@@ -1,0 +1,12 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  namespace: {{ .Release.Namespace }}
+  name: {{ include "telemetry-api.fullname" . }}
+  labels:
+    {{- include "telemetry-api.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+    {{- include "telemetry-api.selectorLabels" . | nindent 6 }}
+{{ toYaml .Values.podDisruptionBudget | indent 2 }}

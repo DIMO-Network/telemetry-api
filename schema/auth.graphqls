@@ -1,0 +1,15 @@
+scalar Map
+
+directive @requiresPrivilege(
+  privileges: [Privilege!]!
+) on FIELD_DEFINITION | OBJECT | INTERFACE | SCALAR | ENUM
+
+enum Privilege {
+  VehicleNonLocationData
+  VehicleCommands
+  VehicleCurrentLocation
+  VehicleAllTimeLocation
+  VehicleVinCredential
+}
+
+directive @requiresToken on FIELD_DEFINITION
