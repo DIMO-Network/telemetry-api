@@ -29,7 +29,6 @@ func NewJWTMiddleware(issuer, contractAddress string, logger *zerolog.Logger) (*
 		return nil, fmt.Errorf("failed to parse issuer URL: %w", err)
 	}
 
-	// fiber refrest rate is 1 hour
 	provider := jwks.NewCachingProvider(issuerURL, 1*time.Hour)
 
 	newCustomClaims := func() validator.CustomClaims {
@@ -51,6 +50,7 @@ func NewJWTMiddleware(issuer, contractAddress string, logger *zerolog.Logger) (*
 		jwtValidator.ValidateToken,
 		jwtmiddleware.WithCredentialsOptional(false),
 		jwtmiddleware.WithErrorHandler(ErrorHandler(logger)),
+		jwtmiddleware.WithCredentialsOptional(true),
 	)
 	return middleware, nil
 }
@@ -58,15 +58,17 @@ func NewJWTMiddleware(issuer, contractAddress string, logger *zerolog.Logger) (*
 // AddClaimHandler is a middleware that adds the custom claims wrapper to the context.
 func AddClaimHandler(next http.Handler, logger *zerolog.Logger) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var claimWrapper *customClaimWrapper
 		claims, ok := r.Context().Value(jwtmiddleware.ContextKey{}).(*validator.ValidatedClaims)
-		if !ok {
-			logger.Error().Msg("could not cast claims to ValidatedClaims")
-			jwtmiddleware.DefaultErrorHandler(w, r, jwtmiddleware.ErrJWTMissing)
-		}
-		claimWrapper, ok := claims.CustomClaims.(*customClaimWrapper)
-		if !ok {
-			logger.Error().Msg("could not cast claims to customClaimWrapper")
-			jwtmiddleware.DefaultErrorHandler(w, r, jwtmiddleware.ErrJWTMissing)
+		if ok {
+			claimWrapper, ok = claims.CustomClaims.(*customClaimWrapper)
+			if !ok {
+				logger.Error().Msg("could not cast claims to customClaimWrapper")
+				jwtmiddleware.DefaultErrorHandler(w, r, jwtmiddleware.ErrJWTMissing)
+			}
+		} else {
+			// if the claims are not in the context, create an empty custom claim wrapper with no privileges.
+			claimWrapper = &customClaimWrapper{}
 		}
 		claimWrapper.privileges = make(map[model.Privilege]struct{}, len(claimWrapper.CustomClaims.PrivilegeIDs))
 		for _, priv := range claimWrapper.CustomClaims.PrivilegeIDs {
