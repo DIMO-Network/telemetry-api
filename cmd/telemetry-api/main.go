@@ -40,7 +40,7 @@ func main() {
 		logger.Fatal().Err(err).Msg("Couldn't create repository.")
 	}
 
-	cfg := graph.Config{Resolvers: &graph.Resolver{baseRepo}}
+	cfg := graph.Config{Resolvers: &graph.Resolver{Repository: baseRepo}}
 	cfg.Directives.OneOf = func(ctx context.Context, _ any, next graphql.Resolver) (any, error) {
 		// The directive on its own is advisory; everything is enforced inside of the resolver
 		return next(ctx)

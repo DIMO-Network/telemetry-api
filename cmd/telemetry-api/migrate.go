@@ -12,7 +12,7 @@ import (
 	"github.com/pressly/goose/v3"
 )
 
-func runGoose(ctx context.Context, settings *config.Settings, command string) error {
+func RunGoose(ctx context.Context, settings *config.Settings, command string) error {
 	db := getClickhouseDB(settings)
 	if err := db.Ping(); err != nil {
 		return fmt.Errorf("failed to ping clickhouse: %v", err)

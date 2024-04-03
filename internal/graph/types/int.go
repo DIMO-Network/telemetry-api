@@ -12,7 +12,7 @@ import (
 // MarshalInt16 marshals an int16 to a graphql.Marshaler.
 func MarshalInt16(i int16) graphql.Marshaler {
 	return graphql.WriterFunc(func(w io.Writer) {
-		io.WriteString(w, strconv.FormatInt(int64(i), 10))
+		_, _ = io.WriteString(w, strconv.FormatInt(int64(i), 10))
 	})
 }
 
@@ -37,7 +37,7 @@ func UnmarshalInt16(v any) (int16, error) {
 // MarshalInt8 marshals an int8 to a graphql.Marshaler.
 func MarshalInt8(i int8) graphql.Marshaler {
 	return graphql.WriterFunc(func(w io.Writer) {
-		io.WriteString(w, strconv.FormatInt(int64(i), 10))
+		_, _ = io.WriteString(w, strconv.FormatInt(int64(i), 10))
 	})
 }
 

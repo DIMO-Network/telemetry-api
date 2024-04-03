@@ -43,13 +43,3 @@ func (s *Service) GetUserDeviceByTokenID(ctx context.Context, tokenID int64) (*p
 
 	return userDevice, nil
 }
-
-// UserDeviceFull represents object user's see on frontend for listing of their devices
-type userDeviceFull struct {
-	ID             string  `json:"id"`
-	VIN            *string `json:"vin"`
-	VINConfirmed   bool    `json:"vinConfirmed"`
-	Name           *string `json:"name"`
-	CustomImageURL *string `json:"customImageUrl"`
-	CountryCode    *string `json:"countryCode"`
-}

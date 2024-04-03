@@ -173,18 +173,6 @@ func (r *Repository) getTotalCount(where string, args []any) (int, error) {
 	return int(count), nil
 }
 
-func decodePageInfo(page model.PageSelection) (string, string, []any) {
-	order := "ASC"
-	if page.Last != nil {
-		order = "DESC"
-	}
-	if page.First != nil {
-	}
-	where := ""
-	args := make([]any, 0)
-	return order, where, args
-}
-
 // ToAPI converts a DIMO model to a DIMO API model.
 func ToAPI(dimo *vss.Dimo, id string, tokenID int) *model.DIMOData {
 	return &model.DIMOData{

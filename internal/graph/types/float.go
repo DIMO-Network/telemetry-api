@@ -13,7 +13,7 @@ import (
 
 func MarshalFloat32(f float32) graphql.Marshaler {
 	return graphql.WriterFunc(func(w io.Writer) {
-		io.WriteString(w, fmt.Sprintf("%g", f))
+		_, _ = io.WriteString(w, fmt.Sprintf("%g", f))
 	})
 }
 
@@ -41,8 +41,8 @@ func MarshalFloat32Context(f float32) graphql.ContextMarshaler {
 		if math.IsInf(float64(f), 0) || math.IsNaN(float64(f)) {
 			return fmt.Errorf("cannot marshal infinite no NaN float values")
 		}
-		io.WriteString(w, fmt.Sprintf("%g", f))
-		return nil
+		_, err := io.WriteString(w, fmt.Sprintf("%g", f))
+		return err
 	})
 }
 
