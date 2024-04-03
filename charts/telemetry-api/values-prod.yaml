@@ -9,8 +9,7 @@ cronJob:
 env:
   PORT: 8080
   MON_PORT: 8888
-  CLICKHOUSE_HOST: <TODO GET HOST>
-  CLICKHOUSE_DATABASE: dimo
+  CLICKHOUSE_HOST: clickhouse-ck-prod-dimo-clickhouse.prod.svc.cluster.local
   DEVICES_APIGRPC_ADDR: devices-api-prod:8086
   TOKEN_EXCHANGE_JWK_KEY_SET_URL: http://dex-roles-rights-prod.prod.svc.cluster.local:5556
   VEHICLE_NFT_ADDRESS: '0xbA5738a18d83D41847dfFbDC6101d37C69c9B0cF'

@@ -26,7 +26,7 @@ cronJob:
 env:
   PORT: 8080
   MON_PORT: 8888
-  CLICKHOUSE_HOST: localhost
+  CLICKHOUSE_HOST: clickhouse-ck-dev-dimo-clickhouse.dev.svc.cluster.local
   CLICKHOUSE_TCP_PORT: 9000
   CLICKHOUSE_USER: clickhouse-user
   CLICKHOUSE_DATABASE: dimo
