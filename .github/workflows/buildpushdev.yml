@@ -6,7 +6,7 @@ on:
 jobs:
   build:
     name: buildpushdev
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - uses: actions/checkout@v3
 
@@ -24,7 +24,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: .
-          file: ./resources/docker/Dockerfile
+          file: ./dockerfile
           push: true
           tags: dimozone/telemetry-api:${{ steps.slug.outputs.sha7 }}, dimozone/telemetry-api:latest
 
