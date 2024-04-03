@@ -80,7 +80,7 @@ func validateFirstLast(first, last *int, maxPageSize int) error {
 			return errors.New("the value for `first` cannot be negative")
 		}
 		if *first > maxPageSize {
-			return fmt.Errorf("the value %d for `first` exceeds the limit %d", *last, maxPageSize)
+			return fmt.Errorf("the value %d for `first` exceeds the limit %d", *first, maxPageSize)
 		}
 		return nil
 	}
