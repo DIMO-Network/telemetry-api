@@ -38,9 +38,9 @@ func NewJWTMiddleware(issuer, jwksURI, contractAddress string, logger *zerolog.L
 		opts = append(opts, jwks.WithCustomJWKSURI(keysURI))
 	}
 	provider := jwks.NewCachingProvider(issuerURL, 1*time.Hour, opts...)
-
+	expectedAddr := common.HexToAddress(contractAddress)
 	newCustomClaims := func() validator.CustomClaims {
-		return &customClaimWrapper{contractAddress: contractAddress}
+		return &customClaimWrapper{expectedContractAddress: expectedAddr}
 	}
 	// Set up the validator.
 	jwtValidator, err := validator.New(
@@ -84,7 +84,7 @@ func AddClaimHandler(next http.Handler, logger *zerolog.Logger) http.Handler {
 					PrivilegeIDs:    []privileges.Privilege{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
 					ContractAddress: addr,
 				}
-				claimWrapper.contractAddress = addr.String()
+				claimWrapper.expectedContractAddress = addr
 			}
 		}
 		claimWrapper.privileges = make(map[model.Privilege]struct{}, len(claimWrapper.CustomClaims.PrivilegeIDs))
@@ -112,16 +112,15 @@ func getClaim(ctx context.Context) *customClaimWrapper {
 }
 
 type customClaimWrapper struct {
-	contractAddress string
-	privileges      map[model.Privilege]struct{}
+	expectedContractAddress common.Address
+	privileges              map[model.Privilege]struct{}
 	privilegetoken.CustomClaims
 }
 
 // Validate function is required to implement the validator.CustomClaims interface.
 func (c *customClaimWrapper) Validate(context.Context) error {
-	str := c.CustomClaims.ContractAddress.String()
-	if c.contractAddress != str {
-		return fmt.Errorf("incorrect contract address")
+	if c.expectedContractAddress != c.CustomClaims.ContractAddress {
+		return fmt.Errorf("incorrect contract address expected %v got %v", c.expectedContractAddress, c.CustomClaims.ContractAddress)
 	}
 	return nil
 }
