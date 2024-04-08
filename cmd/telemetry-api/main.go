@@ -56,8 +56,9 @@ func main() {
 
 	server := handler.NewDefaultServer(graph.NewExecutableSchema(cfg))
 
-	logger.Info().Str("jwkUrl", settings.TokenExchangeJWTKeySetURL).Str("vehicleAddr", settings.VehicleNFTAddress).Msg("Privileges enabled.")
-	authMiddleware, err := NewJWTMiddleware(settings.TokenExchangeJWTKeySetURL, settings.VehicleNFTAddress, &logger)
+	logger.Info().Str("jwksUrl", settings.TokenExchangeJWTKeySetURL).Str("issuerURL", settings.TokenExchangeIssuer).Str("vehicleAddr", settings.VehicleNFTAddress).Msg("Privileges enabled.")
+
+	authMiddleware, err := NewJWTMiddleware(settings.TokenExchangeIssuer, settings.TokenExchangeJWTKeySetURL, settings.VehicleNFTAddress, &logger)
 	if err != nil {
 		logger.Fatal().Err(err).Msg("Couldn't create JWT middleware.")
 	}

@@ -24,13 +24,20 @@ type CustomContextKey struct{}
 
 // NewJWTMiddleware creates a new JWT middleware with the given issuer and contract address.
 // This middleware will validate the token and add the claim to the context
-func NewJWTMiddleware(issuer, contractAddress string, logger *zerolog.Logger) (*jwtmiddleware.JWTMiddleware, error) {
+func NewJWTMiddleware(issuer, jwksURI, contractAddress string, logger *zerolog.Logger) (*jwtmiddleware.JWTMiddleware, error) {
 	issuerURL, err := url.Parse(issuer)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse issuer URL: %w", err)
 	}
-
-	provider := jwks.NewCachingProvider(issuerURL, 1*time.Hour)
+	opts := []jwks.ProviderOption{}
+	if jwksURI != "" {
+		keysURI, err := url.Parse(jwksURI)
+		if err != nil {
+			return nil, fmt.Errorf("failed to parse jwksURI: %w", err)
+		}
+		opts = append(opts, jwks.WithCustomJWKSURI(keysURI))
+	}
+	provider := jwks.NewCachingProvider(issuerURL, 1*time.Hour, opts...)
 
 	newCustomClaims := func() validator.CustomClaims {
 		return &customClaimWrapper{contractAddress: contractAddress}
@@ -150,6 +157,5 @@ func requiresTokenCheck(ctx context.Context, obj interface{}, next graphql.Resol
 	if strconv.Itoa(fileterBy.TokenID) != claim.TokenID && claim.TokenID != "foo" {
 		return nil, fmt.Errorf("unathorized")
 	}
-
 	return next(ctx)
 }
