@@ -8,7 +8,6 @@ import (
 	"github.com/DIMO-Network/telemetry-api/internal/config"
 	"github.com/DIMO-Network/telemetry-api/internal/service/deviceapi"
 	"github.com/rs/zerolog"
-	"github.com/vektah/gqlparser/v2/gqlerror"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
@@ -16,12 +15,6 @@ import (
 const (
 	// MaxPageSize is the maximum page size for paginated results
 	MaxPageSize = 100
-)
-
-var (
-	errInvalidToken = fmt.Errorf("invalid token")
-	// InternalError is a generic error message for internal errors.
-	InternalError = gqlerror.Errorf("Internal error")
 )
 
 // Repository is the base repository for all repositories.

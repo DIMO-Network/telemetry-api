@@ -50,16 +50,11 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	Query struct {
-		Signals func(childComplexity int, tokenID *string, from *time.Time, to *time.Time) int
+		Signals func(childComplexity int, tokenID *int, from *time.Time, to *time.Time) int
 	}
 
 	SignalCollection struct {
-		DefinitionID                                         func(childComplexity int, agg *model.StringAggregation) int
-		Source                                               func(childComplexity int, agg *model.StringAggregation) int
-		Subject                                              func(childComplexity int, agg *model.StringAggregation) int
-		Timestamp                                            func(childComplexity int, agg *model.StringAggregation) int
 		TokenID                                              func(childComplexity int) int
-		Type                                                 func(childComplexity int, agg *model.StringAggregation) int
 		VehicleChassisAxleRow1WheelLeftTirePressure          func(childComplexity int, agg *model.FloatAggregation) int
 		VehicleChassisAxleRow1WheelRightTirePressure         func(childComplexity int, agg *model.FloatAggregation) int
 		VehicleChassisAxleRow2WheelLeftTirePressure          func(childComplexity int, agg *model.FloatAggregation) int
@@ -69,7 +64,6 @@ type ComplexityRoot struct {
 		VehicleCurrentLocationLongitude                      func(childComplexity int, agg *model.FloatAggregation) int
 		VehicleCurrentLocationTimestamp                      func(childComplexity int, agg *model.StringAggregation) int
 		VehicleExteriorAirTemperature                        func(childComplexity int, agg *model.FloatAggregation) int
-		VehicleID                                            func(childComplexity int, agg *model.StringAggregation) int
 		VehicleLowVoltageBatteryCurrentVoltage               func(childComplexity int, agg *model.FloatAggregation) int
 		VehicleOBDBarometricPressure                         func(childComplexity int, agg *model.FloatAggregation) int
 		VehicleOBDEngineLoad                                 func(childComplexity int, agg *model.FloatAggregation) int
@@ -106,14 +100,9 @@ type ComplexityRoot struct {
 }
 
 type QueryResolver interface {
-	Signals(ctx context.Context, tokenID *string, from *time.Time, to *time.Time) (*model.SignalCollection, error)
+	Signals(ctx context.Context, tokenID *int, from *time.Time, to *time.Time) (*model.SignalCollection, error)
 }
 type SignalCollectionResolver interface {
-	DefinitionID(ctx context.Context, obj *model.SignalCollection, agg *model.StringAggregation) ([]*model.SignalString, error)
-	Source(ctx context.Context, obj *model.SignalCollection, agg *model.StringAggregation) ([]*model.SignalString, error)
-	Subject(ctx context.Context, obj *model.SignalCollection, agg *model.StringAggregation) ([]*model.SignalString, error)
-	Timestamp(ctx context.Context, obj *model.SignalCollection, agg *model.StringAggregation) ([]*model.SignalString, error)
-	Type(ctx context.Context, obj *model.SignalCollection, agg *model.StringAggregation) ([]*model.SignalString, error)
 	VehicleChassisAxleRow1WheelLeftTirePressure(ctx context.Context, obj *model.SignalCollection, agg *model.FloatAggregation) ([]*model.SignalFloat, error)
 	VehicleChassisAxleRow1WheelRightTirePressure(ctx context.Context, obj *model.SignalCollection, agg *model.FloatAggregation) ([]*model.SignalFloat, error)
 	VehicleChassisAxleRow2WheelLeftTirePressure(ctx context.Context, obj *model.SignalCollection, agg *model.FloatAggregation) ([]*model.SignalFloat, error)
@@ -145,7 +134,6 @@ type SignalCollectionResolver interface {
 	VehicleVehicleIdentificationBrand(ctx context.Context, obj *model.SignalCollection, agg *model.StringAggregation) ([]*model.SignalString, error)
 	VehicleVehicleIdentificationModel(ctx context.Context, obj *model.SignalCollection, agg *model.StringAggregation) ([]*model.SignalString, error)
 	VehicleVehicleIdentificationYear(ctx context.Context, obj *model.SignalCollection, agg *model.FloatAggregation) ([]*model.SignalFloat, error)
-	VehicleID(ctx context.Context, obj *model.SignalCollection, agg *model.StringAggregation) ([]*model.SignalString, error)
 }
 
 type executableSchema struct {
@@ -177,55 +165,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Signals(childComplexity, args["tokenID"].(*string), args["from"].(*time.Time), args["to"].(*time.Time)), true
-
-	case "SignalCollection.definitionID":
-		if e.complexity.SignalCollection.DefinitionID == nil {
-			break
-		}
-
-		args, err := ec.field_SignalCollection_definitionID_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.SignalCollection.DefinitionID(childComplexity, args["agg"].(*model.StringAggregation)), true
-
-	case "SignalCollection.source":
-		if e.complexity.SignalCollection.Source == nil {
-			break
-		}
-
-		args, err := ec.field_SignalCollection_source_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.SignalCollection.Source(childComplexity, args["agg"].(*model.StringAggregation)), true
-
-	case "SignalCollection.subject":
-		if e.complexity.SignalCollection.Subject == nil {
-			break
-		}
-
-		args, err := ec.field_SignalCollection_subject_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.SignalCollection.Subject(childComplexity, args["agg"].(*model.StringAggregation)), true
-
-	case "SignalCollection.timestamp":
-		if e.complexity.SignalCollection.Timestamp == nil {
-			break
-		}
-
-		args, err := ec.field_SignalCollection_timestamp_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.SignalCollection.Timestamp(childComplexity, args["agg"].(*model.StringAggregation)), true
+		return e.complexity.Query.Signals(childComplexity, args["tokenID"].(*int), args["from"].(*time.Time), args["to"].(*time.Time)), true
 
 	case "SignalCollection.tokenID":
 		if e.complexity.SignalCollection.TokenID == nil {
@@ -233,18 +173,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.SignalCollection.TokenID(childComplexity), true
-
-	case "SignalCollection.type":
-		if e.complexity.SignalCollection.Type == nil {
-			break
-		}
-
-		args, err := ec.field_SignalCollection_type_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.SignalCollection.Type(childComplexity, args["agg"].(*model.StringAggregation)), true
 
 	case "SignalCollection.vehicleChassisAxleRow1WheelLeftTirePressure":
 		if e.complexity.SignalCollection.VehicleChassisAxleRow1WheelLeftTirePressure == nil {
@@ -353,18 +281,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.SignalCollection.VehicleExteriorAirTemperature(childComplexity, args["agg"].(*model.FloatAggregation)), true
-
-	case "SignalCollection.vehicleID":
-		if e.complexity.SignalCollection.VehicleID == nil {
-			break
-		}
-
-		args, err := ec.field_SignalCollection_vehicleID_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.SignalCollection.VehicleID(childComplexity, args["agg"].(*model.StringAggregation)), true
 
 	case "SignalCollection.vehicleLowVoltageBatteryCurrentVoltage":
 		if e.complexity.SignalCollection.VehicleLowVoltageBatteryCurrentVoltage == nil {
@@ -776,7 +692,7 @@ scalar Time
 The root query type for the GraphQL schema.
 """
 type Query {
-  Signals(tokenID: ID, from: Time, to: Time): SignalCollection @requiresToken
+  Signals(tokenID: Int, from: Time, to: Time): SignalCollection @requiresToken
 }
 
 type SignalCollection {
@@ -833,275 +749,252 @@ enum StringAggregationType {
 	{Name: "../../schema/signalcollection-gql.graphqls", Input: `# Code generated by "model-garage" DO NOT EDIT.
 extend type SignalCollection {
   """
-  ID for the vehicles definition
-  Required Privlieges: [VehicleNonLocationData]
-  """
-  definitionID(agg: StringAggregation): [SignalString!]
-    @requiresPrivilege(privileges: [VehicleNonLocationData])
-
-  """
-  where the data was sourced from
-  Required Privlieges: [VehicleNonLocationData]
-  """
-  source(agg: StringAggregation): [SignalString!]
-    @requiresPrivilege(privileges: [VehicleNonLocationData])
-
-  """
-  subjet of this vehicle data
-  Required Privlieges: [VehicleNonLocationData]
-  """
-  subject(agg: StringAggregation): [SignalString!]
-    @requiresPrivilege(privileges: [VehicleNonLocationData])
-
-  """
-  timestamp of when this data was colllected
-  Required Privlieges: [VehicleNonLocationData]
-  """
-  timestamp(agg: StringAggregation): [SignalString!]
-    @requiresPrivilege(privileges: [VehicleNonLocationData])
-
-  """
-  type of data collected
-  Required Privlieges: [VehicleNonLocationData]
-  """
-  type(agg: StringAggregation): [SignalString!]
-    @requiresPrivilege(privileges: [VehicleNonLocationData])
-
-  """
   Tire pressure in kilo-Pascal.
   Required Privlieges: [VehicleNonLocationData]
   """
   vehicleChassisAxleRow1WheelLeftTirePressure(
     agg: FloatAggregation
-  ): [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
-
+  ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
+  
   """
   Tire pressure in kilo-Pascal.
   Required Privlieges: [VehicleNonLocationData]
   """
   vehicleChassisAxleRow1WheelRightTirePressure(
     agg: FloatAggregation
-  ): [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
-
+  ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
+  
   """
   Tire pressure in kilo-Pascal.
   Required Privlieges: [VehicleNonLocationData]
   """
   vehicleChassisAxleRow2WheelLeftTirePressure(
     agg: FloatAggregation
-  ): [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
-
+  ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
+  
   """
   Tire pressure in kilo-Pascal.
   Required Privlieges: [VehicleNonLocationData]
   """
   vehicleChassisAxleRow2WheelRightTirePressure(
     agg: FloatAggregation
-  ): [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
-
+  ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
+  
   """
   Current altitude relative to WGS 84 reference ellipsoid, as measured at the position of GNSS receiver antenna.
   Required Privlieges: [VehicleAllTimeLocation]
   """
-  vehicleCurrentLocationAltitude(agg: FloatAggregation): [SignalFloat!]
-    @requiresPrivilege(privileges: [VehicleAllTimeLocation])
-
+  vehicleCurrentLocationAltitude(
+    agg: FloatAggregation
+  ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleAllTimeLocation])
+  
   """
   Current latitude of vehicle in WGS 84 geodetic coordinates, as measured at the position of GNSS receiver antenna.
   Required Privlieges: [VehicleAllTimeLocation]
   """
-  vehicleCurrentLocationLatitude(agg: FloatAggregation): [SignalFloat!]
-    @requiresPrivilege(privileges: [VehicleAllTimeLocation])
-
+  vehicleCurrentLocationLatitude(
+    agg: FloatAggregation
+  ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleAllTimeLocation])
+  
   """
   Current longitude of vehicle in WGS 84 geodetic coordinates, as measured at the position of GNSS receiver antenna.
   Required Privlieges: [VehicleAllTimeLocation]
   """
-  vehicleCurrentLocationLongitude(agg: FloatAggregation): [SignalFloat!]
-    @requiresPrivilege(privileges: [VehicleAllTimeLocation])
-
+  vehicleCurrentLocationLongitude(
+    agg: FloatAggregation
+  ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleAllTimeLocation])
+  
   """
   Timestamp from GNSS system for current location, formatted according to ISO 8601 with UTC time zone.
   Required Privlieges: [VehicleAllTimeLocation]
   """
-  vehicleCurrentLocationTimestamp(agg: StringAggregation): [SignalString!]
-    @requiresPrivilege(privileges: [VehicleAllTimeLocation])
-
+  vehicleCurrentLocationTimestamp(
+    agg: StringAggregation
+  ):  [SignalString!] @requiresPrivilege(privileges: [VehicleAllTimeLocation])
+  
   """
   Air temperature outside the vehicle.
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehicleExteriorAirTemperature(agg: FloatAggregation): [SignalFloat!]
-    @requiresPrivilege(privileges: [VehicleNonLocationData])
-
+  vehicleExteriorAirTemperature(
+    agg: FloatAggregation
+  ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
+  
   """
   Current Voltage of the low voltage battery.
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehicleLowVoltageBatteryCurrentVoltage(agg: FloatAggregation): [SignalFloat!]
-    @requiresPrivilege(privileges: [VehicleNonLocationData])
-
+  vehicleLowVoltageBatteryCurrentVoltage(
+    agg: FloatAggregation
+  ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
+  
   """
   PID 33 - Barometric pressure
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehicleOBDBarometricPressure(agg: FloatAggregation): [SignalFloat!]
-    @requiresPrivilege(privileges: [VehicleNonLocationData])
-
+  vehicleOBDBarometricPressure(
+    agg: FloatAggregation
+  ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
+  
   """
   PID 04 - Engine load in percent - 0 = no load, 100 = full load
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehicleOBDEngineLoad(agg: FloatAggregation): [SignalFloat!]
-    @requiresPrivilege(privileges: [VehicleNonLocationData])
-
+  vehicleOBDEngineLoad(
+    agg: FloatAggregation
+  ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
+  
   """
   PID 0F - Intake temperature
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehicleOBDIntakeTemp(agg: FloatAggregation): [SignalFloat!]
-    @requiresPrivilege(privileges: [VehicleNonLocationData])
-
+  vehicleOBDIntakeTemp(
+    agg: FloatAggregation
+  ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
+  
   """
   PID 1F - Engine run time
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehicleOBDRunTime(agg: FloatAggregation): [SignalFloat!]
-    @requiresPrivilege(privileges: [VehicleNonLocationData])
-
+  vehicleOBDRunTime(
+    agg: FloatAggregation
+  ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
+  
   """
   Engine coolant temperature.
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehiclePowertrainCombustionEngineECT(agg: FloatAggregation): [SignalFloat!]
-    @requiresPrivilege(privileges: [VehicleNonLocationData])
-
+  vehiclePowertrainCombustionEngineECT(
+    agg: FloatAggregation
+  ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
+  
   """
   Engine oil level.
   Required Privlieges: [VehicleNonLocationData]
   """
   vehiclePowertrainCombustionEngineEngineOilLevel(
     agg: StringAggregation
-  ): [SignalString!] @requiresPrivilege(privileges: [VehicleNonLocationData])
-
+  ):  [SignalString!] @requiresPrivilege(privileges: [VehicleNonLocationData])
+  
   """
   Engine speed measured as rotations per minute.
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehiclePowertrainCombustionEngineSpeed(agg: FloatAggregation): [SignalFloat!]
-    @requiresPrivilege(privileges: [VehicleNonLocationData])
-
+  vehiclePowertrainCombustionEngineSpeed(
+    agg: FloatAggregation
+  ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
+  
   """
   Current throttle position.
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehiclePowertrainCombustionEngineTPS(agg: FloatAggregation): [SignalFloat!]
-    @requiresPrivilege(privileges: [VehicleNonLocationData])
-
+  vehiclePowertrainCombustionEngineTPS(
+    agg: FloatAggregation
+  ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
+  
   """
   Current available fuel in the fuel tank expressed in liters.
   Required Privlieges: [VehicleNonLocationData]
   """
   vehiclePowertrainFuelSystemAbsoluteLevel(
     agg: FloatAggregation
-  ): [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
-
+  ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
+  
   """
   High level information of fuel types supported
   Required Privlieges: [VehicleNonLocationData]
   """
   vehiclePowertrainFuelSystemSupportedFuelTypes(
     agg: StringAggregation
-  ): [SignalString!] @requiresPrivilege(privileges: [VehicleNonLocationData])
-
+  ):  [SignalString!] @requiresPrivilege(privileges: [VehicleNonLocationData])
+  
   """
   Remaining range in meters using all energy sources available in the vehicle.
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehiclePowertrainRange(agg: FloatAggregation): [SignalFloat!]
-    @requiresPrivilege(privileges: [VehicleNonLocationData])
-
+  vehiclePowertrainRange(
+    agg: FloatAggregation
+  ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
+  
   """
   Target charge limit (state of charge) for battery.
   Required Privlieges: [VehicleNonLocationData]
   """
   vehiclePowertrainTractionBatteryChargingChargeLimit(
     agg: FloatAggregation
-  ): [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
-
+  ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
+  
   """
   True if charging is ongoing. Charging is considered to be ongoing if energy is flowing from charger to vehicle.
   Required Privlieges: [VehicleNonLocationData]
   """
   vehiclePowertrainTractionBatteryChargingIsCharging(
     agg: StringAggregation
-  ): [SignalString!] @requiresPrivilege(privileges: [VehicleNonLocationData])
-
+  ):  [SignalString!] @requiresPrivilege(privileges: [VehicleNonLocationData])
+  
   """
   Gross capacity of the battery.
   Required Privlieges: [VehicleNonLocationData]
   """
   vehiclePowertrainTractionBatteryGrossCapacity(
     agg: FloatAggregation
-  ): [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
-
+  ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
+  
   """
   Physical state of charge of the high voltage battery, relative to net capacity. This is not necessarily the state of charge being displayed to the customer.
   Required Privlieges: [VehicleNonLocationData]
   """
   vehiclePowertrainTractionBatteryStateOfChargeCurrent(
     agg: FloatAggregation
-  ): [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
-
+  ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
+  
   """
   Odometer reading, total distance travelled during the lifetime of the transmission.
   Required Privlieges: [VehicleNonLocationData]
   """
   vehiclePowertrainTransmissionTravelledDistance(
     agg: FloatAggregation
-  ): [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
-
+  ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
+  
   """
   Defines the powertrain type of the vehicle.
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehiclePowertrainType(agg: StringAggregation): [SignalString!]
-    @requiresPrivilege(privileges: [VehicleNonLocationData])
-
+  vehiclePowertrainType(
+    agg: StringAggregation
+  ):  [SignalString!] @requiresPrivilege(privileges: [VehicleNonLocationData])
+  
   """
   Vehicle speed.
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehicleSpeed(agg: FloatAggregation): [SignalFloat!]
-    @requiresPrivilege(privileges: [VehicleNonLocationData])
-
+  vehicleSpeed(
+    agg: FloatAggregation
+  ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
+  
   """
   Vehicle brand or manufacturer.
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehicleVehicleIdentificationBrand(agg: StringAggregation): [SignalString!]
-    @requiresPrivilege(privileges: [VehicleNonLocationData])
-
+  vehicleVehicleIdentificationBrand(
+    agg: StringAggregation
+  ):  [SignalString!] @requiresPrivilege(privileges: [VehicleNonLocationData])
+  
   """
   Vehicle model.
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehicleVehicleIdentificationModel(agg: StringAggregation): [SignalString!]
-    @requiresPrivilege(privileges: [VehicleNonLocationData])
-
+  vehicleVehicleIdentificationModel(
+    agg: StringAggregation
+  ):  [SignalString!] @requiresPrivilege(privileges: [VehicleNonLocationData])
+  
   """
   Model year of the vehicle.
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehicleVehicleIdentificationYear(agg: FloatAggregation): [SignalFloat!]
-    @requiresPrivilege(privileges: [VehicleNonLocationData])
-
-  """
-  unque DIMO ID for the vehicle
-  Required Privlieges: [VehicleNonLocationData]
-  """
-  vehicleID(agg: StringAggregation): [SignalString!]
-    @requiresPrivilege(privileges: [VehicleNonLocationData])
+  vehicleVehicleIdentificationYear(
+    agg: FloatAggregation
+  ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
 }
 
 type SignalFloat {
@@ -1126,8 +1019,7 @@ type SignalString {
   value of the signal
   """
   value: String
-}
-`, BuiltIn: false},
+}`, BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)
 
@@ -1153,10 +1045,10 @@ func (ec *executionContext) dir_requiresPrivilege_args(ctx context.Context, rawA
 func (ec *executionContext) field_Query_Signals_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 *string
+	var arg0 *int
 	if tmp, ok := rawArgs["tokenID"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tokenID"))
-		arg0, err = ec.unmarshalOID2ᚖstring(ctx, tmp)
+		arg0, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1195,81 +1087,6 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 		}
 	}
 	args["name"] = arg0
-	return args, nil
-}
-
-func (ec *executionContext) field_SignalCollection_definitionID_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 *model.StringAggregation
-	if tmp, ok := rawArgs["agg"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-		arg0, err = ec.unmarshalOStringAggregation2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐStringAggregation(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["agg"] = arg0
-	return args, nil
-}
-
-func (ec *executionContext) field_SignalCollection_source_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 *model.StringAggregation
-	if tmp, ok := rawArgs["agg"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-		arg0, err = ec.unmarshalOStringAggregation2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐStringAggregation(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["agg"] = arg0
-	return args, nil
-}
-
-func (ec *executionContext) field_SignalCollection_subject_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 *model.StringAggregation
-	if tmp, ok := rawArgs["agg"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-		arg0, err = ec.unmarshalOStringAggregation2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐStringAggregation(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["agg"] = arg0
-	return args, nil
-}
-
-func (ec *executionContext) field_SignalCollection_timestamp_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 *model.StringAggregation
-	if tmp, ok := rawArgs["agg"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-		arg0, err = ec.unmarshalOStringAggregation2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐStringAggregation(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["agg"] = arg0
-	return args, nil
-}
-
-func (ec *executionContext) field_SignalCollection_type_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 *model.StringAggregation
-	if tmp, ok := rawArgs["agg"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-		arg0, err = ec.unmarshalOStringAggregation2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐStringAggregation(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["agg"] = arg0
 	return args, nil
 }
 
@@ -1400,21 +1217,6 @@ func (ec *executionContext) field_SignalCollection_vehicleExteriorAirTemperature
 	if tmp, ok := rawArgs["agg"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
 		arg0, err = ec.unmarshalOFloatAggregation2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["agg"] = arg0
-	return args, nil
-}
-
-func (ec *executionContext) field_SignalCollection_vehicleID_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 *model.StringAggregation
-	if tmp, ok := rawArgs["agg"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-		arg0, err = ec.unmarshalOStringAggregation2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐStringAggregation(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1806,7 +1608,7 @@ func (ec *executionContext) _Query_Signals(ctx context.Context, field graphql.Co
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Query().Signals(rctx, fc.Args["tokenID"].(*string), fc.Args["from"].(*time.Time), fc.Args["to"].(*time.Time))
+			return ec.resolvers.Query().Signals(rctx, fc.Args["tokenID"].(*int), fc.Args["from"].(*time.Time), fc.Args["to"].(*time.Time))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.RequiresToken == nil {
@@ -1849,16 +1651,6 @@ func (ec *executionContext) fieldContext_Query_Signals(ctx context.Context, fiel
 			switch field.Name {
 			case "tokenID":
 				return ec.fieldContext_SignalCollection_tokenID(ctx, field)
-			case "definitionID":
-				return ec.fieldContext_SignalCollection_definitionID(ctx, field)
-			case "source":
-				return ec.fieldContext_SignalCollection_source(ctx, field)
-			case "subject":
-				return ec.fieldContext_SignalCollection_subject(ctx, field)
-			case "timestamp":
-				return ec.fieldContext_SignalCollection_timestamp(ctx, field)
-			case "type":
-				return ec.fieldContext_SignalCollection_type(ctx, field)
 			case "vehicleChassisAxleRow1WheelLeftTirePressure":
 				return ec.fieldContext_SignalCollection_vehicleChassisAxleRow1WheelLeftTirePressure(ctx, field)
 			case "vehicleChassisAxleRow1WheelRightTirePressure":
@@ -1921,8 +1713,6 @@ func (ec *executionContext) fieldContext_Query_Signals(ctx context.Context, fiel
 				return ec.fieldContext_SignalCollection_vehicleVehicleIdentificationModel(ctx, field)
 			case "vehicleVehicleIdentificationYear":
 				return ec.fieldContext_SignalCollection_vehicleVehicleIdentificationYear(ctx, field)
-			case "vehicleID":
-				return ec.fieldContext_SignalCollection_vehicleID(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type SignalCollection", field.Name)
 		},
@@ -2110,416 +1900,6 @@ func (ec *executionContext) fieldContext_SignalCollection_tokenID(ctx context.Co
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type Int does not have child fields")
 		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _SignalCollection_definitionID(ctx context.Context, field graphql.CollectedField, obj *model.SignalCollection) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_SignalCollection_definitionID(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
-			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalCollection().DefinitionID(rctx, obj, fc.Args["agg"].(*model.StringAggregation))
-		}
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VehicleNonLocationData"})
-			if err != nil {
-				return nil, err
-			}
-			if ec.directives.RequiresPrivilege == nil {
-				return nil, errors.New("directive requiresPrivilege is not implemented")
-			}
-			return ec.directives.RequiresPrivilege(ctx, obj, directive0, privileges)
-		}
-
-		tmp, err := directive1(rctx)
-		if err != nil {
-			return nil, graphql.ErrorOnPath(ctx, err)
-		}
-		if tmp == nil {
-			return nil, nil
-		}
-		if data, ok := tmp.([]*model.SignalString); ok {
-			return data, nil
-		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be []*github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalString`, tmp)
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.([]*model.SignalString)
-	fc.Result = res
-	return ec.marshalOSignalString2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalStringᚄ(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_SignalCollection_definitionID(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "SignalCollection",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "timestamp":
-				return ec.fieldContext_SignalString_timestamp(ctx, field)
-			case "value":
-				return ec.fieldContext_SignalString_value(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type SignalString", field.Name)
-		},
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_SignalCollection_definitionID_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return fc, err
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _SignalCollection_source(ctx context.Context, field graphql.CollectedField, obj *model.SignalCollection) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_SignalCollection_source(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
-			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalCollection().Source(rctx, obj, fc.Args["agg"].(*model.StringAggregation))
-		}
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VehicleNonLocationData"})
-			if err != nil {
-				return nil, err
-			}
-			if ec.directives.RequiresPrivilege == nil {
-				return nil, errors.New("directive requiresPrivilege is not implemented")
-			}
-			return ec.directives.RequiresPrivilege(ctx, obj, directive0, privileges)
-		}
-
-		tmp, err := directive1(rctx)
-		if err != nil {
-			return nil, graphql.ErrorOnPath(ctx, err)
-		}
-		if tmp == nil {
-			return nil, nil
-		}
-		if data, ok := tmp.([]*model.SignalString); ok {
-			return data, nil
-		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be []*github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalString`, tmp)
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.([]*model.SignalString)
-	fc.Result = res
-	return ec.marshalOSignalString2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalStringᚄ(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_SignalCollection_source(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "SignalCollection",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "timestamp":
-				return ec.fieldContext_SignalString_timestamp(ctx, field)
-			case "value":
-				return ec.fieldContext_SignalString_value(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type SignalString", field.Name)
-		},
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_SignalCollection_source_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return fc, err
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _SignalCollection_subject(ctx context.Context, field graphql.CollectedField, obj *model.SignalCollection) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_SignalCollection_subject(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
-			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalCollection().Subject(rctx, obj, fc.Args["agg"].(*model.StringAggregation))
-		}
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VehicleNonLocationData"})
-			if err != nil {
-				return nil, err
-			}
-			if ec.directives.RequiresPrivilege == nil {
-				return nil, errors.New("directive requiresPrivilege is not implemented")
-			}
-			return ec.directives.RequiresPrivilege(ctx, obj, directive0, privileges)
-		}
-
-		tmp, err := directive1(rctx)
-		if err != nil {
-			return nil, graphql.ErrorOnPath(ctx, err)
-		}
-		if tmp == nil {
-			return nil, nil
-		}
-		if data, ok := tmp.([]*model.SignalString); ok {
-			return data, nil
-		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be []*github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalString`, tmp)
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.([]*model.SignalString)
-	fc.Result = res
-	return ec.marshalOSignalString2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalStringᚄ(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_SignalCollection_subject(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "SignalCollection",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "timestamp":
-				return ec.fieldContext_SignalString_timestamp(ctx, field)
-			case "value":
-				return ec.fieldContext_SignalString_value(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type SignalString", field.Name)
-		},
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_SignalCollection_subject_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return fc, err
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _SignalCollection_timestamp(ctx context.Context, field graphql.CollectedField, obj *model.SignalCollection) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_SignalCollection_timestamp(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
-			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalCollection().Timestamp(rctx, obj, fc.Args["agg"].(*model.StringAggregation))
-		}
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VehicleNonLocationData"})
-			if err != nil {
-				return nil, err
-			}
-			if ec.directives.RequiresPrivilege == nil {
-				return nil, errors.New("directive requiresPrivilege is not implemented")
-			}
-			return ec.directives.RequiresPrivilege(ctx, obj, directive0, privileges)
-		}
-
-		tmp, err := directive1(rctx)
-		if err != nil {
-			return nil, graphql.ErrorOnPath(ctx, err)
-		}
-		if tmp == nil {
-			return nil, nil
-		}
-		if data, ok := tmp.([]*model.SignalString); ok {
-			return data, nil
-		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be []*github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalString`, tmp)
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.([]*model.SignalString)
-	fc.Result = res
-	return ec.marshalOSignalString2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalStringᚄ(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_SignalCollection_timestamp(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "SignalCollection",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "timestamp":
-				return ec.fieldContext_SignalString_timestamp(ctx, field)
-			case "value":
-				return ec.fieldContext_SignalString_value(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type SignalString", field.Name)
-		},
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_SignalCollection_timestamp_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return fc, err
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _SignalCollection_type(ctx context.Context, field graphql.CollectedField, obj *model.SignalCollection) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_SignalCollection_type(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
-			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalCollection().Type(rctx, obj, fc.Args["agg"].(*model.StringAggregation))
-		}
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VehicleNonLocationData"})
-			if err != nil {
-				return nil, err
-			}
-			if ec.directives.RequiresPrivilege == nil {
-				return nil, errors.New("directive requiresPrivilege is not implemented")
-			}
-			return ec.directives.RequiresPrivilege(ctx, obj, directive0, privileges)
-		}
-
-		tmp, err := directive1(rctx)
-		if err != nil {
-			return nil, graphql.ErrorOnPath(ctx, err)
-		}
-		if tmp == nil {
-			return nil, nil
-		}
-		if data, ok := tmp.([]*model.SignalString); ok {
-			return data, nil
-		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be []*github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalString`, tmp)
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.([]*model.SignalString)
-	fc.Result = res
-	return ec.marshalOSignalString2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalStringᚄ(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_SignalCollection_type(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "SignalCollection",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "timestamp":
-				return ec.fieldContext_SignalString_timestamp(ctx, field)
-			case "value":
-				return ec.fieldContext_SignalString_value(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type SignalString", field.Name)
-		},
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_SignalCollection_type_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return fc, err
 	}
 	return fc, nil
 }
@@ -5066,88 +4446,6 @@ func (ec *executionContext) fieldContext_SignalCollection_vehicleVehicleIdentifi
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalCollection_vehicleID(ctx context.Context, field graphql.CollectedField, obj *model.SignalCollection) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_SignalCollection_vehicleID(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
-			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalCollection().VehicleID(rctx, obj, fc.Args["agg"].(*model.StringAggregation))
-		}
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VehicleNonLocationData"})
-			if err != nil {
-				return nil, err
-			}
-			if ec.directives.RequiresPrivilege == nil {
-				return nil, errors.New("directive requiresPrivilege is not implemented")
-			}
-			return ec.directives.RequiresPrivilege(ctx, obj, directive0, privileges)
-		}
-
-		tmp, err := directive1(rctx)
-		if err != nil {
-			return nil, graphql.ErrorOnPath(ctx, err)
-		}
-		if tmp == nil {
-			return nil, nil
-		}
-		if data, ok := tmp.([]*model.SignalString); ok {
-			return data, nil
-		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be []*github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalString`, tmp)
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.([]*model.SignalString)
-	fc.Result = res
-	return ec.marshalOSignalString2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalStringᚄ(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_SignalCollection_vehicleID(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "SignalCollection",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "timestamp":
-				return ec.fieldContext_SignalString_timestamp(ctx, field)
-			case "value":
-				return ec.fieldContext_SignalString_value(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type SignalString", field.Name)
-		},
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_SignalCollection_vehicleID_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return fc, err
-	}
-	return fc, nil
-}
-
 func (ec *executionContext) _SignalFloat_timestamp(ctx context.Context, field graphql.CollectedField, obj *model.SignalFloat) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalFloat_timestamp(ctx, field)
 	if err != nil {
@@ -7246,171 +6544,6 @@ func (ec *executionContext) _SignalCollection(ctx context.Context, sel ast.Selec
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&out.Invalids, 1)
 			}
-		case "definitionID":
-			field := field
-
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._SignalCollection_definitionID(ctx, field, obj)
-				return res
-			}
-
-			if field.Deferrable != nil {
-				dfs, ok := deferred[field.Deferrable.Label]
-				di := 0
-				if ok {
-					dfs.AddField(field)
-					di = len(dfs.Values) - 1
-				} else {
-					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
-					deferred[field.Deferrable.Label] = dfs
-				}
-				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
-					return innerFunc(ctx, dfs)
-				})
-
-				// don't run the out.Concurrently() call below
-				out.Values[i] = graphql.Null
-				continue
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-		case "source":
-			field := field
-
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._SignalCollection_source(ctx, field, obj)
-				return res
-			}
-
-			if field.Deferrable != nil {
-				dfs, ok := deferred[field.Deferrable.Label]
-				di := 0
-				if ok {
-					dfs.AddField(field)
-					di = len(dfs.Values) - 1
-				} else {
-					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
-					deferred[field.Deferrable.Label] = dfs
-				}
-				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
-					return innerFunc(ctx, dfs)
-				})
-
-				// don't run the out.Concurrently() call below
-				out.Values[i] = graphql.Null
-				continue
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-		case "subject":
-			field := field
-
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._SignalCollection_subject(ctx, field, obj)
-				return res
-			}
-
-			if field.Deferrable != nil {
-				dfs, ok := deferred[field.Deferrable.Label]
-				di := 0
-				if ok {
-					dfs.AddField(field)
-					di = len(dfs.Values) - 1
-				} else {
-					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
-					deferred[field.Deferrable.Label] = dfs
-				}
-				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
-					return innerFunc(ctx, dfs)
-				})
-
-				// don't run the out.Concurrently() call below
-				out.Values[i] = graphql.Null
-				continue
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-		case "timestamp":
-			field := field
-
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._SignalCollection_timestamp(ctx, field, obj)
-				return res
-			}
-
-			if field.Deferrable != nil {
-				dfs, ok := deferred[field.Deferrable.Label]
-				di := 0
-				if ok {
-					dfs.AddField(field)
-					di = len(dfs.Values) - 1
-				} else {
-					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
-					deferred[field.Deferrable.Label] = dfs
-				}
-				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
-					return innerFunc(ctx, dfs)
-				})
-
-				// don't run the out.Concurrently() call below
-				out.Values[i] = graphql.Null
-				continue
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-		case "type":
-			field := field
-
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._SignalCollection_type(ctx, field, obj)
-				return res
-			}
-
-			if field.Deferrable != nil {
-				dfs, ok := deferred[field.Deferrable.Label]
-				di := 0
-				if ok {
-					dfs.AddField(field)
-					di = len(dfs.Values) - 1
-				} else {
-					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
-					deferred[field.Deferrable.Label] = dfs
-				}
-				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
-					return innerFunc(ctx, dfs)
-				})
-
-				// don't run the out.Concurrently() call below
-				out.Values[i] = graphql.Null
-				continue
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "vehicleChassisAxleRow1WheelLeftTirePressure":
 			field := field
 
@@ -8434,39 +7567,6 @@ func (ec *executionContext) _SignalCollection(ctx context.Context, sel ast.Selec
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-		case "vehicleID":
-			field := field
-
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._SignalCollection_vehicleID(ctx, field, obj)
-				return res
-			}
-
-			if field.Deferrable != nil {
-				dfs, ok := deferred[field.Deferrable.Label]
-				di := 0
-				if ok {
-					dfs.AddField(field)
-					di = len(dfs.Values) - 1
-				} else {
-					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
-					deferred[field.Deferrable.Label] = dfs
-				}
-				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
-					return innerFunc(ctx, dfs)
-				})
-
-				// don't run the out.Concurrently() call below
-				out.Values[i] = graphql.Null
-				continue
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -9345,22 +8445,6 @@ func (ec *executionContext) marshalOFloatAggregationType2ᚖgithubᚗcomᚋDIMO�
 		return graphql.Null
 	}
 	return v
-}
-
-func (ec *executionContext) unmarshalOID2ᚖstring(ctx context.Context, v interface{}) (*string, error) {
-	if v == nil {
-		return nil, nil
-	}
-	res, err := graphql.UnmarshalID(v)
-	return &res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) marshalOID2ᚖstring(ctx context.Context, sel ast.SelectionSet, v *string) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	res := graphql.MarshalID(*v)
-	return res
 }
 
 func (ec *executionContext) unmarshalOInt2ᚖint(ctx context.Context, v interface{}) (*int, error) {

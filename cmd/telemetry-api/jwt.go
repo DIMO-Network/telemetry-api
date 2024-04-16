@@ -144,16 +144,17 @@ var privToAPI = map[privileges.Privilege]model.Privilege{
 }
 
 func requiresTokenCheck(ctx context.Context, obj interface{}, next graphql.Resolver) (res interface{}, err error) {
-	fc := graphql.GetFieldContext(ctx)
-	if fc.Args == nil {
-		return nil, fmt.Errorf("unable to collect args")
+	fCtx := graphql.GetFieldContext(ctx)
+	if fCtx == nil {
+		return nil, fmt.Errorf("no field context found")
 	}
-	fileterBy, ok := fc.Args["filterBy"].(*model.DimosFilter)
-	if !ok {
-		return nil, fmt.Errorf("unable to cast filterBy to DimosFilter")
+	tokenID, ok := fCtx.Args["tokenID"].(*int)
+	if !ok || tokenID == nil {
+		return nil, fmt.Errorf("failed to get tokenID from args")
 	}
+
 	claim := getClaim(ctx)
-	if strconv.Itoa(fileterBy.TokenID) != claim.TokenID && claim.TokenID != "foo" {
+	if strconv.Itoa(*tokenID) != claim.TokenID && claim.TokenID != "foo" {
 		return nil, fmt.Errorf("unathorized")
 	}
 	return next(ctx)

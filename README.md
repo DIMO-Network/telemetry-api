@@ -19,6 +19,7 @@ Specify a subcommand:
   `docker`              Build a Docker image of the project.
   `gqlgen`              Generate gqlgen code.
   `gql-model`           Generate gqlgen data model.
+  `gql`                 Generate gqlgen code and data model.
   `tools`               Install `golangci-lint`, `gqlgen`, and `model-garage`.
 ```
 

@@ -8,7 +8,7 @@ scalar Time
 The root query type for the GraphQL schema.
 """
 type Query {
-  Signals(tokenID: ID, from: Time, to: Time): SignalCollection @requiresToken
+  Signals(tokenID: Int, from: Time, to: Time): SignalCollection @requiresToken
 }
 
 type SignalCollection {

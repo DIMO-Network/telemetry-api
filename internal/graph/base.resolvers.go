@@ -6,20 +6,18 @@ package graph
 
 import (
 	"context"
-	"fmt"
-	"strconv"
 	"time"
 
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
+	"github.com/vektah/gqlparser/v2/gqlerror"
 )
 
 // Signals is the resolver for the Signals field.
-func (r *queryResolver) Signals(ctx context.Context, tokenID *string, from *time.Time, to *time.Time) (*model.SignalCollection, error) {
-	tokenIDInt, err := strconv.ParseUint(*tokenID, 10, 32)
-	if err != nil {
-		return nil, fmt.Errorf("failed to convert tokenID to int: %w", err)
+func (r *queryResolver) Signals(ctx context.Context, tokenID *int, from *time.Time, to *time.Time) (*model.SignalCollection, error) {
+	if tokenID == nil {
+		return nil, gqlerror.Errorf("tokenID is required")
 	}
-	return &model.SignalCollection{TokenID: uint32(tokenIDInt)}, nil
+	return &model.SignalCollection{TokenID: uint32(*tokenID)}, nil
 }
 
 // Query returns QueryResolver implementation.

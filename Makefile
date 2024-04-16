@@ -57,6 +57,8 @@ gqlgen: ## Generate gqlgen code.
 gql-model: ## Generate gqlgen data model.
 	@codegen -output=schema  -generators=graphql -graphql.model-name=SignalCollection
 
+gql: gql-model gqlgen
+
 tools-gqlgen:
 	@mkdir -p bin
 	GOBIN=${abspath bin} go install github.com/99designs/gqlgen@${GQLGEN_VERSION}

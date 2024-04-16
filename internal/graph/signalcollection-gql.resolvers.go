@@ -10,51 +10,6 @@ import (
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 )
 
-// DefinitionID is the resolver for the definitionID field.
-func (r *signalCollectionResolver) DefinitionID(ctx context.Context, obj *model.SignalCollection, agg *model.StringAggregation) ([]*model.SignalString, error) {
-	sigArgs, err := getStringArgs(ctx, obj, agg)
-	if err != nil {
-		return nil, err
-	}
-	return r.GetSignalString(ctx, sigArgs)
-}
-
-// Source is the resolver for the source field.
-func (r *signalCollectionResolver) Source(ctx context.Context, obj *model.SignalCollection, agg *model.StringAggregation) ([]*model.SignalString, error) {
-	sigArgs, err := getStringArgs(ctx, obj, agg)
-	if err != nil {
-		return nil, err
-	}
-	return r.GetSignalString(ctx, sigArgs)
-}
-
-// Subject is the resolver for the subject field.
-func (r *signalCollectionResolver) Subject(ctx context.Context, obj *model.SignalCollection, agg *model.StringAggregation) ([]*model.SignalString, error) {
-	sigArgs, err := getStringArgs(ctx, obj, agg)
-	if err != nil {
-		return nil, err
-	}
-	return r.GetSignalString(ctx, sigArgs)
-}
-
-// Timestamp is the resolver for the timestamp field.
-func (r *signalCollectionResolver) Timestamp(ctx context.Context, obj *model.SignalCollection, agg *model.StringAggregation) ([]*model.SignalString, error) {
-	sigArgs, err := getStringArgs(ctx, obj, agg)
-	if err != nil {
-		return nil, err
-	}
-	return r.GetSignalString(ctx, sigArgs)
-}
-
-// Type is the resolver for the type field.
-func (r *signalCollectionResolver) Type(ctx context.Context, obj *model.SignalCollection, agg *model.StringAggregation) ([]*model.SignalString, error) {
-	sigArgs, err := getStringArgs(ctx, obj, agg)
-	if err != nil {
-		return nil, err
-	}
-	return r.GetSignalString(ctx, sigArgs)
-}
-
 // VehicleChassisAxleRow1WheelLeftTirePressure is the resolver for the vehicleChassisAxleRow1WheelLeftTirePressure field.
 func (r *signalCollectionResolver) VehicleChassisAxleRow1WheelLeftTirePressure(ctx context.Context, obj *model.SignalCollection, agg *model.FloatAggregation) ([]*model.SignalFloat, error) {
 	sigArgs, err := getFloatArgs(ctx, obj, agg)
@@ -332,13 +287,4 @@ func (r *signalCollectionResolver) VehicleVehicleIdentificationYear(ctx context.
 		return nil, err
 	}
 	return r.GetSignalFloats(ctx, sigArgs)
-}
-
-// VehicleID is the resolver for the vehicleID field.
-func (r *signalCollectionResolver) VehicleID(ctx context.Context, obj *model.SignalCollection, agg *model.StringAggregation) ([]*model.SignalString, error) {
-	sigArgs, err := getStringArgs(ctx, obj, agg)
-	if err != nil {
-		return nil, err
-	}
-	return r.GetSignalString(ctx, sigArgs)
 }
