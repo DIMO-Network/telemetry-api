@@ -10,30 +10,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/DIMO-Network/model-garage/pkg/vss"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 )
-
-// Node is the resolver for the node field.
-func (r *queryResolver) Node(ctx context.Context, id string) (model.Node, error) {
-	panic(fmt.Errorf("not implemented: Node - node"))
-}
-
-// DIMOData is the resolver for the DIMOData field.
-func (r *queryResolver) DIMOData(ctx context.Context, page model.PageSelection, filterBy *model.DimosFilter) (*model.DimoConnection, error) {
-	// get requestd Cols
-
-	cols := GetPreloads(ctx)
-	queryCols := make([]string, 0, len(cols))
-	for i := range cols {
-		val, ok := vss.DimoJSONName2CHName[cols[i]]
-		if ok {
-			queryCols = append(queryCols, val)
-		}
-	}
-
-	return r.GetDIMOData(ctx, queryCols, page, filterBy)
-}
 
 // Signals is the resolver for the Signals field.
 func (r *queryResolver) Signals(ctx context.Context, tokenID *string, from *time.Time, to *time.Time) (*model.SignalCollection, error) {

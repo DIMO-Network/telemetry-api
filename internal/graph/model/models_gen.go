@@ -9,56 +9,11 @@ import (
 	"time"
 )
 
-type Node interface {
-	IsNode()
-	GetID() string
-}
-
-type DimoConnection struct {
-	TotalCount int         `json:"totalCount"`
-	Edges      []*DimoEdge `json:"edges"`
-	Nodes      []*DIMOData `json:"nodes"`
-	PageInfo   *PageInfo   `json:"pageInfo"`
-}
-
-type DimoEdge struct {
-	Cursor string    `json:"cursor"`
-	Node   *DIMOData `json:"node"`
-}
-
-// The DimosFilter input is used to specify filtering criteria for querying dimos.
-// Dimos must match all of the specified criteria.
-type DimosFilter struct {
-	TokenID int       `json:"tokenID"`
-	Since   time.Time `json:"since"`
-	Until   time.Time `json:"until"`
-}
-
 type FloatAggregation struct {
 	// Aggregation type.
 	Type *FloatAggregationType `json:"type,omitempty"`
 	// interval is a time span that used for aggregatting the data.
 	Interval *int `json:"interval,omitempty"`
-}
-
-type PageInfo struct {
-	StartCursor     *string `json:"startCursor,omitempty"`
-	EndCursor       *string `json:"endCursor,omitempty"`
-	HasPreviousPage bool    `json:"hasPreviousPage"`
-	HasNextPage     bool    `json:"hasNextPage"`
-}
-
-type PageSelection struct {
-	// The number of items to retrieve.
-	// Mutually exclusive with `last`.
-	First *int `json:"first,omitempty"`
-	// A cursor for pagination. Retrieve items after this cursor.
-	After *string `json:"after,omitempty"`
-	// The number of items to retrieve from the end of the list.
-	// Mutually exclusive with `first`.
-	Last *int `json:"last,omitempty"`
-	// A cursor for pagination. Retrieve items before this cursor.
-	Before *string `json:"before,omitempty"`
 }
 
 // The root query type for the GraphQL schema.

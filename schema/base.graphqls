@@ -5,96 +5,10 @@ just like the blockchain, and in UTC.
 scalar Time
 
 """
-This directive on an input object indicates that a client must specify one of the
-fields of the object and no others. Typically used for lookups.
-"""
-directive @oneOf on INPUT_OBJECT
-
-"""
 The root query type for the GraphQL schema.
 """
 type Query {
-  """
-  View a particular node.
-  """
-  node(
-    """
-    The ID of the node.
-    """
-    id: ID!
-  ): Node
-
-  DIMOData(
-    """
-    Select the page of data to retrieve.
-    """
-    page: PageSelection!
-    """
-    Filter the dimos based on specific criteria.
-    """
-    filterBy: DimosFilter
-  ): DimoConnection @requiresToken
-
   Signals(tokenID: ID, from: Time, to: Time): SignalCollection @requiresToken
-}
-
-"""
-The DimosFilter input is used to specify filtering criteria for querying dimos.
-Dimos must match all of the specified criteria.
-"""
-input DimosFilter {
-  tokenID: Int!
-  since: Time!
-  until: Time!
-}
-
-# Shared Types
-interface Node {
-  id: ID!
-}
-
-type DimoConnection {
-  totalCount: Int!
-  edges: [DimoEdge!]!
-  nodes: [DIMOData!]!
-  pageInfo: PageInfo!
-}
-
-type DimoEdge {
-  cursor: String!
-  node: DIMOData!
-}
-
-type PageInfo {
-  startCursor: String
-  endCursor: String
-  hasPreviousPage: Boolean!
-  hasNextPage: Boolean!
-}
-input PageSelection {
-  """
-  The number of items to retrieve.
-  Mutually exclusive with `last`.
-  """
-  first: Int
-  """
-  A cursor for pagination. Retrieve items after this cursor.
-  """
-  after: String
-  """
-  The number of items to retrieve from the end of the list.
-  Mutually exclusive with `first`.
-  """
-  last: Int
-  """
-  A cursor for pagination. Retrieve items before this cursor.
-  """
-  before: String
-}
-
-type DIMOData implements Node {
-  id: ID!
-  tokenID: Int!
 }
 
 type SignalCollection {
