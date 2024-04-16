@@ -6,10 +6,7 @@ import (
 
 	"github.com/ClickHouse/clickhouse-go/v2"
 	"github.com/DIMO-Network/telemetry-api/internal/config"
-	"github.com/DIMO-Network/telemetry-api/internal/service/deviceapi"
 	"github.com/rs/zerolog"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 )
 
 const (
@@ -19,9 +16,8 @@ const (
 
 // Repository is the base repository for all repositories.
 type Repository struct {
-	conn      clickhouse.Conn
-	Log       *zerolog.Logger
-	deviceAPI *deviceapi.Service
+	conn clickhouse.Conn
+	Log  *zerolog.Logger
 }
 
 // NewRepository creates a new base repository.
@@ -41,14 +37,8 @@ func NewRepository(logger *zerolog.Logger, settings config.Settings) (*Repositor
 	if err != nil {
 		return nil, fmt.Errorf("failed to ping clickhouse: %w", err)
 	}
-	devicesConn, err := grpc.Dial(settings.DevicesAPIGRPCAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
-	if err != nil {
-		return nil, fmt.Errorf("failed to dial devices api: %w", err)
-	}
-	deviceAPI := deviceapi.NewService(devicesConn)
 	return &Repository{
-		conn:      conn,
-		Log:       logger,
-		deviceAPI: deviceAPI,
+		conn: conn,
+		Log:  logger,
 	}, nil
 }

@@ -69,6 +69,7 @@ func getSignalArgs(ctx context.Context, obj *model.SignalCollection) (repositori
 	if err != nil {
 		return args, err
 	}
+	args.TokenID = obj.TokenID
 	return args, nil
 }
 
