@@ -55,7 +55,7 @@ gqlgen: ## Generate gqlgen code.
 	@gqlgen generate
 
 gql-model: ## Generate gqlgen data model.
-	@codegen -output=schema  -generators=graphql -graphql.model-name=DIMOData
+	@codegen -output=schema  -generators=graphql -graphql.model-name=SignalCollection
 
 tools-gqlgen:
 	@mkdir -p bin

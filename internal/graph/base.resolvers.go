@@ -7,6 +7,8 @@ package graph
 import (
 	"context"
 	"fmt"
+	"strconv"
+	"time"
 
 	"github.com/DIMO-Network/model-garage/pkg/vss"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
@@ -33,7 +35,20 @@ func (r *queryResolver) DIMOData(ctx context.Context, page model.PageSelection, 
 	return r.GetDIMOData(ctx, queryCols, page, filterBy)
 }
 
+// Signals is the resolver for the Signals field.
+func (r *queryResolver) Signals(ctx context.Context, tokenID *string, from *time.Time, to *time.Time) (*model.SignalCollection, error) {
+	tokenIDInt, err := strconv.ParseUint(*tokenID, 10, 32)
+	if err != nil {
+		return nil, fmt.Errorf("failed to convert tokenID to int: %w", err)
+	}
+	return &model.SignalCollection{TokenID: uint32(tokenIDInt)}, nil
+}
+
 // Query returns QueryResolver implementation.
 func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
+// SignalCollection returns SignalCollectionResolver implementation.
+func (r *Resolver) SignalCollection() SignalCollectionResolver { return &signalCollectionResolver{r} }
+
 type queryResolver struct{ *Resolver }
+type signalCollectionResolver struct{ *Resolver }

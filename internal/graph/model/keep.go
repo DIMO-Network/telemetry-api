@@ -8,5 +8,9 @@ type DIMOData struct {
 	vss.Dimo
 }
 
+type SignalCollection struct {
+	TokenID uint32 `json:"tokenID"`
+}
+
 func (DIMOData) IsNode()            {}
 func (this DIMOData) GetID() string { return this.ID }

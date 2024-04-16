@@ -34,6 +34,8 @@ type Query {
     """
     filterBy: DimosFilter
   ): DimoConnection @requiresToken
+
+  Signals(tokenID: ID, from: Time, to: Time): SignalCollection @requiresToken
 }
 
 """
@@ -93,4 +95,55 @@ input PageSelection {
 type DIMOData implements Node {
   id: ID!
   tokenID: Int!
+}
+
+type SignalCollection {
+  tokenID: Int!
+}
+
+input FloatAggregation {
+  """
+  Aggregation type.
+  """
+  type: FloatAggregationType
+
+  """
+  interval is a time span that used for aggregatting the data.
+  """
+  interval: Int
+}
+
+input StringAggregation {
+  """
+  Aggregation type.
+  """
+  type: StringAggregationType
+
+  """
+  interval is a time span that used for aggregatting the data.
+  """
+  interval: Int
+}
+
+enum FloatAggregationType {
+  avg
+  med
+  max
+  min
+  rand
+}
+
+enum StringAggregationType {
+  """
+  Randomly select a value from the group.
+  """
+  rand
+  """
+  Select the most frequently occurring value in the group.
+  """
+  top
+  """
+  Return a list of unique values in the group.
+  """
+  unique
 }

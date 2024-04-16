@@ -216,7 +216,7 @@ func populateDimoConn(rows driver.Rows, page model.PageSelection, dimoConn *mode
 			return fmt.Errorf("error scanning struct: %w", err)
 		}
 		dimoAPI := ToAPI(&dimoData, "", 0)
-		curs, err := encodeCursor(dimoData.Timestamp)
+		curs, err := encodeCursor(*dimoData.Timestamp)
 		if err != nil {
 			return fmt.Errorf("error encoding global token id: %w", err)
 		}

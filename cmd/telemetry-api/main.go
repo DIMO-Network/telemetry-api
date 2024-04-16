@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"flag"
 	"fmt"
 	"net/http"
@@ -19,6 +20,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/adaptor"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/rs/zerolog"
+	"github.com/vektah/gqlparser/v2/gqlerror"
 )
 
 func main() {
@@ -55,6 +57,8 @@ func main() {
 	serveMonitoring(strconv.Itoa(settings.MonPort), &logger)
 
 	server := handler.NewDefaultServer(graph.NewExecutableSchema(cfg))
+	errLogger := logger.With().Str("component", "gql").Logger()
+	server.SetErrorPresenter(errorHandler(errLogger))
 
 	logger.Info().Str("jwksUrl", settings.TokenExchangeJWTKeySetURL).Str("issuerURL", settings.TokenExchangeIssuer).Str("vehicleAddr", settings.VehicleNFTAddress).Msg("Privileges enabled.")
 
@@ -88,4 +92,16 @@ func serveMonitoring(port string, logger *zerolog.Logger) *fiber.App {
 	}()
 
 	return monApp
+}
+
+// errorHandler is a custom error handler for gqlgen
+func errorHandler(log zerolog.Logger) func(ctx context.Context, e error) *gqlerror.Error {
+	return func(ctx context.Context, e error) *gqlerror.Error {
+		var gqlErr *gqlerror.Error
+		if errors.As(e, &gqlErr) {
+			return gqlErr
+		}
+		log.Error().Err(e).Msg("Internal server error")
+		return gqlerror.Errorf("internal server error")
+	}
 }
