@@ -2,6 +2,8 @@ package repositories
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 	"fmt"
 	"time"
 
@@ -23,6 +25,19 @@ GROUP BY
   group_timestamp 
 ORDER BY 
   group_timestamp ASC;
+`
+const latestSignalQuery = `
+SELECT
+  %s as value,
+  Timestamp
+FROM
+  signal
+WHERE
+  TokenID = ?
+  AND Name = ?
+ORDER BY
+  Timestamp DESC
+LIMIT 1;
 `
 
 // SignalArgs is the base arguments for querying signals.
@@ -91,12 +106,16 @@ func getStringAgg(aggType *model.StringAggregationType) string {
 
 // GetSignalFloats returns the float signals based on the provided arguments.
 func (r *Repository) GetSignalFloats(ctx context.Context, sigArgs FloatSignalArgs) ([]*model.SignalFloat, error) {
+	if err := validateSigArgs(sigArgs.SignalArgs); err != nil {
+		return nil, err
+	}
 	query := getFloatAggFunc(sigArgs.Agg.Type)
 	rows, err := r.conn.Query(ctx, query, sigArgs.Agg.Interval, sigArgs.TokenID, sigArgs.Name, sigArgs.FromTS, sigArgs.ToTS)
 	if err != nil {
 		return nil, fmt.Errorf("failed querying clickhouse: %w", err)
 	}
-	defer rows.Close()
+
+	defer rows.Close() //nolint:errcheck // rows.Close() is called in the caller function
 	signals := []*model.SignalFloat{}
 	for rows.Next() {
 		var signal model.SignalFloat
@@ -111,6 +130,9 @@ func (r *Repository) GetSignalFloats(ctx context.Context, sigArgs FloatSignalArg
 
 // GetSignalString returns the string signals based on the provided arguments.
 func (r *Repository) GetSignalString(ctx context.Context, sigArgs StringSignalArgs) ([]*model.SignalString, error) {
+	if err := validateSigArgs(sigArgs.SignalArgs); err != nil {
+		return nil, err
+	}
 	query := getStringAgg(sigArgs.Agg.Type)
 	rows, err := r.conn.Query(ctx, query, sigArgs.Agg.Interval, sigArgs.TokenID, sigArgs.Name, sigArgs.FromTS, sigArgs.ToTS)
 	if err != nil {
@@ -127,4 +149,62 @@ func (r *Repository) GetSignalString(ctx context.Context, sigArgs StringSignalAr
 		signals = append(signals, &signal)
 	}
 	return signals, nil
+}
+
+// GetLatestSignalFloat returns the latest float signal based on the provided arguments.
+func (r *Repository) GetLatestSignalFloat(ctx context.Context, sigArgs SignalArgs) (*model.SignalFloat, error) {
+	query := fmt.Sprintf(latestSignalQuery, "ValueNumber")
+	row := r.conn.QueryRow(ctx, query, sigArgs.TokenID, sigArgs.Name)
+	if row.Err() != nil {
+		return nil, fmt.Errorf("failed querying clickhouse: %w", row.Err())
+	}
+	var signal model.SignalFloat
+	err := row.Scan(&signal.Value, &signal.Timestamp)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, nil
+		}
+		return nil, fmt.Errorf("failed scanning clickhouse rows: %w", err)
+	}
+	return &signal, nil
+}
+
+// GetLatestSignalString returns the latest string signal based on the provided arguments.
+func (r *Repository) GetLatestSignalString(ctx context.Context, sigArgs SignalArgs) (*model.SignalString, error) {
+	query := fmt.Sprintf(latestSignalQuery, "ValueString")
+	row := r.conn.QueryRow(ctx, query, sigArgs.TokenID, sigArgs.Name)
+	if row.Err() != nil {
+		return nil, fmt.Errorf("failed querying clickhouse: %w", row.Err())
+	}
+	var signal model.SignalString
+	err := row.Scan(&signal.Value, &signal.Timestamp)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, nil
+		}
+		return nil, fmt.Errorf("failed scanning clickhouse rows: %w", err)
+	}
+	return &signal, nil
+}
+
+func validateSigArgs(args SignalArgs) error {
+	if args.FromTS.IsZero() {
+		return fmt.Errorf("from timestamp is zero")
+	}
+	if args.ToTS.IsZero() {
+		return fmt.Errorf("to timestamp is zero")
+	}
+
+	// check if time range is greater than 2 weeks
+	if args.ToTS.Sub(args.FromTS) > 14*24*time.Hour {
+		return fmt.Errorf("time range is greater than 2 weeks")
+	}
+
+	if args.TokenID == 0 {
+		return fmt.Errorf("token id is zero")
+	}
+	if args.Name == "" {
+		return fmt.Errorf("name is empty")
+	}
+	return nil
 }

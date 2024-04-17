@@ -8,7 +8,12 @@ scalar Time
 The root query type for the GraphQL schema.
 """
 type Query {
-  Signals(tokenID: Int, from: Time, to: Time): SignalCollection @requiresToken
+  Signals(tokenID: Int, from: Time, to: Time): SignalAggregations @requiresToken
+  SignalsLatest(tokenID: Int): SignalCollection @requiresToken
+}
+
+type SignalAggregations {
+  tokenID: Int!
 }
 
 type SignalCollection {
@@ -60,4 +65,27 @@ enum StringAggregationType {
   Return a list of unique values in the group.
   """
   unique
+}
+type SignalFloat {
+  """
+  timestamp of when this data was colllected
+  """
+  timestamp: Time
+
+  """
+  value of the signal
+  """
+  value: Float
+}
+
+type SignalString {
+  """
+  timestamp of when this data was colllected
+  """
+  timestamp: Time
+
+  """
+  value of the signal
+  """
+  value: String
 }

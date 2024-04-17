@@ -55,7 +55,7 @@ gqlgen: ## Generate gqlgen code.
 	@gqlgen generate
 
 gql-model: ## Generate gqlgen data model.
-	@codegen -output=schema  -generators=graphql -graphql.model-name=SignalCollection
+	@codegen -output=schema  -generators=graphql -graphql.output-file=generated-signals.graphqls -graphql.template-file=./schema/signals.tmpl
 
 gql: gql-model gqlgen
 

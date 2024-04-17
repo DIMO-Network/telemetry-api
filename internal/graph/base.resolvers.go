@@ -13,18 +13,32 @@ import (
 )
 
 // Signals is the resolver for the Signals field.
-func (r *queryResolver) Signals(ctx context.Context, tokenID *int, from *time.Time, to *time.Time) (*model.SignalCollection, error) {
+func (r *queryResolver) Signals(ctx context.Context, tokenID *int, from *time.Time, to *time.Time) (*model.SignalsWithID, error) {
 	if tokenID == nil {
 		return nil, gqlerror.Errorf("tokenID is required")
 	}
-	return &model.SignalCollection{TokenID: uint32(*tokenID)}, nil
+	return &model.SignalsWithID{TokenID: uint32(*tokenID)}, nil
+}
+
+// SignalsLatest is the resolver for the SignalsLatest field.
+func (r *queryResolver) SignalsLatest(ctx context.Context, tokenID *int) (*model.SignalsWithID, error) {
+	if tokenID == nil {
+		return nil, gqlerror.Errorf("tokenID is required")
+	}
+	return &model.SignalsWithID{TokenID: uint32(*tokenID)}, nil
 }
 
 // Query returns QueryResolver implementation.
 func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
+// SignalAggregations returns SignalAggregationsResolver implementation.
+func (r *Resolver) SignalAggregations() SignalAggregationsResolver {
+	return &signalAggregationsResolver{r}
+}
+
 // SignalCollection returns SignalCollectionResolver implementation.
 func (r *Resolver) SignalCollection() SignalCollectionResolver { return &signalCollectionResolver{r} }
 
 type queryResolver struct{ *Resolver }
+type signalAggregationsResolver struct{ *Resolver }
 type signalCollectionResolver struct{ *Resolver }
