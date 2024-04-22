@@ -7,13 +7,14 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/99designs/gqlgen/graphql"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 )
 
 const signalQuery = `
 SELECT
   %s as value, 
-  toStartOfInterval(Timestamp, toIntervalSecond(?)) as group_timestamp 
+  toStartOfInterval(Timestamp, toIntervalMillisecond(?)) as group_timestamp 
 FROM 
   signal
 WHERE 
@@ -60,13 +61,9 @@ type StringSignalArgs struct {
 	SignalArgs
 }
 
-func getFloatAggFunc(aggType *model.FloatAggregationType) string {
-	var agg model.FloatAggregationType
-	if aggType != nil {
-		agg = *aggType
-	}
+func getFloatAggFunc(aggType model.FloatAggregationType) string {
 	var aggStr string
-	switch agg {
+	switch aggType {
 	case model.FloatAggregationTypeAvg:
 		aggStr = "avg(ValueNumber)"
 	case model.FloatAggregationTypeRand:
@@ -84,13 +81,9 @@ func getFloatAggFunc(aggType *model.FloatAggregationType) string {
 	return fmt.Sprintf(signalQuery, aggStr)
 }
 
-func getStringAgg(aggType *model.StringAggregationType) string {
-	var agg model.StringAggregationType
-	if aggType != nil {
-		agg = *aggType
-	}
+func getStringAgg(aggType model.StringAggregationType) string {
 	var aggStr string
-	switch agg {
+	switch aggType {
 	case model.StringAggregationTypeRand:
 		seed := time.Now().UnixMilli()
 		aggStr = fmt.Sprintf("groupArraySample(1, %d)(ValueString)[1]", seed)
@@ -110,7 +103,12 @@ func (r *Repository) GetSignalFloats(ctx context.Context, sigArgs FloatSignalArg
 		return nil, err
 	}
 	query := getFloatAggFunc(sigArgs.Agg.Type)
-	rows, err := r.conn.Query(ctx, query, sigArgs.Agg.Interval, sigArgs.TokenID, sigArgs.Name, sigArgs.FromTS, sigArgs.ToTS)
+	interval, err := getIntervalMS(sigArgs.Agg.Interval)
+	if err != nil {
+		graphql.AddError(ctx, err)
+		return nil, err
+	}
+	rows, err := r.conn.Query(ctx, query, interval, sigArgs.TokenID, sigArgs.Name, sigArgs.FromTS, sigArgs.ToTS)
 	if err != nil {
 		return nil, fmt.Errorf("failed querying clickhouse: %w", err)
 	}
@@ -134,7 +132,12 @@ func (r *Repository) GetSignalString(ctx context.Context, sigArgs StringSignalAr
 		return nil, err
 	}
 	query := getStringAgg(sigArgs.Agg.Type)
-	rows, err := r.conn.Query(ctx, query, sigArgs.Agg.Interval, sigArgs.TokenID, sigArgs.Name, sigArgs.FromTS, sigArgs.ToTS)
+	interval, err := getIntervalMS(sigArgs.Agg.Interval)
+	if err != nil {
+		graphql.AddError(ctx, err)
+		return nil, err
+	}
+	rows, err := r.conn.Query(ctx, query, interval, sigArgs.TokenID, sigArgs.Name, sigArgs.FromTS, sigArgs.ToTS)
 	if err != nil {
 		return nil, fmt.Errorf("failed querying clickhouse: %w", err)
 	}
@@ -207,4 +210,16 @@ func validateSigArgs(args SignalArgs) error {
 		return fmt.Errorf("name is empty")
 	}
 	return nil
+}
+
+// getIntervalMS returns the interval in milliseconds.
+func getIntervalMS(interval string) (int64, error) {
+	dur, err := time.ParseDuration(interval)
+	if err != nil {
+		return 0, fmt.Errorf("failed parsing interval: %w", err)
+	}
+	if dur < time.Millisecond {
+		return 0, fmt.Errorf("interval less than 1 millisecond are not supported")
+	}
+	return dur.Milliseconds(), nil
 }

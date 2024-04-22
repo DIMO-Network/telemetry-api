@@ -7,10 +7,10 @@ extend type SignalAggregations {
   """
   {{ .JSONName }}(
   {{- if eq .GQLType "Float" }}
-    agg: FloatAggregation
+    agg: FloatAggregation!
   ):  [SignalFloat!]
   {{- else }}
-    agg: StringAggregation
+    agg: StringAggregation!
   ):  [SignalString!]
   {{- end }} @requiresPrivilege(privileges: {{ .Privileges }})
   {{ end }}

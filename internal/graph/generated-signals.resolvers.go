@@ -11,7 +11,7 @@ import (
 )
 
 // VehicleChassisAxleRow1WheelLeftTirePressure is the Aggregation resolver for the vehicleChassisAxleRow1WheelLeftTirePressure field.
-func (r *signalAggregationsResolver) VehicleChassisAxleRow1WheelLeftTirePressure(ctx context.Context, obj *model.SignalsWithID, agg *model.FloatAggregation) ([]*model.SignalFloat, error) {
+func (r *signalAggregationsResolver) VehicleChassisAxleRow1WheelLeftTirePressure(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error) {
 	sigArgs, err := getFloatArgs(ctx, obj, agg)
 	if err != nil {
 		return nil, err
@@ -20,7 +20,7 @@ func (r *signalAggregationsResolver) VehicleChassisAxleRow1WheelLeftTirePressure
 }
 
 // VehicleChassisAxleRow1WheelRightTirePressure is the Aggregation resolver for the vehicleChassisAxleRow1WheelRightTirePressure field.
-func (r *signalAggregationsResolver) VehicleChassisAxleRow1WheelRightTirePressure(ctx context.Context, obj *model.SignalsWithID, agg *model.FloatAggregation) ([]*model.SignalFloat, error) {
+func (r *signalAggregationsResolver) VehicleChassisAxleRow1WheelRightTirePressure(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error) {
 	sigArgs, err := getFloatArgs(ctx, obj, agg)
 	if err != nil {
 		return nil, err
@@ -29,7 +29,7 @@ func (r *signalAggregationsResolver) VehicleChassisAxleRow1WheelRightTirePressur
 }
 
 // VehicleChassisAxleRow2WheelLeftTirePressure is the Aggregation resolver for the vehicleChassisAxleRow2WheelLeftTirePressure field.
-func (r *signalAggregationsResolver) VehicleChassisAxleRow2WheelLeftTirePressure(ctx context.Context, obj *model.SignalsWithID, agg *model.FloatAggregation) ([]*model.SignalFloat, error) {
+func (r *signalAggregationsResolver) VehicleChassisAxleRow2WheelLeftTirePressure(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error) {
 	sigArgs, err := getFloatArgs(ctx, obj, agg)
 	if err != nil {
 		return nil, err
@@ -38,7 +38,7 @@ func (r *signalAggregationsResolver) VehicleChassisAxleRow2WheelLeftTirePressure
 }
 
 // VehicleChassisAxleRow2WheelRightTirePressure is the Aggregation resolver for the vehicleChassisAxleRow2WheelRightTirePressure field.
-func (r *signalAggregationsResolver) VehicleChassisAxleRow2WheelRightTirePressure(ctx context.Context, obj *model.SignalsWithID, agg *model.FloatAggregation) ([]*model.SignalFloat, error) {
+func (r *signalAggregationsResolver) VehicleChassisAxleRow2WheelRightTirePressure(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error) {
 	sigArgs, err := getFloatArgs(ctx, obj, agg)
 	if err != nil {
 		return nil, err
@@ -47,7 +47,7 @@ func (r *signalAggregationsResolver) VehicleChassisAxleRow2WheelRightTirePressur
 }
 
 // VehicleCurrentLocationAltitude is the Aggregation resolver for the vehicleCurrentLocationAltitude field.
-func (r *signalAggregationsResolver) VehicleCurrentLocationAltitude(ctx context.Context, obj *model.SignalsWithID, agg *model.FloatAggregation) ([]*model.SignalFloat, error) {
+func (r *signalAggregationsResolver) VehicleCurrentLocationAltitude(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error) {
 	sigArgs, err := getFloatArgs(ctx, obj, agg)
 	if err != nil {
 		return nil, err
@@ -56,7 +56,7 @@ func (r *signalAggregationsResolver) VehicleCurrentLocationAltitude(ctx context.
 }
 
 // VehicleCurrentLocationLatitude is the Aggregation resolver for the vehicleCurrentLocationLatitude field.
-func (r *signalAggregationsResolver) VehicleCurrentLocationLatitude(ctx context.Context, obj *model.SignalsWithID, agg *model.FloatAggregation) ([]*model.SignalFloat, error) {
+func (r *signalAggregationsResolver) VehicleCurrentLocationLatitude(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error) {
 	sigArgs, err := getFloatArgs(ctx, obj, agg)
 	if err != nil {
 		return nil, err
@@ -65,7 +65,7 @@ func (r *signalAggregationsResolver) VehicleCurrentLocationLatitude(ctx context.
 }
 
 // VehicleCurrentLocationLongitude is the Aggregation resolver for the vehicleCurrentLocationLongitude field.
-func (r *signalAggregationsResolver) VehicleCurrentLocationLongitude(ctx context.Context, obj *model.SignalsWithID, agg *model.FloatAggregation) ([]*model.SignalFloat, error) {
+func (r *signalAggregationsResolver) VehicleCurrentLocationLongitude(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error) {
 	sigArgs, err := getFloatArgs(ctx, obj, agg)
 	if err != nil {
 		return nil, err
@@ -74,7 +74,7 @@ func (r *signalAggregationsResolver) VehicleCurrentLocationLongitude(ctx context
 }
 
 // VehicleCurrentLocationTimestamp is the Aggregation resolver for the vehicleCurrentLocationTimestamp field.
-func (r *signalAggregationsResolver) VehicleCurrentLocationTimestamp(ctx context.Context, obj *model.SignalsWithID, agg *model.StringAggregation) ([]*model.SignalString, error) {
+func (r *signalAggregationsResolver) VehicleCurrentLocationTimestamp(ctx context.Context, obj *model.SignalsWithID, agg model.StringAggregation) ([]*model.SignalString, error) {
 	sigArgs, err := getStringArgs(ctx, obj, agg)
 	if err != nil {
 		return nil, err
@@ -83,7 +83,7 @@ func (r *signalAggregationsResolver) VehicleCurrentLocationTimestamp(ctx context
 }
 
 // VehicleExteriorAirTemperature is the Aggregation resolver for the vehicleExteriorAirTemperature field.
-func (r *signalAggregationsResolver) VehicleExteriorAirTemperature(ctx context.Context, obj *model.SignalsWithID, agg *model.FloatAggregation) ([]*model.SignalFloat, error) {
+func (r *signalAggregationsResolver) VehicleExteriorAirTemperature(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error) {
 	sigArgs, err := getFloatArgs(ctx, obj, agg)
 	if err != nil {
 		return nil, err
@@ -92,7 +92,7 @@ func (r *signalAggregationsResolver) VehicleExteriorAirTemperature(ctx context.C
 }
 
 // VehicleLowVoltageBatteryCurrentVoltage is the Aggregation resolver for the vehicleLowVoltageBatteryCurrentVoltage field.
-func (r *signalAggregationsResolver) VehicleLowVoltageBatteryCurrentVoltage(ctx context.Context, obj *model.SignalsWithID, agg *model.FloatAggregation) ([]*model.SignalFloat, error) {
+func (r *signalAggregationsResolver) VehicleLowVoltageBatteryCurrentVoltage(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error) {
 	sigArgs, err := getFloatArgs(ctx, obj, agg)
 	if err != nil {
 		return nil, err
@@ -101,7 +101,7 @@ func (r *signalAggregationsResolver) VehicleLowVoltageBatteryCurrentVoltage(ctx 
 }
 
 // VehicleOBDBarometricPressure is the Aggregation resolver for the vehicleOBDBarometricPressure field.
-func (r *signalAggregationsResolver) VehicleOBDBarometricPressure(ctx context.Context, obj *model.SignalsWithID, agg *model.FloatAggregation) ([]*model.SignalFloat, error) {
+func (r *signalAggregationsResolver) VehicleOBDBarometricPressure(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error) {
 	sigArgs, err := getFloatArgs(ctx, obj, agg)
 	if err != nil {
 		return nil, err
@@ -110,7 +110,7 @@ func (r *signalAggregationsResolver) VehicleOBDBarometricPressure(ctx context.Co
 }
 
 // VehicleOBDEngineLoad is the Aggregation resolver for the vehicleOBDEngineLoad field.
-func (r *signalAggregationsResolver) VehicleOBDEngineLoad(ctx context.Context, obj *model.SignalsWithID, agg *model.FloatAggregation) ([]*model.SignalFloat, error) {
+func (r *signalAggregationsResolver) VehicleOBDEngineLoad(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error) {
 	sigArgs, err := getFloatArgs(ctx, obj, agg)
 	if err != nil {
 		return nil, err
@@ -119,7 +119,7 @@ func (r *signalAggregationsResolver) VehicleOBDEngineLoad(ctx context.Context, o
 }
 
 // VehicleOBDIntakeTemp is the Aggregation resolver for the vehicleOBDIntakeTemp field.
-func (r *signalAggregationsResolver) VehicleOBDIntakeTemp(ctx context.Context, obj *model.SignalsWithID, agg *model.FloatAggregation) ([]*model.SignalFloat, error) {
+func (r *signalAggregationsResolver) VehicleOBDIntakeTemp(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error) {
 	sigArgs, err := getFloatArgs(ctx, obj, agg)
 	if err != nil {
 		return nil, err
@@ -128,7 +128,7 @@ func (r *signalAggregationsResolver) VehicleOBDIntakeTemp(ctx context.Context, o
 }
 
 // VehicleOBDRunTime is the Aggregation resolver for the vehicleOBDRunTime field.
-func (r *signalAggregationsResolver) VehicleOBDRunTime(ctx context.Context, obj *model.SignalsWithID, agg *model.FloatAggregation) ([]*model.SignalFloat, error) {
+func (r *signalAggregationsResolver) VehicleOBDRunTime(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error) {
 	sigArgs, err := getFloatArgs(ctx, obj, agg)
 	if err != nil {
 		return nil, err
@@ -137,7 +137,7 @@ func (r *signalAggregationsResolver) VehicleOBDRunTime(ctx context.Context, obj 
 }
 
 // VehiclePowertrainCombustionEngineEct is the resolver for the vehiclePowertrainCombustionEngineECT field.
-func (r *signalAggregationsResolver) VehiclePowertrainCombustionEngineEct(ctx context.Context, obj *model.SignalsWithID, agg *model.FloatAggregation) ([]*model.SignalFloat, error) {
+func (r *signalAggregationsResolver) VehiclePowertrainCombustionEngineEct(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error) {
 	sigArgs, err := getFloatArgs(ctx, obj, agg)
 	if err != nil {
 		return nil, err
@@ -146,7 +146,7 @@ func (r *signalAggregationsResolver) VehiclePowertrainCombustionEngineEct(ctx co
 }
 
 // VehiclePowertrainCombustionEngineEngineOilLevel is the Aggregation resolver for the vehiclePowertrainCombustionEngineEngineOilLevel field.
-func (r *signalAggregationsResolver) VehiclePowertrainCombustionEngineEngineOilLevel(ctx context.Context, obj *model.SignalsWithID, agg *model.StringAggregation) ([]*model.SignalString, error) {
+func (r *signalAggregationsResolver) VehiclePowertrainCombustionEngineEngineOilLevel(ctx context.Context, obj *model.SignalsWithID, agg model.StringAggregation) ([]*model.SignalString, error) {
 	sigArgs, err := getStringArgs(ctx, obj, agg)
 	if err != nil {
 		return nil, err
@@ -155,7 +155,7 @@ func (r *signalAggregationsResolver) VehiclePowertrainCombustionEngineEngineOilL
 }
 
 // VehiclePowertrainCombustionEngineSpeed is the Aggregation resolver for the vehiclePowertrainCombustionEngineSpeed field.
-func (r *signalAggregationsResolver) VehiclePowertrainCombustionEngineSpeed(ctx context.Context, obj *model.SignalsWithID, agg *model.FloatAggregation) ([]*model.SignalFloat, error) {
+func (r *signalAggregationsResolver) VehiclePowertrainCombustionEngineSpeed(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error) {
 	sigArgs, err := getFloatArgs(ctx, obj, agg)
 	if err != nil {
 		return nil, err
@@ -164,7 +164,7 @@ func (r *signalAggregationsResolver) VehiclePowertrainCombustionEngineSpeed(ctx 
 }
 
 // VehiclePowertrainCombustionEngineTps is the resolver for the vehiclePowertrainCombustionEngineTPS field.
-func (r *signalAggregationsResolver) VehiclePowertrainCombustionEngineTps(ctx context.Context, obj *model.SignalsWithID, agg *model.FloatAggregation) ([]*model.SignalFloat, error) {
+func (r *signalAggregationsResolver) VehiclePowertrainCombustionEngineTps(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error) {
 	sigArgs, err := getFloatArgs(ctx, obj, agg)
 	if err != nil {
 		return nil, err
@@ -173,7 +173,7 @@ func (r *signalAggregationsResolver) VehiclePowertrainCombustionEngineTps(ctx co
 }
 
 // VehiclePowertrainFuelSystemAbsoluteLevel is the Aggregation resolver for the vehiclePowertrainFuelSystemAbsoluteLevel field.
-func (r *signalAggregationsResolver) VehiclePowertrainFuelSystemAbsoluteLevel(ctx context.Context, obj *model.SignalsWithID, agg *model.FloatAggregation) ([]*model.SignalFloat, error) {
+func (r *signalAggregationsResolver) VehiclePowertrainFuelSystemAbsoluteLevel(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error) {
 	sigArgs, err := getFloatArgs(ctx, obj, agg)
 	if err != nil {
 		return nil, err
@@ -182,7 +182,7 @@ func (r *signalAggregationsResolver) VehiclePowertrainFuelSystemAbsoluteLevel(ct
 }
 
 // VehiclePowertrainFuelSystemSupportedFuelTypes is the Aggregation resolver for the vehiclePowertrainFuelSystemSupportedFuelTypes field.
-func (r *signalAggregationsResolver) VehiclePowertrainFuelSystemSupportedFuelTypes(ctx context.Context, obj *model.SignalsWithID, agg *model.StringAggregation) ([]*model.SignalString, error) {
+func (r *signalAggregationsResolver) VehiclePowertrainFuelSystemSupportedFuelTypes(ctx context.Context, obj *model.SignalsWithID, agg model.StringAggregation) ([]*model.SignalString, error) {
 	sigArgs, err := getStringArgs(ctx, obj, agg)
 	if err != nil {
 		return nil, err
@@ -191,7 +191,7 @@ func (r *signalAggregationsResolver) VehiclePowertrainFuelSystemSupportedFuelTyp
 }
 
 // VehiclePowertrainRange is the Aggregation resolver for the vehiclePowertrainRange field.
-func (r *signalAggregationsResolver) VehiclePowertrainRange(ctx context.Context, obj *model.SignalsWithID, agg *model.FloatAggregation) ([]*model.SignalFloat, error) {
+func (r *signalAggregationsResolver) VehiclePowertrainRange(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error) {
 	sigArgs, err := getFloatArgs(ctx, obj, agg)
 	if err != nil {
 		return nil, err
@@ -200,7 +200,7 @@ func (r *signalAggregationsResolver) VehiclePowertrainRange(ctx context.Context,
 }
 
 // VehiclePowertrainTractionBatteryChargingChargeLimit is the Aggregation resolver for the vehiclePowertrainTractionBatteryChargingChargeLimit field.
-func (r *signalAggregationsResolver) VehiclePowertrainTractionBatteryChargingChargeLimit(ctx context.Context, obj *model.SignalsWithID, agg *model.FloatAggregation) ([]*model.SignalFloat, error) {
+func (r *signalAggregationsResolver) VehiclePowertrainTractionBatteryChargingChargeLimit(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error) {
 	sigArgs, err := getFloatArgs(ctx, obj, agg)
 	if err != nil {
 		return nil, err
@@ -209,7 +209,7 @@ func (r *signalAggregationsResolver) VehiclePowertrainTractionBatteryChargingCha
 }
 
 // VehiclePowertrainTractionBatteryChargingIsCharging is the Aggregation resolver for the vehiclePowertrainTractionBatteryChargingIsCharging field.
-func (r *signalAggregationsResolver) VehiclePowertrainTractionBatteryChargingIsCharging(ctx context.Context, obj *model.SignalsWithID, agg *model.StringAggregation) ([]*model.SignalString, error) {
+func (r *signalAggregationsResolver) VehiclePowertrainTractionBatteryChargingIsCharging(ctx context.Context, obj *model.SignalsWithID, agg model.StringAggregation) ([]*model.SignalString, error) {
 	sigArgs, err := getStringArgs(ctx, obj, agg)
 	if err != nil {
 		return nil, err
@@ -218,7 +218,7 @@ func (r *signalAggregationsResolver) VehiclePowertrainTractionBatteryChargingIsC
 }
 
 // VehiclePowertrainTractionBatteryGrossCapacity is the Aggregation resolver for the vehiclePowertrainTractionBatteryGrossCapacity field.
-func (r *signalAggregationsResolver) VehiclePowertrainTractionBatteryGrossCapacity(ctx context.Context, obj *model.SignalsWithID, agg *model.FloatAggregation) ([]*model.SignalFloat, error) {
+func (r *signalAggregationsResolver) VehiclePowertrainTractionBatteryGrossCapacity(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error) {
 	sigArgs, err := getFloatArgs(ctx, obj, agg)
 	if err != nil {
 		return nil, err
@@ -227,7 +227,7 @@ func (r *signalAggregationsResolver) VehiclePowertrainTractionBatteryGrossCapaci
 }
 
 // VehiclePowertrainTractionBatteryStateOfChargeCurrent is the Aggregation resolver for the vehiclePowertrainTractionBatteryStateOfChargeCurrent field.
-func (r *signalAggregationsResolver) VehiclePowertrainTractionBatteryStateOfChargeCurrent(ctx context.Context, obj *model.SignalsWithID, agg *model.FloatAggregation) ([]*model.SignalFloat, error) {
+func (r *signalAggregationsResolver) VehiclePowertrainTractionBatteryStateOfChargeCurrent(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error) {
 	sigArgs, err := getFloatArgs(ctx, obj, agg)
 	if err != nil {
 		return nil, err
@@ -236,7 +236,7 @@ func (r *signalAggregationsResolver) VehiclePowertrainTractionBatteryStateOfChar
 }
 
 // VehiclePowertrainTransmissionTravelledDistance is the Aggregation resolver for the vehiclePowertrainTransmissionTravelledDistance field.
-func (r *signalAggregationsResolver) VehiclePowertrainTransmissionTravelledDistance(ctx context.Context, obj *model.SignalsWithID, agg *model.FloatAggregation) ([]*model.SignalFloat, error) {
+func (r *signalAggregationsResolver) VehiclePowertrainTransmissionTravelledDistance(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error) {
 	sigArgs, err := getFloatArgs(ctx, obj, agg)
 	if err != nil {
 		return nil, err
@@ -245,7 +245,7 @@ func (r *signalAggregationsResolver) VehiclePowertrainTransmissionTravelledDista
 }
 
 // VehiclePowertrainType is the Aggregation resolver for the vehiclePowertrainType field.
-func (r *signalAggregationsResolver) VehiclePowertrainType(ctx context.Context, obj *model.SignalsWithID, agg *model.StringAggregation) ([]*model.SignalString, error) {
+func (r *signalAggregationsResolver) VehiclePowertrainType(ctx context.Context, obj *model.SignalsWithID, agg model.StringAggregation) ([]*model.SignalString, error) {
 	sigArgs, err := getStringArgs(ctx, obj, agg)
 	if err != nil {
 		return nil, err
@@ -254,7 +254,7 @@ func (r *signalAggregationsResolver) VehiclePowertrainType(ctx context.Context, 
 }
 
 // VehicleSpeed is the Aggregation resolver for the vehicleSpeed field.
-func (r *signalAggregationsResolver) VehicleSpeed(ctx context.Context, obj *model.SignalsWithID, agg *model.FloatAggregation) ([]*model.SignalFloat, error) {
+func (r *signalAggregationsResolver) VehicleSpeed(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error) {
 	sigArgs, err := getFloatArgs(ctx, obj, agg)
 	if err != nil {
 		return nil, err
@@ -263,7 +263,7 @@ func (r *signalAggregationsResolver) VehicleSpeed(ctx context.Context, obj *mode
 }
 
 // VehicleVehicleIdentificationBrand is the Aggregation resolver for the vehicleVehicleIdentificationBrand field.
-func (r *signalAggregationsResolver) VehicleVehicleIdentificationBrand(ctx context.Context, obj *model.SignalsWithID, agg *model.StringAggregation) ([]*model.SignalString, error) {
+func (r *signalAggregationsResolver) VehicleVehicleIdentificationBrand(ctx context.Context, obj *model.SignalsWithID, agg model.StringAggregation) ([]*model.SignalString, error) {
 	sigArgs, err := getStringArgs(ctx, obj, agg)
 	if err != nil {
 		return nil, err
@@ -272,7 +272,7 @@ func (r *signalAggregationsResolver) VehicleVehicleIdentificationBrand(ctx conte
 }
 
 // VehicleVehicleIdentificationModel is the Aggregation resolver for the vehicleVehicleIdentificationModel field.
-func (r *signalAggregationsResolver) VehicleVehicleIdentificationModel(ctx context.Context, obj *model.SignalsWithID, agg *model.StringAggregation) ([]*model.SignalString, error) {
+func (r *signalAggregationsResolver) VehicleVehicleIdentificationModel(ctx context.Context, obj *model.SignalsWithID, agg model.StringAggregation) ([]*model.SignalString, error) {
 	sigArgs, err := getStringArgs(ctx, obj, agg)
 	if err != nil {
 		return nil, err
@@ -281,7 +281,7 @@ func (r *signalAggregationsResolver) VehicleVehicleIdentificationModel(ctx conte
 }
 
 // VehicleVehicleIdentificationYear is the Aggregation resolver for the vehicleVehicleIdentificationYear field.
-func (r *signalAggregationsResolver) VehicleVehicleIdentificationYear(ctx context.Context, obj *model.SignalsWithID, agg *model.FloatAggregation) ([]*model.SignalFloat, error) {
+func (r *signalAggregationsResolver) VehicleVehicleIdentificationYear(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error) {
 	sigArgs, err := getFloatArgs(ctx, obj, agg)
 	if err != nil {
 		return nil, err

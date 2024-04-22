@@ -61,6 +61,7 @@ func (r *RepositoryTestSuite) TearDownTest() {
 }
 func (r *RepositoryTestSuite) TestGetSignalFloats() {
 	endTs := r.dataStartTime.Add(time.Hour * 24 * 14)
+	day := time.Hour * 24
 	ctx := context.Background()
 	testCases := []struct {
 		name     string
@@ -77,8 +78,8 @@ func (r *RepositoryTestSuite) TestGetSignalFloats() {
 					Name:    vss.FieldVehicleSpeed,
 				},
 				Agg: model.FloatAggregation{
-					Type:     ref(model.FloatAggregationTypeAvg),
-					Interval: ref(60 * 60 * 24),
+					Type:     model.FloatAggregationTypeAvg,
+					Interval: day.String(),
 				},
 			},
 			expected: []model.SignalFloat{

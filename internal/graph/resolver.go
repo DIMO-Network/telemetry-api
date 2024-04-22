@@ -19,30 +19,24 @@ type Resolver struct {
 	*repositories.Repository
 }
 
-func getFloatArgs(ctx context.Context, obj *model.SignalsWithID, agg *model.FloatAggregation) (repositories.FloatSignalArgs, error) {
-	if agg == nil {
-		return repositories.FloatSignalArgs{}, fmt.Errorf("aggregation type is nil")
-	}
+func getFloatArgs(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) (repositories.FloatSignalArgs, error) {
 	args, err := getSignalArgs(ctx, obj)
 	if err != nil {
 		return repositories.FloatSignalArgs{}, err
 	}
 	return repositories.FloatSignalArgs{
-		Agg:        *agg,
+		Agg:        agg,
 		SignalArgs: args,
 	}, nil
 }
 
-func getStringArgs(ctx context.Context, obj *model.SignalsWithID, agg *model.StringAggregation) (repositories.StringSignalArgs, error) {
-	if agg == nil {
-		return repositories.StringSignalArgs{}, fmt.Errorf("aggregation type is nil")
-	}
+func getStringArgs(ctx context.Context, obj *model.SignalsWithID, agg model.StringAggregation) (repositories.StringSignalArgs, error) {
 	args, err := getSignalArgs(ctx, obj)
 	if err != nil {
 		return repositories.StringSignalArgs{}, err
 	}
 	return repositories.StringSignalArgs{
-		Agg:        *agg,
+		Agg:        agg,
 		SignalArgs: args,
 	}, nil
 }
@@ -72,12 +66,9 @@ func getTimeArg(args map[string]any, name string) time.Time {
 	if !ok {
 		return time.Time{}
 	}
-	timeArg, ok := val.(*time.Time)
+	timeArg, ok := val.(time.Time)
 	if !ok {
 		return time.Time{}
 	}
-	if timeArg == nil {
-		return time.Time{}
-	}
-	return *timeArg
+	return timeArg
 }

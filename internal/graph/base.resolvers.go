@@ -9,23 +9,16 @@ import (
 	"time"
 
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
-	"github.com/vektah/gqlparser/v2/gqlerror"
 )
 
 // Signals is the resolver for the Signals field.
-func (r *queryResolver) Signals(ctx context.Context, tokenID *int, from *time.Time, to *time.Time) (*model.SignalsWithID, error) {
-	if tokenID == nil {
-		return nil, gqlerror.Errorf("tokenID is required")
-	}
-	return &model.SignalsWithID{TokenID: uint32(*tokenID)}, nil
+func (r *queryResolver) Signals(ctx context.Context, tokenID int, from time.Time, to time.Time) (*model.SignalsWithID, error) {
+	return &model.SignalsWithID{TokenID: uint32(tokenID)}, nil
 }
 
 // SignalsLatest is the resolver for the SignalsLatest field.
-func (r *queryResolver) SignalsLatest(ctx context.Context, tokenID *int) (*model.SignalsWithID, error) {
-	if tokenID == nil {
-		return nil, gqlerror.Errorf("tokenID is required")
-	}
-	return &model.SignalsWithID{TokenID: uint32(*tokenID)}, nil
+func (r *queryResolver) SignalsLatest(ctx context.Context, tokenID int) (*model.SignalsWithID, error) {
+	return &model.SignalsWithID{TokenID: uint32(tokenID)}, nil
 }
 
 // Query returns QueryResolver implementation.

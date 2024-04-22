@@ -148,13 +148,13 @@ func requiresTokenCheck(ctx context.Context, obj interface{}, next graphql.Resol
 	if fCtx == nil {
 		return nil, fmt.Errorf("no field context found")
 	}
-	tokenID, ok := fCtx.Args["tokenID"].(*int)
-	if !ok || tokenID == nil {
+	tokenID, ok := fCtx.Args["tokenID"].(int)
+	if !ok {
 		return nil, fmt.Errorf("failed to get tokenID from args")
 	}
 
 	claim := getClaim(ctx)
-	if strconv.Itoa(*tokenID) != claim.TokenID && claim.TokenID != "foo" {
+	if strconv.Itoa(tokenID) != claim.TokenID && claim.TokenID != "foo" {
 		return nil, fmt.Errorf("unathorized")
 	}
 	return next(ctx)

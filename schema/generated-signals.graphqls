@@ -5,7 +5,7 @@ extend type SignalAggregations {
   Required Privlieges: [VehicleNonLocationData]
   """
   vehicleChassisAxleRow1WheelLeftTirePressure(
-    agg: FloatAggregation
+    agg: FloatAggregation!
   ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
   
   """
@@ -13,7 +13,7 @@ extend type SignalAggregations {
   Required Privlieges: [VehicleNonLocationData]
   """
   vehicleChassisAxleRow1WheelRightTirePressure(
-    agg: FloatAggregation
+    agg: FloatAggregation!
   ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
   
   """
@@ -21,7 +21,7 @@ extend type SignalAggregations {
   Required Privlieges: [VehicleNonLocationData]
   """
   vehicleChassisAxleRow2WheelLeftTirePressure(
-    agg: FloatAggregation
+    agg: FloatAggregation!
   ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
   
   """
@@ -29,7 +29,7 @@ extend type SignalAggregations {
   Required Privlieges: [VehicleNonLocationData]
   """
   vehicleChassisAxleRow2WheelRightTirePressure(
-    agg: FloatAggregation
+    agg: FloatAggregation!
   ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
   
   """
@@ -37,7 +37,7 @@ extend type SignalAggregations {
   Required Privlieges: [VehicleAllTimeLocation]
   """
   vehicleCurrentLocationAltitude(
-    agg: FloatAggregation
+    agg: FloatAggregation!
   ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleAllTimeLocation])
   
   """
@@ -45,7 +45,7 @@ extend type SignalAggregations {
   Required Privlieges: [VehicleAllTimeLocation]
   """
   vehicleCurrentLocationLatitude(
-    agg: FloatAggregation
+    agg: FloatAggregation!
   ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleAllTimeLocation])
   
   """
@@ -53,7 +53,7 @@ extend type SignalAggregations {
   Required Privlieges: [VehicleAllTimeLocation]
   """
   vehicleCurrentLocationLongitude(
-    agg: FloatAggregation
+    agg: FloatAggregation!
   ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleAllTimeLocation])
   
   """
@@ -61,7 +61,7 @@ extend type SignalAggregations {
   Required Privlieges: [VehicleAllTimeLocation]
   """
   vehicleCurrentLocationTimestamp(
-    agg: StringAggregation
+    agg: StringAggregation!
   ):  [SignalString!] @requiresPrivilege(privileges: [VehicleAllTimeLocation])
   
   """
@@ -69,7 +69,7 @@ extend type SignalAggregations {
   Required Privlieges: [VehicleNonLocationData]
   """
   vehicleExteriorAirTemperature(
-    agg: FloatAggregation
+    agg: FloatAggregation!
   ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
   
   """
@@ -77,7 +77,7 @@ extend type SignalAggregations {
   Required Privlieges: [VehicleNonLocationData]
   """
   vehicleLowVoltageBatteryCurrentVoltage(
-    agg: FloatAggregation
+    agg: FloatAggregation!
   ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
   
   """
@@ -85,7 +85,7 @@ extend type SignalAggregations {
   Required Privlieges: [VehicleNonLocationData]
   """
   vehicleOBDBarometricPressure(
-    agg: FloatAggregation
+    agg: FloatAggregation!
   ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
   
   """
@@ -93,7 +93,7 @@ extend type SignalAggregations {
   Required Privlieges: [VehicleNonLocationData]
   """
   vehicleOBDEngineLoad(
-    agg: FloatAggregation
+    agg: FloatAggregation!
   ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
   
   """
@@ -101,7 +101,7 @@ extend type SignalAggregations {
   Required Privlieges: [VehicleNonLocationData]
   """
   vehicleOBDIntakeTemp(
-    agg: FloatAggregation
+    agg: FloatAggregation!
   ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
   
   """
@@ -109,7 +109,7 @@ extend type SignalAggregations {
   Required Privlieges: [VehicleNonLocationData]
   """
   vehicleOBDRunTime(
-    agg: FloatAggregation
+    agg: FloatAggregation!
   ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
   
   """
@@ -117,7 +117,7 @@ extend type SignalAggregations {
   Required Privlieges: [VehicleNonLocationData]
   """
   vehiclePowertrainCombustionEngineECT(
-    agg: FloatAggregation
+    agg: FloatAggregation!
   ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
   
   """
@@ -125,7 +125,7 @@ extend type SignalAggregations {
   Required Privlieges: [VehicleNonLocationData]
   """
   vehiclePowertrainCombustionEngineEngineOilLevel(
-    agg: StringAggregation
+    agg: StringAggregation!
   ):  [SignalString!] @requiresPrivilege(privileges: [VehicleNonLocationData])
   
   """
@@ -133,7 +133,7 @@ extend type SignalAggregations {
   Required Privlieges: [VehicleNonLocationData]
   """
   vehiclePowertrainCombustionEngineSpeed(
-    agg: FloatAggregation
+    agg: FloatAggregation!
   ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
   
   """
@@ -141,7 +141,7 @@ extend type SignalAggregations {
   Required Privlieges: [VehicleNonLocationData]
   """
   vehiclePowertrainCombustionEngineTPS(
-    agg: FloatAggregation
+    agg: FloatAggregation!
   ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
   
   """
@@ -149,7 +149,7 @@ extend type SignalAggregations {
   Required Privlieges: [VehicleNonLocationData]
   """
   vehiclePowertrainFuelSystemAbsoluteLevel(
-    agg: FloatAggregation
+    agg: FloatAggregation!
   ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
   
   """
@@ -157,7 +157,7 @@ extend type SignalAggregations {
   Required Privlieges: [VehicleNonLocationData]
   """
   vehiclePowertrainFuelSystemSupportedFuelTypes(
-    agg: StringAggregation
+    agg: StringAggregation!
   ):  [SignalString!] @requiresPrivilege(privileges: [VehicleNonLocationData])
   
   """
@@ -165,7 +165,7 @@ extend type SignalAggregations {
   Required Privlieges: [VehicleNonLocationData]
   """
   vehiclePowertrainRange(
-    agg: FloatAggregation
+    agg: FloatAggregation!
   ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
   
   """
@@ -173,7 +173,7 @@ extend type SignalAggregations {
   Required Privlieges: [VehicleNonLocationData]
   """
   vehiclePowertrainTractionBatteryChargingChargeLimit(
-    agg: FloatAggregation
+    agg: FloatAggregation!
   ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
   
   """
@@ -181,7 +181,7 @@ extend type SignalAggregations {
   Required Privlieges: [VehicleNonLocationData]
   """
   vehiclePowertrainTractionBatteryChargingIsCharging(
-    agg: StringAggregation
+    agg: StringAggregation!
   ):  [SignalString!] @requiresPrivilege(privileges: [VehicleNonLocationData])
   
   """
@@ -189,7 +189,7 @@ extend type SignalAggregations {
   Required Privlieges: [VehicleNonLocationData]
   """
   vehiclePowertrainTractionBatteryGrossCapacity(
-    agg: FloatAggregation
+    agg: FloatAggregation!
   ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
   
   """
@@ -197,7 +197,7 @@ extend type SignalAggregations {
   Required Privlieges: [VehicleNonLocationData]
   """
   vehiclePowertrainTractionBatteryStateOfChargeCurrent(
-    agg: FloatAggregation
+    agg: FloatAggregation!
   ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
   
   """
@@ -205,7 +205,7 @@ extend type SignalAggregations {
   Required Privlieges: [VehicleNonLocationData]
   """
   vehiclePowertrainTransmissionTravelledDistance(
-    agg: FloatAggregation
+    agg: FloatAggregation!
   ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
   
   """
@@ -213,7 +213,7 @@ extend type SignalAggregations {
   Required Privlieges: [VehicleNonLocationData]
   """
   vehiclePowertrainType(
-    agg: StringAggregation
+    agg: StringAggregation!
   ):  [SignalString!] @requiresPrivilege(privileges: [VehicleNonLocationData])
   
   """
@@ -221,7 +221,7 @@ extend type SignalAggregations {
   Required Privlieges: [VehicleNonLocationData]
   """
   vehicleSpeed(
-    agg: FloatAggregation
+    agg: FloatAggregation!
   ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
   
   """
@@ -229,7 +229,7 @@ extend type SignalAggregations {
   Required Privlieges: [VehicleNonLocationData]
   """
   vehicleVehicleIdentificationBrand(
-    agg: StringAggregation
+    agg: StringAggregation!
   ):  [SignalString!] @requiresPrivilege(privileges: [VehicleNonLocationData])
   
   """
@@ -237,7 +237,7 @@ extend type SignalAggregations {
   Required Privlieges: [VehicleNonLocationData]
   """
   vehicleVehicleIdentificationModel(
-    agg: StringAggregation
+    agg: StringAggregation!
   ):  [SignalString!] @requiresPrivilege(privileges: [VehicleNonLocationData])
   
   """
@@ -245,7 +245,7 @@ extend type SignalAggregations {
   Required Privlieges: [VehicleNonLocationData]
   """
   vehicleVehicleIdentificationYear(
-    agg: FloatAggregation
+    agg: FloatAggregation!
   ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
   
 }

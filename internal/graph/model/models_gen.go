@@ -11,9 +11,11 @@ import (
 
 type FloatAggregation struct {
 	// Aggregation type.
-	Type *FloatAggregationType `json:"type,omitempty"`
-	// interval is a time span that used for aggregatting the data.
-	Interval *int `json:"interval,omitempty"`
+	Type FloatAggregationType `json:"type"`
+	// interval is a time span that used for aggregatting the data with.
+	// A duration string is a sequence of decimal numbers, each with optional fraction and a unit suffix,
+	// such as "300ms", "-1.5h" or "2h45m". Valid time units are "ms", "s", "m", "h", "d", "w", "y".
+	Interval string `json:"interval"`
 }
 
 // The root query type for the GraphQL schema.
@@ -36,9 +38,11 @@ type SignalString struct {
 
 type StringAggregation struct {
 	// Aggregation type.
-	Type *StringAggregationType `json:"type,omitempty"`
-	// interval is a time span that used for aggregatting the data.
-	Interval *int `json:"interval,omitempty"`
+	Type StringAggregationType `json:"type"`
+	// interval is a time span that used for aggregatting the data with.
+	// A duration string is a sequence of decimal numbers, each with optional fraction and a unit suffix,
+	// such as "300ms", "-1.5h" or "2h45m". Valid time units are "ms", "s", "m", "h", "d", "w", "y".
+	Interval string `json:"interval"`
 }
 
 type FloatAggregationType string

@@ -8,8 +8,9 @@ scalar Time
 The root query type for the GraphQL schema.
 """
 type Query {
-  Signals(tokenID: Int, from: Time, to: Time): SignalAggregations @requiresToken
-  SignalsLatest(tokenID: Int): SignalCollection @requiresToken
+  Signals(tokenID: Int!, from: Time!, to: Time!): SignalAggregations
+    @requiresToken
+  SignalsLatest(tokenID: Int!): SignalCollection @requiresToken
 }
 
 type SignalAggregations {
@@ -24,24 +25,28 @@ input FloatAggregation {
   """
   Aggregation type.
   """
-  type: FloatAggregationType
+  type: FloatAggregationType!
 
   """
-  interval is a time span that used for aggregatting the data.
+  interval is a time span that used for aggregatting the data with.
+  A duration string is a sequence of decimal numbers, each with optional fraction and a unit suffix,
+  such as "300ms", "-1.5h" or "2h45m". Valid time units are "ms", "s", "m", "h", "d", "w", "y".
   """
-  interval: Int
+  interval: String!
 }
 
 input StringAggregation {
   """
   Aggregation type.
   """
-  type: StringAggregationType
+  type: StringAggregationType!
 
   """
-  interval is a time span that used for aggregatting the data.
+  interval is a time span that used for aggregatting the data with.
+  A duration string is a sequence of decimal numbers, each with optional fraction and a unit suffix,
+  such as "300ms", "-1.5h" or "2h45m". Valid time units are "ms", "s", "m", "h", "d", "w", "y".
   """
-  interval: Int
+  interval: String!
 }
 
 enum FloatAggregationType {
