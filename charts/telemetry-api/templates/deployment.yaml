@@ -42,16 +42,11 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          env:
-            - name: POD_NAMESPACE
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.namespace
           envFrom:
-            - configMapRef:
-                name: {{ include "telemetry-api.fullname" . }}-config
-            - secretRef:
-                name: {{ include "telemetry-api.fullname" . }}-secret
+          - configMapRef:
+              name: {{ include "telemetry-api.fullname" . }}-config
+          - secretRef:
+              name: {{ include "telemetry-api.fullname" . }}-secret
           ports:
 {{ toYaml .Values.ports | indent 12 }}
           livenessProbe:

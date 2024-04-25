@@ -25,10 +25,6 @@ import (
 func main() {
 	ctx := context.Background()
 	logger := zerolog.New(os.Stdout).With().Timestamp().Str("app", "telemetry-api").Logger()
-	ns := os.Getenv("POD_NAMESPACE")
-	if ns != "dev" {
-		logger.Fatal().Msg("This version of the telemetry-api is only meant to be run on the dev. revert this commit to run on prod")
-	}
 	// create a flag for the settings file
 	settingsFile := flag.String("settings", "settings.yaml", "settings file")
 	flag.Parse()
