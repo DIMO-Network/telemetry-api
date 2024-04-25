@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -18,6 +19,8 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/rs/zerolog"
 )
+
+var errUnauthorized = fmt.Errorf("unauthorized")
 
 // CustomContextKey is a custom key for the context to store the custom claims.
 type CustomContextKey struct{}
@@ -93,7 +96,11 @@ func AddClaimHandler(next http.Handler, logger *zerolog.Logger) http.Handler {
 func ErrorHandler(logger *zerolog.Logger) func(w http.ResponseWriter, r *http.Request, err error) {
 	return func(w http.ResponseWriter, r *http.Request, err error) {
 		logger.Error().Err(err).Msg("error validating token")
-		jwtmiddleware.DefaultErrorHandler(w, r, err)
+		if errors.Is(err, errUnauthorized) {
+			jwtmiddleware.DefaultErrorHandler(w, r, errUnauthorized)
+		} else {
+			jwtmiddleware.DefaultErrorHandler(w, r, err)
+		}
 	}
 }
 
@@ -111,7 +118,7 @@ type customClaimWrapper struct {
 // Validate function is required to implement the validator.CustomClaims interface.
 func (c *customClaimWrapper) Validate(context.Context) error {
 	if c.expectedContractAddress != c.CustomClaims.ContractAddress {
-		return fmt.Errorf("incorrect contract address expected %v got %v", c.expectedContractAddress, c.CustomClaims.ContractAddress)
+		return fmt.Errorf("%w: incorrect contract address expected %v got %v", errUnauthorized, c.expectedContractAddress, c.CustomClaims.ContractAddress)
 	}
 	return nil
 }
@@ -120,7 +127,7 @@ func requiresPrivilegeCheck(ctx context.Context, obj interface{}, next graphql.R
 	claim := getClaim(ctx)
 	for _, priv := range privileges {
 		if _, ok := claim.privileges[priv]; !ok {
-			return nil, fmt.Errorf("unathorized")
+			return nil, fmt.Errorf("%w: missing required privileges", errUnauthorized)
 		}
 	}
 	return next(ctx)
@@ -137,16 +144,16 @@ var privToAPI = map[privileges.Privilege]model.Privilege{
 func requiresTokenCheck(ctx context.Context, obj interface{}, next graphql.Resolver) (res interface{}, err error) {
 	fCtx := graphql.GetFieldContext(ctx)
 	if fCtx == nil {
-		return nil, fmt.Errorf("no field context found")
+		return nil, fmt.Errorf("%w: no field context found", err)
 	}
 	tokenID, ok := fCtx.Args["tokenID"].(int)
 	if !ok {
-		return nil, fmt.Errorf("failed to get tokenID from args")
+		return nil, fmt.Errorf("%w: failed to get tokenID from args", err)
 	}
 
 	claim := getClaim(ctx)
 	if strconv.Itoa(tokenID) != claim.TokenID {
-		return nil, fmt.Errorf("unathorized")
+		return nil, fmt.Errorf("%w: tokenID mismatch", err)
 	}
 	return next(ctx)
 }
