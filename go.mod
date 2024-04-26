@@ -4,14 +4,14 @@ go 1.22.0
 
 require (
 	github.com/99designs/gqlgen v0.17.45
-	github.com/ClickHouse/clickhouse-go/v2 v2.23.1
+	github.com/ClickHouse/clickhouse-go/v2 v2.23.2
 	github.com/DIMO-Network/model-garage v0.1.2
 	github.com/DIMO-Network/shared v0.10.12
 	github.com/auth0/go-jwt-middleware/v2 v2.2.1
 	github.com/docker/go-connections v0.5.0
 	github.com/ethereum/go-ethereum v1.14.0
 	github.com/gofiber/fiber/v2 v2.52.4
-	github.com/prometheus/client_golang v1.18.0
+	github.com/prometheus/client_golang v1.19.0
 	github.com/rs/zerolog v1.32.0
 	github.com/stretchr/testify v1.9.0
 	github.com/vektah/gqlparser/v2 v2.5.11
@@ -79,7 +79,7 @@ require (
 	github.com/power-devops/perfstat v0.0.0-20221212215047-62379fc7944b // indirect
 	github.com/pressly/goose/v3 v3.20.0 // indirect
 	github.com/prometheus/client_model v0.6.0 // indirect
-	github.com/prometheus/common v0.47.0 // indirect
+	github.com/prometheus/common v0.48.0 // indirect
 	github.com/prometheus/procfs v0.12.0 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
