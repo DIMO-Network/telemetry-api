@@ -20,8 +20,8 @@ FROM
 WHERE 
   TokenID = ? 
   AND Name = ?
-  And Timestamp > ?
-  And Timestamp < ?
+  AND Timestamp > ?
+  AND Timestamp < ?
 GROUP BY 
   group_timestamp 
 ORDER BY 
@@ -88,7 +88,7 @@ func getStringAgg(aggType model.StringAggregationType) string {
 		seed := time.Now().UnixMilli()
 		aggStr = fmt.Sprintf("groupArraySample(1, %d)(ValueString)[1]", seed)
 	case model.StringAggregationTypeUnique:
-		aggStr = "groupUniqArray(ValueString)"
+		aggStr = "arrayStringConcat(groupUniqArray(ValueString),',')"
 	case model.StringAggregationTypeTop:
 		aggStr = "topK(1, 10)(ValueString)"
 	default:

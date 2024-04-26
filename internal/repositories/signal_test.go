@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"strings"
 	"testing"
 	"time"
 
@@ -17,6 +18,8 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/suite"
 )
+
+const day = time.Hour * 24
 
 type RepositoryTestSuite struct {
 	suite.Suite
@@ -61,7 +64,6 @@ func (r *RepositoryTestSuite) TearDownTest() {
 }
 func (r *RepositoryTestSuite) TestGetSignalFloats() {
 	endTs := r.dataStartTime.Add(time.Hour * 24 * 14)
-	day := time.Hour * 24
 	ctx := context.Background()
 	testCases := []struct {
 		name     string
@@ -117,6 +119,16 @@ func (r *RepositoryTestSuite) insertTestData() {
 		}
 		testSignal = append(testSignal, sig)
 	}
+	for i := range 10 {
+		sig := vss.Signal{
+			Name:        vss.FieldPowertrainType,
+			Timestamp:   r.dataStartTime.Add(time.Second * time.Duration(30*i)),
+			TokenID:     1,
+			ValueString: fmt.Sprintf("value%d", i%3+1),
+		}
+		testSignal = append(testSignal, sig)
+	}
+
 	batch, err := conn.PrepareBatch(ctx, fmt.Sprintf("INSERT INTO %s", vss.TableName))
 	r.Require().NoError(err, "Failed to prepare batch")
 	for _, sig := range testSignal {
@@ -132,4 +144,53 @@ func TestRepositorySuite(t *testing.T) {
 
 func ref[T any](t T) *T {
 	return &t
+}
+func (r *RepositoryTestSuite) TestGetSignalString() {
+	ctx := context.Background()
+	testCases := []struct {
+		name     string
+		sigArgs  repositories.StringSignalArgs
+		expected []*model.SignalString
+	}{
+		{
+			name: "unique",
+			sigArgs: repositories.StringSignalArgs{
+				SignalArgs: repositories.SignalArgs{
+					TokenID: 1,
+					FromTS:  r.dataStartTime,
+					ToTS:    r.dataStartTime.Add(time.Hour),
+					Name:    vss.FieldPowertrainType,
+				},
+				Agg: model.StringAggregation{
+					Type:     model.StringAggregationTypeUnique,
+					Interval: day.String(),
+				},
+			},
+			expected: []*model.SignalString{
+				{
+					Timestamp: ref(r.dataStartTime),
+					Value:     ref("value2,value1,value3"),
+				},
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		r.Run(tc.name, func() {
+			// Call the GetSignalString method
+			result, err := r.repo.GetSignalString(ctx, tc.sigArgs)
+			r.Require().NoError(err)
+
+			for i, sig := range result {
+				if tc.sigArgs.Agg.Type == model.StringAggregationTypeUnique {
+					// split the expected value and the actual value by comma
+					expected := strings.Split(*tc.expected[i].Value, ",")
+					actual := strings.Split(*sig.Value, ",")
+					r.Require().Equal(expected, actual)
+				} else {
+					r.Require().Equal(tc.expected[i], sig)
+				}
+			}
+		})
+	}
 }

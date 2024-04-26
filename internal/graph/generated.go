@@ -1150,7 +1150,7 @@ input StringAggregation {
   """
   interval is a time span that used for aggregatting the data with.
   A duration string is a sequence of decimal numbers, each with optional fraction and a unit suffix,
-  such as "300ms", "-1.5h" or "2h45m". Valid time units are "ms", "s", "m", "h", "d", "w", "y".
+  such as "300ms", "-1.5h" or "2h45m". Valid time units are "ms", "s", "m", "h"
   """
   interval: String!
 }
