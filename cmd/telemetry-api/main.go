@@ -12,6 +12,7 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/DIMO-Network/shared"
+	"github.com/DIMO-Network/telemetry-api/internal/auth"
 	"github.com/DIMO-Network/telemetry-api/internal/config"
 	"github.com/DIMO-Network/telemetry-api/internal/graph"
 	"github.com/DIMO-Network/telemetry-api/internal/repositories"
@@ -42,8 +43,8 @@ func main() {
 	}
 
 	cfg := graph.Config{Resolvers: &graph.Resolver{Repository: baseRepo}}
-	cfg.Directives.RequiresPrivilege = requiresPrivilegeCheck
-	cfg.Directives.RequiresToken = requiresTokenCheck
+	cfg.Directives.RequiresPrivilege = auth.RequiresPrivilegeCheck
+	cfg.Directives.RequiresToken = auth.RequiresTokenCheck
 
 	serveMonitoring(strconv.Itoa(settings.MonPort), &logger)
 
@@ -53,14 +54,14 @@ func main() {
 
 	logger.Info().Str("jwksUrl", settings.TokenExchangeJWTKeySetURL).Str("issuerURL", settings.TokenExchangeIssuer).Str("vehicleAddr", settings.VehicleNFTAddress).Msg("Privileges enabled.")
 
-	authMiddleware, err := NewJWTMiddleware(settings.TokenExchangeIssuer, settings.TokenExchangeJWTKeySetURL, settings.VehicleNFTAddress, &logger)
+	authMiddleware, err := auth.NewJWTMiddleware(settings.TokenExchangeIssuer, settings.TokenExchangeJWTKeySetURL, settings.VehicleNFTAddress, &logger)
 	if err != nil {
 		logger.Fatal().Err(err).Msg("Couldn't create JWT middleware.")
 	}
 
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
 
-	authedHandler := authMiddleware.CheckJWT(AddClaimHandler(server, &logger))
+	authedHandler := authMiddleware.CheckJWT(auth.AddClaimHandler(server, &logger))
 	http.Handle("/query", authedHandler)
 
 	logger.Info().Msgf("Server started on port: %d", settings.Port)
