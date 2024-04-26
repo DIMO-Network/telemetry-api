@@ -31,7 +31,7 @@ func (r *RepositoryTestSuite) SetupTest() {
 	r.container, err = clickhouseinfra.CreateClickHouseContainer(ctx, "", "")
 	r.Require().NoError(err, "Failed to create clickhouse container")
 
-	db, err := clickhouseinfra.GetClickhouseAsDB(r.container.ClickHouseContainer)
+	db, err := clickhouseinfra.GetClickhouseAsDB(ctx, r.container.ClickHouseContainer)
 	r.Require().NoError(err, "Failed to get clickhouse connection")
 
 	err = migrations.RunGoose(ctx, []string{"up", "-v"}, db)
@@ -75,7 +75,7 @@ func (r *RepositoryTestSuite) TestGetSignalFloats() {
 					TokenID: 1,
 					FromTS:  r.dataStartTime,
 					ToTS:    endTs,
-					Name:    vss.FieldVehicleSpeed,
+					Name:    vss.FieldSpeed,
 				},
 				Agg: model.FloatAggregation{
 					Type:     model.FloatAggregationTypeAvg,
@@ -110,7 +110,7 @@ func (r *RepositoryTestSuite) insertTestData() {
 	testSignal := []vss.Signal{}
 	for i := range 10 {
 		sig := vss.Signal{
-			Name:        vss.FieldVehicleSpeed,
+			Name:        vss.FieldSpeed,
 			Timestamp:   r.dataStartTime.Add(time.Second * time.Duration(30*i)),
 			TokenID:     1,
 			ValueNumber: float64(i),

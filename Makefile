@@ -16,7 +16,7 @@ VER_CUT   := $(shell echo $(VERSION) | cut -c2-)
 # Dependency versions
 GOLANGCI_VERSION   = v1.56.2
 GQLGEN_VERSION     = v0.17.45
-MODEL_GARAGE_VERSION = latest
+MODEL_GARAGE_VERSION = v0.1.2
 
 
 build:
@@ -39,7 +39,7 @@ tidy:
 	@go mod tidy
 
 test:
-	@go test ./...
+	@go test -v ./...
 
 lint:
 	@golangci-lint run

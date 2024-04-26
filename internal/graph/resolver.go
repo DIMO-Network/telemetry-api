@@ -50,7 +50,7 @@ func getSignalArgs(ctx context.Context, obj *model.SignalsWithID) (repositories.
 	}
 	name := fCtx.Field.Name
 	var ok bool
-	args.Name, ok = vss.DimoJSONName2CHName[name]
+	args.Name, ok = vss.JSONName2CHName[name]
 	if !ok {
 		return args, fmt.Errorf("field %s not found", name)
 	}

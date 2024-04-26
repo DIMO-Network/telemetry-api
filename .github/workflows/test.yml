@@ -25,11 +25,5 @@ jobs:
       - name: modVerify
         run: go mod verify
 
-      - name: Run Tests with go testsum
-        run: gotestsum --format pkgname --jsonfile test.json
-
-      - name: Annotate tests
-        if: always()
-        uses: guyarb/golang-test-annotations@v0.6.0
-        with:
-          test-results: test.json
+      - name: Run Tests
+        run: make test

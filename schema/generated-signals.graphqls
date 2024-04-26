@@ -4,7 +4,7 @@ extend type SignalAggregations {
   Tire pressure in kilo-Pascal.
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehicleChassisAxleRow1WheelLeftTirePressure(
+  chassisAxleRow1WheelLeftTirePressure(
     agg: FloatAggregation!
   ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
   
@@ -12,7 +12,7 @@ extend type SignalAggregations {
   Tire pressure in kilo-Pascal.
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehicleChassisAxleRow1WheelRightTirePressure(
+  chassisAxleRow1WheelRightTirePressure(
     agg: FloatAggregation!
   ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
   
@@ -20,7 +20,7 @@ extend type SignalAggregations {
   Tire pressure in kilo-Pascal.
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehicleChassisAxleRow2WheelLeftTirePressure(
+  chassisAxleRow2WheelLeftTirePressure(
     agg: FloatAggregation!
   ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
   
@@ -28,7 +28,7 @@ extend type SignalAggregations {
   Tire pressure in kilo-Pascal.
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehicleChassisAxleRow2WheelRightTirePressure(
+  chassisAxleRow2WheelRightTirePressure(
     agg: FloatAggregation!
   ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
   
@@ -36,7 +36,7 @@ extend type SignalAggregations {
   Current altitude relative to WGS 84 reference ellipsoid, as measured at the position of GNSS receiver antenna.
   Required Privlieges: [VehicleAllTimeLocation]
   """
-  vehicleCurrentLocationAltitude(
+  currentLocationAltitude(
     agg: FloatAggregation!
   ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleAllTimeLocation])
   
@@ -44,7 +44,7 @@ extend type SignalAggregations {
   Current latitude of vehicle in WGS 84 geodetic coordinates, as measured at the position of GNSS receiver antenna.
   Required Privlieges: [VehicleAllTimeLocation]
   """
-  vehicleCurrentLocationLatitude(
+  currentLocationLatitude(
     agg: FloatAggregation!
   ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleAllTimeLocation])
   
@@ -52,7 +52,7 @@ extend type SignalAggregations {
   Current longitude of vehicle in WGS 84 geodetic coordinates, as measured at the position of GNSS receiver antenna.
   Required Privlieges: [VehicleAllTimeLocation]
   """
-  vehicleCurrentLocationLongitude(
+  currentLocationLongitude(
     agg: FloatAggregation!
   ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleAllTimeLocation])
   
@@ -60,15 +60,47 @@ extend type SignalAggregations {
   Timestamp from GNSS system for current location, formatted according to ISO 8601 with UTC time zone.
   Required Privlieges: [VehicleAllTimeLocation]
   """
-  vehicleCurrentLocationTimestamp(
+  currentLocationTimestamp(
     agg: StringAggregation!
   ):  [SignalString!] @requiresPrivilege(privileges: [VehicleAllTimeLocation])
+  
+  """
+  Horizontal dilution of precision of GPS
+  Required Privlieges: [VehicleNonLocationData]
+  """
+  dIMOAftermarketHDOP(
+    agg: FloatAggregation!
+  ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
+  
+  """
+  Number of sync satellites for GPS
+  Required Privlieges: [VehicleNonLocationData]
+  """
+  dIMOAftermarketNSAT(
+    agg: FloatAggregation!
+  ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
+  
+  """
+  Service Set Ientifier for the wifi.
+  Required Privlieges: [VehicleNonLocationData]
+  """
+  dIMOAftermarketSSID(
+    agg: StringAggregation!
+  ):  [SignalString!] @requiresPrivilege(privileges: [VehicleNonLocationData])
+  
+  """
+  Indicate the current wpa state for the devices wifi
+  Required Privlieges: [VehicleNonLocationData]
+  """
+  dIMOAftermarketWPAState(
+    agg: StringAggregation!
+  ):  [SignalString!] @requiresPrivilege(privileges: [VehicleNonLocationData])
   
   """
   Air temperature outside the vehicle.
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehicleExteriorAirTemperature(
+  exteriorAirTemperature(
     agg: FloatAggregation!
   ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
   
@@ -76,7 +108,7 @@ extend type SignalAggregations {
   Current Voltage of the low voltage battery.
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehicleLowVoltageBatteryCurrentVoltage(
+  lowVoltageBatteryCurrentVoltage(
     agg: FloatAggregation!
   ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
   
@@ -84,7 +116,7 @@ extend type SignalAggregations {
   PID 33 - Barometric pressure
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehicleOBDBarometricPressure(
+  oBDBarometricPressure(
     agg: FloatAggregation!
   ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
   
@@ -92,7 +124,7 @@ extend type SignalAggregations {
   PID 04 - Engine load in percent - 0 = no load, 100 = full load
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehicleOBDEngineLoad(
+  oBDEngineLoad(
     agg: FloatAggregation!
   ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
   
@@ -100,7 +132,7 @@ extend type SignalAggregations {
   PID 0F - Intake temperature
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehicleOBDIntakeTemp(
+  oBDIntakeTemp(
     agg: FloatAggregation!
   ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
   
@@ -108,7 +140,7 @@ extend type SignalAggregations {
   PID 1F - Engine run time
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehicleOBDRunTime(
+  oBDRunTime(
     agg: FloatAggregation!
   ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
   
@@ -116,7 +148,7 @@ extend type SignalAggregations {
   Engine coolant temperature.
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehiclePowertrainCombustionEngineECT(
+  powertrainCombustionEngineECT(
     agg: FloatAggregation!
   ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
   
@@ -124,15 +156,23 @@ extend type SignalAggregations {
   Engine oil level.
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehiclePowertrainCombustionEngineEngineOilLevel(
+  powertrainCombustionEngineEngineOilLevel(
     agg: StringAggregation!
   ):  [SignalString!] @requiresPrivilege(privileges: [VehicleNonLocationData])
+  
+  """
+  Grams of air drawn into engine per second.
+  Required Privlieges: [VehicleNonLocationData]
+  """
+  powertrainCombustionEngineMAF(
+    agg: FloatAggregation!
+  ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
   
   """
   Engine speed measured as rotations per minute.
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehiclePowertrainCombustionEngineSpeed(
+  powertrainCombustionEngineSpeed(
     agg: FloatAggregation!
   ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
   
@@ -140,7 +180,7 @@ extend type SignalAggregations {
   Current throttle position.
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehiclePowertrainCombustionEngineTPS(
+  powertrainCombustionEngineTPS(
     agg: FloatAggregation!
   ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
   
@@ -148,7 +188,7 @@ extend type SignalAggregations {
   Current available fuel in the fuel tank expressed in liters.
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehiclePowertrainFuelSystemAbsoluteLevel(
+  powertrainFuelSystemAbsoluteLevel(
     agg: FloatAggregation!
   ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
   
@@ -156,7 +196,7 @@ extend type SignalAggregations {
   High level information of fuel types supported
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehiclePowertrainFuelSystemSupportedFuelTypes(
+  powertrainFuelSystemSupportedFuelTypes(
     agg: StringAggregation!
   ):  [SignalString!] @requiresPrivilege(privileges: [VehicleNonLocationData])
   
@@ -164,7 +204,7 @@ extend type SignalAggregations {
   Remaining range in meters using all energy sources available in the vehicle.
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehiclePowertrainRange(
+  powertrainRange(
     agg: FloatAggregation!
   ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
   
@@ -172,7 +212,7 @@ extend type SignalAggregations {
   Target charge limit (state of charge) for battery.
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehiclePowertrainTractionBatteryChargingChargeLimit(
+  powertrainTractionBatteryChargingChargeLimit(
     agg: FloatAggregation!
   ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
   
@@ -180,7 +220,7 @@ extend type SignalAggregations {
   True if charging is ongoing. Charging is considered to be ongoing if energy is flowing from charger to vehicle.
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehiclePowertrainTractionBatteryChargingIsCharging(
+  powertrainTractionBatteryChargingIsCharging(
     agg: StringAggregation!
   ):  [SignalString!] @requiresPrivilege(privileges: [VehicleNonLocationData])
   
@@ -188,7 +228,7 @@ extend type SignalAggregations {
   Gross capacity of the battery.
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehiclePowertrainTractionBatteryGrossCapacity(
+  powertrainTractionBatteryGrossCapacity(
     agg: FloatAggregation!
   ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
   
@@ -196,7 +236,7 @@ extend type SignalAggregations {
   Physical state of charge of the high voltage battery, relative to net capacity. This is not necessarily the state of charge being displayed to the customer.
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehiclePowertrainTractionBatteryStateOfChargeCurrent(
+  powertrainTractionBatteryStateOfChargeCurrent(
     agg: FloatAggregation!
   ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
   
@@ -204,7 +244,7 @@ extend type SignalAggregations {
   Odometer reading, total distance travelled during the lifetime of the transmission.
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehiclePowertrainTransmissionTravelledDistance(
+  powertrainTransmissionTravelledDistance(
     agg: FloatAggregation!
   ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
   
@@ -212,7 +252,7 @@ extend type SignalAggregations {
   Defines the powertrain type of the vehicle.
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehiclePowertrainType(
+  powertrainType(
     agg: StringAggregation!
   ):  [SignalString!] @requiresPrivilege(privileges: [VehicleNonLocationData])
   
@@ -220,7 +260,7 @@ extend type SignalAggregations {
   Vehicle speed.
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehicleSpeed(
+  speed(
     agg: FloatAggregation!
   ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
   
@@ -228,7 +268,7 @@ extend type SignalAggregations {
   Vehicle brand or manufacturer.
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehicleVehicleIdentificationBrand(
+  vehicleIdentificationBrand(
     agg: StringAggregation!
   ):  [SignalString!] @requiresPrivilege(privileges: [VehicleNonLocationData])
   
@@ -236,7 +276,7 @@ extend type SignalAggregations {
   Vehicle model.
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehicleVehicleIdentificationModel(
+  vehicleIdentificationModel(
     agg: StringAggregation!
   ):  [SignalString!] @requiresPrivilege(privileges: [VehicleNonLocationData])
   
@@ -244,7 +284,7 @@ extend type SignalAggregations {
   Model year of the vehicle.
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehicleVehicleIdentificationYear(
+  vehicleIdentificationYear(
     agg: FloatAggregation!
   ):  [SignalFloat!] @requiresPrivilege(privileges: [VehicleNonLocationData])
   
@@ -255,187 +295,217 @@ extend type SignalCollection {
   Tire pressure in kilo-Pascal.
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehicleChassisAxleRow1WheelLeftTirePressure: SignalFloat @requiresPrivilege(privileges: [VehicleNonLocationData])
+  chassisAxleRow1WheelLeftTirePressure: SignalFloat @requiresPrivilege(privileges: [VehicleNonLocationData])
   
   """
   Tire pressure in kilo-Pascal.
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehicleChassisAxleRow1WheelRightTirePressure: SignalFloat @requiresPrivilege(privileges: [VehicleNonLocationData])
+  chassisAxleRow1WheelRightTirePressure: SignalFloat @requiresPrivilege(privileges: [VehicleNonLocationData])
   
   """
   Tire pressure in kilo-Pascal.
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehicleChassisAxleRow2WheelLeftTirePressure: SignalFloat @requiresPrivilege(privileges: [VehicleNonLocationData])
+  chassisAxleRow2WheelLeftTirePressure: SignalFloat @requiresPrivilege(privileges: [VehicleNonLocationData])
   
   """
   Tire pressure in kilo-Pascal.
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehicleChassisAxleRow2WheelRightTirePressure: SignalFloat @requiresPrivilege(privileges: [VehicleNonLocationData])
+  chassisAxleRow2WheelRightTirePressure: SignalFloat @requiresPrivilege(privileges: [VehicleNonLocationData])
   
   """
   Current altitude relative to WGS 84 reference ellipsoid, as measured at the position of GNSS receiver antenna.
   Required Privlieges: [VehicleAllTimeLocation]
   """
-  vehicleCurrentLocationAltitude: SignalFloat @requiresPrivilege(privileges: [VehicleAllTimeLocation])
+  currentLocationAltitude: SignalFloat @requiresPrivilege(privileges: [VehicleAllTimeLocation])
   
   """
   Current latitude of vehicle in WGS 84 geodetic coordinates, as measured at the position of GNSS receiver antenna.
   Required Privlieges: [VehicleAllTimeLocation]
   """
-  vehicleCurrentLocationLatitude: SignalFloat @requiresPrivilege(privileges: [VehicleAllTimeLocation])
+  currentLocationLatitude: SignalFloat @requiresPrivilege(privileges: [VehicleAllTimeLocation])
   
   """
   Current longitude of vehicle in WGS 84 geodetic coordinates, as measured at the position of GNSS receiver antenna.
   Required Privlieges: [VehicleAllTimeLocation]
   """
-  vehicleCurrentLocationLongitude: SignalFloat @requiresPrivilege(privileges: [VehicleAllTimeLocation])
+  currentLocationLongitude: SignalFloat @requiresPrivilege(privileges: [VehicleAllTimeLocation])
   
   """
   Timestamp from GNSS system for current location, formatted according to ISO 8601 with UTC time zone.
   Required Privlieges: [VehicleAllTimeLocation]
   """
-  vehicleCurrentLocationTimestamp: SignalString @requiresPrivilege(privileges: [VehicleAllTimeLocation])
+  currentLocationTimestamp: SignalString @requiresPrivilege(privileges: [VehicleAllTimeLocation])
+  
+  """
+  Horizontal dilution of precision of GPS
+  Required Privlieges: [VehicleNonLocationData]
+  """
+  dIMOAftermarketHDOP: SignalFloat @requiresPrivilege(privileges: [VehicleNonLocationData])
+  
+  """
+  Number of sync satellites for GPS
+  Required Privlieges: [VehicleNonLocationData]
+  """
+  dIMOAftermarketNSAT: SignalFloat @requiresPrivilege(privileges: [VehicleNonLocationData])
+  
+  """
+  Service Set Ientifier for the wifi.
+  Required Privlieges: [VehicleNonLocationData]
+  """
+  dIMOAftermarketSSID: SignalString @requiresPrivilege(privileges: [VehicleNonLocationData])
+  
+  """
+  Indicate the current wpa state for the devices wifi
+  Required Privlieges: [VehicleNonLocationData]
+  """
+  dIMOAftermarketWPAState: SignalString @requiresPrivilege(privileges: [VehicleNonLocationData])
   
   """
   Air temperature outside the vehicle.
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehicleExteriorAirTemperature: SignalFloat @requiresPrivilege(privileges: [VehicleNonLocationData])
+  exteriorAirTemperature: SignalFloat @requiresPrivilege(privileges: [VehicleNonLocationData])
   
   """
   Current Voltage of the low voltage battery.
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehicleLowVoltageBatteryCurrentVoltage: SignalFloat @requiresPrivilege(privileges: [VehicleNonLocationData])
+  lowVoltageBatteryCurrentVoltage: SignalFloat @requiresPrivilege(privileges: [VehicleNonLocationData])
   
   """
   PID 33 - Barometric pressure
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehicleOBDBarometricPressure: SignalFloat @requiresPrivilege(privileges: [VehicleNonLocationData])
+  oBDBarometricPressure: SignalFloat @requiresPrivilege(privileges: [VehicleNonLocationData])
   
   """
   PID 04 - Engine load in percent - 0 = no load, 100 = full load
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehicleOBDEngineLoad: SignalFloat @requiresPrivilege(privileges: [VehicleNonLocationData])
+  oBDEngineLoad: SignalFloat @requiresPrivilege(privileges: [VehicleNonLocationData])
   
   """
   PID 0F - Intake temperature
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehicleOBDIntakeTemp: SignalFloat @requiresPrivilege(privileges: [VehicleNonLocationData])
+  oBDIntakeTemp: SignalFloat @requiresPrivilege(privileges: [VehicleNonLocationData])
   
   """
   PID 1F - Engine run time
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehicleOBDRunTime: SignalFloat @requiresPrivilege(privileges: [VehicleNonLocationData])
+  oBDRunTime: SignalFloat @requiresPrivilege(privileges: [VehicleNonLocationData])
   
   """
   Engine coolant temperature.
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehiclePowertrainCombustionEngineECT: SignalFloat @requiresPrivilege(privileges: [VehicleNonLocationData])
+  powertrainCombustionEngineECT: SignalFloat @requiresPrivilege(privileges: [VehicleNonLocationData])
   
   """
   Engine oil level.
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehiclePowertrainCombustionEngineEngineOilLevel: SignalString @requiresPrivilege(privileges: [VehicleNonLocationData])
+  powertrainCombustionEngineEngineOilLevel: SignalString @requiresPrivilege(privileges: [VehicleNonLocationData])
+  
+  """
+  Grams of air drawn into engine per second.
+  Required Privlieges: [VehicleNonLocationData]
+  """
+  powertrainCombustionEngineMAF: SignalFloat @requiresPrivilege(privileges: [VehicleNonLocationData])
   
   """
   Engine speed measured as rotations per minute.
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehiclePowertrainCombustionEngineSpeed: SignalFloat @requiresPrivilege(privileges: [VehicleNonLocationData])
+  powertrainCombustionEngineSpeed: SignalFloat @requiresPrivilege(privileges: [VehicleNonLocationData])
   
   """
   Current throttle position.
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehiclePowertrainCombustionEngineTPS: SignalFloat @requiresPrivilege(privileges: [VehicleNonLocationData])
+  powertrainCombustionEngineTPS: SignalFloat @requiresPrivilege(privileges: [VehicleNonLocationData])
   
   """
   Current available fuel in the fuel tank expressed in liters.
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehiclePowertrainFuelSystemAbsoluteLevel: SignalFloat @requiresPrivilege(privileges: [VehicleNonLocationData])
+  powertrainFuelSystemAbsoluteLevel: SignalFloat @requiresPrivilege(privileges: [VehicleNonLocationData])
   
   """
   High level information of fuel types supported
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehiclePowertrainFuelSystemSupportedFuelTypes: SignalString @requiresPrivilege(privileges: [VehicleNonLocationData])
+  powertrainFuelSystemSupportedFuelTypes: SignalString @requiresPrivilege(privileges: [VehicleNonLocationData])
   
   """
   Remaining range in meters using all energy sources available in the vehicle.
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehiclePowertrainRange: SignalFloat @requiresPrivilege(privileges: [VehicleNonLocationData])
+  powertrainRange: SignalFloat @requiresPrivilege(privileges: [VehicleNonLocationData])
   
   """
   Target charge limit (state of charge) for battery.
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehiclePowertrainTractionBatteryChargingChargeLimit: SignalFloat @requiresPrivilege(privileges: [VehicleNonLocationData])
+  powertrainTractionBatteryChargingChargeLimit: SignalFloat @requiresPrivilege(privileges: [VehicleNonLocationData])
   
   """
   True if charging is ongoing. Charging is considered to be ongoing if energy is flowing from charger to vehicle.
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehiclePowertrainTractionBatteryChargingIsCharging: SignalString @requiresPrivilege(privileges: [VehicleNonLocationData])
+  powertrainTractionBatteryChargingIsCharging: SignalString @requiresPrivilege(privileges: [VehicleNonLocationData])
   
   """
   Gross capacity of the battery.
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehiclePowertrainTractionBatteryGrossCapacity: SignalFloat @requiresPrivilege(privileges: [VehicleNonLocationData])
+  powertrainTractionBatteryGrossCapacity: SignalFloat @requiresPrivilege(privileges: [VehicleNonLocationData])
   
   """
   Physical state of charge of the high voltage battery, relative to net capacity. This is not necessarily the state of charge being displayed to the customer.
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehiclePowertrainTractionBatteryStateOfChargeCurrent: SignalFloat @requiresPrivilege(privileges: [VehicleNonLocationData])
+  powertrainTractionBatteryStateOfChargeCurrent: SignalFloat @requiresPrivilege(privileges: [VehicleNonLocationData])
   
   """
   Odometer reading, total distance travelled during the lifetime of the transmission.
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehiclePowertrainTransmissionTravelledDistance: SignalFloat @requiresPrivilege(privileges: [VehicleNonLocationData])
+  powertrainTransmissionTravelledDistance: SignalFloat @requiresPrivilege(privileges: [VehicleNonLocationData])
   
   """
   Defines the powertrain type of the vehicle.
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehiclePowertrainType: SignalString @requiresPrivilege(privileges: [VehicleNonLocationData])
+  powertrainType: SignalString @requiresPrivilege(privileges: [VehicleNonLocationData])
   
   """
   Vehicle speed.
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehicleSpeed: SignalFloat @requiresPrivilege(privileges: [VehicleNonLocationData])
+  speed: SignalFloat @requiresPrivilege(privileges: [VehicleNonLocationData])
   
   """
   Vehicle brand or manufacturer.
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehicleVehicleIdentificationBrand: SignalString @requiresPrivilege(privileges: [VehicleNonLocationData])
+  vehicleIdentificationBrand: SignalString @requiresPrivilege(privileges: [VehicleNonLocationData])
   
   """
   Vehicle model.
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehicleVehicleIdentificationModel: SignalString @requiresPrivilege(privileges: [VehicleNonLocationData])
+  vehicleIdentificationModel: SignalString @requiresPrivilege(privileges: [VehicleNonLocationData])
   
   """
   Model year of the vehicle.
   Required Privlieges: [VehicleNonLocationData]
   """
-  vehicleVehicleIdentificationYear: SignalFloat @requiresPrivilege(privileges: [VehicleNonLocationData])
+  vehicleIdentificationYear: SignalFloat @requiresPrivilege(privileges: [VehicleNonLocationData])
   
 }
 
