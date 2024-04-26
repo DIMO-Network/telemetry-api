@@ -40,7 +40,7 @@ require (
 	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/distribution/reference v0.5.0 // indirect
-	github.com/docker/docker v26.0.1+incompatible // indirect
+	github.com/docker/docker v26.0.2+incompatible // indirect
 	github.com/docker/go-units v0.5.0 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/go-faster/city v1.0.1 // indirect
