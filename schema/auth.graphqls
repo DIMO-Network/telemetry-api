@@ -5,11 +5,11 @@ directive @requiresPrivilege(
 ) on FIELD_DEFINITION | OBJECT | INTERFACE | SCALAR | ENUM
 
 enum Privilege {
-  VehicleNonLocationData
-  VehicleCommands
-  VehicleCurrentLocation
-  VehicleAllTimeLocation
-  VehicleVinCredential
+  VEHICLE_NON_LOCATION_DATA
+  VEHICLE_COMMANDS
+  VEHICLE_CURRENT_LOCATION
+  VEHICLE_ALL_TIME_LOCATION
+  VEHICLE_VIN_CREDENTIAL
 }
 
 directive @requiresToken on FIELD_DEFINITION

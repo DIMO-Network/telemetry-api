@@ -48,11 +48,11 @@ type StringAggregation struct {
 type FloatAggregationType string
 
 const (
-	FloatAggregationTypeAvg  FloatAggregationType = "avg"
-	FloatAggregationTypeMed  FloatAggregationType = "med"
-	FloatAggregationTypeMax  FloatAggregationType = "max"
-	FloatAggregationTypeMin  FloatAggregationType = "min"
-	FloatAggregationTypeRand FloatAggregationType = "rand"
+	FloatAggregationTypeAvg  FloatAggregationType = "AVG"
+	FloatAggregationTypeMed  FloatAggregationType = "MED"
+	FloatAggregationTypeMax  FloatAggregationType = "MAX"
+	FloatAggregationTypeMin  FloatAggregationType = "MIN"
+	FloatAggregationTypeRand FloatAggregationType = "RAND"
 )
 
 var AllFloatAggregationType = []FloatAggregationType{
@@ -95,11 +95,11 @@ func (e FloatAggregationType) MarshalGQL(w io.Writer) {
 type Privilege string
 
 const (
-	PrivilegeVehicleNonLocationData Privilege = "VehicleNonLocationData"
-	PrivilegeVehicleCommands        Privilege = "VehicleCommands"
-	PrivilegeVehicleCurrentLocation Privilege = "VehicleCurrentLocation"
-	PrivilegeVehicleAllTimeLocation Privilege = "VehicleAllTimeLocation"
-	PrivilegeVehicleVinCredential   Privilege = "VehicleVinCredential"
+	PrivilegeVehicleNonLocationData Privilege = "VEHICLE_NON_LOCATION_DATA"
+	PrivilegeVehicleCommands        Privilege = "VEHICLE_COMMANDS"
+	PrivilegeVehicleCurrentLocation Privilege = "VEHICLE_CURRENT_LOCATION"
+	PrivilegeVehicleAllTimeLocation Privilege = "VEHICLE_ALL_TIME_LOCATION"
+	PrivilegeVehicleVinCredential   Privilege = "VEHICLE_VIN_CREDENTIAL"
 )
 
 var AllPrivilege = []Privilege{
@@ -143,11 +143,11 @@ type StringAggregationType string
 
 const (
 	// Randomly select a value from the group.
-	StringAggregationTypeRand StringAggregationType = "rand"
+	StringAggregationTypeRand StringAggregationType = "RAND"
 	// Select the most frequently occurring value in the group.
-	StringAggregationTypeTop StringAggregationType = "top"
+	StringAggregationTypeTop StringAggregationType = "TOP"
 	// Return a list of unique values in the group.
-	StringAggregationTypeUnique StringAggregationType = "unique"
+	StringAggregationTypeUnique StringAggregationType = "UNIQUE"
 )
 
 var AllStringAggregationType = []StringAggregationType{
