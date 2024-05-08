@@ -5,7 +5,7 @@ go 1.22.0
 require (
 	github.com/99designs/gqlgen v0.17.45
 	github.com/ClickHouse/clickhouse-go/v2 v2.23.2
-	github.com/DIMO-Network/model-garage v0.1.2
+	github.com/DIMO-Network/model-garage v0.1.3-0.20240508183923-cb0c47352026
 	github.com/DIMO-Network/shared v0.10.12
 	github.com/auth0/go-jwt-middleware/v2 v2.2.1
 	github.com/docker/go-connections v0.5.0
