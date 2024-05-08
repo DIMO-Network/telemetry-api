@@ -246,24 +246,24 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	_ = ec
 	switch typeName + "." + field {
 
-	case "Query.Signals":
+	case "Query.signals":
 		if e.complexity.Query.Signals == nil {
 			break
 		}
 
-		args, err := ec.field_Query_Signals_args(context.TODO(), rawArgs)
+		args, err := ec.field_Query_signals_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
 		return e.complexity.Query.Signals(childComplexity, args["tokenID"].(int), args["from"].(time.Time), args["to"].(time.Time)), true
 
-	case "Query.SignalsLatest":
+	case "Query.signalsLatest":
 		if e.complexity.Query.SignalsLatest == nil {
 			break
 		}
 
-		args, err := ec.field_Query_SignalsLatest_args(context.TODO(), rawArgs)
+		args, err := ec.field_Query_signalsLatest_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -1095,11 +1095,11 @@ directive @requiresPrivilege(
 ) on FIELD_DEFINITION | OBJECT | INTERFACE | SCALAR | ENUM
 
 enum Privilege {
-  VehicleNonLocationData
-  VehicleCommands
-  VehicleCurrentLocation
-  VehicleAllTimeLocation
-  VehicleVinCredential
+  VEHICLE_NON_LOCATION_DATA
+  VEHICLE_COMMANDS
+  VEHICLE_CURRENT_LOCATION
+  VEHICLE_ALL_TIME_LOCATION
+  VEHICLE_VIN_CREDENTIAL
 }
 
 directive @requiresToken on FIELD_DEFINITION
@@ -1114,9 +1114,9 @@ scalar Time
 The root query type for the GraphQL schema.
 """
 type Query {
-  Signals(tokenID: Int!, from: Time!, to: Time!): SignalAggregations
+  signals(tokenID: Int!, from: Time!, to: Time!): SignalAggregations
     @requiresToken
-  SignalsLatest(tokenID: Int!): SignalCollection @requiresToken
+  signalsLatest(tokenID: Int!): SignalCollection @requiresToken
 }
 
 type SignalAggregations {
@@ -1156,26 +1156,26 @@ input StringAggregation {
 }
 
 enum FloatAggregationType {
-  avg
-  med
-  max
-  min
-  rand
+  AVG
+  MED
+  MAX
+  MIN
+  RAND
 }
 
 enum StringAggregationType {
   """
   Randomly select a value from the group.
   """
-  rand
+  RAND
   """
   Select the most frequently occurring value in the group.
   """
-  top
+  TOP
   """
   Return a list of unique values in the group.
   """
-  unique
+  UNIQUE
 }
 type SignalFloat {
   """
@@ -1735,7 +1735,22 @@ func (ec *executionContext) dir_requiresPrivilege_args(ctx context.Context, rawA
 	return args, nil
 }
 
-func (ec *executionContext) field_Query_SignalsLatest_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["name"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["name"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_signalsLatest_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 int
@@ -1750,7 +1765,7 @@ func (ec *executionContext) field_Query_SignalsLatest_args(ctx context.Context, 
 	return args, nil
 }
 
-func (ec *executionContext) field_Query_Signals_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Query_signals_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 int
@@ -1780,21 +1795,6 @@ func (ec *executionContext) field_Query_Signals_args(ctx context.Context, rawArg
 		}
 	}
 	args["to"] = arg2
-	return args, nil
-}
-
-func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["name"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["name"] = arg0
 	return args, nil
 }
 
@@ -2376,8 +2376,8 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 
 // region    **************************** field.gotpl *****************************
 
-func (ec *executionContext) _Query_Signals(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Query_Signals(ctx, field)
+func (ec *executionContext) _Query_signals(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_signals(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -2424,7 +2424,7 @@ func (ec *executionContext) _Query_Signals(ctx context.Context, field graphql.Co
 	return ec.marshalOSignalAggregations2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalsWithID(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Query_Signals(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Query_signals(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Query",
 		Field:      field,
@@ -2517,15 +2517,15 @@ func (ec *executionContext) fieldContext_Query_Signals(ctx context.Context, fiel
 		}
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Query_Signals_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+	if fc.Args, err = ec.field_Query_signals_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
 	return fc, nil
 }
 
-func (ec *executionContext) _Query_SignalsLatest(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Query_SignalsLatest(ctx, field)
+func (ec *executionContext) _Query_signalsLatest(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_signalsLatest(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -2572,7 +2572,7 @@ func (ec *executionContext) _Query_SignalsLatest(ctx context.Context, field grap
 	return ec.marshalOSignalCollection2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalsWithID(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Query_SignalsLatest(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Query_signalsLatest(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Query",
 		Field:      field,
@@ -2665,7 +2665,7 @@ func (ec *executionContext) fieldContext_Query_SignalsLatest(ctx context.Context
 		}
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Query_SignalsLatest_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+	if fc.Args, err = ec.field_Query_signalsLatest_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -10429,7 +10429,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Query")
-		case "Signals":
+		case "signals":
 			field := field
 
 			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
@@ -10438,7 +10438,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_Signals(ctx, field)
+				res = ec._Query_signals(ctx, field)
 				return res
 			}
 
@@ -10448,7 +10448,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
-		case "SignalsLatest":
+		case "signalsLatest":
 			field := field
 
 			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
@@ -10457,7 +10457,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_SignalsLatest(ctx, field)
+				res = ec._Query_signalsLatest(ctx, field)
 				return res
 			}
 

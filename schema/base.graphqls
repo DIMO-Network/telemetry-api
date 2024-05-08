@@ -8,9 +8,9 @@ scalar Time
 The root query type for the GraphQL schema.
 """
 type Query {
-  Signals(tokenID: Int!, from: Time!, to: Time!): SignalAggregations
+  signals(tokenID: Int!, from: Time!, to: Time!): SignalAggregations
     @requiresToken
-  SignalsLatest(tokenID: Int!): SignalCollection @requiresToken
+  signalsLatest(tokenID: Int!): SignalCollection @requiresToken
 }
 
 type SignalAggregations {
@@ -50,26 +50,26 @@ input StringAggregation {
 }
 
 enum FloatAggregationType {
-  avg
-  med
-  max
-  min
-  rand
+  AVG
+  MED
+  MAX
+  MIN
+  RAND
 }
 
 enum StringAggregationType {
   """
   Randomly select a value from the group.
   """
-  rand
+  RAND
   """
   Select the most frequently occurring value in the group.
   """
-  top
+  TOP
   """
   Return a list of unique values in the group.
   """
-  unique
+  UNIQUE
 }
 type SignalFloat {
   """
