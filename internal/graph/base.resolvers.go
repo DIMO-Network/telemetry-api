@@ -6,19 +6,25 @@ package graph
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 )
 
 // Signals is the resolver for the Signals field.
-func (r *queryResolver) Signals(ctx context.Context, tokenID int, from time.Time, to time.Time) (*model.SignalsWithID, error) {
+func (r *queryResolver) Signals(ctx context.Context, tokenID int, from time.Time, to time.Time, filter *model.SignalFilter) (*model.SignalsWithID, error) {
 	return &model.SignalsWithID{TokenID: uint32(tokenID)}, nil
 }
 
 // SignalsLatest is the resolver for the SignalsLatest field.
-func (r *queryResolver) SignalsLatest(ctx context.Context, tokenID int) (*model.SignalsWithID, error) {
+func (r *queryResolver) SignalsLatest(ctx context.Context, tokenID int, filter *model.SignalFilter) (*model.SignalsWithID, error) {
 	return &model.SignalsWithID{TokenID: uint32(tokenID)}, nil
+}
+
+// LastSeen is the resolver for the lastSeen field.
+func (r *signalCollectionResolver) LastSeen(ctx context.Context, obj *model.SignalsWithID) (*time.Time, error) {
+	panic(fmt.Errorf("not implemented: LastSeen - lastSeen"))
 }
 
 // Query returns QueryResolver implementation.

@@ -19,7 +19,10 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
-const day = time.Hour * 24
+const (
+	day        = time.Hour * 24
+	dataPoints = 10
+)
 
 type RepositoryTestSuite struct {
 	suite.Suite
@@ -28,7 +31,7 @@ type RepositoryTestSuite struct {
 	container     *clickhouseinfra.Container
 }
 
-func (r *RepositoryTestSuite) SetupTest() {
+func (r *RepositoryTestSuite) SetupSuite() {
 	ctx := context.Background()
 	var err error
 	r.container, err = clickhouseinfra.CreateClickHouseContainer(ctx, "", "")
@@ -59,9 +62,10 @@ func (r *RepositoryTestSuite) SetupTest() {
 	r.dataStartTime = time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
 	r.insertTestData()
 }
-func (r *RepositoryTestSuite) TearDownTest() {
+func (r *RepositoryTestSuite) TearDownSuite() {
 	r.container.Terminate(context.Background())
 }
+
 func (r *RepositoryTestSuite) TestGetSignalFloats() {
 	endTs := r.dataStartTime.Add(time.Hour * 24 * 14)
 	ctx := context.Background()
@@ -91,11 +95,36 @@ func (r *RepositoryTestSuite) TestGetSignalFloats() {
 				},
 			},
 		},
+		{
+			name: "max smartcar",
+			sigArgs: repositories.FloatSignalArgs{
+				SignalArgs: repositories.SignalArgs{
+					TokenID: 1,
+					FromTS:  r.dataStartTime,
+					ToTS:    endTs,
+					Name:    vss.FieldSpeed,
+					Filter: &model.SignalFilter{
+						Source: ref("autopi"),
+					},
+				},
+				Agg: model.FloatAggregation{
+					Type:     model.FloatAggregationTypeMax,
+					Interval: day.String(),
+				},
+			},
+
+			expected: []model.SignalFloat{
+				{
+					Timestamp: ref(r.dataStartTime),
+					Value:     ref(7.0),
+				},
+			},
+		},
 	}
 	for _, tc := range testCases {
 		r.Run(tc.name, func() {
 			// Call the GetSignalFloats method
-			result, err := r.repo.GetSignalFloats(ctx, tc.sigArgs)
+			result, err := r.repo.GetSignalFloats(ctx, &tc.sigArgs)
 			r.Require().NoError(err)
 
 			for i, sig := range result {
@@ -105,46 +134,6 @@ func (r *RepositoryTestSuite) TestGetSignalFloats() {
 	}
 }
 
-func (r *RepositoryTestSuite) insertTestData() {
-	ctx := context.Background()
-	conn, err := clickhouseinfra.GetClickHouseAsConn(r.container.ClickHouseContainer)
-	r.Require().NoError(err, "Failed to get clickhouse connection")
-	testSignal := []vss.Signal{}
-	for i := range 10 {
-		sig := vss.Signal{
-			Name:        vss.FieldSpeed,
-			Timestamp:   r.dataStartTime.Add(time.Second * time.Duration(30*i)),
-			TokenID:     1,
-			ValueNumber: float64(i),
-		}
-		testSignal = append(testSignal, sig)
-	}
-	for i := range 10 {
-		sig := vss.Signal{
-			Name:        vss.FieldPowertrainType,
-			Timestamp:   r.dataStartTime.Add(time.Second * time.Duration(30*i)),
-			TokenID:     1,
-			ValueString: fmt.Sprintf("value%d", i%3+1),
-		}
-		testSignal = append(testSignal, sig)
-	}
-
-	batch, err := conn.PrepareBatch(ctx, fmt.Sprintf("INSERT INTO %s", vss.TableName))
-	r.Require().NoError(err, "Failed to prepare batch")
-	for _, sig := range testSignal {
-		err := batch.AppendStruct(&sig)
-		r.Require().NoError(err, "Failed to append struct")
-	}
-	err = batch.Send()
-	r.Require().NoError(err, "Failed to send batch")
-}
-func TestRepositorySuite(t *testing.T) {
-	suite.Run(t, new(RepositoryTestSuite))
-}
-
-func ref[T any](t T) *T {
-	return &t
-}
 func (r *RepositoryTestSuite) TestGetSignalString() {
 	ctx := context.Background()
 	testCases := []struct {
@@ -173,12 +162,36 @@ func (r *RepositoryTestSuite) TestGetSignalString() {
 				},
 			},
 		},
+		{
+			name: "Top autopi",
+			sigArgs: repositories.StringSignalArgs{
+				SignalArgs: repositories.SignalArgs{
+					TokenID: 1,
+					FromTS:  r.dataStartTime,
+					ToTS:    r.dataStartTime.Add(time.Hour),
+					Name:    vss.FieldPowertrainType,
+					Filter: &model.SignalFilter{
+						Source: ref("autopi"),
+					},
+				},
+				Agg: model.StringAggregation{
+					Type:     model.StringAggregationTypeTop,
+					Interval: day.String(),
+				},
+			},
+			expected: []*model.SignalString{
+				{
+					Timestamp: ref(r.dataStartTime),
+					Value:     ref("value2"),
+				},
+			},
+		},
 	}
 
 	for _, tc := range testCases {
 		r.Run(tc.name, func() {
 			// Call the GetSignalString method
-			result, err := r.repo.GetSignalString(ctx, tc.sigArgs)
+			result, err := r.repo.GetSignalString(ctx, &tc.sigArgs)
 			r.Require().NoError(err)
 
 			for i, sig := range result {
@@ -193,4 +206,169 @@ func (r *RepositoryTestSuite) TestGetSignalString() {
 			}
 		})
 	}
+}
+func (r *RepositoryTestSuite) TestGetLatestSignalFloat() {
+	ctx := context.Background()
+	testCases := []struct {
+		name     string
+		sigArgs  repositories.SignalArgs
+		expected *model.SignalFloat
+	}{
+		{
+			name: "latest",
+			sigArgs: repositories.SignalArgs{
+				TokenID: 1,
+				Name:    vss.FieldSpeed,
+			},
+			expected: &model.SignalFloat{
+				Timestamp: ref(r.dataStartTime.Add(time.Second * time.Duration(30*(dataPoints-1)))),
+				Value:     ref(9.0),
+			},
+		},
+		{
+			name: "latest smartcar",
+			sigArgs: repositories.SignalArgs{
+				TokenID: 1,
+				Name:    vss.FieldSpeed,
+				Filter: &model.SignalFilter{
+					Source: ref("smartcar"),
+				},
+			},
+			expected: &model.SignalFloat{
+				Timestamp: ref(r.dataStartTime.Add(time.Second * time.Duration(30*(dataPoints-2)))),
+				Value:     ref(8.0),
+			},
+		},
+	}
+	for _, tc := range testCases {
+		r.Run(tc.name, func() {
+			// Call the GetLatestSignalFloat method
+			result, err := r.repo.GetLatestSignalFloat(ctx, &tc.sigArgs)
+			r.Require().NoError(err)
+			r.Require().Equal(tc.expected, result)
+		})
+	}
+}
+
+func (r *RepositoryTestSuite) TestGetLatestSignalString() {
+	ctx := context.Background()
+	testCases := []struct {
+		name     string
+		sigArgs  repositories.SignalArgs
+		expected *model.SignalString
+	}{
+		{
+			name: "latest",
+			sigArgs: repositories.SignalArgs{
+				TokenID: 1,
+				Name:    vss.FieldPowertrainType,
+			},
+			expected: &model.SignalString{
+				Timestamp: ref(r.dataStartTime.Add(time.Second * time.Duration(30*(dataPoints-1)))),
+				Value:     ref("value1"),
+			},
+		},
+		{
+			name: "latest smartcar",
+			sigArgs: repositories.SignalArgs{
+				TokenID: 1,
+				Name:    vss.FieldPowertrainType,
+				Filter: &model.SignalFilter{
+					Source: ref("smartcar"),
+				},
+			},
+			expected: &model.SignalString{
+				Timestamp: ref(r.dataStartTime.Add(time.Second * time.Duration(30*(dataPoints-2)))),
+				Value:     ref("value3"),
+			},
+		},
+	}
+	for _, tc := range testCases {
+		r.Run(tc.name, func() {
+			// Call the GetLatestSignalString method
+			result, err := r.repo.GetLatestSignalString(ctx, &tc.sigArgs)
+			r.Require().NoError(err)
+			r.Require().Equal(tc.expected, result)
+		})
+	}
+}
+
+func (r *RepositoryTestSuite) TestLastSeen() {
+	ctx := context.Background()
+	testCases := []struct {
+		name     string
+		sigArgs  repositories.SignalArgs
+		expected time.Time
+	}{
+		{
+			name:     "last seen",
+			expected: r.dataStartTime.Add(time.Second * time.Duration(30*(dataPoints-1))),
+			sigArgs: repositories.SignalArgs{
+				TokenID: 1,
+			},
+		},
+		{
+			name:     "last seen smartcar",
+			expected: r.dataStartTime.Add(time.Second * time.Duration(30*(dataPoints-2))),
+			sigArgs: repositories.SignalArgs{
+				TokenID: 1,
+				Filter: &model.SignalFilter{
+					Source: ref("smartcar"),
+				},
+			},
+		},
+	}
+	for _, tc := range testCases {
+		r.Run(tc.name, func() {
+			// Call the LastSeen method
+			result, err := r.repo.GetLastSeen(ctx, &tc.sigArgs)
+			r.Require().NoError(err)
+			r.Require().Equal(tc.expected, result)
+		})
+	}
+
+}
+
+func (r *RepositoryTestSuite) insertTestData() {
+	ctx := context.Background()
+	conn, err := clickhouseinfra.GetClickHouseAsConn(r.container.ClickHouseContainer)
+	r.Require().NoError(err, "Failed to get clickhouse connection")
+	testSignal := []vss.Signal{}
+	var sources = []string{"dimo/integration/2ULfuC8U9dOqRshZBAi0lMM1Rrx", "dimo/integration/27qftVRWQYpVDcO5DltO5Ojbjxk", "dimo/integration/22N2xaPOq2WW2gAHBHd0Ikn4Zob"}
+	for i := range dataPoints {
+		sig := vss.Signal{
+			Name:        vss.FieldSpeed,
+			Timestamp:   r.dataStartTime.Add(time.Second * time.Duration(30*i)),
+			Source:      sources[i%3],
+			TokenID:     1,
+			ValueNumber: float64(i),
+		}
+		testSignal = append(testSignal, sig)
+	}
+	for i := range dataPoints {
+		sig := vss.Signal{
+			Name:        vss.FieldPowertrainType,
+			Timestamp:   r.dataStartTime.Add(time.Second * time.Duration(30*i)),
+			Source:      sources[i%3],
+			TokenID:     1,
+			ValueString: fmt.Sprintf("value%d", i%3+1),
+		}
+		testSignal = append(testSignal, sig)
+	}
+
+	batch, err := conn.PrepareBatch(ctx, fmt.Sprintf("INSERT INTO %s", vss.TableName))
+	r.Require().NoError(err, "Failed to prepare batch")
+	for _, sig := range testSignal {
+		err := batch.AppendStruct(&sig)
+		r.Require().NoError(err, "Failed to append struct")
+	}
+	err = batch.Send()
+	r.Require().NoError(err, "Failed to send batch")
+}
+func TestRepositorySuite(t *testing.T) {
+	suite.Run(t, new(RepositoryTestSuite))
+}
+
+func ref[T any](t T) *T {
+	return &t
 }

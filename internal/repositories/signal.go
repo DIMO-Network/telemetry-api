@@ -5,46 +5,21 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"slices"
 	"time"
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
+	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 )
 
-const signalQuery = `
-SELECT
-  %s as value, 
-  toStartOfInterval(Timestamp, toIntervalMillisecond(?)) as group_timestamp 
-FROM 
-  signal
-WHERE 
-  TokenID = ? 
-  AND Name = ?
-  AND Timestamp > ?
-  AND Timestamp < ?
-GROUP BY 
-  group_timestamp 
-ORDER BY 
-  group_timestamp ASC;
-`
-const latestSignalQuery = `
-SELECT
-  %s as value,
-  Timestamp
-FROM
-  signal
-WHERE
-  TokenID = ?
-  AND Name = ?
-ORDER BY
-  Timestamp DESC
-LIMIT 1;
-`
+var sourceValues = []string{"autopi", "macaron", "smartcar", "tesla"}
 
 // SignalArgs is the base arguments for querying signals.
 type SignalArgs struct {
 	FromTS  time.Time
 	ToTS    time.Time
+	Filter  *model.SignalFilter
 	Name    string
 	TokenID uint32
 }
@@ -61,54 +36,18 @@ type StringSignalArgs struct {
 	SignalArgs
 }
 
-func getFloatAggFunc(aggType model.FloatAggregationType) string {
-	var aggStr string
-	switch aggType {
-	case model.FloatAggregationTypeAvg:
-		aggStr = "avg(ValueNumber)"
-	case model.FloatAggregationTypeRand:
-		seed := time.Now().UnixMilli()
-		aggStr = fmt.Sprintf("groupArraySample(1, %d)(ValueNumber)[1]", seed)
-	case model.FloatAggregationTypeMin:
-		aggStr = "min(ValueNumber)"
-	case model.FloatAggregationTypeMax:
-		aggStr = "max(ValueNumber)"
-	case model.FloatAggregationTypeMed:
-		aggStr = "median(ValueNumber)"
-	default:
-		aggStr = "avg(ValueNumber)"
-	}
-	return fmt.Sprintf(signalQuery, aggStr)
-}
-
-func getStringAgg(aggType model.StringAggregationType) string {
-	var aggStr string
-	switch aggType {
-	case model.StringAggregationTypeRand:
-		seed := time.Now().UnixMilli()
-		aggStr = fmt.Sprintf("groupArraySample(1, %d)(ValueString)[1]", seed)
-	case model.StringAggregationTypeUnique:
-		aggStr = "arrayStringConcat(groupUniqArray(ValueString),',')"
-	case model.StringAggregationTypeTop:
-		aggStr = "topK(1, 10)(ValueString)"
-	default:
-		aggStr = "topK(1, 10)(ValueString)"
-	}
-	return fmt.Sprintf(signalQuery, aggStr)
-}
-
 // GetSignalFloats returns the float signals based on the provided arguments.
-func (r *Repository) GetSignalFloats(ctx context.Context, sigArgs FloatSignalArgs) ([]*model.SignalFloat, error) {
-	if err := validateSigArgs(sigArgs.SignalArgs); err != nil {
+func (r *Repository) GetSignalFloats(ctx context.Context, sigArgs *FloatSignalArgs) ([]*model.SignalFloat, error) {
+	if err := validateAggSigArgs(&sigArgs.SignalArgs); err != nil {
 		return nil, err
 	}
-	query := getFloatAggFunc(sigArgs.Agg.Type)
 	interval, err := getIntervalMS(sigArgs.Agg.Interval)
 	if err != nil {
 		graphql.AddError(ctx, err)
 		return nil, err
 	}
-	rows, err := r.conn.Query(ctx, query, interval, sigArgs.TokenID, sigArgs.Name, sigArgs.FromTS, sigArgs.ToTS)
+	stmt, args := getAggQuery(sigArgs.SignalArgs, interval, getFloatAggFunc(sigArgs.Agg.Type))
+	rows, err := r.conn.Query(ctx, stmt, args...)
 	if err != nil {
 		return nil, fmt.Errorf("failed querying clickhouse: %w", err)
 	}
@@ -127,17 +66,17 @@ func (r *Repository) GetSignalFloats(ctx context.Context, sigArgs FloatSignalArg
 }
 
 // GetSignalString returns the string signals based on the provided arguments.
-func (r *Repository) GetSignalString(ctx context.Context, sigArgs StringSignalArgs) ([]*model.SignalString, error) {
-	if err := validateSigArgs(sigArgs.SignalArgs); err != nil {
+func (r *Repository) GetSignalString(ctx context.Context, sigArgs *StringSignalArgs) ([]*model.SignalString, error) {
+	if err := validateAggSigArgs(&sigArgs.SignalArgs); err != nil {
 		return nil, err
 	}
-	query := getStringAgg(sigArgs.Agg.Type)
 	interval, err := getIntervalMS(sigArgs.Agg.Interval)
 	if err != nil {
 		graphql.AddError(ctx, err)
 		return nil, err
 	}
-	rows, err := r.conn.Query(ctx, query, interval, sigArgs.TokenID, sigArgs.Name, sigArgs.FromTS, sigArgs.ToTS)
+	stmt, args := getAggQuery(sigArgs.SignalArgs, interval, getStringAgg(sigArgs.Agg.Type))
+	rows, err := r.conn.Query(ctx, stmt, args...)
 	if err != nil {
 		return nil, fmt.Errorf("failed querying clickhouse: %w", err)
 	}
@@ -154,43 +93,67 @@ func (r *Repository) GetSignalString(ctx context.Context, sigArgs StringSignalAr
 	return signals, nil
 }
 
-// GetLatestSignalFloat returns the latest float signal based on the provided arguments.
-func (r *Repository) GetLatestSignalFloat(ctx context.Context, sigArgs SignalArgs) (*model.SignalFloat, error) {
-	query := fmt.Sprintf(latestSignalQuery, "ValueNumber")
-	row := r.conn.QueryRow(ctx, query, sigArgs.TokenID, sigArgs.Name)
-	if row.Err() != nil {
-		return nil, fmt.Errorf("failed querying clickhouse: %w", row.Err())
-	}
-	var signal model.SignalFloat
-	err := row.Scan(&signal.Value, &signal.Timestamp)
+// GetLastSeen returns the last seen timestamp of a token.
+func (r *Repository) GetLastSeen(ctx context.Context, sigArgs *SignalArgs) (time.Time, error) {
+	err := validateLastSeenSigArgs(sigArgs)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, nil
-		}
-		return nil, fmt.Errorf("failed scanning clickhouse rows: %w", err)
+		return time.Time{}, err
 	}
-	return &signal, nil
+	mods := []qm.QueryMod{
+		selectTimestamp(),
+		fromSignal(),
+		withTokenID(sigArgs.TokenID),
+		orderByTS(),
+		qm.Limit(1),
+	}
+	if sigArgs.Filter != nil && sigArgs.Filter.Source != nil {
+		mods = append(mods, withSource(*sigArgs.Filter.Source))
+	}
+	stmt, args := newQuery(mods...)
+	row := r.conn.QueryRow(ctx, stmt, args...)
+	if row.Err() != nil {
+		return time.Time{}, fmt.Errorf("failed querying clickhouse: %w", row.Err())
+	}
+	var timestamp time.Time
+	err = row.Scan(&timestamp)
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		return time.Time{}, fmt.Errorf("failed scanning clickhouse rows: %w", err)
+	}
+	return timestamp, nil
+}
+
+// GetLatestSignalFloat returns the latest float signal based on the provided arguments.
+func (r *Repository) GetLatestSignalFloat(ctx context.Context, sigArgs *SignalArgs) (*model.SignalFloat, error) {
+	var signal model.SignalFloat
+	err := r.getLatestSignal(ctx, sigArgs, FloatValueCol, &signal.Value, &signal.Timestamp)
+	return &signal, err
 }
 
 // GetLatestSignalString returns the latest string signal based on the provided arguments.
-func (r *Repository) GetLatestSignalString(ctx context.Context, sigArgs SignalArgs) (*model.SignalString, error) {
-	query := fmt.Sprintf(latestSignalQuery, "ValueString")
-	row := r.conn.QueryRow(ctx, query, sigArgs.TokenID, sigArgs.Name)
-	if row.Err() != nil {
-		return nil, fmt.Errorf("failed querying clickhouse: %w", row.Err())
-	}
+func (r *Repository) GetLatestSignalString(ctx context.Context, sigArgs *SignalArgs) (*model.SignalString, error) {
 	var signal model.SignalString
-	err := row.Scan(&signal.Value, &signal.Timestamp)
+	err := validateLastestSigArgs(sigArgs)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, nil
-		}
-		return nil, fmt.Errorf("failed scanning clickhouse rows: %w", err)
+		return nil, err
 	}
-	return &signal, nil
+	err = r.getLatestSignal(ctx, sigArgs, StringValueCol, &signal.Value, &signal.Timestamp)
+	return &signal, err
 }
 
-func validateSigArgs(args SignalArgs) error {
+func (r *Repository) getLatestSignal(ctx context.Context, sigArgs *SignalArgs, valueCol string, dest ...any) error {
+	stmt, args := getLatestQuery(valueCol, sigArgs)
+	row := r.conn.QueryRow(ctx, stmt, args...)
+	if row.Err() != nil {
+		return fmt.Errorf("failed querying clickhouse: %w", row.Err())
+	}
+	err := row.Scan(dest...)
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		return fmt.Errorf("failed scanning clickhouse rows: %w", err)
+	}
+	return nil
+}
+
+func validateAggSigArgs(args *SignalArgs) error {
 	if args.FromTS.IsZero() {
 		return fmt.Errorf("from timestamp is zero")
 	}
@@ -202,12 +165,31 @@ func validateSigArgs(args SignalArgs) error {
 	if args.ToTS.Sub(args.FromTS) > 14*24*time.Hour {
 		return fmt.Errorf("time range is greater than 2 weeks")
 	}
+	return validateLastestSigArgs(args)
+}
 
+func validateLastestSigArgs(args *SignalArgs) error {
+	if args.Name == "" {
+		return fmt.Errorf("name is empty")
+	}
+	return validateLastSeenSigArgs(args)
+}
+
+func validateLastSeenSigArgs(args *SignalArgs) error {
 	if args.TokenID == 0 {
 		return fmt.Errorf("token id is zero")
 	}
-	if args.Name == "" {
-		return fmt.Errorf("name is empty")
+
+	return validateFilter(args.Filter)
+}
+
+func validateFilter(filter *model.SignalFilter) error {
+	if filter == nil {
+		return nil
+	}
+	// if we move to storing the device address as source we can remove this check.
+	if filter.Source != nil && !slices.Contains(sourceValues, *filter.Source) {
+		return fmt.Errorf("invalid source '%s', expected one of %v", *filter.Source, sourceValues)
 	}
 	return nil
 }

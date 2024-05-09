@@ -19,31 +19,31 @@ type Resolver struct {
 	*repositories.Repository
 }
 
-func getFloatArgs(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) (repositories.FloatSignalArgs, error) {
+func getFloatArgs(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) (*repositories.FloatSignalArgs, error) {
 	args, err := getSignalArgs(ctx, obj)
 	if err != nil {
-		return repositories.FloatSignalArgs{}, err
+		return nil, err
 	}
-	return repositories.FloatSignalArgs{
+	return &repositories.FloatSignalArgs{
 		Agg:        agg,
-		SignalArgs: args,
+		SignalArgs: *args,
 	}, nil
 }
 
-func getStringArgs(ctx context.Context, obj *model.SignalsWithID, agg model.StringAggregation) (repositories.StringSignalArgs, error) {
+func getStringArgs(ctx context.Context, obj *model.SignalsWithID, agg model.StringAggregation) (*repositories.StringSignalArgs, error) {
 	args, err := getSignalArgs(ctx, obj)
 	if err != nil {
-		return repositories.StringSignalArgs{}, err
+		return nil, err
 	}
-	return repositories.StringSignalArgs{
+	return &repositories.StringSignalArgs{
 		Agg:        agg,
-		SignalArgs: args,
+		SignalArgs: *args,
 	}, nil
 }
 
 // getFloatSignalArgs returns the arguments for the float signal query.
-func getSignalArgs(ctx context.Context, obj *model.SignalsWithID) (repositories.SignalArgs, error) {
-	var args repositories.SignalArgs
+func getSignalArgs(ctx context.Context, obj *model.SignalsWithID) (*repositories.SignalArgs, error) {
+	args := &repositories.SignalArgs{}
 	fCtx := graphql.GetFieldContext(ctx)
 	if fCtx == nil {
 		return args, fmt.Errorf("no field context found")
@@ -57,7 +57,9 @@ func getSignalArgs(ctx context.Context, obj *model.SignalsWithID) (repositories.
 
 	args.FromTS = getTimeArg(fCtx.Parent.Args, "from")
 	args.ToTS = getTimeArg(fCtx.Parent.Args, "to")
+	args.Filter = getFilterArg(fCtx.Parent.Args)
 	args.TokenID = obj.TokenID
+
 	return args, nil
 }
 
@@ -71,4 +73,16 @@ func getTimeArg(args map[string]any, name string) time.Time {
 		return time.Time{}
 	}
 	return timeArg
+}
+
+func getFilterArg(args map[string]any) *model.SignalFilter {
+	filterArg, ok := args["filter"]
+	if !ok {
+		return nil
+	}
+	filter, ok := filterArg.(*model.SignalFilter)
+	if !ok {
+		return nil
+	}
+	return filter
 }
