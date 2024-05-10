@@ -25,13 +25,7 @@ type Query {
     @requiresToken
 }
 
-type SignalAggregations {
-  tokenID: Int!
-}
-
 type SignalCollection {
-  tokenID: Int!
-
   """
   The last time any signal was seen matching the filter.
   """

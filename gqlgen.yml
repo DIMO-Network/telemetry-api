@@ -76,10 +76,10 @@ resolver:
 models:
   SignalAggregations:
     model:
-      - github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalsWithID
+      - github.com/DIMO-Network/telemetry-api/internal/graph/model.Signals
   SignalCollection:
     model:
-      - github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalsWithID
+      - github.com/DIMO-Network/telemetry-api/internal/graph/model.Signals
   ID:
     model:
       - github.com/99designs/gqlgen/graphql.ID

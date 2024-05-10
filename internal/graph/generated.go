@@ -89,7 +89,6 @@ type ComplexityRoot struct {
 		PowertrainTransmissionTravelledDistance       func(childComplexity int, agg model.FloatAggregation) int
 		PowertrainType                                func(childComplexity int, agg model.StringAggregation) int
 		Speed                                         func(childComplexity int, agg model.FloatAggregation) int
-		TokenID                                       func(childComplexity int) int
 		VehicleIdentificationBrand                    func(childComplexity int, agg model.StringAggregation) int
 		VehicleIdentificationModel                    func(childComplexity int, agg model.StringAggregation) int
 		VehicleIdentificationYear                     func(childComplexity int, agg model.FloatAggregation) int
@@ -130,7 +129,6 @@ type ComplexityRoot struct {
 		PowertrainTransmissionTravelledDistance       func(childComplexity int) int
 		PowertrainType                                func(childComplexity int) int
 		Speed                                         func(childComplexity int) int
-		TokenID                                       func(childComplexity int) int
 		VehicleIdentificationBrand                    func(childComplexity int) int
 		VehicleIdentificationModel                    func(childComplexity int) int
 		VehicleIdentificationYear                     func(childComplexity int) int
@@ -148,85 +146,85 @@ type ComplexityRoot struct {
 }
 
 type QueryResolver interface {
-	Signals(ctx context.Context, tokenID int, from time.Time, to time.Time, filter *model.SignalFilter) (*model.SignalsWithID, error)
-	SignalsLatest(ctx context.Context, tokenID int, filter *model.SignalFilter) (*model.SignalsWithID, error)
+	Signals(ctx context.Context, tokenID int, from time.Time, to time.Time, filter *model.SignalFilter) (*model.Signals, error)
+	SignalsLatest(ctx context.Context, tokenID int, filter *model.SignalFilter) (*model.Signals, error)
 }
 type SignalAggregationsResolver interface {
-	ChassisAxleRow1WheelLeftTirePressure(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error)
-	ChassisAxleRow1WheelRightTirePressure(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error)
-	ChassisAxleRow2WheelLeftTirePressure(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error)
-	ChassisAxleRow2WheelRightTirePressure(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error)
-	CurrentLocationAltitude(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error)
-	CurrentLocationLatitude(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error)
-	CurrentLocationLongitude(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error)
-	CurrentLocationTimestamp(ctx context.Context, obj *model.SignalsWithID, agg model.StringAggregation) ([]*model.SignalString, error)
-	DIMOAftermarketHdop(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error)
-	DIMOAftermarketNsat(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error)
-	DIMOAftermarketSsid(ctx context.Context, obj *model.SignalsWithID, agg model.StringAggregation) ([]*model.SignalString, error)
-	DIMOAftermarketWPAState(ctx context.Context, obj *model.SignalsWithID, agg model.StringAggregation) ([]*model.SignalString, error)
-	ExteriorAirTemperature(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error)
-	LowVoltageBatteryCurrentVoltage(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error)
-	OBDBarometricPressure(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error)
-	OBDEngineLoad(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error)
-	OBDIntakeTemp(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error)
-	OBDRunTime(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error)
-	PowertrainCombustionEngineEct(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error)
-	PowertrainCombustionEngineEngineOilLevel(ctx context.Context, obj *model.SignalsWithID, agg model.StringAggregation) ([]*model.SignalString, error)
-	PowertrainCombustionEngineMaf(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error)
-	PowertrainCombustionEngineSpeed(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error)
-	PowertrainCombustionEngineTps(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error)
-	PowertrainFuelSystemAbsoluteLevel(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error)
-	PowertrainFuelSystemSupportedFuelTypes(ctx context.Context, obj *model.SignalsWithID, agg model.StringAggregation) ([]*model.SignalString, error)
-	PowertrainRange(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error)
-	PowertrainTractionBatteryChargingChargeLimit(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error)
-	PowertrainTractionBatteryChargingIsCharging(ctx context.Context, obj *model.SignalsWithID, agg model.StringAggregation) ([]*model.SignalString, error)
-	PowertrainTractionBatteryGrossCapacity(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error)
-	PowertrainTractionBatteryStateOfChargeCurrent(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error)
-	PowertrainTransmissionTravelledDistance(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error)
-	PowertrainType(ctx context.Context, obj *model.SignalsWithID, agg model.StringAggregation) ([]*model.SignalString, error)
-	Speed(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error)
-	VehicleIdentificationBrand(ctx context.Context, obj *model.SignalsWithID, agg model.StringAggregation) ([]*model.SignalString, error)
-	VehicleIdentificationModel(ctx context.Context, obj *model.SignalsWithID, agg model.StringAggregation) ([]*model.SignalString, error)
-	VehicleIdentificationYear(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error)
+	ChassisAxleRow1WheelLeftTirePressure(ctx context.Context, obj *model.Signals, agg model.FloatAggregation) ([]*model.SignalFloat, error)
+	ChassisAxleRow1WheelRightTirePressure(ctx context.Context, obj *model.Signals, agg model.FloatAggregation) ([]*model.SignalFloat, error)
+	ChassisAxleRow2WheelLeftTirePressure(ctx context.Context, obj *model.Signals, agg model.FloatAggregation) ([]*model.SignalFloat, error)
+	ChassisAxleRow2WheelRightTirePressure(ctx context.Context, obj *model.Signals, agg model.FloatAggregation) ([]*model.SignalFloat, error)
+	CurrentLocationAltitude(ctx context.Context, obj *model.Signals, agg model.FloatAggregation) ([]*model.SignalFloat, error)
+	CurrentLocationLatitude(ctx context.Context, obj *model.Signals, agg model.FloatAggregation) ([]*model.SignalFloat, error)
+	CurrentLocationLongitude(ctx context.Context, obj *model.Signals, agg model.FloatAggregation) ([]*model.SignalFloat, error)
+	CurrentLocationTimestamp(ctx context.Context, obj *model.Signals, agg model.StringAggregation) ([]*model.SignalString, error)
+	DIMOAftermarketHdop(ctx context.Context, obj *model.Signals, agg model.FloatAggregation) ([]*model.SignalFloat, error)
+	DIMOAftermarketNsat(ctx context.Context, obj *model.Signals, agg model.FloatAggregation) ([]*model.SignalFloat, error)
+	DIMOAftermarketSsid(ctx context.Context, obj *model.Signals, agg model.StringAggregation) ([]*model.SignalString, error)
+	DIMOAftermarketWPAState(ctx context.Context, obj *model.Signals, agg model.StringAggregation) ([]*model.SignalString, error)
+	ExteriorAirTemperature(ctx context.Context, obj *model.Signals, agg model.FloatAggregation) ([]*model.SignalFloat, error)
+	LowVoltageBatteryCurrentVoltage(ctx context.Context, obj *model.Signals, agg model.FloatAggregation) ([]*model.SignalFloat, error)
+	OBDBarometricPressure(ctx context.Context, obj *model.Signals, agg model.FloatAggregation) ([]*model.SignalFloat, error)
+	OBDEngineLoad(ctx context.Context, obj *model.Signals, agg model.FloatAggregation) ([]*model.SignalFloat, error)
+	OBDIntakeTemp(ctx context.Context, obj *model.Signals, agg model.FloatAggregation) ([]*model.SignalFloat, error)
+	OBDRunTime(ctx context.Context, obj *model.Signals, agg model.FloatAggregation) ([]*model.SignalFloat, error)
+	PowertrainCombustionEngineEct(ctx context.Context, obj *model.Signals, agg model.FloatAggregation) ([]*model.SignalFloat, error)
+	PowertrainCombustionEngineEngineOilLevel(ctx context.Context, obj *model.Signals, agg model.StringAggregation) ([]*model.SignalString, error)
+	PowertrainCombustionEngineMaf(ctx context.Context, obj *model.Signals, agg model.FloatAggregation) ([]*model.SignalFloat, error)
+	PowertrainCombustionEngineSpeed(ctx context.Context, obj *model.Signals, agg model.FloatAggregation) ([]*model.SignalFloat, error)
+	PowertrainCombustionEngineTps(ctx context.Context, obj *model.Signals, agg model.FloatAggregation) ([]*model.SignalFloat, error)
+	PowertrainFuelSystemAbsoluteLevel(ctx context.Context, obj *model.Signals, agg model.FloatAggregation) ([]*model.SignalFloat, error)
+	PowertrainFuelSystemSupportedFuelTypes(ctx context.Context, obj *model.Signals, agg model.StringAggregation) ([]*model.SignalString, error)
+	PowertrainRange(ctx context.Context, obj *model.Signals, agg model.FloatAggregation) ([]*model.SignalFloat, error)
+	PowertrainTractionBatteryChargingChargeLimit(ctx context.Context, obj *model.Signals, agg model.FloatAggregation) ([]*model.SignalFloat, error)
+	PowertrainTractionBatteryChargingIsCharging(ctx context.Context, obj *model.Signals, agg model.StringAggregation) ([]*model.SignalString, error)
+	PowertrainTractionBatteryGrossCapacity(ctx context.Context, obj *model.Signals, agg model.FloatAggregation) ([]*model.SignalFloat, error)
+	PowertrainTractionBatteryStateOfChargeCurrent(ctx context.Context, obj *model.Signals, agg model.FloatAggregation) ([]*model.SignalFloat, error)
+	PowertrainTransmissionTravelledDistance(ctx context.Context, obj *model.Signals, agg model.FloatAggregation) ([]*model.SignalFloat, error)
+	PowertrainType(ctx context.Context, obj *model.Signals, agg model.StringAggregation) ([]*model.SignalString, error)
+	Speed(ctx context.Context, obj *model.Signals, agg model.FloatAggregation) ([]*model.SignalFloat, error)
+	VehicleIdentificationBrand(ctx context.Context, obj *model.Signals, agg model.StringAggregation) ([]*model.SignalString, error)
+	VehicleIdentificationModel(ctx context.Context, obj *model.Signals, agg model.StringAggregation) ([]*model.SignalString, error)
+	VehicleIdentificationYear(ctx context.Context, obj *model.Signals, agg model.FloatAggregation) ([]*model.SignalFloat, error)
 }
 type SignalCollectionResolver interface {
-	LastSeen(ctx context.Context, obj *model.SignalsWithID) (*time.Time, error)
-	ChassisAxleRow1WheelLeftTirePressure(ctx context.Context, obj *model.SignalsWithID) (*model.SignalFloat, error)
-	ChassisAxleRow1WheelRightTirePressure(ctx context.Context, obj *model.SignalsWithID) (*model.SignalFloat, error)
-	ChassisAxleRow2WheelLeftTirePressure(ctx context.Context, obj *model.SignalsWithID) (*model.SignalFloat, error)
-	ChassisAxleRow2WheelRightTirePressure(ctx context.Context, obj *model.SignalsWithID) (*model.SignalFloat, error)
-	CurrentLocationAltitude(ctx context.Context, obj *model.SignalsWithID) (*model.SignalFloat, error)
-	CurrentLocationLatitude(ctx context.Context, obj *model.SignalsWithID) (*model.SignalFloat, error)
-	CurrentLocationLongitude(ctx context.Context, obj *model.SignalsWithID) (*model.SignalFloat, error)
-	CurrentLocationTimestamp(ctx context.Context, obj *model.SignalsWithID) (*model.SignalString, error)
-	DIMOAftermarketHdop(ctx context.Context, obj *model.SignalsWithID) (*model.SignalFloat, error)
-	DIMOAftermarketNsat(ctx context.Context, obj *model.SignalsWithID) (*model.SignalFloat, error)
-	DIMOAftermarketSsid(ctx context.Context, obj *model.SignalsWithID) (*model.SignalString, error)
-	DIMOAftermarketWPAState(ctx context.Context, obj *model.SignalsWithID) (*model.SignalString, error)
-	ExteriorAirTemperature(ctx context.Context, obj *model.SignalsWithID) (*model.SignalFloat, error)
-	LowVoltageBatteryCurrentVoltage(ctx context.Context, obj *model.SignalsWithID) (*model.SignalFloat, error)
-	OBDBarometricPressure(ctx context.Context, obj *model.SignalsWithID) (*model.SignalFloat, error)
-	OBDEngineLoad(ctx context.Context, obj *model.SignalsWithID) (*model.SignalFloat, error)
-	OBDIntakeTemp(ctx context.Context, obj *model.SignalsWithID) (*model.SignalFloat, error)
-	OBDRunTime(ctx context.Context, obj *model.SignalsWithID) (*model.SignalFloat, error)
-	PowertrainCombustionEngineEct(ctx context.Context, obj *model.SignalsWithID) (*model.SignalFloat, error)
-	PowertrainCombustionEngineEngineOilLevel(ctx context.Context, obj *model.SignalsWithID) (*model.SignalString, error)
-	PowertrainCombustionEngineMaf(ctx context.Context, obj *model.SignalsWithID) (*model.SignalFloat, error)
-	PowertrainCombustionEngineSpeed(ctx context.Context, obj *model.SignalsWithID) (*model.SignalFloat, error)
-	PowertrainCombustionEngineTps(ctx context.Context, obj *model.SignalsWithID) (*model.SignalFloat, error)
-	PowertrainFuelSystemAbsoluteLevel(ctx context.Context, obj *model.SignalsWithID) (*model.SignalFloat, error)
-	PowertrainFuelSystemSupportedFuelTypes(ctx context.Context, obj *model.SignalsWithID) (*model.SignalString, error)
-	PowertrainRange(ctx context.Context, obj *model.SignalsWithID) (*model.SignalFloat, error)
-	PowertrainTractionBatteryChargingChargeLimit(ctx context.Context, obj *model.SignalsWithID) (*model.SignalFloat, error)
-	PowertrainTractionBatteryChargingIsCharging(ctx context.Context, obj *model.SignalsWithID) (*model.SignalString, error)
-	PowertrainTractionBatteryGrossCapacity(ctx context.Context, obj *model.SignalsWithID) (*model.SignalFloat, error)
-	PowertrainTractionBatteryStateOfChargeCurrent(ctx context.Context, obj *model.SignalsWithID) (*model.SignalFloat, error)
-	PowertrainTransmissionTravelledDistance(ctx context.Context, obj *model.SignalsWithID) (*model.SignalFloat, error)
-	PowertrainType(ctx context.Context, obj *model.SignalsWithID) (*model.SignalString, error)
-	Speed(ctx context.Context, obj *model.SignalsWithID) (*model.SignalFloat, error)
-	VehicleIdentificationBrand(ctx context.Context, obj *model.SignalsWithID) (*model.SignalString, error)
-	VehicleIdentificationModel(ctx context.Context, obj *model.SignalsWithID) (*model.SignalString, error)
-	VehicleIdentificationYear(ctx context.Context, obj *model.SignalsWithID) (*model.SignalFloat, error)
+	LastSeen(ctx context.Context, obj *model.Signals) (*time.Time, error)
+	ChassisAxleRow1WheelLeftTirePressure(ctx context.Context, obj *model.Signals) (*model.SignalFloat, error)
+	ChassisAxleRow1WheelRightTirePressure(ctx context.Context, obj *model.Signals) (*model.SignalFloat, error)
+	ChassisAxleRow2WheelLeftTirePressure(ctx context.Context, obj *model.Signals) (*model.SignalFloat, error)
+	ChassisAxleRow2WheelRightTirePressure(ctx context.Context, obj *model.Signals) (*model.SignalFloat, error)
+	CurrentLocationAltitude(ctx context.Context, obj *model.Signals) (*model.SignalFloat, error)
+	CurrentLocationLatitude(ctx context.Context, obj *model.Signals) (*model.SignalFloat, error)
+	CurrentLocationLongitude(ctx context.Context, obj *model.Signals) (*model.SignalFloat, error)
+	CurrentLocationTimestamp(ctx context.Context, obj *model.Signals) (*model.SignalString, error)
+	DIMOAftermarketHdop(ctx context.Context, obj *model.Signals) (*model.SignalFloat, error)
+	DIMOAftermarketNsat(ctx context.Context, obj *model.Signals) (*model.SignalFloat, error)
+	DIMOAftermarketSsid(ctx context.Context, obj *model.Signals) (*model.SignalString, error)
+	DIMOAftermarketWPAState(ctx context.Context, obj *model.Signals) (*model.SignalString, error)
+	ExteriorAirTemperature(ctx context.Context, obj *model.Signals) (*model.SignalFloat, error)
+	LowVoltageBatteryCurrentVoltage(ctx context.Context, obj *model.Signals) (*model.SignalFloat, error)
+	OBDBarometricPressure(ctx context.Context, obj *model.Signals) (*model.SignalFloat, error)
+	OBDEngineLoad(ctx context.Context, obj *model.Signals) (*model.SignalFloat, error)
+	OBDIntakeTemp(ctx context.Context, obj *model.Signals) (*model.SignalFloat, error)
+	OBDRunTime(ctx context.Context, obj *model.Signals) (*model.SignalFloat, error)
+	PowertrainCombustionEngineEct(ctx context.Context, obj *model.Signals) (*model.SignalFloat, error)
+	PowertrainCombustionEngineEngineOilLevel(ctx context.Context, obj *model.Signals) (*model.SignalString, error)
+	PowertrainCombustionEngineMaf(ctx context.Context, obj *model.Signals) (*model.SignalFloat, error)
+	PowertrainCombustionEngineSpeed(ctx context.Context, obj *model.Signals) (*model.SignalFloat, error)
+	PowertrainCombustionEngineTps(ctx context.Context, obj *model.Signals) (*model.SignalFloat, error)
+	PowertrainFuelSystemAbsoluteLevel(ctx context.Context, obj *model.Signals) (*model.SignalFloat, error)
+	PowertrainFuelSystemSupportedFuelTypes(ctx context.Context, obj *model.Signals) (*model.SignalString, error)
+	PowertrainRange(ctx context.Context, obj *model.Signals) (*model.SignalFloat, error)
+	PowertrainTractionBatteryChargingChargeLimit(ctx context.Context, obj *model.Signals) (*model.SignalFloat, error)
+	PowertrainTractionBatteryChargingIsCharging(ctx context.Context, obj *model.Signals) (*model.SignalString, error)
+	PowertrainTractionBatteryGrossCapacity(ctx context.Context, obj *model.Signals) (*model.SignalFloat, error)
+	PowertrainTractionBatteryStateOfChargeCurrent(ctx context.Context, obj *model.Signals) (*model.SignalFloat, error)
+	PowertrainTransmissionTravelledDistance(ctx context.Context, obj *model.Signals) (*model.SignalFloat, error)
+	PowertrainType(ctx context.Context, obj *model.Signals) (*model.SignalString, error)
+	Speed(ctx context.Context, obj *model.Signals) (*model.SignalFloat, error)
+	VehicleIdentificationBrand(ctx context.Context, obj *model.Signals) (*model.SignalString, error)
+	VehicleIdentificationModel(ctx context.Context, obj *model.Signals) (*model.SignalString, error)
+	VehicleIdentificationYear(ctx context.Context, obj *model.Signals) (*model.SignalFloat, error)
 }
 
 type executableSchema struct {
@@ -668,13 +666,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.SignalAggregations.Speed(childComplexity, args["agg"].(model.FloatAggregation)), true
 
-	case "SignalAggregations.tokenID":
-		if e.complexity.SignalAggregations.TokenID == nil {
-			break
-		}
-
-		return e.complexity.SignalAggregations.TokenID(childComplexity), true
-
 	case "SignalAggregations.vehicleIdentificationBrand":
 		if e.complexity.SignalAggregations.VehicleIdentificationBrand == nil {
 			break
@@ -949,13 +940,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.SignalCollection.Speed(childComplexity), true
 
-	case "SignalCollection.tokenID":
-		if e.complexity.SignalCollection.TokenID == nil {
-			break
-		}
-
-		return e.complexity.SignalCollection.TokenID(childComplexity), true
-
 	case "SignalCollection.vehicleIdentificationBrand":
 		if e.complexity.SignalCollection.VehicleIdentificationBrand == nil {
 			break
@@ -1141,13 +1125,7 @@ type Query {
     @requiresToken
 }
 
-type SignalAggregations {
-  tokenID: Int!
-}
-
 type SignalCollection {
-  tokenID: Int!
-
   """
   The last time any signal was seen matching the filter.
   """
@@ -1240,7 +1218,7 @@ input SignalFilter {
 }
 `, BuiltIn: false},
 	{Name: "../../schema/generated-signals.graphqls", Input: `# Code generated  with ` + "`" + `make gql-model` + "`" + ` DO NOT EDIT.
-extend type SignalAggregations {
+type SignalAggregations {
   """
   Tire pressure in kilo-Pascal.
   Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
@@ -2463,10 +2441,10 @@ func (ec *executionContext) _Query_signals(ctx context.Context, field graphql.Co
 		if tmp == nil {
 			return nil, nil
 		}
-		if data, ok := tmp.(*model.SignalsWithID); ok {
+		if data, ok := tmp.(*model.Signals); ok {
 			return data, nil
 		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalsWithID`, tmp)
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.Signals`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2475,9 +2453,9 @@ func (ec *executionContext) _Query_signals(ctx context.Context, field graphql.Co
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*model.SignalsWithID)
+	res := resTmp.(*model.Signals)
 	fc.Result = res
-	return ec.marshalOSignalAggregations2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalsWithID(ctx, field.Selections, res)
+	return ec.marshalOSignalAggregations2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignals(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_signals(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2488,8 +2466,6 @@ func (ec *executionContext) fieldContext_Query_signals(ctx context.Context, fiel
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "tokenID":
-				return ec.fieldContext_SignalAggregations_tokenID(ctx, field)
 			case "chassisAxleRow1WheelLeftTirePressure":
 				return ec.fieldContext_SignalAggregations_chassisAxleRow1WheelLeftTirePressure(ctx, field)
 			case "chassisAxleRow1WheelRightTirePressure":
@@ -2611,10 +2587,10 @@ func (ec *executionContext) _Query_signalsLatest(ctx context.Context, field grap
 		if tmp == nil {
 			return nil, nil
 		}
-		if data, ok := tmp.(*model.SignalsWithID); ok {
+		if data, ok := tmp.(*model.Signals); ok {
 			return data, nil
 		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalsWithID`, tmp)
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.Signals`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2623,9 +2599,9 @@ func (ec *executionContext) _Query_signalsLatest(ctx context.Context, field grap
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*model.SignalsWithID)
+	res := resTmp.(*model.Signals)
 	fc.Result = res
-	return ec.marshalOSignalCollection2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalsWithID(ctx, field.Selections, res)
+	return ec.marshalOSignalCollection2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignals(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_signalsLatest(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2636,8 +2612,6 @@ func (ec *executionContext) fieldContext_Query_signalsLatest(ctx context.Context
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "tokenID":
-				return ec.fieldContext_SignalCollection_tokenID(ctx, field)
 			case "lastSeen":
 				return ec.fieldContext_SignalCollection_lastSeen(ctx, field)
 			case "chassisAxleRow1WheelLeftTirePressure":
@@ -2859,51 +2833,7 @@ func (ec *executionContext) fieldContext_Query___schema(ctx context.Context, fie
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalAggregations_tokenID(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_SignalAggregations_tokenID(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.TokenID, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(uint32)
-	fc.Result = res
-	return ec.marshalNInt2uint32(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_SignalAggregations_tokenID(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "SignalAggregations",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Int does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _SignalAggregations_chassisAxleRow1WheelLeftTirePressure(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalAggregations_chassisAxleRow1WheelLeftTirePressure(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalAggregations_chassisAxleRow1WheelLeftTirePressure(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -2985,7 +2915,7 @@ func (ec *executionContext) fieldContext_SignalAggregations_chassisAxleRow1Wheel
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalAggregations_chassisAxleRow1WheelRightTirePressure(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalAggregations_chassisAxleRow1WheelRightTirePressure(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalAggregations_chassisAxleRow1WheelRightTirePressure(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -3067,7 +2997,7 @@ func (ec *executionContext) fieldContext_SignalAggregations_chassisAxleRow1Wheel
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalAggregations_chassisAxleRow2WheelLeftTirePressure(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalAggregations_chassisAxleRow2WheelLeftTirePressure(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalAggregations_chassisAxleRow2WheelLeftTirePressure(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -3149,7 +3079,7 @@ func (ec *executionContext) fieldContext_SignalAggregations_chassisAxleRow2Wheel
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalAggregations_chassisAxleRow2WheelRightTirePressure(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalAggregations_chassisAxleRow2WheelRightTirePressure(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalAggregations_chassisAxleRow2WheelRightTirePressure(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -3231,7 +3161,7 @@ func (ec *executionContext) fieldContext_SignalAggregations_chassisAxleRow2Wheel
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalAggregations_currentLocationAltitude(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalAggregations_currentLocationAltitude(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalAggregations_currentLocationAltitude(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -3313,7 +3243,7 @@ func (ec *executionContext) fieldContext_SignalAggregations_currentLocationAltit
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalAggregations_currentLocationLatitude(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalAggregations_currentLocationLatitude(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalAggregations_currentLocationLatitude(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -3395,7 +3325,7 @@ func (ec *executionContext) fieldContext_SignalAggregations_currentLocationLatit
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalAggregations_currentLocationLongitude(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalAggregations_currentLocationLongitude(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalAggregations_currentLocationLongitude(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -3477,7 +3407,7 @@ func (ec *executionContext) fieldContext_SignalAggregations_currentLocationLongi
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalAggregations_currentLocationTimestamp(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalAggregations_currentLocationTimestamp(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalAggregations_currentLocationTimestamp(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -3559,7 +3489,7 @@ func (ec *executionContext) fieldContext_SignalAggregations_currentLocationTimes
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalAggregations_dIMOAftermarketHDOP(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalAggregations_dIMOAftermarketHDOP(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalAggregations_dIMOAftermarketHDOP(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -3641,7 +3571,7 @@ func (ec *executionContext) fieldContext_SignalAggregations_dIMOAftermarketHDOP(
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalAggregations_dIMOAftermarketNSAT(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalAggregations_dIMOAftermarketNSAT(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalAggregations_dIMOAftermarketNSAT(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -3723,7 +3653,7 @@ func (ec *executionContext) fieldContext_SignalAggregations_dIMOAftermarketNSAT(
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalAggregations_dIMOAftermarketSSID(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalAggregations_dIMOAftermarketSSID(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalAggregations_dIMOAftermarketSSID(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -3805,7 +3735,7 @@ func (ec *executionContext) fieldContext_SignalAggregations_dIMOAftermarketSSID(
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalAggregations_dIMOAftermarketWPAState(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalAggregations_dIMOAftermarketWPAState(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalAggregations_dIMOAftermarketWPAState(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -3887,7 +3817,7 @@ func (ec *executionContext) fieldContext_SignalAggregations_dIMOAftermarketWPASt
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalAggregations_exteriorAirTemperature(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalAggregations_exteriorAirTemperature(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalAggregations_exteriorAirTemperature(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -3969,7 +3899,7 @@ func (ec *executionContext) fieldContext_SignalAggregations_exteriorAirTemperatu
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalAggregations_lowVoltageBatteryCurrentVoltage(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalAggregations_lowVoltageBatteryCurrentVoltage(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalAggregations_lowVoltageBatteryCurrentVoltage(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -4051,7 +3981,7 @@ func (ec *executionContext) fieldContext_SignalAggregations_lowVoltageBatteryCur
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalAggregations_oBDBarometricPressure(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalAggregations_oBDBarometricPressure(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalAggregations_oBDBarometricPressure(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -4133,7 +4063,7 @@ func (ec *executionContext) fieldContext_SignalAggregations_oBDBarometricPressur
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalAggregations_oBDEngineLoad(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalAggregations_oBDEngineLoad(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalAggregations_oBDEngineLoad(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -4215,7 +4145,7 @@ func (ec *executionContext) fieldContext_SignalAggregations_oBDEngineLoad(ctx co
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalAggregations_oBDIntakeTemp(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalAggregations_oBDIntakeTemp(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalAggregations_oBDIntakeTemp(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -4297,7 +4227,7 @@ func (ec *executionContext) fieldContext_SignalAggregations_oBDIntakeTemp(ctx co
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalAggregations_oBDRunTime(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalAggregations_oBDRunTime(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalAggregations_oBDRunTime(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -4379,7 +4309,7 @@ func (ec *executionContext) fieldContext_SignalAggregations_oBDRunTime(ctx conte
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineECT(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineECT(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalAggregations_powertrainCombustionEngineECT(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -4461,7 +4391,7 @@ func (ec *executionContext) fieldContext_SignalAggregations_powertrainCombustion
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineEngineOilLevel(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineEngineOilLevel(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalAggregations_powertrainCombustionEngineEngineOilLevel(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -4543,7 +4473,7 @@ func (ec *executionContext) fieldContext_SignalAggregations_powertrainCombustion
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineMAF(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineMAF(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalAggregations_powertrainCombustionEngineMAF(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -4625,7 +4555,7 @@ func (ec *executionContext) fieldContext_SignalAggregations_powertrainCombustion
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineSpeed(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineSpeed(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalAggregations_powertrainCombustionEngineSpeed(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -4707,7 +4637,7 @@ func (ec *executionContext) fieldContext_SignalAggregations_powertrainCombustion
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineTPS(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineTPS(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalAggregations_powertrainCombustionEngineTPS(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -4789,7 +4719,7 @@ func (ec *executionContext) fieldContext_SignalAggregations_powertrainCombustion
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalAggregations_powertrainFuelSystemAbsoluteLevel(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalAggregations_powertrainFuelSystemAbsoluteLevel(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalAggregations_powertrainFuelSystemAbsoluteLevel(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -4871,7 +4801,7 @@ func (ec *executionContext) fieldContext_SignalAggregations_powertrainFuelSystem
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalAggregations_powertrainFuelSystemSupportedFuelTypes(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalAggregations_powertrainFuelSystemSupportedFuelTypes(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalAggregations_powertrainFuelSystemSupportedFuelTypes(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -4953,7 +4883,7 @@ func (ec *executionContext) fieldContext_SignalAggregations_powertrainFuelSystem
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalAggregations_powertrainRange(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalAggregations_powertrainRange(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalAggregations_powertrainRange(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -5035,7 +4965,7 @@ func (ec *executionContext) fieldContext_SignalAggregations_powertrainRange(ctx 
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryChargingChargeLimit(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryChargingChargeLimit(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalAggregations_powertrainTractionBatteryChargingChargeLimit(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -5117,7 +5047,7 @@ func (ec *executionContext) fieldContext_SignalAggregations_powertrainTractionBa
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryChargingIsCharging(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryChargingIsCharging(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalAggregations_powertrainTractionBatteryChargingIsCharging(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -5199,7 +5129,7 @@ func (ec *executionContext) fieldContext_SignalAggregations_powertrainTractionBa
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryGrossCapacity(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryGrossCapacity(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalAggregations_powertrainTractionBatteryGrossCapacity(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -5281,7 +5211,7 @@ func (ec *executionContext) fieldContext_SignalAggregations_powertrainTractionBa
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryStateOfChargeCurrent(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryStateOfChargeCurrent(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalAggregations_powertrainTractionBatteryStateOfChargeCurrent(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -5363,7 +5293,7 @@ func (ec *executionContext) fieldContext_SignalAggregations_powertrainTractionBa
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalAggregations_powertrainTransmissionTravelledDistance(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalAggregations_powertrainTransmissionTravelledDistance(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalAggregations_powertrainTransmissionTravelledDistance(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -5445,7 +5375,7 @@ func (ec *executionContext) fieldContext_SignalAggregations_powertrainTransmissi
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalAggregations_powertrainType(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalAggregations_powertrainType(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalAggregations_powertrainType(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -5527,7 +5457,7 @@ func (ec *executionContext) fieldContext_SignalAggregations_powertrainType(ctx c
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalAggregations_speed(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalAggregations_speed(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalAggregations_speed(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -5609,7 +5539,7 @@ func (ec *executionContext) fieldContext_SignalAggregations_speed(ctx context.Co
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalAggregations_vehicleIdentificationBrand(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalAggregations_vehicleIdentificationBrand(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalAggregations_vehicleIdentificationBrand(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -5691,7 +5621,7 @@ func (ec *executionContext) fieldContext_SignalAggregations_vehicleIdentificatio
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalAggregations_vehicleIdentificationModel(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalAggregations_vehicleIdentificationModel(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalAggregations_vehicleIdentificationModel(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -5773,7 +5703,7 @@ func (ec *executionContext) fieldContext_SignalAggregations_vehicleIdentificatio
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalAggregations_vehicleIdentificationYear(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalAggregations_vehicleIdentificationYear(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalAggregations_vehicleIdentificationYear(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -5855,51 +5785,7 @@ func (ec *executionContext) fieldContext_SignalAggregations_vehicleIdentificatio
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalCollection_tokenID(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_SignalCollection_tokenID(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.TokenID, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(uint32)
-	fc.Result = res
-	return ec.marshalNInt2uint32(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_SignalCollection_tokenID(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "SignalCollection",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Int does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _SignalCollection_lastSeen(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalCollection_lastSeen(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalCollection_lastSeen(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -5940,7 +5826,7 @@ func (ec *executionContext) fieldContext_SignalCollection_lastSeen(ctx context.C
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalCollection_chassisAxleRow1WheelLeftTirePressure(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalCollection_chassisAxleRow1WheelLeftTirePressure(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalCollection_chassisAxleRow1WheelLeftTirePressure(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -6011,7 +5897,7 @@ func (ec *executionContext) fieldContext_SignalCollection_chassisAxleRow1WheelLe
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalCollection_chassisAxleRow1WheelRightTirePressure(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalCollection_chassisAxleRow1WheelRightTirePressure(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalCollection_chassisAxleRow1WheelRightTirePressure(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -6082,7 +5968,7 @@ func (ec *executionContext) fieldContext_SignalCollection_chassisAxleRow1WheelRi
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalCollection_chassisAxleRow2WheelLeftTirePressure(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalCollection_chassisAxleRow2WheelLeftTirePressure(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalCollection_chassisAxleRow2WheelLeftTirePressure(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -6153,7 +6039,7 @@ func (ec *executionContext) fieldContext_SignalCollection_chassisAxleRow2WheelLe
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalCollection_chassisAxleRow2WheelRightTirePressure(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalCollection_chassisAxleRow2WheelRightTirePressure(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalCollection_chassisAxleRow2WheelRightTirePressure(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -6224,7 +6110,7 @@ func (ec *executionContext) fieldContext_SignalCollection_chassisAxleRow2WheelRi
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalCollection_currentLocationAltitude(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalCollection_currentLocationAltitude(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalCollection_currentLocationAltitude(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -6295,7 +6181,7 @@ func (ec *executionContext) fieldContext_SignalCollection_currentLocationAltitud
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalCollection_currentLocationLatitude(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalCollection_currentLocationLatitude(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalCollection_currentLocationLatitude(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -6366,7 +6252,7 @@ func (ec *executionContext) fieldContext_SignalCollection_currentLocationLatitud
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalCollection_currentLocationLongitude(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalCollection_currentLocationLongitude(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalCollection_currentLocationLongitude(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -6437,7 +6323,7 @@ func (ec *executionContext) fieldContext_SignalCollection_currentLocationLongitu
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalCollection_currentLocationTimestamp(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalCollection_currentLocationTimestamp(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalCollection_currentLocationTimestamp(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -6508,7 +6394,7 @@ func (ec *executionContext) fieldContext_SignalCollection_currentLocationTimesta
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalCollection_dIMOAftermarketHDOP(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalCollection_dIMOAftermarketHDOP(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalCollection_dIMOAftermarketHDOP(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -6579,7 +6465,7 @@ func (ec *executionContext) fieldContext_SignalCollection_dIMOAftermarketHDOP(ct
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalCollection_dIMOAftermarketNSAT(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalCollection_dIMOAftermarketNSAT(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalCollection_dIMOAftermarketNSAT(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -6650,7 +6536,7 @@ func (ec *executionContext) fieldContext_SignalCollection_dIMOAftermarketNSAT(ct
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalCollection_dIMOAftermarketSSID(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalCollection_dIMOAftermarketSSID(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalCollection_dIMOAftermarketSSID(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -6721,7 +6607,7 @@ func (ec *executionContext) fieldContext_SignalCollection_dIMOAftermarketSSID(ct
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalCollection_dIMOAftermarketWPAState(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalCollection_dIMOAftermarketWPAState(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalCollection_dIMOAftermarketWPAState(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -6792,7 +6678,7 @@ func (ec *executionContext) fieldContext_SignalCollection_dIMOAftermarketWPAStat
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalCollection_exteriorAirTemperature(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalCollection_exteriorAirTemperature(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalCollection_exteriorAirTemperature(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -6863,7 +6749,7 @@ func (ec *executionContext) fieldContext_SignalCollection_exteriorAirTemperature
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalCollection_lowVoltageBatteryCurrentVoltage(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalCollection_lowVoltageBatteryCurrentVoltage(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalCollection_lowVoltageBatteryCurrentVoltage(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -6934,7 +6820,7 @@ func (ec *executionContext) fieldContext_SignalCollection_lowVoltageBatteryCurre
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalCollection_oBDBarometricPressure(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalCollection_oBDBarometricPressure(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalCollection_oBDBarometricPressure(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -7005,7 +6891,7 @@ func (ec *executionContext) fieldContext_SignalCollection_oBDBarometricPressure(
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalCollection_oBDEngineLoad(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalCollection_oBDEngineLoad(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalCollection_oBDEngineLoad(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -7076,7 +6962,7 @@ func (ec *executionContext) fieldContext_SignalCollection_oBDEngineLoad(ctx cont
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalCollection_oBDIntakeTemp(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalCollection_oBDIntakeTemp(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalCollection_oBDIntakeTemp(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -7147,7 +7033,7 @@ func (ec *executionContext) fieldContext_SignalCollection_oBDIntakeTemp(ctx cont
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalCollection_oBDRunTime(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalCollection_oBDRunTime(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalCollection_oBDRunTime(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -7218,7 +7104,7 @@ func (ec *executionContext) fieldContext_SignalCollection_oBDRunTime(ctx context
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalCollection_powertrainCombustionEngineECT(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalCollection_powertrainCombustionEngineECT(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalCollection_powertrainCombustionEngineECT(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -7289,7 +7175,7 @@ func (ec *executionContext) fieldContext_SignalCollection_powertrainCombustionEn
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalCollection_powertrainCombustionEngineEngineOilLevel(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalCollection_powertrainCombustionEngineEngineOilLevel(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalCollection_powertrainCombustionEngineEngineOilLevel(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -7360,7 +7246,7 @@ func (ec *executionContext) fieldContext_SignalCollection_powertrainCombustionEn
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalCollection_powertrainCombustionEngineMAF(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalCollection_powertrainCombustionEngineMAF(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalCollection_powertrainCombustionEngineMAF(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -7431,7 +7317,7 @@ func (ec *executionContext) fieldContext_SignalCollection_powertrainCombustionEn
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalCollection_powertrainCombustionEngineSpeed(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalCollection_powertrainCombustionEngineSpeed(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalCollection_powertrainCombustionEngineSpeed(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -7502,7 +7388,7 @@ func (ec *executionContext) fieldContext_SignalCollection_powertrainCombustionEn
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalCollection_powertrainCombustionEngineTPS(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalCollection_powertrainCombustionEngineTPS(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalCollection_powertrainCombustionEngineTPS(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -7573,7 +7459,7 @@ func (ec *executionContext) fieldContext_SignalCollection_powertrainCombustionEn
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalCollection_powertrainFuelSystemAbsoluteLevel(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalCollection_powertrainFuelSystemAbsoluteLevel(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalCollection_powertrainFuelSystemAbsoluteLevel(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -7644,7 +7530,7 @@ func (ec *executionContext) fieldContext_SignalCollection_powertrainFuelSystemAb
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalCollection_powertrainFuelSystemSupportedFuelTypes(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalCollection_powertrainFuelSystemSupportedFuelTypes(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalCollection_powertrainFuelSystemSupportedFuelTypes(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -7715,7 +7601,7 @@ func (ec *executionContext) fieldContext_SignalCollection_powertrainFuelSystemSu
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalCollection_powertrainRange(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalCollection_powertrainRange(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalCollection_powertrainRange(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -7786,7 +7672,7 @@ func (ec *executionContext) fieldContext_SignalCollection_powertrainRange(ctx co
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalCollection_powertrainTractionBatteryChargingChargeLimit(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalCollection_powertrainTractionBatteryChargingChargeLimit(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalCollection_powertrainTractionBatteryChargingChargeLimit(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -7857,7 +7743,7 @@ func (ec *executionContext) fieldContext_SignalCollection_powertrainTractionBatt
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalCollection_powertrainTractionBatteryChargingIsCharging(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalCollection_powertrainTractionBatteryChargingIsCharging(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalCollection_powertrainTractionBatteryChargingIsCharging(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -7928,7 +7814,7 @@ func (ec *executionContext) fieldContext_SignalCollection_powertrainTractionBatt
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalCollection_powertrainTractionBatteryGrossCapacity(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalCollection_powertrainTractionBatteryGrossCapacity(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalCollection_powertrainTractionBatteryGrossCapacity(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -7999,7 +7885,7 @@ func (ec *executionContext) fieldContext_SignalCollection_powertrainTractionBatt
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalCollection_powertrainTractionBatteryStateOfChargeCurrent(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalCollection_powertrainTractionBatteryStateOfChargeCurrent(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalCollection_powertrainTractionBatteryStateOfChargeCurrent(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -8070,7 +7956,7 @@ func (ec *executionContext) fieldContext_SignalCollection_powertrainTractionBatt
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalCollection_powertrainTransmissionTravelledDistance(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalCollection_powertrainTransmissionTravelledDistance(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalCollection_powertrainTransmissionTravelledDistance(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -8141,7 +8027,7 @@ func (ec *executionContext) fieldContext_SignalCollection_powertrainTransmission
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalCollection_powertrainType(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalCollection_powertrainType(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalCollection_powertrainType(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -8212,7 +8098,7 @@ func (ec *executionContext) fieldContext_SignalCollection_powertrainType(ctx con
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalCollection_speed(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalCollection_speed(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalCollection_speed(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -8283,7 +8169,7 @@ func (ec *executionContext) fieldContext_SignalCollection_speed(ctx context.Cont
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalCollection_vehicleIdentificationBrand(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalCollection_vehicleIdentificationBrand(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalCollection_vehicleIdentificationBrand(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -8354,7 +8240,7 @@ func (ec *executionContext) fieldContext_SignalCollection_vehicleIdentificationB
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalCollection_vehicleIdentificationModel(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalCollection_vehicleIdentificationModel(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalCollection_vehicleIdentificationModel(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -8425,7 +8311,7 @@ func (ec *executionContext) fieldContext_SignalCollection_vehicleIdentificationM
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalCollection_vehicleIdentificationYear(ctx context.Context, field graphql.CollectedField, obj *model.SignalsWithID) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalCollection_vehicleIdentificationYear(ctx context.Context, field graphql.CollectedField, obj *model.Signals) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalCollection_vehicleIdentificationYear(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -10626,7 +10512,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 
 var signalAggregationsImplementors = []string{"SignalAggregations"}
 
-func (ec *executionContext) _SignalAggregations(ctx context.Context, sel ast.SelectionSet, obj *model.SignalsWithID) graphql.Marshaler {
+func (ec *executionContext) _SignalAggregations(ctx context.Context, sel ast.SelectionSet, obj *model.Signals) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, signalAggregationsImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -10635,11 +10521,6 @@ func (ec *executionContext) _SignalAggregations(ctx context.Context, sel ast.Sel
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("SignalAggregations")
-		case "tokenID":
-			out.Values[i] = ec._SignalAggregations_tokenID(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&out.Invalids, 1)
-			}
 		case "chassisAxleRow1WheelLeftTirePressure":
 			field := field
 
@@ -11853,7 +11734,7 @@ func (ec *executionContext) _SignalAggregations(ctx context.Context, sel ast.Sel
 
 var signalCollectionImplementors = []string{"SignalCollection"}
 
-func (ec *executionContext) _SignalCollection(ctx context.Context, sel ast.SelectionSet, obj *model.SignalsWithID) graphql.Marshaler {
+func (ec *executionContext) _SignalCollection(ctx context.Context, sel ast.SelectionSet, obj *model.Signals) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, signalCollectionImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -11862,11 +11743,6 @@ func (ec *executionContext) _SignalCollection(ctx context.Context, sel ast.Selec
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("SignalCollection")
-		case "tokenID":
-			out.Values[i] = ec._SignalCollection_tokenID(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&out.Invalids, 1)
-			}
 		case "lastSeen":
 			field := field
 
@@ -13558,21 +13434,6 @@ func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.Selecti
 	return res
 }
 
-func (ec *executionContext) unmarshalNInt2uint32(ctx context.Context, v interface{}) (uint32, error) {
-	res, err := graphql.UnmarshalUint32(v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) marshalNInt2uint32(ctx context.Context, sel ast.SelectionSet, v uint32) graphql.Marshaler {
-	res := graphql.MarshalUint32(v)
-	if res == graphql.Null {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
-		}
-	}
-	return res
-}
-
 func (ec *executionContext) unmarshalNPrivilege2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilege(ctx context.Context, v interface{}) (model.Privilege, error) {
 	var res model.Privilege
 	err := res.UnmarshalGQL(v)
@@ -14004,14 +13865,14 @@ func (ec *executionContext) marshalOFloat2ᚖfloat64(ctx context.Context, sel as
 	return res
 }
 
-func (ec *executionContext) marshalOSignalAggregations2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalsWithID(ctx context.Context, sel ast.SelectionSet, v *model.SignalsWithID) graphql.Marshaler {
+func (ec *executionContext) marshalOSignalAggregations2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignals(ctx context.Context, sel ast.SelectionSet, v *model.Signals) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
 	return ec._SignalAggregations(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalOSignalCollection2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalsWithID(ctx context.Context, sel ast.SelectionSet, v *model.SignalsWithID) graphql.Marshaler {
+func (ec *executionContext) marshalOSignalCollection2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignals(ctx context.Context, sel ast.SelectionSet, v *model.Signals) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
