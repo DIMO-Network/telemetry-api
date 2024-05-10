@@ -19,17 +19,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: install tools
-        run: make tools
-
-      - name: generate graphql files
-        run: make gql
-
       - name: go mod tidy
         run: go mod tidy
 
       - name: go mod verify
         run: go mod verify
+
+      - name: install tools
+        run: make tools
+
+      - name: generate graphql files
+        run: make gql
 
       - name: porcelain
         shell: bash
