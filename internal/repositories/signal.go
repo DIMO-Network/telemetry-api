@@ -10,10 +10,13 @@ import (
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
-	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 )
 
-var sourceValues = []string{"autopi", "macaron", "smartcar", "tesla"}
+var (
+	twoWeeks       = 14 * 24 * time.Hour
+	sourceValues   = []string{"autopi", "macaron", "smartcar", "tesla"}
+	errInvalidArgs = errors.New("invalid arguments")
+)
 
 // SignalArgs is the base arguments for querying signals.
 type SignalArgs struct {
@@ -52,7 +55,7 @@ func (r *Repository) GetSignalFloats(ctx context.Context, sigArgs *FloatSignalAr
 		return nil, fmt.Errorf("failed querying clickhouse: %w", err)
 	}
 
-	defer rows.Close() //nolint:errcheck // rows.Close() is called in the caller function
+	defer rows.Close() //nolint:errcheck // we don't care about the error here
 	signals := []*model.SignalFloat{}
 	for rows.Next() {
 		var signal model.SignalFloat
@@ -93,35 +96,6 @@ func (r *Repository) GetSignalString(ctx context.Context, sigArgs *StringSignalA
 	return signals, nil
 }
 
-// GetLastSeen returns the last seen timestamp of a token.
-func (r *Repository) GetLastSeen(ctx context.Context, sigArgs *SignalArgs) (time.Time, error) {
-	err := validateLastSeenSigArgs(sigArgs)
-	if err != nil {
-		return time.Time{}, err
-	}
-	mods := []qm.QueryMod{
-		selectTimestamp(),
-		fromSignal(),
-		withTokenID(sigArgs.TokenID),
-		orderByTS(),
-		qm.Limit(1),
-	}
-	if sigArgs.Filter != nil && sigArgs.Filter.Source != nil {
-		mods = append(mods, withSource(*sigArgs.Filter.Source))
-	}
-	stmt, args := newQuery(mods...)
-	row := r.conn.QueryRow(ctx, stmt, args...)
-	if row.Err() != nil {
-		return time.Time{}, fmt.Errorf("failed querying clickhouse: %w", row.Err())
-	}
-	var timestamp time.Time
-	err = row.Scan(&timestamp)
-	if err != nil && !errors.Is(err, sql.ErrNoRows) {
-		return time.Time{}, fmt.Errorf("failed scanning clickhouse rows: %w", err)
-	}
-	return timestamp, nil
-}
-
 // GetLatestSignalFloat returns the latest float signal based on the provided arguments.
 func (r *Repository) GetLatestSignalFloat(ctx context.Context, sigArgs *SignalArgs) (*model.SignalFloat, error) {
 	var signal model.SignalFloat
@@ -153,31 +127,50 @@ func (r *Repository) getLatestSignal(ctx context.Context, sigArgs *SignalArgs, v
 	return nil
 }
 
+// GetLastSeen returns the last seen timestamp of a token.
+func (r *Repository) GetLastSeen(ctx context.Context, sigArgs *SignalArgs) (time.Time, error) {
+	err := validateLastSeenSigArgs(sigArgs)
+	if err != nil {
+		return time.Time{}, err
+	}
+	stmt, args := getLastSeenQuery(sigArgs)
+	row := r.conn.QueryRow(ctx, stmt, args...)
+	if row.Err() != nil {
+		return time.Time{}, fmt.Errorf("failed querying clickhouse: %w", row.Err())
+	}
+	var timestamp time.Time
+	err = row.Scan(&timestamp)
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		return time.Time{}, fmt.Errorf("failed scanning clickhouse rows: %w", err)
+	}
+	return timestamp, nil
+}
+
 func validateAggSigArgs(args *SignalArgs) error {
 	if args.FromTS.IsZero() {
-		return fmt.Errorf("from timestamp is zero")
+		return fmt.Errorf("%w from timestamp is zero", errInvalidArgs)
 	}
 	if args.ToTS.IsZero() {
-		return fmt.Errorf("to timestamp is zero")
+		return fmt.Errorf("%w to timestamp is zero", errInvalidArgs)
 	}
 
 	// check if time range is greater than 2 weeks
-	if args.ToTS.Sub(args.FromTS) > 14*24*time.Hour {
-		return fmt.Errorf("time range is greater than 2 weeks")
+	if args.ToTS.Sub(args.FromTS) > twoWeeks {
+		return fmt.Errorf("%w time range is greater than 2 weeks", errInvalidArgs)
 	}
 	return validateLastestSigArgs(args)
 }
 
 func validateLastestSigArgs(args *SignalArgs) error {
 	if args.Name == "" {
-		return fmt.Errorf("name is empty")
+		return fmt.Errorf("%w name is empty", errInvalidArgs)
 	}
 	return validateLastSeenSigArgs(args)
 }
 
 func validateLastSeenSigArgs(args *SignalArgs) error {
 	if args.TokenID == 0 {
-		return fmt.Errorf("token id is zero")
+		return fmt.Errorf("%w token id is zero", errInvalidArgs)
 	}
 
 	return validateFilter(args.Filter)
@@ -189,7 +182,7 @@ func validateFilter(filter *model.SignalFilter) error {
 	}
 	// if we move to storing the device address as source we can remove this check.
 	if filter.Source != nil && !slices.Contains(sourceValues, *filter.Source) {
-		return fmt.Errorf("invalid source '%s', expected one of %v", *filter.Source, sourceValues)
+		return fmt.Errorf("%w source '%s', expected one of %v", errInvalidArgs, *filter.Source, sourceValues)
 	}
 	return nil
 }
@@ -201,7 +194,7 @@ func getIntervalMS(interval string) (int64, error) {
 		return 0, fmt.Errorf("failed parsing interval: %w", err)
 	}
 	if dur < time.Millisecond {
-		return 0, fmt.Errorf("interval less than 1 millisecond are not supported")
+		return 0, fmt.Errorf("%w interval less than 1 millisecond are not supported", errInvalidArgs)
 	}
 	return dur.Milliseconds(), nil
 }

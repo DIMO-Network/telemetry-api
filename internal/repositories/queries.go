@@ -43,7 +43,7 @@ var dialect = drivers.Dialect{
 }
 
 // newQuery initializes a new Query using the passed in QueryMods.
-func newQuery(mods ...qm.QueryMod) (stmt string, args []any) {
+func newQuery(mods ...qm.QueryMod) (string, []any) {
 	q := &queries.Query{}
 	queries.SetDialect(q, &dialect)
 	qm.Apply(q, mods...)
@@ -185,9 +185,7 @@ func getLatestQuery(valueCol string, sigArgs *SignalArgs) (stmt string, args []a
 		orderByTS(),
 		qm.Limit(1),
 	}
-	if sigArgs.Filter != nil && sigArgs.Filter.Source != nil {
-		mods = append(mods, withSource(*sigArgs.Filter.Source))
-	}
+	mods = append(mods, getFilterMods(sigArgs.Filter)...)
 	return newQuery(mods...)
 }
 
@@ -220,8 +218,30 @@ func getAggQuery(sigArgs SignalArgs, intervalMS int64, aggFunc string) (stmt str
 		groupByInterval(),
 		orderByInterval(),
 	}
-	if sigArgs.Filter != nil && sigArgs.Filter.Source != nil {
-		mods = append(mods, withSource(*sigArgs.Filter.Source))
-	}
+	mods = append(mods, getFilterMods(sigArgs.Filter)...)
 	return newQuery(mods...)
+}
+
+func getLastSeenQuery(sigArgs *SignalArgs) (stmt string, args []any) {
+	mods := []qm.QueryMod{
+		selectTimestamp(),
+		fromSignal(),
+		withTokenID(sigArgs.TokenID),
+		orderByTS(),
+		qm.Limit(1),
+	}
+	mods = append(mods, getFilterMods(sigArgs.Filter)...)
+	return newQuery(mods...)
+}
+
+// getFilterMods returns the query mods for the filter.
+func getFilterMods(filter *model.SignalFilter) []qm.QueryMod {
+	if filter == nil {
+		return nil
+	}
+	var mods []qm.QueryMod
+	if filter.Source != nil {
+		mods = append(mods, withSource(*filter.Source))
+	}
+	return mods
 }

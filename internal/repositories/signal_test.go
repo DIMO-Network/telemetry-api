@@ -31,6 +31,10 @@ type RepositoryTestSuite struct {
 	container     *clickhouseinfra.Container
 }
 
+func TestRepositorySuite(t *testing.T) {
+	suite.Run(t, new(RepositoryTestSuite))
+}
+
 func (r *RepositoryTestSuite) SetupSuite() {
 	ctx := context.Background()
 	var err error
@@ -62,6 +66,7 @@ func (r *RepositoryTestSuite) SetupSuite() {
 	r.dataStartTime = time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
 	r.insertTestData()
 }
+
 func (r *RepositoryTestSuite) TearDownSuite() {
 	r.container.Terminate(context.Background())
 }
@@ -329,6 +334,10 @@ func (r *RepositoryTestSuite) TestLastSeen() {
 
 }
 
+// insertTestData inserts test data into the clickhouse database.
+// it loops for 10 iterations and inserts a 2 signals  with each iteration that have a value of i and a powertrain type of "value"+ n%3+1
+// The source is selected from a list of sources in a round robin fashion of sources[i%3].
+// The timestamp is incremented by 30 seconds for each iteration.
 func (r *RepositoryTestSuite) insertTestData() {
 	ctx := context.Background()
 	conn, err := clickhouseinfra.GetClickHouseAsConn(r.container.ClickHouseContainer)
@@ -336,26 +345,27 @@ func (r *RepositoryTestSuite) insertTestData() {
 	testSignal := []vss.Signal{}
 	var sources = []string{"dimo/integration/2ULfuC8U9dOqRshZBAi0lMM1Rrx", "dimo/integration/27qftVRWQYpVDcO5DltO5Ojbjxk", "dimo/integration/22N2xaPOq2WW2gAHBHd0Ikn4Zob"}
 	for i := range dataPoints {
-		sig := vss.Signal{
+
+		numSig := vss.Signal{
 			Name:        vss.FieldSpeed,
 			Timestamp:   r.dataStartTime.Add(time.Second * time.Duration(30*i)),
 			Source:      sources[i%3],
 			TokenID:     1,
 			ValueNumber: float64(i),
 		}
-		testSignal = append(testSignal, sig)
-	}
-	for i := range dataPoints {
-		sig := vss.Signal{
+
+		strSig := vss.Signal{
 			Name:        vss.FieldPowertrainType,
 			Timestamp:   r.dataStartTime.Add(time.Second * time.Duration(30*i)),
 			Source:      sources[i%3],
 			TokenID:     1,
 			ValueString: fmt.Sprintf("value%d", i%3+1),
 		}
-		testSignal = append(testSignal, sig)
+
+		testSignal = append(testSignal, numSig, strSig)
 	}
 
+	// insert the test data into the clickhouse database
 	batch, err := conn.PrepareBatch(ctx, fmt.Sprintf("INSERT INTO %s", vss.TableName))
 	r.Require().NoError(err, "Failed to prepare batch")
 	for _, sig := range testSignal {
@@ -364,9 +374,6 @@ func (r *RepositoryTestSuite) insertTestData() {
 	}
 	err = batch.Send()
 	r.Require().NoError(err, "Failed to send batch")
-}
-func TestRepositorySuite(t *testing.T) {
-	suite.Run(t, new(RepositoryTestSuite))
 }
 
 func ref[T any](t T) *T {
