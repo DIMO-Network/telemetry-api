@@ -178,7 +178,7 @@ ORDER BY
  Timestamp DESC
  LIMIT 1;
 */
-func getLatestQuery(valueCol string, sigArgs *SignalArgs) (stmt string, args []any) {
+func getLatestQuery(valueCol string, sigArgs *model.SignalArgs) (stmt string, args []any) {
 	mods := []qm.QueryMod{
 		selectValue(valueCol),
 		selectTimestamp(),
@@ -209,7 +209,7 @@ GROUP BY
 ORDER BY
 	group_timestamp ASC;
 */
-func getAggQuery(sigArgs SignalArgs, intervalMS int64, aggFunc string) (stmt string, args []any) {
+func getAggQuery(sigArgs model.SignalArgs, intervalMS int64, aggFunc string) (stmt string, args []any) {
 	mods := []qm.QueryMod{
 		selectValue(aggFunc),
 		selectInterval(intervalMS),
@@ -237,7 +237,7 @@ ORDER BY
 	Timestamp DESC
 LIMIT 1;
 */
-func getLastSeenQuery(sigArgs *SignalArgs) (stmt string, args []any) {
+func getLastSeenQuery(sigArgs *model.SignalArgs) (stmt string, args []any) {
 	mods := []qm.QueryMod{
 		selectTimestamp(),
 		fromSignal(),

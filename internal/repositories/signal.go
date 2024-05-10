@@ -18,29 +18,8 @@ var (
 	errInvalidArgs = errors.New("invalid arguments")
 )
 
-// SignalArgs is the base arguments for querying signals.
-type SignalArgs struct {
-	FromTS  time.Time
-	ToTS    time.Time
-	Filter  *model.SignalFilter
-	Name    string
-	TokenID uint32
-}
-
-// FloatSignalArgs is the arguments for querying a float signals.
-type FloatSignalArgs struct {
-	Agg model.FloatAggregation
-	SignalArgs
-}
-
-// StringSignalArgs is the arguments for querying a string signals.
-type StringSignalArgs struct {
-	Agg model.StringAggregation
-	SignalArgs
-}
-
 // GetSignalFloats returns the float signals based on the provided arguments.
-func (r *Repository) GetSignalFloats(ctx context.Context, sigArgs *FloatSignalArgs) ([]*model.SignalFloat, error) {
+func (r *Repository) GetSignalFloats(ctx context.Context, sigArgs *model.FloatSignalArgs) ([]*model.SignalFloat, error) {
 	if err := validateAggSigArgs(&sigArgs.SignalArgs); err != nil {
 		return nil, err
 	}
@@ -69,7 +48,7 @@ func (r *Repository) GetSignalFloats(ctx context.Context, sigArgs *FloatSignalAr
 }
 
 // GetSignalString returns the string signals based on the provided arguments.
-func (r *Repository) GetSignalString(ctx context.Context, sigArgs *StringSignalArgs) ([]*model.SignalString, error) {
+func (r *Repository) GetSignalString(ctx context.Context, sigArgs *model.StringSignalArgs) ([]*model.SignalString, error) {
 	if err := validateAggSigArgs(&sigArgs.SignalArgs); err != nil {
 		return nil, err
 	}
@@ -97,14 +76,14 @@ func (r *Repository) GetSignalString(ctx context.Context, sigArgs *StringSignalA
 }
 
 // GetLatestSignalFloat returns the latest float signal based on the provided arguments.
-func (r *Repository) GetLatestSignalFloat(ctx context.Context, sigArgs *SignalArgs) (*model.SignalFloat, error) {
+func (r *Repository) GetLatestSignalFloat(ctx context.Context, sigArgs *model.SignalArgs) (*model.SignalFloat, error) {
 	var signal model.SignalFloat
 	err := r.getLatestSignal(ctx, sigArgs, FloatValueCol, &signal.Value, &signal.Timestamp)
 	return &signal, err
 }
 
 // GetLatestSignalString returns the latest string signal based on the provided arguments.
-func (r *Repository) GetLatestSignalString(ctx context.Context, sigArgs *SignalArgs) (*model.SignalString, error) {
+func (r *Repository) GetLatestSignalString(ctx context.Context, sigArgs *model.SignalArgs) (*model.SignalString, error) {
 	var signal model.SignalString
 	err := validateLastestSigArgs(sigArgs)
 	if err != nil {
@@ -114,7 +93,7 @@ func (r *Repository) GetLatestSignalString(ctx context.Context, sigArgs *SignalA
 	return &signal, err
 }
 
-func (r *Repository) getLatestSignal(ctx context.Context, sigArgs *SignalArgs, valueCol string, dest ...any) error {
+func (r *Repository) getLatestSignal(ctx context.Context, sigArgs *model.SignalArgs, valueCol string, dest ...any) error {
 	stmt, args := getLatestQuery(valueCol, sigArgs)
 	row := r.conn.QueryRow(ctx, stmt, args...)
 	if row.Err() != nil {
@@ -128,25 +107,25 @@ func (r *Repository) getLatestSignal(ctx context.Context, sigArgs *SignalArgs, v
 }
 
 // GetLastSeen returns the last seen timestamp of a token.
-func (r *Repository) GetLastSeen(ctx context.Context, sigArgs *SignalArgs) (time.Time, error) {
+func (r *Repository) GetLastSeen(ctx context.Context, sigArgs *model.SignalArgs) (*time.Time, error) {
 	err := validateLastSeenSigArgs(sigArgs)
 	if err != nil {
-		return time.Time{}, err
+		return nil, err
 	}
 	stmt, args := getLastSeenQuery(sigArgs)
 	row := r.conn.QueryRow(ctx, stmt, args...)
 	if row.Err() != nil {
-		return time.Time{}, fmt.Errorf("failed querying clickhouse: %w", row.Err())
+		return nil, fmt.Errorf("failed querying clickhouse: %w", row.Err())
 	}
 	var timestamp time.Time
 	err = row.Scan(&timestamp)
 	if err != nil && !errors.Is(err, sql.ErrNoRows) {
-		return time.Time{}, fmt.Errorf("failed scanning clickhouse rows: %w", err)
+		return nil, fmt.Errorf("failed scanning clickhouse rows: %w", err)
 	}
-	return timestamp, nil
+	return &timestamp, nil
 }
 
-func validateAggSigArgs(args *SignalArgs) error {
+func validateAggSigArgs(args *model.SignalArgs) error {
 	if args.FromTS.IsZero() {
 		return fmt.Errorf("%w from timestamp is zero", errInvalidArgs)
 	}
@@ -161,14 +140,14 @@ func validateAggSigArgs(args *SignalArgs) error {
 	return validateLastestSigArgs(args)
 }
 
-func validateLastestSigArgs(args *SignalArgs) error {
+func validateLastestSigArgs(args *model.SignalArgs) error {
 	if args.Name == "" {
 		return fmt.Errorf("%w name is empty", errInvalidArgs)
 	}
 	return validateLastSeenSigArgs(args)
 }
 
-func validateLastSeenSigArgs(args *SignalArgs) error {
+func validateLastSeenSigArgs(args *model.SignalArgs) error {
 	if args.TokenID == 0 {
 		return fmt.Errorf("%w token id is zero", errInvalidArgs)
 	}

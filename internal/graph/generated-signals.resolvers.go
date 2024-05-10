@@ -12,648 +12,576 @@ import (
 
 // ChassisAxleRow1WheelLeftTirePressure is the Aggregation resolver for the chassisAxleRow1WheelLeftTirePressure field.
 func (r *signalAggregationsResolver) ChassisAxleRow1WheelLeftTirePressure(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error) {
-	sigArgs, err := getFloatArgs(ctx, obj, agg)
-	if err != nil {
-		return nil, err
+	obj.SigArgs.Name = "Chassis_Axle_Row1_Wheel_Left_Tire_Pressure"
+	floatArgs := model.FloatSignalArgs{
+		Agg:        agg,
+		SignalArgs: obj.SigArgs,
 	}
-	return r.GetSignalFloats(ctx, sigArgs)
+	return r.GetSignalFloats(ctx, &floatArgs)
 }
 
 // ChassisAxleRow1WheelRightTirePressure is the Aggregation resolver for the chassisAxleRow1WheelRightTirePressure field.
 func (r *signalAggregationsResolver) ChassisAxleRow1WheelRightTirePressure(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error) {
-	sigArgs, err := getFloatArgs(ctx, obj, agg)
-	if err != nil {
-		return nil, err
+	obj.SigArgs.Name = "Chassis_Axle_Row1_Wheel_Right_Tire_Pressure"
+	floatArgs := model.FloatSignalArgs{
+		Agg:        agg,
+		SignalArgs: obj.SigArgs,
 	}
-	return r.GetSignalFloats(ctx, sigArgs)
+	return r.GetSignalFloats(ctx, &floatArgs)
 }
 
 // ChassisAxleRow2WheelLeftTirePressure is the Aggregation resolver for the chassisAxleRow2WheelLeftTirePressure field.
 func (r *signalAggregationsResolver) ChassisAxleRow2WheelLeftTirePressure(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error) {
-	sigArgs, err := getFloatArgs(ctx, obj, agg)
-	if err != nil {
-		return nil, err
+	obj.SigArgs.Name = "Chassis_Axle_Row2_Wheel_Left_Tire_Pressure"
+	floatArgs := model.FloatSignalArgs{
+		Agg:        agg,
+		SignalArgs: obj.SigArgs,
 	}
-	return r.GetSignalFloats(ctx, sigArgs)
+	return r.GetSignalFloats(ctx, &floatArgs)
 }
 
 // ChassisAxleRow2WheelRightTirePressure is the Aggregation resolver for the chassisAxleRow2WheelRightTirePressure field.
 func (r *signalAggregationsResolver) ChassisAxleRow2WheelRightTirePressure(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error) {
-	sigArgs, err := getFloatArgs(ctx, obj, agg)
-	if err != nil {
-		return nil, err
+	obj.SigArgs.Name = "Chassis_Axle_Row2_Wheel_Right_Tire_Pressure"
+	floatArgs := model.FloatSignalArgs{
+		Agg:        agg,
+		SignalArgs: obj.SigArgs,
 	}
-	return r.GetSignalFloats(ctx, sigArgs)
+	return r.GetSignalFloats(ctx, &floatArgs)
 }
 
 // CurrentLocationAltitude is the Aggregation resolver for the currentLocationAltitude field.
 func (r *signalAggregationsResolver) CurrentLocationAltitude(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error) {
-	sigArgs, err := getFloatArgs(ctx, obj, agg)
-	if err != nil {
-		return nil, err
+	obj.SigArgs.Name = "CurrentLocation_Altitude"
+	floatArgs := model.FloatSignalArgs{
+		Agg:        agg,
+		SignalArgs: obj.SigArgs,
 	}
-	return r.GetSignalFloats(ctx, sigArgs)
+	return r.GetSignalFloats(ctx, &floatArgs)
 }
 
 // CurrentLocationLatitude is the Aggregation resolver for the currentLocationLatitude field.
 func (r *signalAggregationsResolver) CurrentLocationLatitude(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error) {
-	sigArgs, err := getFloatArgs(ctx, obj, agg)
-	if err != nil {
-		return nil, err
+	obj.SigArgs.Name = "CurrentLocation_Latitude"
+	floatArgs := model.FloatSignalArgs{
+		Agg:        agg,
+		SignalArgs: obj.SigArgs,
 	}
-	return r.GetSignalFloats(ctx, sigArgs)
+	return r.GetSignalFloats(ctx, &floatArgs)
 }
 
 // CurrentLocationLongitude is the Aggregation resolver for the currentLocationLongitude field.
 func (r *signalAggregationsResolver) CurrentLocationLongitude(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error) {
-	sigArgs, err := getFloatArgs(ctx, obj, agg)
-	if err != nil {
-		return nil, err
+	obj.SigArgs.Name = "CurrentLocation_Longitude"
+	floatArgs := model.FloatSignalArgs{
+		Agg:        agg,
+		SignalArgs: obj.SigArgs,
 	}
-	return r.GetSignalFloats(ctx, sigArgs)
+	return r.GetSignalFloats(ctx, &floatArgs)
 }
 
 // CurrentLocationTimestamp is the Aggregation resolver for the currentLocationTimestamp field.
 func (r *signalAggregationsResolver) CurrentLocationTimestamp(ctx context.Context, obj *model.SignalsWithID, agg model.StringAggregation) ([]*model.SignalString, error) {
-	sigArgs, err := getStringArgs(ctx, obj, agg)
-	if err != nil {
-		return nil, err
+	obj.SigArgs.Name = "CurrentLocation_Timestamp"
+	strArgs := model.StringSignalArgs{
+		Agg:        agg,
+		SignalArgs: obj.SigArgs,
 	}
-	return r.GetSignalString(ctx, sigArgs)
+	return r.GetSignalString(ctx, &strArgs)
 }
 
-// DIMOAftermarketHdop is the Aggregation resolver for the dIMOAftermarketHdop field.
+// DIMOAftermarketHdop is the Aggregation resolver for the DIMOAftermarketHdop field.
 func (r *signalAggregationsResolver) DIMOAftermarketHdop(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error) {
-	sigArgs, err := getFloatArgs(ctx, obj, agg)
-	if err != nil {
-		return nil, err
+	obj.SigArgs.Name = "DIMO_Aftermarket_HDOP"
+	floatArgs := model.FloatSignalArgs{
+		Agg:        agg,
+		SignalArgs: obj.SigArgs,
 	}
-	return r.GetSignalFloats(ctx, sigArgs)
+	return r.GetSignalFloats(ctx, &floatArgs)
 }
 
-// DIMOAftermarketNsat is the Aggregation resolver for the dIMOAftermarketNsat field.
+// DIMOAftermarketNsat is the Aggregation resolver for the DIMOAftermarketNsat field.
 func (r *signalAggregationsResolver) DIMOAftermarketNsat(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error) {
-	sigArgs, err := getFloatArgs(ctx, obj, agg)
-	if err != nil {
-		return nil, err
+	obj.SigArgs.Name = "DIMO_Aftermarket_NSAT"
+	floatArgs := model.FloatSignalArgs{
+		Agg:        agg,
+		SignalArgs: obj.SigArgs,
 	}
-	return r.GetSignalFloats(ctx, sigArgs)
+	return r.GetSignalFloats(ctx, &floatArgs)
 }
 
-// DIMOAftermarketSsid is the Aggregation resolver for the dIMOAftermarketSsid field.
+// DIMOAftermarketSsid is the Aggregation resolver for the DIMOAftermarketSsid field.
 func (r *signalAggregationsResolver) DIMOAftermarketSsid(ctx context.Context, obj *model.SignalsWithID, agg model.StringAggregation) ([]*model.SignalString, error) {
-	sigArgs, err := getStringArgs(ctx, obj, agg)
-	if err != nil {
-		return nil, err
+	obj.SigArgs.Name = "DIMO_Aftermarket_SSID"
+	strArgs := model.StringSignalArgs{
+		Agg:        agg,
+		SignalArgs: obj.SigArgs,
 	}
-	return r.GetSignalString(ctx, sigArgs)
+	return r.GetSignalString(ctx, &strArgs)
 }
 
 // DIMOAftermarketWPAState is the Aggregation resolver for the dIMOAftermarketWPAState field.
 func (r *signalAggregationsResolver) DIMOAftermarketWPAState(ctx context.Context, obj *model.SignalsWithID, agg model.StringAggregation) ([]*model.SignalString, error) {
-	sigArgs, err := getStringArgs(ctx, obj, agg)
-	if err != nil {
-		return nil, err
+	obj.SigArgs.Name = "DIMO_Aftermarket_WPAState"
+	strArgs := model.StringSignalArgs{
+		Agg:        agg,
+		SignalArgs: obj.SigArgs,
 	}
-	return r.GetSignalString(ctx, sigArgs)
+	return r.GetSignalString(ctx, &strArgs)
 }
 
 // ExteriorAirTemperature is the Aggregation resolver for the exteriorAirTemperature field.
 func (r *signalAggregationsResolver) ExteriorAirTemperature(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error) {
-	sigArgs, err := getFloatArgs(ctx, obj, agg)
-	if err != nil {
-		return nil, err
+	obj.SigArgs.Name = "Exterior_AirTemperature"
+	floatArgs := model.FloatSignalArgs{
+		Agg:        agg,
+		SignalArgs: obj.SigArgs,
 	}
-	return r.GetSignalFloats(ctx, sigArgs)
+	return r.GetSignalFloats(ctx, &floatArgs)
 }
 
 // LowVoltageBatteryCurrentVoltage is the Aggregation resolver for the lowVoltageBatteryCurrentVoltage field.
 func (r *signalAggregationsResolver) LowVoltageBatteryCurrentVoltage(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error) {
-	sigArgs, err := getFloatArgs(ctx, obj, agg)
-	if err != nil {
-		return nil, err
+	obj.SigArgs.Name = "LowVoltageBattery_CurrentVoltage"
+	floatArgs := model.FloatSignalArgs{
+		Agg:        agg,
+		SignalArgs: obj.SigArgs,
 	}
-	return r.GetSignalFloats(ctx, sigArgs)
+	return r.GetSignalFloats(ctx, &floatArgs)
 }
 
 // OBDBarometricPressure is the Aggregation resolver for the oBDBarometricPressure field.
 func (r *signalAggregationsResolver) OBDBarometricPressure(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error) {
-	sigArgs, err := getFloatArgs(ctx, obj, agg)
-	if err != nil {
-		return nil, err
+	obj.SigArgs.Name = "OBD_BarometricPressure"
+	floatArgs := model.FloatSignalArgs{
+		Agg:        agg,
+		SignalArgs: obj.SigArgs,
 	}
-	return r.GetSignalFloats(ctx, sigArgs)
+	return r.GetSignalFloats(ctx, &floatArgs)
 }
 
 // OBDEngineLoad is the Aggregation resolver for the oBDEngineLoad field.
 func (r *signalAggregationsResolver) OBDEngineLoad(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error) {
-	sigArgs, err := getFloatArgs(ctx, obj, agg)
-	if err != nil {
-		return nil, err
+	obj.SigArgs.Name = "OBD_EngineLoad"
+	floatArgs := model.FloatSignalArgs{
+		Agg:        agg,
+		SignalArgs: obj.SigArgs,
 	}
-	return r.GetSignalFloats(ctx, sigArgs)
+	return r.GetSignalFloats(ctx, &floatArgs)
 }
 
 // OBDIntakeTemp is the Aggregation resolver for the oBDIntakeTemp field.
 func (r *signalAggregationsResolver) OBDIntakeTemp(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error) {
-	sigArgs, err := getFloatArgs(ctx, obj, agg)
-	if err != nil {
-		return nil, err
+	obj.SigArgs.Name = "OBD_IntakeTemp"
+	floatArgs := model.FloatSignalArgs{
+		Agg:        agg,
+		SignalArgs: obj.SigArgs,
 	}
-	return r.GetSignalFloats(ctx, sigArgs)
+	return r.GetSignalFloats(ctx, &floatArgs)
 }
 
 // OBDRunTime is the Aggregation resolver for the oBDRunTime field.
 func (r *signalAggregationsResolver) OBDRunTime(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error) {
-	sigArgs, err := getFloatArgs(ctx, obj, agg)
-	if err != nil {
-		return nil, err
+	obj.SigArgs.Name = "OBD_RunTime"
+	floatArgs := model.FloatSignalArgs{
+		Agg:        agg,
+		SignalArgs: obj.SigArgs,
 	}
-	return r.GetSignalFloats(ctx, sigArgs)
+	return r.GetSignalFloats(ctx, &floatArgs)
 }
 
-// PowertrainCombustionEngineEct is the Aggregation resolver for the powertrainCombustionEngineEct field.
+// PowertrainCombustionEngineEct is the Aggregation resolver for the PowertrainCombustionEngineEct field.
 func (r *signalAggregationsResolver) PowertrainCombustionEngineEct(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error) {
-	sigArgs, err := getFloatArgs(ctx, obj, agg)
-	if err != nil {
-		return nil, err
+	obj.SigArgs.Name = "Powertrain_CombustionEngine_ECT"
+	floatArgs := model.FloatSignalArgs{
+		Agg:        agg,
+		SignalArgs: obj.SigArgs,
 	}
-	return r.GetSignalFloats(ctx, sigArgs)
+	return r.GetSignalFloats(ctx, &floatArgs)
 }
 
 // PowertrainCombustionEngineEngineOilLevel is the Aggregation resolver for the powertrainCombustionEngineEngineOilLevel field.
 func (r *signalAggregationsResolver) PowertrainCombustionEngineEngineOilLevel(ctx context.Context, obj *model.SignalsWithID, agg model.StringAggregation) ([]*model.SignalString, error) {
-	sigArgs, err := getStringArgs(ctx, obj, agg)
-	if err != nil {
-		return nil, err
+	obj.SigArgs.Name = "Powertrain_CombustionEngine_EngineOilLevel"
+	strArgs := model.StringSignalArgs{
+		Agg:        agg,
+		SignalArgs: obj.SigArgs,
 	}
-	return r.GetSignalString(ctx, sigArgs)
+	return r.GetSignalString(ctx, &strArgs)
 }
 
-// PowertrainCombustionEngineMaf is the Aggregation resolver for the powertrainCombustionEngineMaf field.
+// PowertrainCombustionEngineMaf is the Aggregation resolver for the PowertrainCombustionEngineMaf field.
 func (r *signalAggregationsResolver) PowertrainCombustionEngineMaf(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error) {
-	sigArgs, err := getFloatArgs(ctx, obj, agg)
-	if err != nil {
-		return nil, err
+	obj.SigArgs.Name = "Powertrain_CombustionEngine_MAF"
+	floatArgs := model.FloatSignalArgs{
+		Agg:        agg,
+		SignalArgs: obj.SigArgs,
 	}
-	return r.GetSignalFloats(ctx, sigArgs)
+	return r.GetSignalFloats(ctx, &floatArgs)
 }
 
 // PowertrainCombustionEngineSpeed is the Aggregation resolver for the powertrainCombustionEngineSpeed field.
 func (r *signalAggregationsResolver) PowertrainCombustionEngineSpeed(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error) {
-	sigArgs, err := getFloatArgs(ctx, obj, agg)
-	if err != nil {
-		return nil, err
+	obj.SigArgs.Name = "Powertrain_CombustionEngine_Speed"
+	floatArgs := model.FloatSignalArgs{
+		Agg:        agg,
+		SignalArgs: obj.SigArgs,
 	}
-	return r.GetSignalFloats(ctx, sigArgs)
+	return r.GetSignalFloats(ctx, &floatArgs)
 }
 
-// PowertrainCombustionEngineTps is the Aggregation resolver for the powertrainCombustionEngineTps field.
+// PowertrainCombustionEngineTps is the Aggregation resolver for the PowertrainCombustionEngineTps field.
 func (r *signalAggregationsResolver) PowertrainCombustionEngineTps(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error) {
-	sigArgs, err := getFloatArgs(ctx, obj, agg)
-	if err != nil {
-		return nil, err
+	obj.SigArgs.Name = "Powertrain_CombustionEngine_TPS"
+	floatArgs := model.FloatSignalArgs{
+		Agg:        agg,
+		SignalArgs: obj.SigArgs,
 	}
-	return r.GetSignalFloats(ctx, sigArgs)
+	return r.GetSignalFloats(ctx, &floatArgs)
 }
 
 // PowertrainFuelSystemAbsoluteLevel is the Aggregation resolver for the powertrainFuelSystemAbsoluteLevel field.
 func (r *signalAggregationsResolver) PowertrainFuelSystemAbsoluteLevel(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error) {
-	sigArgs, err := getFloatArgs(ctx, obj, agg)
-	if err != nil {
-		return nil, err
+	obj.SigArgs.Name = "Powertrain_FuelSystem_AbsoluteLevel"
+	floatArgs := model.FloatSignalArgs{
+		Agg:        agg,
+		SignalArgs: obj.SigArgs,
 	}
-	return r.GetSignalFloats(ctx, sigArgs)
+	return r.GetSignalFloats(ctx, &floatArgs)
 }
 
 // PowertrainFuelSystemSupportedFuelTypes is the Aggregation resolver for the powertrainFuelSystemSupportedFuelTypes field.
 func (r *signalAggregationsResolver) PowertrainFuelSystemSupportedFuelTypes(ctx context.Context, obj *model.SignalsWithID, agg model.StringAggregation) ([]*model.SignalString, error) {
-	sigArgs, err := getStringArgs(ctx, obj, agg)
-	if err != nil {
-		return nil, err
+	obj.SigArgs.Name = "Powertrain_FuelSystem_SupportedFuelTypes"
+	strArgs := model.StringSignalArgs{
+		Agg:        agg,
+		SignalArgs: obj.SigArgs,
 	}
-	return r.GetSignalString(ctx, sigArgs)
+	return r.GetSignalString(ctx, &strArgs)
 }
 
 // PowertrainRange is the Aggregation resolver for the powertrainRange field.
 func (r *signalAggregationsResolver) PowertrainRange(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error) {
-	sigArgs, err := getFloatArgs(ctx, obj, agg)
-	if err != nil {
-		return nil, err
+	obj.SigArgs.Name = "Powertrain_Range"
+	floatArgs := model.FloatSignalArgs{
+		Agg:        agg,
+		SignalArgs: obj.SigArgs,
 	}
-	return r.GetSignalFloats(ctx, sigArgs)
+	return r.GetSignalFloats(ctx, &floatArgs)
 }
 
 // PowertrainTractionBatteryChargingChargeLimit is the Aggregation resolver for the powertrainTractionBatteryChargingChargeLimit field.
 func (r *signalAggregationsResolver) PowertrainTractionBatteryChargingChargeLimit(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error) {
-	sigArgs, err := getFloatArgs(ctx, obj, agg)
-	if err != nil {
-		return nil, err
+	obj.SigArgs.Name = "Powertrain_TractionBattery_Charging_ChargeLimit"
+	floatArgs := model.FloatSignalArgs{
+		Agg:        agg,
+		SignalArgs: obj.SigArgs,
 	}
-	return r.GetSignalFloats(ctx, sigArgs)
+	return r.GetSignalFloats(ctx, &floatArgs)
 }
 
 // PowertrainTractionBatteryChargingIsCharging is the Aggregation resolver for the powertrainTractionBatteryChargingIsCharging field.
 func (r *signalAggregationsResolver) PowertrainTractionBatteryChargingIsCharging(ctx context.Context, obj *model.SignalsWithID, agg model.StringAggregation) ([]*model.SignalString, error) {
-	sigArgs, err := getStringArgs(ctx, obj, agg)
-	if err != nil {
-		return nil, err
+	obj.SigArgs.Name = "Powertrain_TractionBattery_Charging_IsCharging"
+	strArgs := model.StringSignalArgs{
+		Agg:        agg,
+		SignalArgs: obj.SigArgs,
 	}
-	return r.GetSignalString(ctx, sigArgs)
+	return r.GetSignalString(ctx, &strArgs)
 }
 
 // PowertrainTractionBatteryGrossCapacity is the Aggregation resolver for the powertrainTractionBatteryGrossCapacity field.
 func (r *signalAggregationsResolver) PowertrainTractionBatteryGrossCapacity(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error) {
-	sigArgs, err := getFloatArgs(ctx, obj, agg)
-	if err != nil {
-		return nil, err
+	obj.SigArgs.Name = "Powertrain_TractionBattery_GrossCapacity"
+	floatArgs := model.FloatSignalArgs{
+		Agg:        agg,
+		SignalArgs: obj.SigArgs,
 	}
-	return r.GetSignalFloats(ctx, sigArgs)
+	return r.GetSignalFloats(ctx, &floatArgs)
 }
 
 // PowertrainTractionBatteryStateOfChargeCurrent is the Aggregation resolver for the powertrainTractionBatteryStateOfChargeCurrent field.
 func (r *signalAggregationsResolver) PowertrainTractionBatteryStateOfChargeCurrent(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error) {
-	sigArgs, err := getFloatArgs(ctx, obj, agg)
-	if err != nil {
-		return nil, err
+	obj.SigArgs.Name = "Powertrain_TractionBattery_StateOfCharge_Current"
+	floatArgs := model.FloatSignalArgs{
+		Agg:        agg,
+		SignalArgs: obj.SigArgs,
 	}
-	return r.GetSignalFloats(ctx, sigArgs)
+	return r.GetSignalFloats(ctx, &floatArgs)
 }
 
 // PowertrainTransmissionTravelledDistance is the Aggregation resolver for the powertrainTransmissionTravelledDistance field.
 func (r *signalAggregationsResolver) PowertrainTransmissionTravelledDistance(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error) {
-	sigArgs, err := getFloatArgs(ctx, obj, agg)
-	if err != nil {
-		return nil, err
+	obj.SigArgs.Name = "Powertrain_Transmission_TravelledDistance"
+	floatArgs := model.FloatSignalArgs{
+		Agg:        agg,
+		SignalArgs: obj.SigArgs,
 	}
-	return r.GetSignalFloats(ctx, sigArgs)
+	return r.GetSignalFloats(ctx, &floatArgs)
 }
 
 // PowertrainType is the Aggregation resolver for the powertrainType field.
 func (r *signalAggregationsResolver) PowertrainType(ctx context.Context, obj *model.SignalsWithID, agg model.StringAggregation) ([]*model.SignalString, error) {
-	sigArgs, err := getStringArgs(ctx, obj, agg)
-	if err != nil {
-		return nil, err
+	obj.SigArgs.Name = "Powertrain_Type"
+	strArgs := model.StringSignalArgs{
+		Agg:        agg,
+		SignalArgs: obj.SigArgs,
 	}
-	return r.GetSignalString(ctx, sigArgs)
+	return r.GetSignalString(ctx, &strArgs)
 }
 
 // Speed is the Aggregation resolver for the speed field.
 func (r *signalAggregationsResolver) Speed(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error) {
-	sigArgs, err := getFloatArgs(ctx, obj, agg)
-	if err != nil {
-		return nil, err
+	obj.SigArgs.Name = "Speed"
+	floatArgs := model.FloatSignalArgs{
+		Agg:        agg,
+		SignalArgs: obj.SigArgs,
 	}
-	return r.GetSignalFloats(ctx, sigArgs)
+	return r.GetSignalFloats(ctx, &floatArgs)
 }
 
 // VehicleIdentificationBrand is the Aggregation resolver for the vehicleIdentificationBrand field.
 func (r *signalAggregationsResolver) VehicleIdentificationBrand(ctx context.Context, obj *model.SignalsWithID, agg model.StringAggregation) ([]*model.SignalString, error) {
-	sigArgs, err := getStringArgs(ctx, obj, agg)
-	if err != nil {
-		return nil, err
+	obj.SigArgs.Name = "VehicleIdentification_Brand"
+	strArgs := model.StringSignalArgs{
+		Agg:        agg,
+		SignalArgs: obj.SigArgs,
 	}
-	return r.GetSignalString(ctx, sigArgs)
+	return r.GetSignalString(ctx, &strArgs)
 }
 
 // VehicleIdentificationModel is the Aggregation resolver for the vehicleIdentificationModel field.
 func (r *signalAggregationsResolver) VehicleIdentificationModel(ctx context.Context, obj *model.SignalsWithID, agg model.StringAggregation) ([]*model.SignalString, error) {
-	sigArgs, err := getStringArgs(ctx, obj, agg)
-	if err != nil {
-		return nil, err
+	obj.SigArgs.Name = "VehicleIdentification_Model"
+	strArgs := model.StringSignalArgs{
+		Agg:        agg,
+		SignalArgs: obj.SigArgs,
 	}
-	return r.GetSignalString(ctx, sigArgs)
+	return r.GetSignalString(ctx, &strArgs)
 }
 
 // VehicleIdentificationYear is the Aggregation resolver for the vehicleIdentificationYear field.
 func (r *signalAggregationsResolver) VehicleIdentificationYear(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) ([]*model.SignalFloat, error) {
-	sigArgs, err := getFloatArgs(ctx, obj, agg)
-	if err != nil {
-		return nil, err
+	obj.SigArgs.Name = "VehicleIdentification_Year"
+	floatArgs := model.FloatSignalArgs{
+		Agg:        agg,
+		SignalArgs: obj.SigArgs,
 	}
-	return r.GetSignalFloats(ctx, sigArgs)
+	return r.GetSignalFloats(ctx, &floatArgs)
 }
 
 // ChassisAxleRow1WheelLeftTirePressure is the Collection resolver for the chassisAxleRow1WheelLeftTirePressure field.
 func (r *signalCollectionResolver) ChassisAxleRow1WheelLeftTirePressure(ctx context.Context, obj *model.SignalsWithID) (*model.SignalFloat, error) {
-	sigArgs, err := getSignalArgs(ctx, obj)
-	if err != nil {
-		return nil, err
-	}
-	return r.GetLatestSignalFloat(ctx, sigArgs)
+	obj.SigArgs.Name = "Chassis_Axle_Row1_Wheel_Left_Tire_Pressure"
+	return r.GetLatestSignalFloat(ctx, &obj.SigArgs)
 }
 
 // ChassisAxleRow1WheelRightTirePressure is the Collection resolver for the chassisAxleRow1WheelRightTirePressure field.
 func (r *signalCollectionResolver) ChassisAxleRow1WheelRightTirePressure(ctx context.Context, obj *model.SignalsWithID) (*model.SignalFloat, error) {
-	sigArgs, err := getSignalArgs(ctx, obj)
-	if err != nil {
-		return nil, err
-	}
-	return r.GetLatestSignalFloat(ctx, sigArgs)
+	obj.SigArgs.Name = "Chassis_Axle_Row1_Wheel_Right_Tire_Pressure"
+	return r.GetLatestSignalFloat(ctx, &obj.SigArgs)
 }
 
 // ChassisAxleRow2WheelLeftTirePressure is the Collection resolver for the chassisAxleRow2WheelLeftTirePressure field.
 func (r *signalCollectionResolver) ChassisAxleRow2WheelLeftTirePressure(ctx context.Context, obj *model.SignalsWithID) (*model.SignalFloat, error) {
-	sigArgs, err := getSignalArgs(ctx, obj)
-	if err != nil {
-		return nil, err
-	}
-	return r.GetLatestSignalFloat(ctx, sigArgs)
+	obj.SigArgs.Name = "Chassis_Axle_Row2_Wheel_Left_Tire_Pressure"
+	return r.GetLatestSignalFloat(ctx, &obj.SigArgs)
 }
 
 // ChassisAxleRow2WheelRightTirePressure is the Collection resolver for the chassisAxleRow2WheelRightTirePressure field.
 func (r *signalCollectionResolver) ChassisAxleRow2WheelRightTirePressure(ctx context.Context, obj *model.SignalsWithID) (*model.SignalFloat, error) {
-	sigArgs, err := getSignalArgs(ctx, obj)
-	if err != nil {
-		return nil, err
-	}
-	return r.GetLatestSignalFloat(ctx, sigArgs)
+	obj.SigArgs.Name = "Chassis_Axle_Row2_Wheel_Right_Tire_Pressure"
+	return r.GetLatestSignalFloat(ctx, &obj.SigArgs)
 }
 
 // CurrentLocationAltitude is the Collection resolver for the currentLocationAltitude field.
 func (r *signalCollectionResolver) CurrentLocationAltitude(ctx context.Context, obj *model.SignalsWithID) (*model.SignalFloat, error) {
-	sigArgs, err := getSignalArgs(ctx, obj)
-	if err != nil {
-		return nil, err
-	}
-	return r.GetLatestSignalFloat(ctx, sigArgs)
+	obj.SigArgs.Name = "CurrentLocation_Altitude"
+	return r.GetLatestSignalFloat(ctx, &obj.SigArgs)
 }
 
 // CurrentLocationLatitude is the Collection resolver for the currentLocationLatitude field.
 func (r *signalCollectionResolver) CurrentLocationLatitude(ctx context.Context, obj *model.SignalsWithID) (*model.SignalFloat, error) {
-	sigArgs, err := getSignalArgs(ctx, obj)
-	if err != nil {
-		return nil, err
-	}
-	return r.GetLatestSignalFloat(ctx, sigArgs)
+	obj.SigArgs.Name = "CurrentLocation_Latitude"
+	return r.GetLatestSignalFloat(ctx, &obj.SigArgs)
 }
 
 // CurrentLocationLongitude is the Collection resolver for the currentLocationLongitude field.
 func (r *signalCollectionResolver) CurrentLocationLongitude(ctx context.Context, obj *model.SignalsWithID) (*model.SignalFloat, error) {
-	sigArgs, err := getSignalArgs(ctx, obj)
-	if err != nil {
-		return nil, err
-	}
-	return r.GetLatestSignalFloat(ctx, sigArgs)
+	obj.SigArgs.Name = "CurrentLocation_Longitude"
+	return r.GetLatestSignalFloat(ctx, &obj.SigArgs)
 }
 
 // CurrentLocationTimestamp is the Collection resolver for the currentLocationTimestamp field.
 func (r *signalCollectionResolver) CurrentLocationTimestamp(ctx context.Context, obj *model.SignalsWithID) (*model.SignalString, error) {
-	sigArgs, err := getSignalArgs(ctx, obj)
-	if err != nil {
-		return nil, err
-	}
-	return r.GetLatestSignalString(ctx, sigArgs)
+	obj.SigArgs.Name = "CurrentLocation_Timestamp"
+	return r.GetLatestSignalString(ctx, &obj.SigArgs)
 }
 
-// DIMOAftermarketHdop is the Collection resolver for the dIMOAftermarketHdop field.
+// DIMOAftermarketHdop is the Collection resolver for the DIMOAftermarketHdop field.
 func (r *signalCollectionResolver) DIMOAftermarketHdop(ctx context.Context, obj *model.SignalsWithID) (*model.SignalFloat, error) {
-	sigArgs, err := getSignalArgs(ctx, obj)
-	if err != nil {
-		return nil, err
-	}
-	return r.GetLatestSignalFloat(ctx, sigArgs)
+	obj.SigArgs.Name = "DIMO_Aftermarket_HDOP"
+	return r.GetLatestSignalFloat(ctx, &obj.SigArgs)
 }
 
-// DIMOAftermarketNsat is the Collection resolver for the dIMOAftermarketNsat field.
+// DIMOAftermarketNsat is the Collection resolver for the DIMOAftermarketNsat field.
 func (r *signalCollectionResolver) DIMOAftermarketNsat(ctx context.Context, obj *model.SignalsWithID) (*model.SignalFloat, error) {
-	sigArgs, err := getSignalArgs(ctx, obj)
-	if err != nil {
-		return nil, err
-	}
-	return r.GetLatestSignalFloat(ctx, sigArgs)
+	obj.SigArgs.Name = "DIMO_Aftermarket_NSAT"
+	return r.GetLatestSignalFloat(ctx, &obj.SigArgs)
 }
 
-// DIMOAftermarketSsid is the Collection resolver for the dIMOAftermarketSsid field.
+// DIMOAftermarketSsid is the Collection resolver for the DIMOAftermarketSsid field.
 func (r *signalCollectionResolver) DIMOAftermarketSsid(ctx context.Context, obj *model.SignalsWithID) (*model.SignalString, error) {
-	sigArgs, err := getSignalArgs(ctx, obj)
-	if err != nil {
-		return nil, err
-	}
-	return r.GetLatestSignalString(ctx, sigArgs)
+	obj.SigArgs.Name = "DIMO_Aftermarket_SSID"
+	return r.GetLatestSignalString(ctx, &obj.SigArgs)
 }
 
 // DIMOAftermarketWPAState is the Collection resolver for the dIMOAftermarketWPAState field.
 func (r *signalCollectionResolver) DIMOAftermarketWPAState(ctx context.Context, obj *model.SignalsWithID) (*model.SignalString, error) {
-	sigArgs, err := getSignalArgs(ctx, obj)
-	if err != nil {
-		return nil, err
-	}
-	return r.GetLatestSignalString(ctx, sigArgs)
+	obj.SigArgs.Name = "DIMO_Aftermarket_WPAState"
+	return r.GetLatestSignalString(ctx, &obj.SigArgs)
 }
 
 // ExteriorAirTemperature is the Collection resolver for the exteriorAirTemperature field.
 func (r *signalCollectionResolver) ExteriorAirTemperature(ctx context.Context, obj *model.SignalsWithID) (*model.SignalFloat, error) {
-	sigArgs, err := getSignalArgs(ctx, obj)
-	if err != nil {
-		return nil, err
-	}
-	return r.GetLatestSignalFloat(ctx, sigArgs)
+	obj.SigArgs.Name = "Exterior_AirTemperature"
+	return r.GetLatestSignalFloat(ctx, &obj.SigArgs)
 }
 
 // LowVoltageBatteryCurrentVoltage is the Collection resolver for the lowVoltageBatteryCurrentVoltage field.
 func (r *signalCollectionResolver) LowVoltageBatteryCurrentVoltage(ctx context.Context, obj *model.SignalsWithID) (*model.SignalFloat, error) {
-	sigArgs, err := getSignalArgs(ctx, obj)
-	if err != nil {
-		return nil, err
-	}
-	return r.GetLatestSignalFloat(ctx, sigArgs)
+	obj.SigArgs.Name = "LowVoltageBattery_CurrentVoltage"
+	return r.GetLatestSignalFloat(ctx, &obj.SigArgs)
 }
 
 // OBDBarometricPressure is the Collection resolver for the oBDBarometricPressure field.
 func (r *signalCollectionResolver) OBDBarometricPressure(ctx context.Context, obj *model.SignalsWithID) (*model.SignalFloat, error) {
-	sigArgs, err := getSignalArgs(ctx, obj)
-	if err != nil {
-		return nil, err
-	}
-	return r.GetLatestSignalFloat(ctx, sigArgs)
+	obj.SigArgs.Name = "OBD_BarometricPressure"
+	return r.GetLatestSignalFloat(ctx, &obj.SigArgs)
 }
 
 // OBDEngineLoad is the Collection resolver for the oBDEngineLoad field.
 func (r *signalCollectionResolver) OBDEngineLoad(ctx context.Context, obj *model.SignalsWithID) (*model.SignalFloat, error) {
-	sigArgs, err := getSignalArgs(ctx, obj)
-	if err != nil {
-		return nil, err
-	}
-	return r.GetLatestSignalFloat(ctx, sigArgs)
+	obj.SigArgs.Name = "OBD_EngineLoad"
+	return r.GetLatestSignalFloat(ctx, &obj.SigArgs)
 }
 
 // OBDIntakeTemp is the Collection resolver for the oBDIntakeTemp field.
 func (r *signalCollectionResolver) OBDIntakeTemp(ctx context.Context, obj *model.SignalsWithID) (*model.SignalFloat, error) {
-	sigArgs, err := getSignalArgs(ctx, obj)
-	if err != nil {
-		return nil, err
-	}
-	return r.GetLatestSignalFloat(ctx, sigArgs)
+	obj.SigArgs.Name = "OBD_IntakeTemp"
+	return r.GetLatestSignalFloat(ctx, &obj.SigArgs)
 }
 
 // OBDRunTime is the Collection resolver for the oBDRunTime field.
 func (r *signalCollectionResolver) OBDRunTime(ctx context.Context, obj *model.SignalsWithID) (*model.SignalFloat, error) {
-	sigArgs, err := getSignalArgs(ctx, obj)
-	if err != nil {
-		return nil, err
-	}
-	return r.GetLatestSignalFloat(ctx, sigArgs)
+	obj.SigArgs.Name = "OBD_RunTime"
+	return r.GetLatestSignalFloat(ctx, &obj.SigArgs)
 }
 
-// PowertrainCombustionEngineEct is the Collection resolver for the powertrainCombustionEngineEct field.
+// PowertrainCombustionEngineEct is the Collection resolver for the PowertrainCombustionEngineEct field.
 func (r *signalCollectionResolver) PowertrainCombustionEngineEct(ctx context.Context, obj *model.SignalsWithID) (*model.SignalFloat, error) {
-	sigArgs, err := getSignalArgs(ctx, obj)
-	if err != nil {
-		return nil, err
-	}
-	return r.GetLatestSignalFloat(ctx, sigArgs)
+	obj.SigArgs.Name = "Powertrain_CombustionEngine_ECT"
+	return r.GetLatestSignalFloat(ctx, &obj.SigArgs)
 }
 
 // PowertrainCombustionEngineEngineOilLevel is the Collection resolver for the powertrainCombustionEngineEngineOilLevel field.
 func (r *signalCollectionResolver) PowertrainCombustionEngineEngineOilLevel(ctx context.Context, obj *model.SignalsWithID) (*model.SignalString, error) {
-	sigArgs, err := getSignalArgs(ctx, obj)
-	if err != nil {
-		return nil, err
-	}
-	return r.GetLatestSignalString(ctx, sigArgs)
+	obj.SigArgs.Name = "Powertrain_CombustionEngine_EngineOilLevel"
+	return r.GetLatestSignalString(ctx, &obj.SigArgs)
 }
 
-// PowertrainCombustionEngineMaf is the Collection resolver for the powertrainCombustionEngineMaf field.
+// PowertrainCombustionEngineMaf is the Collection resolver for the PowertrainCombustionEngineMaf field.
 func (r *signalCollectionResolver) PowertrainCombustionEngineMaf(ctx context.Context, obj *model.SignalsWithID) (*model.SignalFloat, error) {
-	sigArgs, err := getSignalArgs(ctx, obj)
-	if err != nil {
-		return nil, err
-	}
-	return r.GetLatestSignalFloat(ctx, sigArgs)
+	obj.SigArgs.Name = "Powertrain_CombustionEngine_MAF"
+	return r.GetLatestSignalFloat(ctx, &obj.SigArgs)
 }
 
 // PowertrainCombustionEngineSpeed is the Collection resolver for the powertrainCombustionEngineSpeed field.
 func (r *signalCollectionResolver) PowertrainCombustionEngineSpeed(ctx context.Context, obj *model.SignalsWithID) (*model.SignalFloat, error) {
-	sigArgs, err := getSignalArgs(ctx, obj)
-	if err != nil {
-		return nil, err
-	}
-	return r.GetLatestSignalFloat(ctx, sigArgs)
+	obj.SigArgs.Name = "Powertrain_CombustionEngine_Speed"
+	return r.GetLatestSignalFloat(ctx, &obj.SigArgs)
 }
 
-// PowertrainCombustionEngineTps is the Collection resolver for the powertrainCombustionEngineTps field.
+// PowertrainCombustionEngineTps is the Collection resolver for the PowertrainCombustionEngineTps field.
 func (r *signalCollectionResolver) PowertrainCombustionEngineTps(ctx context.Context, obj *model.SignalsWithID) (*model.SignalFloat, error) {
-	sigArgs, err := getSignalArgs(ctx, obj)
-	if err != nil {
-		return nil, err
-	}
-	return r.GetLatestSignalFloat(ctx, sigArgs)
+	obj.SigArgs.Name = "Powertrain_CombustionEngine_TPS"
+	return r.GetLatestSignalFloat(ctx, &obj.SigArgs)
 }
 
 // PowertrainFuelSystemAbsoluteLevel is the Collection resolver for the powertrainFuelSystemAbsoluteLevel field.
 func (r *signalCollectionResolver) PowertrainFuelSystemAbsoluteLevel(ctx context.Context, obj *model.SignalsWithID) (*model.SignalFloat, error) {
-	sigArgs, err := getSignalArgs(ctx, obj)
-	if err != nil {
-		return nil, err
-	}
-	return r.GetLatestSignalFloat(ctx, sigArgs)
+	obj.SigArgs.Name = "Powertrain_FuelSystem_AbsoluteLevel"
+	return r.GetLatestSignalFloat(ctx, &obj.SigArgs)
 }
 
 // PowertrainFuelSystemSupportedFuelTypes is the Collection resolver for the powertrainFuelSystemSupportedFuelTypes field.
 func (r *signalCollectionResolver) PowertrainFuelSystemSupportedFuelTypes(ctx context.Context, obj *model.SignalsWithID) (*model.SignalString, error) {
-	sigArgs, err := getSignalArgs(ctx, obj)
-	if err != nil {
-		return nil, err
-	}
-	return r.GetLatestSignalString(ctx, sigArgs)
+	obj.SigArgs.Name = "Powertrain_FuelSystem_SupportedFuelTypes"
+	return r.GetLatestSignalString(ctx, &obj.SigArgs)
 }
 
 // PowertrainRange is the Collection resolver for the powertrainRange field.
 func (r *signalCollectionResolver) PowertrainRange(ctx context.Context, obj *model.SignalsWithID) (*model.SignalFloat, error) {
-	sigArgs, err := getSignalArgs(ctx, obj)
-	if err != nil {
-		return nil, err
-	}
-	return r.GetLatestSignalFloat(ctx, sigArgs)
+	obj.SigArgs.Name = "Powertrain_Range"
+	return r.GetLatestSignalFloat(ctx, &obj.SigArgs)
 }
 
 // PowertrainTractionBatteryChargingChargeLimit is the Collection resolver for the powertrainTractionBatteryChargingChargeLimit field.
 func (r *signalCollectionResolver) PowertrainTractionBatteryChargingChargeLimit(ctx context.Context, obj *model.SignalsWithID) (*model.SignalFloat, error) {
-	sigArgs, err := getSignalArgs(ctx, obj)
-	if err != nil {
-		return nil, err
-	}
-	return r.GetLatestSignalFloat(ctx, sigArgs)
+	obj.SigArgs.Name = "Powertrain_TractionBattery_Charging_ChargeLimit"
+	return r.GetLatestSignalFloat(ctx, &obj.SigArgs)
 }
 
 // PowertrainTractionBatteryChargingIsCharging is the Collection resolver for the powertrainTractionBatteryChargingIsCharging field.
 func (r *signalCollectionResolver) PowertrainTractionBatteryChargingIsCharging(ctx context.Context, obj *model.SignalsWithID) (*model.SignalString, error) {
-	sigArgs, err := getSignalArgs(ctx, obj)
-	if err != nil {
-		return nil, err
-	}
-	return r.GetLatestSignalString(ctx, sigArgs)
+	obj.SigArgs.Name = "Powertrain_TractionBattery_Charging_IsCharging"
+	return r.GetLatestSignalString(ctx, &obj.SigArgs)
 }
 
 // PowertrainTractionBatteryGrossCapacity is the Collection resolver for the powertrainTractionBatteryGrossCapacity field.
 func (r *signalCollectionResolver) PowertrainTractionBatteryGrossCapacity(ctx context.Context, obj *model.SignalsWithID) (*model.SignalFloat, error) {
-	sigArgs, err := getSignalArgs(ctx, obj)
-	if err != nil {
-		return nil, err
-	}
-	return r.GetLatestSignalFloat(ctx, sigArgs)
+	obj.SigArgs.Name = "Powertrain_TractionBattery_GrossCapacity"
+	return r.GetLatestSignalFloat(ctx, &obj.SigArgs)
 }
 
 // PowertrainTractionBatteryStateOfChargeCurrent is the Collection resolver for the powertrainTractionBatteryStateOfChargeCurrent field.
 func (r *signalCollectionResolver) PowertrainTractionBatteryStateOfChargeCurrent(ctx context.Context, obj *model.SignalsWithID) (*model.SignalFloat, error) {
-	sigArgs, err := getSignalArgs(ctx, obj)
-	if err != nil {
-		return nil, err
-	}
-	return r.GetLatestSignalFloat(ctx, sigArgs)
+	obj.SigArgs.Name = "Powertrain_TractionBattery_StateOfCharge_Current"
+	return r.GetLatestSignalFloat(ctx, &obj.SigArgs)
 }
 
 // PowertrainTransmissionTravelledDistance is the Collection resolver for the powertrainTransmissionTravelledDistance field.
 func (r *signalCollectionResolver) PowertrainTransmissionTravelledDistance(ctx context.Context, obj *model.SignalsWithID) (*model.SignalFloat, error) {
-	sigArgs, err := getSignalArgs(ctx, obj)
-	if err != nil {
-		return nil, err
-	}
-	return r.GetLatestSignalFloat(ctx, sigArgs)
+	obj.SigArgs.Name = "Powertrain_Transmission_TravelledDistance"
+	return r.GetLatestSignalFloat(ctx, &obj.SigArgs)
 }
 
 // PowertrainType is the Collection resolver for the powertrainType field.
 func (r *signalCollectionResolver) PowertrainType(ctx context.Context, obj *model.SignalsWithID) (*model.SignalString, error) {
-	sigArgs, err := getSignalArgs(ctx, obj)
-	if err != nil {
-		return nil, err
-	}
-	return r.GetLatestSignalString(ctx, sigArgs)
+	obj.SigArgs.Name = "Powertrain_Type"
+	return r.GetLatestSignalString(ctx, &obj.SigArgs)
 }
 
 // Speed is the Collection resolver for the speed field.
 func (r *signalCollectionResolver) Speed(ctx context.Context, obj *model.SignalsWithID) (*model.SignalFloat, error) {
-	sigArgs, err := getSignalArgs(ctx, obj)
-	if err != nil {
-		return nil, err
-	}
-	return r.GetLatestSignalFloat(ctx, sigArgs)
+	obj.SigArgs.Name = "Speed"
+	return r.GetLatestSignalFloat(ctx, &obj.SigArgs)
 }
 
 // VehicleIdentificationBrand is the Collection resolver for the vehicleIdentificationBrand field.
 func (r *signalCollectionResolver) VehicleIdentificationBrand(ctx context.Context, obj *model.SignalsWithID) (*model.SignalString, error) {
-	sigArgs, err := getSignalArgs(ctx, obj)
-	if err != nil {
-		return nil, err
-	}
-	return r.GetLatestSignalString(ctx, sigArgs)
+	obj.SigArgs.Name = "VehicleIdentification_Brand"
+	return r.GetLatestSignalString(ctx, &obj.SigArgs)
 }
 
 // VehicleIdentificationModel is the Collection resolver for the vehicleIdentificationModel field.
 func (r *signalCollectionResolver) VehicleIdentificationModel(ctx context.Context, obj *model.SignalsWithID) (*model.SignalString, error) {
-	sigArgs, err := getSignalArgs(ctx, obj)
-	if err != nil {
-		return nil, err
-	}
-	return r.GetLatestSignalString(ctx, sigArgs)
+	obj.SigArgs.Name = "VehicleIdentification_Model"
+	return r.GetLatestSignalString(ctx, &obj.SigArgs)
 }
 
 // VehicleIdentificationYear is the Collection resolver for the vehicleIdentificationYear field.
 func (r *signalCollectionResolver) VehicleIdentificationYear(ctx context.Context, obj *model.SignalsWithID) (*model.SignalFloat, error) {
-	sigArgs, err := getSignalArgs(ctx, obj)
-	if err != nil {
-		return nil, err
-	}
-	return r.GetLatestSignalFloat(ctx, sigArgs)
+	obj.SigArgs.Name = "VehicleIdentification_Year"
+	return r.GetLatestSignalFloat(ctx, &obj.SigArgs)
 }

@@ -76,13 +76,13 @@ func (r *RepositoryTestSuite) TestGetSignalFloats() {
 	ctx := context.Background()
 	testCases := []struct {
 		name     string
-		sigArgs  repositories.FloatSignalArgs
+		sigArgs  model.FloatSignalArgs
 		expected []model.SignalFloat
 	}{
 		{
 			name: "average",
-			sigArgs: repositories.FloatSignalArgs{
-				SignalArgs: repositories.SignalArgs{
+			sigArgs: model.FloatSignalArgs{
+				SignalArgs: model.SignalArgs{
 					TokenID: 1,
 					FromTS:  r.dataStartTime,
 					ToTS:    endTs,
@@ -102,8 +102,8 @@ func (r *RepositoryTestSuite) TestGetSignalFloats() {
 		},
 		{
 			name: "max smartcar",
-			sigArgs: repositories.FloatSignalArgs{
-				SignalArgs: repositories.SignalArgs{
+			sigArgs: model.FloatSignalArgs{
+				SignalArgs: model.SignalArgs{
 					TokenID: 1,
 					FromTS:  r.dataStartTime,
 					ToTS:    endTs,
@@ -143,13 +143,13 @@ func (r *RepositoryTestSuite) TestGetSignalString() {
 	ctx := context.Background()
 	testCases := []struct {
 		name     string
-		sigArgs  repositories.StringSignalArgs
+		sigArgs  model.StringSignalArgs
 		expected []*model.SignalString
 	}{
 		{
 			name: "unique",
-			sigArgs: repositories.StringSignalArgs{
-				SignalArgs: repositories.SignalArgs{
+			sigArgs: model.StringSignalArgs{
+				SignalArgs: model.SignalArgs{
 					TokenID: 1,
 					FromTS:  r.dataStartTime,
 					ToTS:    r.dataStartTime.Add(time.Hour),
@@ -169,8 +169,8 @@ func (r *RepositoryTestSuite) TestGetSignalString() {
 		},
 		{
 			name: "Top autopi",
-			sigArgs: repositories.StringSignalArgs{
-				SignalArgs: repositories.SignalArgs{
+			sigArgs: model.StringSignalArgs{
+				SignalArgs: model.SignalArgs{
 					TokenID: 1,
 					FromTS:  r.dataStartTime,
 					ToTS:    r.dataStartTime.Add(time.Hour),
@@ -216,12 +216,12 @@ func (r *RepositoryTestSuite) TestGetLatestSignalFloat() {
 	ctx := context.Background()
 	testCases := []struct {
 		name     string
-		sigArgs  repositories.SignalArgs
+		sigArgs  model.SignalArgs
 		expected *model.SignalFloat
 	}{
 		{
 			name: "latest",
-			sigArgs: repositories.SignalArgs{
+			sigArgs: model.SignalArgs{
 				TokenID: 1,
 				Name:    vss.FieldSpeed,
 			},
@@ -232,7 +232,7 @@ func (r *RepositoryTestSuite) TestGetLatestSignalFloat() {
 		},
 		{
 			name: "latest smartcar",
-			sigArgs: repositories.SignalArgs{
+			sigArgs: model.SignalArgs{
 				TokenID: 1,
 				Name:    vss.FieldSpeed,
 				Filter: &model.SignalFilter{
@@ -259,12 +259,12 @@ func (r *RepositoryTestSuite) TestGetLatestSignalString() {
 	ctx := context.Background()
 	testCases := []struct {
 		name     string
-		sigArgs  repositories.SignalArgs
+		sigArgs  model.SignalArgs
 		expected *model.SignalString
 	}{
 		{
 			name: "latest",
-			sigArgs: repositories.SignalArgs{
+			sigArgs: model.SignalArgs{
 				TokenID: 1,
 				Name:    vss.FieldPowertrainType,
 			},
@@ -275,7 +275,7 @@ func (r *RepositoryTestSuite) TestGetLatestSignalString() {
 		},
 		{
 			name: "latest smartcar",
-			sigArgs: repositories.SignalArgs{
+			sigArgs: model.SignalArgs{
 				TokenID: 1,
 				Name:    vss.FieldPowertrainType,
 				Filter: &model.SignalFilter{
@@ -302,20 +302,20 @@ func (r *RepositoryTestSuite) TestLastSeen() {
 	ctx := context.Background()
 	testCases := []struct {
 		name     string
-		sigArgs  repositories.SignalArgs
+		sigArgs  model.SignalArgs
 		expected time.Time
 	}{
 		{
 			name:     "last seen",
 			expected: r.dataStartTime.Add(time.Second * time.Duration(30*(dataPoints-1))),
-			sigArgs: repositories.SignalArgs{
+			sigArgs: model.SignalArgs{
 				TokenID: 1,
 			},
 		},
 		{
 			name:     "last seen smartcar",
 			expected: r.dataStartTime.Add(time.Second * time.Duration(30*(dataPoints-2))),
-			sigArgs: repositories.SignalArgs{
+			sigArgs: model.SignalArgs{
 				TokenID: 1,
 				Filter: &model.SignalFilter{
 					Source: ref("smartcar"),
