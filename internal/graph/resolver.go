@@ -19,6 +19,7 @@ type Resolver struct {
 	*repositories.Repository
 }
 
+// getFloatArgs returns the complete arguments for the float signal query including arguments from the parent field.
 func getFloatArgs(ctx context.Context, obj *model.SignalsWithID, agg model.FloatAggregation) (*repositories.FloatSignalArgs, error) {
 	args, err := getSignalArgs(ctx, obj)
 	if err != nil {
@@ -30,6 +31,7 @@ func getFloatArgs(ctx context.Context, obj *model.SignalsWithID, agg model.Float
 	}, nil
 }
 
+// getStringArgs returns the complete arguments for the string signal query including arguments from the parent field.
 func getStringArgs(ctx context.Context, obj *model.SignalsWithID, agg model.StringAggregation) (*repositories.StringSignalArgs, error) {
 	args, err := getSignalArgs(ctx, obj)
 	if err != nil {
@@ -63,6 +65,7 @@ func getSignalArgs(ctx context.Context, obj *model.SignalsWithID) (*repositories
 	return args, nil
 }
 
+// getTimeArg returns the time argument from the args map.
 func getTimeArg(args map[string]any, name string) time.Time {
 	val, ok := args[name]
 	if !ok {
@@ -75,6 +78,7 @@ func getTimeArg(args map[string]any, name string) time.Time {
 	return timeArg
 }
 
+// getFilterArg returns the filter argument from the args map.
 func getFilterArg(args map[string]any) *model.SignalFilter {
 	filterArg, ok := args["filter"]
 	if !ok {

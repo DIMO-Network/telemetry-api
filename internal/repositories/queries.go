@@ -29,6 +29,7 @@ var sourceTranslations = map[string]string{
 }
 
 var dialect = drivers.Dialect{
+	// Clickhouse does not like quotes around identifiers, so we set them to spaces since LQ and RQ are not optional.
 	LQ: ' ',
 	RQ: ' ',
 
@@ -125,6 +126,7 @@ func selectInterval(milliSeconds int64) qm.QueryMod {
 	return qm.Select(fmt.Sprintf("toStartOfInterval(Timestamp, toIntervalMillisecond(%d)) as %s", milliSeconds, IntervalGroup))
 }
 
+// returns a string representation of the aggregation function based on the aggregation type.
 func getFloatAggFunc(aggType model.FloatAggregationType) string {
 	var aggStr string
 	switch aggType {
@@ -145,6 +147,7 @@ func getFloatAggFunc(aggType model.FloatAggregationType) string {
 	return aggStr
 }
 
+// returns a string representation of the aggregation function based on the aggregation type.
 func getStringAgg(aggType model.StringAggregationType) string {
 	var aggStr string
 	switch aggType {
@@ -222,6 +225,18 @@ func getAggQuery(sigArgs SignalArgs, intervalMS int64, aggFunc string) (stmt str
 	return newQuery(mods...)
 }
 
+// creates a query to get the last seen timestamp of a token.
+/*
+SELECT
+	Timestamp
+FROM
+	signal
+WHERE
+	TokenID = ?
+ORDER BY
+	Timestamp DESC
+LIMIT 1;
+*/
 func getLastSeenQuery(sigArgs *SignalArgs) (stmt string, args []any) {
 	mods := []qm.QueryMod{
 		selectTimestamp(),
