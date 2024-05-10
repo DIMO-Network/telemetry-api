@@ -1,0 +1,42 @@
+name: generate files
+on:
+  pull_request:
+    branches: [ '**' ]
+env:
+  GOPRIVATE: github.com/DIMO-Network
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+jobs:
+  golangci:
+    runs-on: ubuntu-latest
+
+    name: lint
+    steps:
+      - name: Install Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.21.x
+
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: install tools
+        run: make tools
+
+      - name: generate graphql files
+        run: make gql
+
+      - name: go mod tidy
+        run: go mod tidy
+
+      - name: go mod verify
+        run: go mod verify
+
+      - name: porcelain
+        shell: bash
+        run: |
+          dirty_files="$(git status --porcelain)"
+          if [[ `git status --porcelain` ]]; then
+            echo "The following files are dirty after running generators:"
+            echo "${dirty_files}"
+            exit 1
+          fi
