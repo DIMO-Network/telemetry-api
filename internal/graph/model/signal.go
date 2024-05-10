@@ -16,18 +16,19 @@ type SignalArgs struct {
 	FromTS  time.Time
 	ToTS    time.Time
 	Filter  *SignalFilter
-	Name    string
 	TokenID uint32
 }
 
 // FloatSignalArgs is the arguments for querying a float signals.
 type FloatSignalArgs struct {
-	Agg FloatAggregation
+	Name string
+	Agg  FloatAggregation
 	SignalArgs
 }
 
 // StringSignalArgs is the arguments for querying a string signals.
 type StringSignalArgs struct {
-	Agg StringAggregation
+	Name string
+	Agg  StringAggregation
 	SignalArgs
 }

@@ -82,11 +82,11 @@ func (r *RepositoryTestSuite) TestGetSignalFloats() {
 		{
 			name: "average",
 			sigArgs: model.FloatSignalArgs{
+				Name: vss.FieldSpeed,
 				SignalArgs: model.SignalArgs{
 					TokenID: 1,
 					FromTS:  r.dataStartTime,
 					ToTS:    endTs,
-					Name:    vss.FieldSpeed,
 				},
 				Agg: model.FloatAggregation{
 					Type:     model.FloatAggregationTypeAvg,
@@ -103,11 +103,11 @@ func (r *RepositoryTestSuite) TestGetSignalFloats() {
 		{
 			name: "max smartcar",
 			sigArgs: model.FloatSignalArgs{
+				Name: vss.FieldSpeed,
 				SignalArgs: model.SignalArgs{
 					TokenID: 1,
 					FromTS:  r.dataStartTime,
 					ToTS:    endTs,
-					Name:    vss.FieldSpeed,
 					Filter: &model.SignalFilter{
 						Source: ref("autopi"),
 					},
@@ -149,11 +149,11 @@ func (r *RepositoryTestSuite) TestGetSignalString() {
 		{
 			name: "unique",
 			sigArgs: model.StringSignalArgs{
+				Name: vss.FieldPowertrainType,
 				SignalArgs: model.SignalArgs{
 					TokenID: 1,
 					FromTS:  r.dataStartTime,
 					ToTS:    r.dataStartTime.Add(time.Hour),
-					Name:    vss.FieldPowertrainType,
 				},
 				Agg: model.StringAggregation{
 					Type:     model.StringAggregationTypeUnique,
@@ -170,11 +170,11 @@ func (r *RepositoryTestSuite) TestGetSignalString() {
 		{
 			name: "Top autopi",
 			sigArgs: model.StringSignalArgs{
+				Name: vss.FieldPowertrainType,
 				SignalArgs: model.SignalArgs{
 					TokenID: 1,
 					FromTS:  r.dataStartTime,
 					ToTS:    r.dataStartTime.Add(time.Hour),
-					Name:    vss.FieldPowertrainType,
 					Filter: &model.SignalFilter{
 						Source: ref("autopi"),
 					},
@@ -216,14 +216,16 @@ func (r *RepositoryTestSuite) TestGetLatestSignalFloat() {
 	ctx := context.Background()
 	testCases := []struct {
 		name     string
-		sigArgs  model.SignalArgs
+		sigArgs  model.FloatSignalArgs
 		expected *model.SignalFloat
 	}{
 		{
 			name: "latest",
-			sigArgs: model.SignalArgs{
-				TokenID: 1,
-				Name:    vss.FieldSpeed,
+			sigArgs: model.FloatSignalArgs{
+				SignalArgs: model.SignalArgs{
+					TokenID: 1,
+				},
+				Name: vss.FieldSpeed,
 			},
 			expected: &model.SignalFloat{
 				Timestamp: ref(r.dataStartTime.Add(time.Second * time.Duration(30*(dataPoints-1)))),
@@ -232,12 +234,14 @@ func (r *RepositoryTestSuite) TestGetLatestSignalFloat() {
 		},
 		{
 			name: "latest smartcar",
-			sigArgs: model.SignalArgs{
-				TokenID: 1,
-				Name:    vss.FieldSpeed,
-				Filter: &model.SignalFilter{
-					Source: ref("smartcar"),
+			sigArgs: model.FloatSignalArgs{
+				SignalArgs: model.SignalArgs{
+					TokenID: 1,
+					Filter: &model.SignalFilter{
+						Source: ref("smartcar"),
+					},
 				},
+				Name: vss.FieldSpeed,
 			},
 			expected: &model.SignalFloat{
 				Timestamp: ref(r.dataStartTime.Add(time.Second * time.Duration(30*(dataPoints-2)))),
@@ -259,14 +263,16 @@ func (r *RepositoryTestSuite) TestGetLatestSignalString() {
 	ctx := context.Background()
 	testCases := []struct {
 		name     string
-		sigArgs  model.SignalArgs
+		sigArgs  model.StringSignalArgs
 		expected *model.SignalString
 	}{
 		{
 			name: "latest",
-			sigArgs: model.SignalArgs{
-				TokenID: 1,
-				Name:    vss.FieldPowertrainType,
+			sigArgs: model.StringSignalArgs{
+				SignalArgs: model.SignalArgs{
+					TokenID: 1,
+				},
+				Name: vss.FieldPowertrainType,
 			},
 			expected: &model.SignalString{
 				Timestamp: ref(r.dataStartTime.Add(time.Second * time.Duration(30*(dataPoints-1)))),
@@ -275,12 +281,14 @@ func (r *RepositoryTestSuite) TestGetLatestSignalString() {
 		},
 		{
 			name: "latest smartcar",
-			sigArgs: model.SignalArgs{
-				TokenID: 1,
-				Name:    vss.FieldPowertrainType,
-				Filter: &model.SignalFilter{
-					Source: ref("smartcar"),
+			sigArgs: model.StringSignalArgs{
+				SignalArgs: model.SignalArgs{
+					TokenID: 1,
+					Filter: &model.SignalFilter{
+						Source: ref("smartcar"),
+					},
 				},
+				Name: vss.FieldPowertrainType,
 			},
 			expected: &model.SignalString{
 				Timestamp: ref(r.dataStartTime.Add(time.Second * time.Duration(30*(dataPoints-2)))),
@@ -328,7 +336,7 @@ func (r *RepositoryTestSuite) TestLastSeen() {
 			// Call the LastSeen method
 			result, err := r.repo.GetLastSeen(ctx, &tc.sigArgs)
 			r.Require().NoError(err)
-			r.Require().Equal(tc.expected, result)
+			r.Require().Equal(tc.expected, *result)
 		})
 	}
 

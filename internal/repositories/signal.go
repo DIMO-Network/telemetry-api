@@ -28,7 +28,7 @@ func (r *Repository) GetSignalFloats(ctx context.Context, sigArgs *model.FloatSi
 		graphql.AddError(ctx, err)
 		return nil, err
 	}
-	stmt, args := getAggQuery(sigArgs.SignalArgs, interval, getFloatAggFunc(sigArgs.Agg.Type))
+	stmt, args := getAggQuery(sigArgs.SignalArgs, interval, sigArgs.Name, getFloatAggFunc(sigArgs.Agg.Type))
 	rows, err := r.conn.Query(ctx, stmt, args...)
 	if err != nil {
 		return nil, fmt.Errorf("failed querying clickhouse: %w", err)
@@ -57,7 +57,7 @@ func (r *Repository) GetSignalString(ctx context.Context, sigArgs *model.StringS
 		graphql.AddError(ctx, err)
 		return nil, err
 	}
-	stmt, args := getAggQuery(sigArgs.SignalArgs, interval, getStringAgg(sigArgs.Agg.Type))
+	stmt, args := getAggQuery(sigArgs.SignalArgs, interval, sigArgs.Name, getStringAgg(sigArgs.Agg.Type))
 	rows, err := r.conn.Query(ctx, stmt, args...)
 	if err != nil {
 		return nil, fmt.Errorf("failed querying clickhouse: %w", err)
@@ -76,25 +76,25 @@ func (r *Repository) GetSignalString(ctx context.Context, sigArgs *model.StringS
 }
 
 // GetLatestSignalFloat returns the latest float signal based on the provided arguments.
-func (r *Repository) GetLatestSignalFloat(ctx context.Context, sigArgs *model.SignalArgs) (*model.SignalFloat, error) {
+func (r *Repository) GetLatestSignalFloat(ctx context.Context, sigArgs *model.FloatSignalArgs) (*model.SignalFloat, error) {
 	var signal model.SignalFloat
-	err := r.getLatestSignal(ctx, sigArgs, FloatValueCol, &signal.Value, &signal.Timestamp)
+	err := r.getLatestSignal(ctx, &sigArgs.SignalArgs, sigArgs.Name, FloatValueCol, &signal.Value, &signal.Timestamp)
 	return &signal, err
 }
 
 // GetLatestSignalString returns the latest string signal based on the provided arguments.
-func (r *Repository) GetLatestSignalString(ctx context.Context, sigArgs *model.SignalArgs) (*model.SignalString, error) {
+func (r *Repository) GetLatestSignalString(ctx context.Context, sigArgs *model.StringSignalArgs) (*model.SignalString, error) {
 	var signal model.SignalString
-	err := validateLastestSigArgs(sigArgs)
+	err := validateLastest(&sigArgs.SignalArgs)
 	if err != nil {
 		return nil, err
 	}
-	err = r.getLatestSignal(ctx, sigArgs, StringValueCol, &signal.Value, &signal.Timestamp)
+	err = r.getLatestSignal(ctx, &sigArgs.SignalArgs, sigArgs.Name, StringValueCol, &signal.Value, &signal.Timestamp)
 	return &signal, err
 }
 
-func (r *Repository) getLatestSignal(ctx context.Context, sigArgs *model.SignalArgs, valueCol string, dest ...any) error {
-	stmt, args := getLatestQuery(valueCol, sigArgs)
+func (r *Repository) getLatestSignal(ctx context.Context, sigArgs *model.SignalArgs, name, valueCol string, dest ...any) error {
+	stmt, args := getLatestQuery(valueCol, name, sigArgs)
 	row := r.conn.QueryRow(ctx, stmt, args...)
 	if row.Err() != nil {
 		return fmt.Errorf("failed querying clickhouse: %w", row.Err())
@@ -108,7 +108,7 @@ func (r *Repository) getLatestSignal(ctx context.Context, sigArgs *model.SignalA
 
 // GetLastSeen returns the last seen timestamp of a token.
 func (r *Repository) GetLastSeen(ctx context.Context, sigArgs *model.SignalArgs) (*time.Time, error) {
-	err := validateLastSeenSigArgs(sigArgs)
+	err := validateLastest(sigArgs)
 	if err != nil {
 		return nil, err
 	}
@@ -137,17 +137,10 @@ func validateAggSigArgs(args *model.SignalArgs) error {
 	if args.ToTS.Sub(args.FromTS) > twoWeeks {
 		return fmt.Errorf("%w time range is greater than 2 weeks", errInvalidArgs)
 	}
-	return validateLastestSigArgs(args)
+	return validateLastest(args)
 }
 
-func validateLastestSigArgs(args *model.SignalArgs) error {
-	if args.Name == "" {
-		return fmt.Errorf("%w name is empty", errInvalidArgs)
-	}
-	return validateLastSeenSigArgs(args)
-}
-
-func validateLastSeenSigArgs(args *model.SignalArgs) error {
+func validateLastest(args *model.SignalArgs) error {
 	if args.TokenID == 0 {
 		return fmt.Errorf("%w token id is zero", errInvalidArgs)
 	}
