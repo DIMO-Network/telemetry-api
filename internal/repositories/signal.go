@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"slices"
 	"time"
 
 	"github.com/99designs/gqlgen/graphql"
@@ -14,7 +13,6 @@ import (
 
 var (
 	twoWeeks       = 14 * 24 * time.Hour
-	sourceValues   = []string{"autopi", "macaron", "smartcar", "tesla"}
 	errInvalidArgs = errors.New("invalid arguments")
 )
 
@@ -141,8 +139,8 @@ func validateAggSigArgs(args *model.SignalArgs) error {
 }
 
 func validateLastest(args *model.SignalArgs) error {
-	if args.TokenID == 0 {
-		return fmt.Errorf("%w token id is zero", errInvalidArgs)
+	if args.TokenID < 1 {
+		return fmt.Errorf("%w tokenId is not a non-zero uint32", errInvalidArgs)
 	}
 
 	return validateFilter(args.Filter)
@@ -152,9 +150,11 @@ func validateFilter(filter *model.SignalFilter) error {
 	if filter == nil {
 		return nil
 	}
-	// if we move to storing the device address as source we can remove this check.
-	if filter.Source != nil && !slices.Contains(sourceValues, *filter.Source) {
-		return fmt.Errorf("%w source '%s', expected one of %v", errInvalidArgs, *filter.Source, sourceValues)
+	// TODO: remove this check when we move to storing the device address as source
+	if filter.Source != nil {
+		if _, ok := sourceTranslations[*filter.Source]; !ok {
+			return fmt.Errorf("%w source '%s', is not a valid value", errInvalidArgs, *filter.Source)
+		}
 	}
 	return nil
 }

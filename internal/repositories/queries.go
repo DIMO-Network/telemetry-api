@@ -21,6 +21,7 @@ const (
 	IntervalGroup = "group_timestamp"
 )
 
+// TODO: remove this map when we move to storing the device address
 var sourceTranslations = map[string]string{
 	"macron":   "dimo/integration/2ULfuC8U9dOqRshZBAi0lMM1Rrx",
 	"tesla":    "dimo/integration/26A5Dk3vvvQutjSyF0Jka2DP5lg",
@@ -29,9 +30,8 @@ var sourceTranslations = map[string]string{
 }
 
 var dialect = drivers.Dialect{
-	// Clickhouse does not like quotes around identifiers, so we set them to spaces since LQ and RQ are not optional.
-	LQ: ' ',
-	RQ: ' ',
+	LQ: '`',
+	RQ: '`',
 
 	UseIndexPlaceholders:    false,
 	UseLastInsertID:         false,
@@ -96,21 +96,22 @@ func withToTS(toTS time.Time) qm.QueryMod {
 // withSource adds a WHERE clause to the query to filter by Source.
 // Example: 'WHERE Source = ?'.
 func withSource(source string) qm.QueryMod {
+	// TODO: remove this logic when we move to storing the device address as source.
 	if translateSource, ok := sourceTranslations[source]; ok {
 		return qm.Where("Source = ?", translateSource)
 	}
 	return qm.Where("Source = ?", source)
 }
 
-// orderByTS adds an ORDER BY clause to the query to order by Timestamp in descending order.
+// orderByTimeStampDESC adds an ORDER BY clause to the query to order by Timestamp in descending order.
 // Example: 'ORDER BY Timestamp DESC'.
-func orderByTS() qm.QueryMod {
+func orderByTimeStampDESC() qm.QueryMod {
 	return qm.OrderBy("Timestamp DESC")
 }
 
-// orderByInterval adds an ORDER BY clause to the query to order by the interval group in ascending order.
+// orderByIntervalASC adds an ORDER BY clause to the query to order by the interval group in ascending order.
 // Example: 'ORDER BY group_timestamp ASC'.
-func orderByInterval() qm.QueryMod {
+func orderByIntervalASC() qm.QueryMod {
 	return qm.OrderBy(IntervalGroup + " ASC")
 }
 
@@ -185,7 +186,7 @@ func getLatestQuery(valueCol, name string, sigArgs *model.SignalArgs) (stmt stri
 		fromSignal(),
 		withName(name),
 		withTokenID(sigArgs.TokenID),
-		orderByTS(),
+		orderByTimeStampDESC(),
 		qm.Limit(1),
 	}
 	mods = append(mods, getFilterMods(sigArgs.Filter)...)
@@ -219,7 +220,7 @@ func getAggQuery(sigArgs model.SignalArgs, intervalMS int64, name, aggFunc strin
 		withFromTS(sigArgs.FromTS),
 		withToTS(sigArgs.ToTS),
 		groupByInterval(),
-		orderByInterval(),
+		orderByIntervalASC(),
 	}
 	mods = append(mods, getFilterMods(sigArgs.Filter)...)
 	return newQuery(mods...)
@@ -242,7 +243,7 @@ func getLastSeenQuery(sigArgs *model.SignalArgs) (stmt string, args []any) {
 		selectTimestamp(),
 		fromSignal(),
 		withTokenID(sigArgs.TokenID),
-		orderByTS(),
+		orderByTimeStampDESC(),
 		qm.Limit(1),
 	}
 	mods = append(mods, getFilterMods(sigArgs.Filter)...)
