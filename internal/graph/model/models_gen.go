@@ -22,6 +22,13 @@ type FloatAggregation struct {
 type Query struct {
 }
 
+// SignalFilter holds the filter parameters for the signal querys.
+type SignalFilter struct {
+	// Filter signals by source type.
+	// avalible sources are: "autopi", "macaron", "smartcar", "tesla"
+	Source *string `json:"source,omitempty"`
+}
+
 type SignalFloat struct {
 	// timestamp of when this data was colllected
 	Timestamp *time.Time `json:"timestamp,omitempty"`

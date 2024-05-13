@@ -1,5 +1,5 @@
 # Code generated  with `make gql-model` DO NOT EDIT.
-extend type SignalAggregations {
+type SignalAggregations {
   """
   Tire pressure in kilo-Pascal.
   Required Privlieges: [VEHICLE_NON_LOCATION_DATA]

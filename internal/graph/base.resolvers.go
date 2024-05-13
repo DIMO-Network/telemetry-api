@@ -12,26 +12,44 @@ import (
 )
 
 // Signals is the resolver for the Signals field.
-func (r *queryResolver) Signals(ctx context.Context, tokenID int, from time.Time, to time.Time) (*model.SignalsWithID, error) {
-	return &model.SignalsWithID{TokenID: uint32(tokenID)}, nil
+func (r *queryResolver) Signals(ctx context.Context, tokenID int, from time.Time, to time.Time, filter *model.SignalFilter) (*model.Signals, error) {
+	sigArgs := model.SignalArgs{
+		FromTS:  from,
+		ToTS:    to,
+		Filter:  filter,
+		TokenID: uint32(tokenID),
+	}
+	return &model.Signals{SigArgs: sigArgs}, nil
 }
 
 // SignalsLatest is the resolver for the SignalsLatest field.
-func (r *queryResolver) SignalsLatest(ctx context.Context, tokenID int) (*model.SignalsWithID, error) {
-	return &model.SignalsWithID{TokenID: uint32(tokenID)}, nil
+func (r *queryResolver) SignalsLatest(ctx context.Context, tokenID int, filter *model.SignalFilter) (*model.Signals, error) {
+	sigArgs := model.SignalArgs{
+		Filter:  filter,
+		TokenID: uint32(tokenID),
+	}
+
+	return &model.Signals{SigArgs: sigArgs}, nil
+}
+
+// LastSeen is the resolver for the lastSeen field.
+func (r *signalCollectionResolver) LastSeen(ctx context.Context, obj *model.Signals) (*time.Time, error) {
+	return r.GetLastSeen(ctx, &obj.SigArgs)
 }
 
 // Query returns QueryResolver implementation.
 func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
-// SignalAggregations returns SignalAggregationsResolver implementation.
-func (r *Resolver) SignalAggregations() SignalAggregationsResolver {
-	return &signalAggregationsResolver{r}
-}
-
 // SignalCollection returns SignalCollectionResolver implementation.
 func (r *Resolver) SignalCollection() SignalCollectionResolver { return &signalCollectionResolver{r} }
 
 type queryResolver struct{ *Resolver }
-type signalAggregationsResolver struct{ *Resolver }
 type signalCollectionResolver struct{ *Resolver }
+
+// !!! WARNING !!!
+// The code below was going to be deleted when updating resolvers. It has been copied here so you have
+// one last chance to move it out of harms way if you want. There are two reasons this happens:
+//   - When renaming or deleting a resolver the old code will be put in here. You can safely delete
+//     it when you're done.
+//   - You have helper methods in this file. Move them out to keep these resolver files clean.
+type sigArgKey struct{}
