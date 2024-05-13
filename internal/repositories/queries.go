@@ -23,7 +23,7 @@ const (
 
 // TODO: remove this map when we move to storing the device address
 var sourceTranslations = map[string]string{
-	"macron":   "dimo/integration/2ULfuC8U9dOqRshZBAi0lMM1Rrx",
+	"macaron":  "dimo/integration/2ULfuC8U9dOqRshZBAi0lMM1Rrx",
 	"tesla":    "dimo/integration/26A5Dk3vvvQutjSyF0Jka2DP5lg",
 	"autopi":   "dimo/integration/27qftVRWQYpVDcO5DltO5Ojbjxk",
 	"smartcar": "dimo/integration/22N2xaPOq2WW2gAHBHd0Ikn4Zob",
