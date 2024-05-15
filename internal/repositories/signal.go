@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/99designs/gqlgen/graphql"
+	"github.com/DIMO-Network/model-garage/pkg/vss"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 )
 
@@ -76,7 +77,7 @@ func (r *Repository) GetSignalString(ctx context.Context, sigArgs *model.StringS
 // GetLatestSignalFloat returns the latest float signal based on the provided arguments.
 func (r *Repository) GetLatestSignalFloat(ctx context.Context, sigArgs *model.FloatSignalArgs) (*model.SignalFloat, error) {
 	var signal model.SignalFloat
-	err := r.getLatestSignal(ctx, &sigArgs.SignalArgs, sigArgs.Name, FloatValueCol, &signal.Value, &signal.Timestamp)
+	err := r.getLatestSignal(ctx, &sigArgs.SignalArgs, sigArgs.Name, vss.ValueNumberCol, &signal.Value, &signal.Timestamp)
 	return &signal, err
 }
 
@@ -87,7 +88,7 @@ func (r *Repository) GetLatestSignalString(ctx context.Context, sigArgs *model.S
 	if err != nil {
 		return nil, err
 	}
-	err = r.getLatestSignal(ctx, &sigArgs.SignalArgs, sigArgs.Name, StringValueCol, &signal.Value, &signal.Timestamp)
+	err = r.getLatestSignal(ctx, &sigArgs.SignalArgs, sigArgs.Name, vss.ValueStringCol, &signal.Value, &signal.Timestamp)
 	return &signal, err
 }
 

@@ -37,7 +37,7 @@ func main() {
 	_ = ctx
 
 	repoLogger := logger.With().Str("component", "repository").Logger()
-	baseRepo, err := repositories.NewRepository(&repoLogger, settings)
+	baseRepo, err := repositories.NewRepository(&repoLogger, settings, nil)
 	if err != nil {
 		logger.Fatal().Err(err).Msg("Couldn't create repository.")
 	}

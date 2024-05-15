@@ -14,7 +14,6 @@ import (
 	"github.com/DIMO-Network/telemetry-api/internal/config"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	"github.com/DIMO-Network/telemetry-api/internal/repositories"
-	"github.com/docker/go-connections/nat"
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/suite"
 )
@@ -41,7 +40,7 @@ func (r *RepositoryTestSuite) SetupSuite() {
 	r.container, err = clickhouseinfra.CreateClickHouseContainer(ctx, "", "")
 	r.Require().NoError(err, "Failed to create clickhouse container")
 
-	db, err := clickhouseinfra.GetClickhouseAsDB(ctx, r.container.ClickHouseContainer)
+	db, err := r.container.GetClickhouseAsDB(ctx)
 	r.Require().NoError(err, "Failed to get clickhouse connection")
 
 	err = migrations.RunGoose(ctx, []string{"up", "-v"}, db)
@@ -52,7 +51,7 @@ func (r *RepositoryTestSuite) SetupSuite() {
 	host, err := r.container.Host(ctx)
 	r.Require().NoError(err, "Failed to get clickhouse host")
 
-	port, err := r.container.MappedPort(ctx, nat.Port("9000/tcp"))
+	port, err := r.container.MappedPort(ctx, clickhouseinfra.SecureNativePort)
 	r.Require().NoError(err, "Failed to get clickhouse port")
 
 	settings := config.Settings{
@@ -60,8 +59,9 @@ func (r *RepositoryTestSuite) SetupSuite() {
 		ClickHouseTCPPort:  port.Int(),
 		ClickHouseUser:     r.container.User,
 		ClickHousePassword: r.container.Password,
+		ClickHouseDatabase: r.container.DbName,
 	}
-	r.repo, err = repositories.NewRepository(&testLogger, settings)
+	r.repo, err = repositories.NewRepository(&testLogger, settings, r.container.RootCAs)
 	r.Require().NoError(err, "Failed to create repository")
 	r.dataStartTime = time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
 	r.insertTestData()
@@ -348,7 +348,7 @@ func (r *RepositoryTestSuite) TestLastSeen() {
 // The timestamp is incremented by 30 seconds for each iteration.
 func (r *RepositoryTestSuite) insertTestData() {
 	ctx := context.Background()
-	conn, err := clickhouseinfra.GetClickHouseAsConn(r.container.ClickHouseContainer)
+	conn, err := r.container.GetClickHouseAsConn()
 	r.Require().NoError(err, "Failed to get clickhouse connection")
 	testSignal := []vss.Signal{}
 	var sources = []string{"dimo/integration/2ULfuC8U9dOqRshZBAi0lMM1Rrx", "dimo/integration/27qftVRWQYpVDcO5DltO5Ojbjxk", "dimo/integration/22N2xaPOq2WW2gAHBHd0Ikn4Zob"}

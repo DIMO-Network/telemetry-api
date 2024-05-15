@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/DIMO-Network/model-garage/pkg/vss"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	"github.com/volatiletech/sqlboiler/v4/drivers"
 	"github.com/volatiletech/sqlboiler/v4/queries"
@@ -11,14 +12,30 @@ import (
 )
 
 const (
-	// FloatValueCol is the column name for float values.
-	FloatValueCol = "ValueNumber"
-
-	// StringValueCol is the column name for string values.
-	StringValueCol = "ValueString"
-
 	// IntervalGroup is the column alias for the interval group.
 	IntervalGroup = "group_timestamp"
+	tokenIDWhere  = vss.TokenIDCol + " = ?"
+	nameWhere     = vss.NameCol + " = ?"
+	timestampFrom = vss.TimestampCol + " > ?"
+	timestampTo   = vss.TimestampCol + " < ?"
+	sourceWhere   = vss.SourceCol + " = ?"
+	timestampDesc = vss.TimestampCol + " DESC"
+	groupAsc      = IntervalGroup + " ASC"
+)
+
+// Aggregation functions for float signals.
+const (
+	avgGroup  = "avg(" + vss.ValueNumberCol + ")"
+	randGroup = "groupArraySample(1, %d)(" + vss.ValueNumberCol + ")[1]"
+	minGroup  = "min(" + vss.ValueNumberCol + ")"
+	maxGroup  = "max(" + vss.ValueNumberCol + ")"
+	medGroup  = "median(" + vss.ValueNumberCol + ")"
+)
+
+const (
+	randStringGroup = "groupArraySample(1, %d)(" + vss.ValueStringCol + ")[1]"
+	uniqueGroup     = "arrayStringConcat(groupUniqArray(" + vss.ValueStringCol + "),',')"
+	topGroup        = "arrayStringConcat(topK(1, 10)(" + vss.ValueStringCol + "))"
 )
 
 // TODO: remove this map when we move to storing the device address
@@ -60,37 +77,37 @@ func selectValue(valueCol string) qm.QueryMod {
 // selectTimestamp adds a SELECT clause to the query to select the Timestamp column.
 // Example: 'SELECT Timestamp'.
 func selectTimestamp() qm.QueryMod {
-	return qm.Select("Timestamp")
+	return qm.Select(vss.TimestampCol)
 }
 
 // fromSignal adds a FROM clause to the query to select the signal table.
 // Example: 'FROM signal'.
 func fromSignal() qm.QueryMod {
-	return qm.From("signal")
+	return qm.From(vss.TableName)
 }
 
 // withTokenID adds a WHERE clause to the query to filter by TokenID.
 // Example: 'WHERE TokenID = ?'.
 func withTokenID(tokenID uint32) qm.QueryMod {
-	return qm.Where("TokenID = ?", tokenID)
+	return qm.Where(tokenIDWhere, tokenID)
 }
 
 // withName adds a WHERE clause to the query to filter by Name.
 // Example: 'WHERE Name = ?'.
 func withName(name string) qm.QueryMod {
-	return qm.Where("Name = ?", name)
+	return qm.Where(nameWhere, name)
 }
 
 // withFromTS adds a WHERE clause to the query to filter by Timestamp greater than fromTS.
 // Example: 'WHERE Timestamp > ?'.
 func withFromTS(fromTS time.Time) qm.QueryMod {
-	return qm.Where("Timestamp > ?", fromTS)
+	return qm.Where(timestampFrom, fromTS)
 }
 
 // withToTS adds a WHERE clause to the query to filter by Timestamp less than toTS.
 // Example: 'WHERE Timestamp < ?'.
 func withToTS(toTS time.Time) qm.QueryMod {
-	return qm.Where("Timestamp < ?", toTS)
+	return qm.Where(timestampTo, toTS)
 }
 
 // withSource adds a WHERE clause to the query to filter by Source.
@@ -98,21 +115,21 @@ func withToTS(toTS time.Time) qm.QueryMod {
 func withSource(source string) qm.QueryMod {
 	// TODO: remove this logic when we move to storing the device address as source.
 	if translateSource, ok := sourceTranslations[source]; ok {
-		return qm.Where("Source = ?", translateSource)
+		return qm.Where(sourceWhere, translateSource)
 	}
-	return qm.Where("Source = ?", source)
+	return qm.Where(sourceWhere, source)
 }
 
 // orderByTimeStampDESC adds an ORDER BY clause to the query to order by Timestamp in descending order.
 // Example: 'ORDER BY Timestamp DESC'.
 func orderByTimeStampDESC() qm.QueryMod {
-	return qm.OrderBy("Timestamp DESC")
+	return qm.OrderBy(timestampDesc)
 }
 
 // orderByIntervalASC adds an ORDER BY clause to the query to order by the interval group in ascending order.
 // Example: 'ORDER BY group_timestamp ASC'.
 func orderByIntervalASC() qm.QueryMod {
-	return qm.OrderBy(IntervalGroup + " ASC")
+	return qm.OrderBy(groupAsc)
 }
 
 // groupByInterval adds a GROUP BY clause to the query to group by the interval group.
@@ -124,43 +141,39 @@ func groupByInterval() qm.QueryMod {
 // selectInterval adds a SELECT clause to the query to select the interval group based on the given milliSeconds.
 // Example: 'SELECT toStartOfInterval(Timestamp, toIntervalMillisecond(?)) as group_timestamp'.
 func selectInterval(milliSeconds int64) qm.QueryMod {
-	return qm.Select(fmt.Sprintf("toStartOfInterval(Timestamp, toIntervalMillisecond(%d)) as %s", milliSeconds, IntervalGroup))
+	return qm.Select(fmt.Sprintf("toStartOfInterval(%s, toIntervalMillisecond(%d)) as %s", vss.TimestampCol, milliSeconds, IntervalGroup))
 }
 
 // returns a string representation of the aggregation function based on the aggregation type.
 func getFloatAggFunc(aggType model.FloatAggregationType) string {
-	var aggStr string
+	aggStr := avgGroup
 	switch aggType {
 	case model.FloatAggregationTypeAvg:
-		aggStr = "avg(ValueNumber)"
+		aggStr = avgGroup
 	case model.FloatAggregationTypeRand:
 		seed := time.Now().UnixMilli()
-		aggStr = fmt.Sprintf("groupArraySample(1, %d)(ValueNumber)[1]", seed)
+		aggStr = fmt.Sprintf(randGroup, seed)
 	case model.FloatAggregationTypeMin:
-		aggStr = "min(ValueNumber)"
+		aggStr = minGroup
 	case model.FloatAggregationTypeMax:
-		aggStr = "max(ValueNumber)"
+		aggStr = maxGroup
 	case model.FloatAggregationTypeMed:
-		aggStr = "median(ValueNumber)"
-	default:
-		aggStr = "avg(ValueNumber)"
+		aggStr = medGroup
 	}
 	return aggStr
 }
 
 // returns a string representation of the aggregation function based on the aggregation type.
 func getStringAgg(aggType model.StringAggregationType) string {
-	var aggStr string
+	aggStr := topGroup
 	switch aggType {
 	case model.StringAggregationTypeRand:
 		seed := time.Now().UnixMilli()
-		aggStr = fmt.Sprintf("groupArraySample(1, %d)(ValueString)[1]", seed)
+		aggStr = fmt.Sprintf(randStringGroup, seed)
 	case model.StringAggregationTypeUnique:
-		aggStr = "arrayStringConcat(groupUniqArray(ValueString),',')"
+		aggStr = uniqueGroup
 	case model.StringAggregationTypeTop:
-		aggStr = "arrayStringConcat(topK(1, 10)(ValueString))"
-	default:
-		aggStr = "arrayStringConcat(topK(1, 10)(ValueString))"
+		aggStr = topGroup
 	}
 	return aggStr
 }

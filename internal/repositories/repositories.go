@@ -2,6 +2,8 @@ package repositories
 
 import (
 	"context"
+	"crypto/tls"
+	"crypto/x509"
 	"fmt"
 
 	"github.com/ClickHouse/clickhouse-go/v2"
@@ -21,13 +23,18 @@ type Repository struct {
 }
 
 // NewRepository creates a new base repository.
-func NewRepository(logger *zerolog.Logger, settings config.Settings) (*Repository, error) {
+// clientCAs is optional and can be nil.
+func NewRepository(logger *zerolog.Logger, settings config.Settings, rootCAs *x509.CertPool) (*Repository, error) {
 	addr := fmt.Sprintf("%s:%d", settings.ClickHouseHost, settings.ClickHouseTCPPort)
 	conn, err := clickhouse.Open(&clickhouse.Options{
 		Addr: []string{addr},
 		Auth: clickhouse.Auth{
 			Username: settings.ClickHouseUser,
 			Password: settings.ClickHousePassword,
+			Database: settings.ClickHouseDatabase,
+		},
+		TLS: &tls.Config{
+			RootCAs: rootCAs,
 		},
 	})
 	if err != nil {
