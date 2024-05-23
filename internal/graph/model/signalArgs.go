@@ -7,8 +7,6 @@ import (
 const (
 	// LastSeenField is the field name for the last seen timestamp.
 	LastSeenField = "lastSeen"
-	// TimestampField is the field name for the timestamp.
-	TimestampField = "timestamp"
 )
 
 // SignalArgs is the base arguments for querying signals.

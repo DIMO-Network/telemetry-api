@@ -44,10 +44,10 @@ func NewService(settings config.Settings, rootCAs *x509.CertPool) (*Service, err
 
 // GetLatestSignals returns the latest signals based on the provided arguments from the ClickHouse database.
 func (s *Service) GetLatestSignals(ctx context.Context, latestArgs *model.LatestSignalsArgs) ([]*vss.Signal, error) {
-	stmt, args := GetLatestQuery(latestArgs)
+	stmt, args := getLatestQuery(latestArgs)
 	if latestArgs.IncludeLastSeen {
 		lastSeenStmt, lastSeenArgs := getLastSeenQuery(&latestArgs.SignalArgs)
-		stmt, args = UnionAll([]string{stmt, lastSeenStmt}, [][]any{args, lastSeenArgs})
+		stmt, args = unionALl([]string{stmt, lastSeenStmt}, [][]any{args, lastSeenArgs})
 	}
 
 	signals, err := s.getSignals(ctx, stmt, args)
@@ -58,6 +58,7 @@ func (s *Service) GetLatestSignals(ctx context.Context, latestArgs *model.Latest
 }
 
 // GetAggregatedSignals returns a slice of aggregated signals based on the provided arguments from the ClickHouse database.
+// The signals are sorted by timestamp in ascending order.
 // The timestamp on each signal is for the start of the interval.
 func (s *Service) GetAggregatedSignals(ctx context.Context, aggArgs *model.AggregatedSignalArgs) ([]*vss.Signal, error) {
 	stmt, args := getAggQuery(aggArgs)

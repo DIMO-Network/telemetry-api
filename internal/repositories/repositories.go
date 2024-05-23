@@ -46,22 +46,26 @@ func (r *Repository) GetSignal(ctx context.Context, aggArgs *model.AggregatedSig
 		return nil, errInternal
 	}
 
-	// combine signals with the same timestamp
+	// combine signals with the same timestamp by iterating over all signals
+	// if the timestamp differs from the previous signal, create a new SignalAggregations object
 	var allAggs []*model.SignalAggregations
-	var aggs *model.SignalAggregations
+	var currAggs *model.SignalAggregations
 	lastTS := time.Time{}
 	for _, signal := range signals {
 		if !lastTS.Equal(signal.Timestamp) {
 			lastTS = signal.Timestamp
-			aggs = &model.SignalAggregations{
+			currAggs = &model.SignalAggregations{
 				Timestamp: signal.Timestamp,
 			}
-			allAggs = append(allAggs, aggs)
+			allAggs = append(allAggs, currAggs)
 		}
-		model.SetAggregationField(aggs, signal)
+
+		model.SetAggregationField(currAggs, signal)
 	}
-	if aggs != nil {
-		allAggs = append(allAggs, aggs)
+
+	// add the aggregations to the last SignalAggregations object
+	if currAggs != nil {
+		allAggs = append(allAggs, currAggs)
 	}
 	return allAggs, nil
 }
@@ -79,6 +83,10 @@ func (r *Repository) GetSignalLatest(ctx context.Context, latestArgs *model.Late
 	}
 	coll := &model.SignalCollection{}
 	for _, signal := range signals {
+		if signal.Name == model.LastSeenField {
+			coll.LastSeen = &signal.Timestamp
+			continue
+		}
 		model.SetCollectionField(coll, signal)
 	}
 

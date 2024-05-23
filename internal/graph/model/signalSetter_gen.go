@@ -9,8 +9,6 @@ func SetCollectionField(collection *SignalCollection, signal *vss.Signal) {
 		return
 	}
 	switch signal.Name {
-	case LastSeenField:
-		collection.LastSeen = &signal.Timestamp
 	case "chassisAxleRow1WheelLeftTirePressure":
 		collection.ChassisAxleRow1WheelLeftTirePressure = &SignalFloat{
 			Timestamp: signal.Timestamp,

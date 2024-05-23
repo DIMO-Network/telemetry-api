@@ -9,17 +9,8 @@ import (
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 )
 
-// getIntervalMS parses the interval string and returns the milliseconds.
-func getIntervalMS(interval string) (int64, error) {
-	dur, err := time.ParseDuration(interval)
-	if err != nil {
-		return 0, fmt.Errorf("failed parsing interval: %w", err)
-	}
-	return dur.Milliseconds(), nil
-}
-
-// AgregtaionArgsFromContext creates an aggregated signals arguments from the context and the provided arguments.
-func AgregtaionArgsFromContext(ctx context.Context, tokenID int, interval string, from time.Time, to time.Time, filter *model.SignalFilter) (*model.AggregatedSignalArgs, error) {
+// agregtaionArgsFromContext creates an aggregated signals arguments from the context and the provided arguments.
+func agregtaionArgsFromContext(ctx context.Context, tokenID int, interval string, from time.Time, to time.Time, filter *model.SignalFilter) (*model.AggregatedSignalArgs, error) {
 	intervalInt, err := getIntervalMS(interval)
 	if err != nil {
 		return nil, err
@@ -71,8 +62,8 @@ func addSignalAggregation(aggArgs *model.AggregatedSignalArgs, child *graphql.Fi
 	return nil
 }
 
-// LatestArgsFromContext creates a latest signals arguments from the context and the provided arguments.
-func LatestArgsFromContext(ctx context.Context, tokenID int, filter *model.SignalFilter) (*model.LatestSignalsArgs, error) {
+// latestArgsFromContext creates a latest signals arguments from the context and the provided arguments.
+func latestArgsFromContext(ctx context.Context, tokenID int, filter *model.SignalFilter) (*model.LatestSignalsArgs, error) {
 	latestArgs := model.LatestSignalsArgs{
 		SignalArgs: model.SignalArgs{
 			TokenID: uint32(tokenID),
@@ -91,6 +82,15 @@ func LatestArgsFromContext(ctx context.Context, tokenID int, filter *model.Signa
 		latestArgs.SignalNames = append(latestArgs.SignalNames, field.Name)
 	}
 	return &latestArgs, nil
+}
+
+// getIntervalMS parses the interval string and returns the milliseconds.
+func getIntervalMS(interval string) (int64, error) {
+	dur, err := time.ParseDuration(interval)
+	if err != nil {
+		return 0, fmt.Errorf("failed parsing interval: %w", err)
+	}
+	return dur.Milliseconds(), nil
 }
 
 // isSignal checks if the field has the isSignal directive.

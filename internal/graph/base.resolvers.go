@@ -13,7 +13,7 @@ import (
 
 // Signals is the resolver for the Signals field.
 func (r *queryResolver) Signals(ctx context.Context, tokenID int, interval string, from time.Time, to time.Time, filter *model.SignalFilter) ([]*model.SignalAggregations, error) {
-	aggArgs, err := AgregtaionArgsFromContext(ctx, tokenID, interval, from, to, filter)
+	aggArgs, err := agregtaionArgsFromContext(ctx, tokenID, interval, from, to, filter)
 	if err != nil {
 		return nil, err
 	}
@@ -22,7 +22,7 @@ func (r *queryResolver) Signals(ctx context.Context, tokenID int, interval strin
 
 // SignalsLatest is the resolver for the SignalsLatest field.
 func (r *queryResolver) SignalsLatest(ctx context.Context, tokenID int, filter *model.SignalFilter) (*model.SignalCollection, error) {
-	latestArgs, err := LatestArgsFromContext(ctx, tokenID, filter)
+	latestArgs, err := latestArgsFromContext(ctx, tokenID, filter)
 	if err != nil {
 		return nil, err
 	}

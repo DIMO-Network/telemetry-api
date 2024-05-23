@@ -16,12 +16,10 @@ const (
 	// IntervalGroup is the column alias for the interval group.
 	IntervalGroup = "group_timestamp"
 	tokenIDWhere  = vss.TokenIDCol + " = ?"
-	nameWhere     = vss.NameCol + " = ?"
 	nameIn        = vss.NameCol + " IN ?"
 	timestampFrom = vss.TimestampCol + " > ?"
 	timestampTo   = vss.TimestampCol + " < ?"
 	sourceWhere   = vss.SourceCol + " = ?"
-	timestampDesc = vss.TimestampCol + " DESC"
 	groupAsc      = IntervalGroup + " ASC"
 )
 
@@ -86,36 +84,6 @@ func newQuery(mods ...qm.QueryMod) (string, []any) {
 	return queries.BuildQuery(q)
 }
 
-// selectValue adds a SELECT clause to the query to select a specific value column.
-// Example: SELECT valueCol as value.
-func selectValue(valueCol string) qm.QueryMod {
-	return qm.Select(valueCol + " as value")
-}
-
-// withTokenID adds a WHERE clause to the query to filter by TokenID.
-// Example: 'WHERE TokenID = ?'.
-func withTokenID(tokenID uint32) qm.QueryMod {
-	return qm.Where(tokenIDWhere, tokenID)
-}
-
-// withName adds a WHERE clause to the query to filter by Name.
-// Example: 'WHERE Name = ?'.
-func withName(name string) qm.QueryMod {
-	return qm.Where(nameWhere, name)
-}
-
-// withFromTS adds a WHERE clause to the query to filter by Timestamp greater than fromTS.
-// Example: 'WHERE Timestamp > ?'.
-func withFromTS(fromTS time.Time) qm.QueryMod {
-	return qm.Where(timestampFrom, fromTS)
-}
-
-// withToTS adds a WHERE clause to the query to filter by Timestamp less than toTS.
-// Example: 'WHERE Timestamp < ?'.
-func withToTS(toTS time.Time) qm.QueryMod {
-	return qm.Where(timestampTo, toTS)
-}
-
 // withSource adds a WHERE clause to the query to filter by Source.
 // Example: 'WHERE Source = ?'.
 func withSource(source string) qm.QueryMod {
@@ -124,12 +92,6 @@ func withSource(source string) qm.QueryMod {
 		return qm.Where(sourceWhere, translateSource)
 	}
 	return qm.Where(sourceWhere, source)
-}
-
-// groupByInterval adds a GROUP BY clause to the query to group by the interval group.
-// Example: 'GROUP BY group_timestamp'.
-func groupByInterval() qm.QueryMod {
-	return qm.GroupBy(IntervalGroup)
 }
 
 // selectInterval adds a SELECT clause to the query to select the interval group based on the given milliSeconds.
@@ -198,7 +160,7 @@ func getStringAgg(aggType model.StringAggregation) string {
 	return aggStr
 }
 
-// GetLatestQuery creates a query to get the latest signal value for each signal names
+// getLatestQuery creates a query to get the latest signal value for each signal names
 // returns the query statement and the arguments list,
 /*
 SELECT
@@ -214,14 +176,14 @@ WHERE
 Group BY
   name
 */
-func GetLatestQuery(latestArgs *model.LatestSignalsArgs) (string, []any) {
+func getLatestQuery(latestArgs *model.LatestSignalsArgs) (string, []any) {
 	mods := []qm.QueryMod{
 		qm.Select(vss.NameCol),
 		qm.Select(latestTimestamp),
 		qm.Select(latestNumber),
 		qm.Select(latestString),
 		qm.From(vss.TableName),
-		withTokenID(latestArgs.TokenID),
+		qm.Where(tokenIDWhere, latestArgs.TokenID),
 		qm.WhereIn(nameIn, latestArgs.SignalNames),
 		qm.GroupBy(vss.NameCol),
 	}
@@ -252,14 +214,14 @@ func getLastSeenQuery(sigArgs *model.SignalArgs) (string, []any) {
 		qm.Select(numValAsNull),
 		qm.Select(strValAsNull),
 		qm.From(vss.TableName),
-		withTokenID(sigArgs.TokenID),
+		qm.Where(tokenIDWhere, sigArgs.TokenID),
 	}
 	mods = append(mods, getFilterMods(sigArgs.Filter)...)
 	return newQuery(mods...)
 }
 
-// UnionAll creates a UNION ALL statement from the given statements and arguments.
-func UnionAll(allStatements []string, allArgs [][]any) (string, []any) {
+// unionALl creates a UNION ALL statement from the given statements and arguments.
+func unionALl(allStatements []string, allArgs [][]any) (string, []any) {
 	var args []any
 	for i := range allStatements {
 		allStatements[i] = strings.TrimSuffix(allStatements[i], ";")
@@ -316,9 +278,9 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any) {
 		selectNumberAggs(aggArgs.FloatArgs),
 		selectStringAggs(aggArgs.StringArgs),
 		qm.WhereIn(nameIn, names),
-		withTokenID(aggArgs.TokenID),
-		withFromTS(aggArgs.FromTS),
-		withToTS(aggArgs.ToTS),
+		qm.Where(tokenIDWhere, aggArgs.TokenID),
+		qm.Where(timestampFrom, aggArgs.FromTS),
+		qm.Where(timestampTo, aggArgs.ToTS),
 		qm.From(vss.TableName),
 		qm.GroupBy(IntervalGroup),
 		qm.GroupBy(vss.NameCol),

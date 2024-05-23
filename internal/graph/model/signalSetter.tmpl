@@ -7,8 +7,6 @@ func SetCollectionField(collection *SignalCollection, signal *vss.Signal) {
         return
     }
     switch signal.Name {
-    case LastSeenField:
-        collection.LastSeen = &signal.Timestamp
 {{- range .Signals }}
     case "{{ .JSONName }}":
         {{- if eq .GQLType "Float" }}
