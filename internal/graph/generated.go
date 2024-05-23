@@ -1217,7 +1217,7 @@ input SignalFilter {
   source: String
 }
 `, BuiltIn: false},
-	{Name: "../../schema/generated-signals.graphqls", Input: `# Code generated  with ` + "`" + `make gql-model` + "`" + ` DO NOT EDIT.
+	{Name: "../../schema/signals_gen.graphqls", Input: `# Code generated  with ` + "`" + `make gql-model` + "`" + ` DO NOT EDIT.
 type SignalAggregations {
   """
   Tire pressure in kilo-Pascal.
