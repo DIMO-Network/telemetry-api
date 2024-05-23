@@ -80,26 +80,4 @@ models:
   SignalCollection:
     model:
       - github.com/DIMO-Network/telemetry-api/internal/graph/model.Signals
-  ID:
-    model:
-      - github.com/99designs/gqlgen/graphql.ID
-      - github.com/99designs/gqlgen/graphql.Int
-      - github.com/99designs/gqlgen/graphql.Int64
-      - github.com/99designs/gqlgen/graphql.Int32
-  Int:
-    model:
-      - github.com/99designs/gqlgen/graphql.Int
-      - github.com/99designs/gqlgen/graphql.Int32
-      - github.com/99designs/gqlgen/graphql.Uint32
-      - github.com/99designs/gqlgen/graphql.Int64
-      - github.com/DIMO-Network/telemetry-api/internal/graph/types.Int16
-      - github.com/DIMO-Network/telemetry-api/internal/graph/types.Int8
-      - github.com/DIMO-Network/telemetry-api/internal/graph/types.Uint16
-      - github.com/DIMO-Network/telemetry-api/internal/graph/types.Uint8
-  Float:
-    model:
-      - github.com/99designs/gqlgen/graphql.Float
-      - github.com/99designs/gqlgen/graphql.Int64
-      - github.com/DIMO-Network/telemetry-api/internal/graph/types.Float32
-      - github.com/DIMO-Network/telemetry-api/internal/graph/types.Uint64
 
