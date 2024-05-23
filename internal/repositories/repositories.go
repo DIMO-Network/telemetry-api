@@ -2,50 +2,85 @@ package repositories
 
 import (
 	"context"
-	"crypto/tls"
 	"crypto/x509"
+	"errors"
 	"fmt"
+	"time"
 
-	"github.com/ClickHouse/clickhouse-go/v2"
 	"github.com/DIMO-Network/telemetry-api/internal/config"
+	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
+	"github.com/DIMO-Network/telemetry-api/internal/service/ch"
 	"github.com/rs/zerolog"
 )
 
-const (
-	// MaxPageSize is the maximum page size for paginated results
-	MaxPageSize = 100
-)
+var errInternal = errors.New("internal error")
 
 // Repository is the base repository for all repositories.
 type Repository struct {
-	conn clickhouse.Conn
-	Log  *zerolog.Logger
+	chService *ch.Service
+	log       *zerolog.Logger
 }
 
 // NewRepository creates a new base repository.
 // clientCAs is optional and can be nil.
 func NewRepository(logger *zerolog.Logger, settings config.Settings, rootCAs *x509.CertPool) (*Repository, error) {
-	addr := fmt.Sprintf("%s:%d", settings.ClickHouseHost, settings.ClickHouseTCPPort)
-	conn, err := clickhouse.Open(&clickhouse.Options{
-		Addr: []string{addr},
-		Auth: clickhouse.Auth{
-			Username: settings.ClickHouseUser,
-			Password: settings.ClickHousePassword,
-			Database: settings.ClickHouseDatabase,
-		},
-		TLS: &tls.Config{
-			RootCAs: rootCAs,
-		},
-	})
+	chService, err := ch.NewService(settings, rootCAs)
 	if err != nil {
-		return nil, fmt.Errorf("failed to open clickhouse connection: %w", err)
-	}
-	err = conn.Ping(context.Background())
-	if err != nil {
-		return nil, fmt.Errorf("failed to ping clickhouse: %w", err)
+		return nil, fmt.Errorf("failed to create ch service: %w", err)
 	}
 	return &Repository{
-		conn: conn,
-		Log:  logger,
+		chService: chService,
+		log:       logger,
 	}, nil
+}
+
+// GetSignal returns the aggregated signals for the given tokenID, interval, from, to and filter.
+func (r *Repository) GetSignal(ctx context.Context, aggArgs *model.AggregatedSignalArgs) ([]*model.SignalAggregations, error) {
+	if err := validateAggSigArgs(aggArgs); err != nil {
+		return nil, fmt.Errorf("invalid arguments: %w", err)
+	}
+	signals, err := r.chService.GetAggregatedSignals(ctx, aggArgs)
+	if err != nil {
+		// Do not return the database erorr to the client, but log it.
+		r.log.Error().Err(err).Msg("failed to query signals")
+		return nil, errInternal
+	}
+
+	// combine signals with the same timestamp
+	var allAggs []*model.SignalAggregations
+	var aggs *model.SignalAggregations
+	lastTS := time.Time{}
+	for _, signal := range signals {
+		if !lastTS.Equal(signal.Timestamp) {
+			lastTS = signal.Timestamp
+			aggs = &model.SignalAggregations{
+				Timestamp: signal.Timestamp,
+			}
+			allAggs = append(allAggs, aggs)
+		}
+		model.SetAggregationField(aggs, signal)
+	}
+	if aggs != nil {
+		allAggs = append(allAggs, aggs)
+	}
+	return allAggs, nil
+}
+
+// GetSignalLatest returns the latest signals for the given tokenID and filter.
+func (r *Repository) GetSignalLatest(ctx context.Context, latestArgs *model.LatestSignalsArgs) (*model.SignalCollection, error) {
+	if err := validateSignalArgs(&latestArgs.SignalArgs); err != nil {
+		return nil, fmt.Errorf("invalid arguments: %w", err)
+	}
+	signals, err := r.chService.GetLatestSignals(ctx, latestArgs)
+	if err != nil {
+		// Do not return the database erorr to the client, but log it.
+		r.log.Error().Err(err).Msg("failed to query latest signals")
+		return nil, errInternal
+	}
+	coll := &model.SignalCollection{}
+	for _, signal := range signals {
+		model.SetCollectionField(coll, signal)
+	}
+
+	return coll, nil
 }

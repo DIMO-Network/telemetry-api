@@ -9,6 +9,7 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/DIMO-Network/shared"
@@ -45,6 +46,8 @@ func main() {
 	cfg := graph.Config{Resolvers: &graph.Resolver{Repository: baseRepo}}
 	cfg.Directives.RequiresPrivilege = auth.RequiresPrivilegeCheck
 	cfg.Directives.RequiresToken = auth.RequiresTokenCheck
+	cfg.Directives.IsSignal = noOp
+	cfg.Directives.HasAggregation = noOp
 
 	serveMonitoring(strconv.Itoa(settings.MonPort), &logger)
 
@@ -96,4 +99,8 @@ func errorHandler(log zerolog.Logger) func(ctx context.Context, e error) *gqlerr
 		log.Error().Err(e).Msg("Internal server error")
 		return gqlerror.Errorf("internal server error")
 	}
+}
+
+func noOp(ctx context.Context, obj interface{}, next graphql.Resolver) (res interface{}, err error) {
+	return next(ctx)
 }

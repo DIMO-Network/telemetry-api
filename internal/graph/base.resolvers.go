@@ -12,36 +12,24 @@ import (
 )
 
 // Signals is the resolver for the Signals field.
-func (r *queryResolver) Signals(ctx context.Context, tokenID int, from time.Time, to time.Time, filter *model.SignalFilter) (*model.Signals, error) {
-	sigArgs := model.SignalArgs{
-		FromTS:  from,
-		ToTS:    to,
-		Filter:  filter,
-		TokenID: uint32(tokenID),
+func (r *queryResolver) Signals(ctx context.Context, tokenID int, interval string, from time.Time, to time.Time, filter *model.SignalFilter) ([]*model.SignalAggregations, error) {
+	aggArgs, err := AgregtaionArgsFromContext(ctx, tokenID, interval, from, to, filter)
+	if err != nil {
+		return nil, err
 	}
-	return &model.Signals{SigArgs: sigArgs}, nil
+	return r.Repository.GetSignal(ctx, aggArgs)
 }
 
 // SignalsLatest is the resolver for the SignalsLatest field.
-func (r *queryResolver) SignalsLatest(ctx context.Context, tokenID int, filter *model.SignalFilter) (*model.Signals, error) {
-	sigArgs := model.SignalArgs{
-		Filter:  filter,
-		TokenID: uint32(tokenID),
+func (r *queryResolver) SignalsLatest(ctx context.Context, tokenID int, filter *model.SignalFilter) (*model.SignalCollection, error) {
+	latestArgs, err := LatestArgsFromContext(ctx, tokenID, filter)
+	if err != nil {
+		return nil, err
 	}
-
-	return &model.Signals{SigArgs: sigArgs}, nil
-}
-
-// LastSeen is the resolver for the lastSeen field.
-func (r *signalCollectionResolver) LastSeen(ctx context.Context, obj *model.Signals) (*time.Time, error) {
-	return r.GetLastSeen(ctx, &obj.SigArgs)
+	return r.Repository.GetSignalLatest(ctx, latestArgs)
 }
 
 // Query returns QueryResolver implementation.
 func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
-// SignalCollection returns SignalCollectionResolver implementation.
-func (r *Resolver) SignalCollection() SignalCollectionResolver { return &signalCollectionResolver{r} }
-
 type queryResolver struct{ *Resolver }
-type signalCollectionResolver struct{ *Resolver }
