@@ -184,7 +184,7 @@ func (c *CHServiceTestSuite) TestGetSignalFloats() {
 			c.Require().NoError(err)
 
 			for i, sig := range result {
-				c.Require().Equal(tc.expected[i], sig)
+				c.Require().Equal(tc.expected[i], *sig)
 			}
 		})
 	}
@@ -256,7 +256,9 @@ func (c *CHServiceTestSuite) TestGetLatestSignalFloat() {
 			// Call the GetLatestSignalFloat method
 			result, err := c.chService.GetLatestSignals(ctx, &tc.latestArgs)
 			c.Require().NoError(err)
-			c.Require().Equal(tc.expected, result)
+			for i, sig := range result {
+				c.Require().Equal(tc.expected[i], *sig)
+			}
 		})
 	}
 }
