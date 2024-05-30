@@ -1,18 +1,18 @@
 # Code generated  with `make gql-model` DO NOT EDIT.
-type SignalAggregations {
+extend type SignalAggregations {
   {{- range .Signals }}
   """
   {{ .Desc }}
-  Required Privlieges: {{ .Privileges }}
+  Required Privileges: {{ .Privileges }}
   """
   {{ .JSONName }}(
   {{- if eq .GQLType "Float" }}
     agg: FloatAggregation!
-  ):  [SignalFloat!]
+  ):  Float
   {{- else }}
     agg: StringAggregation!
-  ):  [SignalString!]
-  {{- end }} @requiresPrivilege(privileges: {{ .Privileges }})
+  ):  String
+  {{- end }} @requiresPrivilege(privileges: {{ .Privileges }}) @goField(name: "{{ .GOName }}") @isSignal @hasAggregation
   {{ end }}
 }
 
@@ -27,7 +27,7 @@ extend type SignalCollection {
   {{ .JSONName }}: SignalFloat
   {{- else }}
   {{ .JSONName }}: SignalString
-  {{- end }} @requiresPrivilege(privileges: {{ .Privileges }})
+  {{- end }} @requiresPrivilege(privileges: {{ .Privileges }}) @goField(name: "{{ .GOName }}") @isSignal
   {{ end }}
 }
 

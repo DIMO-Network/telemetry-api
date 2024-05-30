@@ -4,6 +4,13 @@ just like the blockchain, and in UTC.
 """
 scalar Time
 
+directive @goField(
+  forceResolver: Boolean
+  name: String
+  omittable: Boolean
+) on INPUT_FIELD_DEFINITION | FIELD_DEFINITION
+directive @isSignal on INPUT_FIELD_DEFINITION | FIELD_DEFINITION
+directive @hasAggregation on INPUT_FIELD_DEFINITION | FIELD_DEFINITION
 """
 The root query type for the GraphQL schema.
 """
@@ -13,16 +20,27 @@ type Query {
   """
   signals(
     tokenID: Int!
+    """
+    interval is a time span that used for aggregatting the data with.
+    A duration string is a sequence of decimal numbers, each with optional fraction and a unit suffix,
+    such as "300ms" or "2h45m". Valid time units are "ms", "s", "m", "h"
+    """
+    interval: String!
     from: Time!
     to: Time!
     filter: SignalFilter
-  ): SignalAggregations @requiresToken
-
+  ): [SignalAggregations!] @requiresToken
   """
   SignalsLatest returns the latest signals for a given token.
   """
   signalsLatest(tokenID: Int!, filter: SignalFilter): SignalCollection
     @requiresToken
+}
+type SignalAggregations {
+  """
+  Timestamp of the aggregated data.
+  """
+  timestamp: Time!
 }
 
 type SignalCollection {
@@ -32,35 +50,7 @@ type SignalCollection {
   lastSeen: Time
 }
 
-input FloatAggregation {
-  """
-  Aggregation type.
-  """
-  type: FloatAggregationType!
-
-  """
-  interval is a time span that used for aggregatting the data with.
-  A duration string is a sequence of decimal numbers, each with optional fraction and a unit suffix,
-  such as "300ms", "-1.5h" or "2h45m". Valid time units are "ms", "s", "m", "h", "d", "w", "y".
-  """
-  interval: String!
-}
-
-input StringAggregation {
-  """
-  Aggregation type.
-  """
-  type: StringAggregationType!
-
-  """
-  interval is a time span that used for aggregatting the data with.
-  A duration string is a sequence of decimal numbers, each with optional fraction and a unit suffix,
-  such as "300ms", "-1.5h" or "2h45m". Valid time units are "ms", "s", "m", "h"
-  """
-  interval: String!
-}
-
-enum FloatAggregationType {
+enum FloatAggregation {
   AVG
   MED
   MAX
@@ -68,7 +58,7 @@ enum FloatAggregationType {
   RAND
 }
 
-enum StringAggregationType {
+enum StringAggregation {
   """
   Randomly select a value from the group.
   """
@@ -86,24 +76,24 @@ type SignalFloat {
   """
   timestamp of when this data was colllected
   """
-  timestamp: Time
+  timestamp: Time!
 
   """
   value of the signal
   """
-  value: Float
+  value: Float!
 }
 
 type SignalString {
   """
   timestamp of when this data was colllected
   """
-  timestamp: Time
+  timestamp: Time!
 
   """
   value of the signal
   """
-  value: String
+  value: String!
 }
 
 """
