@@ -13,7 +13,7 @@ import (
 
 // Signals is the resolver for the Signals field.
 func (r *queryResolver) Signals(ctx context.Context, tokenID int, interval string, from time.Time, to time.Time, filter *model.SignalFilter) ([]*model.SignalAggregations, error) {
-	aggArgs, err := agregtaionArgsFromContext(ctx, tokenID, interval, from, to, filter)
+	aggArgs, err := aggregationArgsFromContext(ctx, tokenID, interval, from, to, filter)
 	if err != nil {
 		return nil, err
 	}

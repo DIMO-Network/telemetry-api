@@ -41,7 +41,7 @@ func (r *Repository) GetSignal(ctx context.Context, aggArgs *model.AggregatedSig
 	}
 	signals, err := r.chService.GetAggregatedSignals(ctx, aggArgs)
 	if err != nil {
-		// Do not return the database erorr to the client, but log it.
+		// Do not return the database error to the client, but log it.
 		r.log.Error().Err(err).Msg("failed to query signals")
 		return nil, errInternal
 	}
@@ -51,6 +51,7 @@ func (r *Repository) GetSignal(ctx context.Context, aggArgs *model.AggregatedSig
 	var allAggs []*model.SignalAggregations
 	var currAggs *model.SignalAggregations
 	lastTS := time.Time{}
+
 	for _, signal := range signals {
 		if !lastTS.Equal(signal.Timestamp) {
 			lastTS = signal.Timestamp
@@ -77,7 +78,7 @@ func (r *Repository) GetSignalLatest(ctx context.Context, latestArgs *model.Late
 	}
 	signals, err := r.chService.GetLatestSignals(ctx, latestArgs)
 	if err != nil {
-		// Do not return the database erorr to the client, but log it.
+		// Do not return the database error to the client, but log it.
 		r.log.Error().Err(err).Msg("failed to query latest signals")
 		return nil, errInternal
 	}

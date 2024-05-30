@@ -9,8 +9,9 @@ import (
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 )
 
-// agregtaionArgsFromContext creates an aggregated signals arguments from the context and the provided arguments.
-func agregtaionArgsFromContext(ctx context.Context, tokenID int, interval string, from time.Time, to time.Time, filter *model.SignalFilter) (*model.AggregatedSignalArgs, error) {
+// aggregationArgsFromContext creates an aggregated signals arguments from the context and the provided arguments.
+func aggregationArgsFromContext(ctx context.Context, tokenID int, interval string, from time.Time, to time.Time, filter *model.SignalFilter) (*model.AggregatedSignalArgs, error) {
+	// 1h 1s
 	intervalInt, err := getIntervalMS(interval)
 	if err != nil {
 		return nil, err

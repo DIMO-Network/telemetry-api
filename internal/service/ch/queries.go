@@ -17,7 +17,7 @@ const (
 	IntervalGroup = "group_timestamp"
 	tokenIDWhere  = vss.TokenIDCol + " = ?"
 	nameIn        = vss.NameCol + " IN ?"
-	timestampFrom = vss.TimestampCol + " > ?"
+	timestampFrom = vss.TimestampCol + " >= ?"
 	timestampTo   = vss.TimestampCol + " < ?"
 	sourceWhere   = vss.SourceCol + " = ?"
 	groupAsc      = IntervalGroup + " ASC"
@@ -40,11 +40,11 @@ const (
 
 // Aggregation functions for float signals.
 const (
-	avgGroup  = "avg(" + vss.ValueNumberCol + ")"
-	randGroup = "groupArraySample(1, %d)(" + vss.ValueNumberCol + ")[1]"
-	minGroup  = "min(" + vss.ValueNumberCol + ")"
-	maxGroup  = "max(" + vss.ValueNumberCol + ")"
-	medGroup  = "median(" + vss.ValueNumberCol + ")"
+	avgGroup       = "avg(" + vss.ValueNumberCol + ")"
+	randFloatGroup = "groupArraySample(1, %d)(" + vss.ValueNumberCol + ")[1]"
+	minGroup       = "min(" + vss.ValueNumberCol + ")"
+	maxGroup       = "max(" + vss.ValueNumberCol + ")"
+	medGroup       = "median(" + vss.ValueNumberCol + ")"
 )
 
 // Aggregation functions for string signals.
@@ -134,7 +134,7 @@ func getFloatAggFunc(aggType model.FloatAggregation) string {
 		aggStr = avgGroup
 	case model.FloatAggregationRand:
 		seed := time.Now().UnixMilli()
-		aggStr = fmt.Sprintf(randGroup, seed)
+		aggStr = fmt.Sprintf(randFloatGroup, seed)
 	case model.FloatAggregationMin:
 		aggStr = minGroup
 	case model.FloatAggregationMax:
@@ -220,8 +220,8 @@ func getLastSeenQuery(sigArgs *model.SignalArgs) (string, []any) {
 	return newQuery(mods...)
 }
 
-// unionALl creates a UNION ALL statement from the given statements and arguments.
-func unionALl(allStatements []string, allArgs [][]any) (string, []any) {
+// unionAll creates a UNION ALL statement from the given statements and arguments.
+func unionAll(allStatements []string, allArgs [][]any) (string, []any) {
 	var args []any
 	for i := range allStatements {
 		allStatements[i] = strings.TrimSuffix(allStatements[i], ";")
@@ -265,6 +265,7 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any) {
 	if aggArgs == nil {
 		return "", nil
 	}
+
 	names := make([]string, 0, len(aggArgs.FloatArgs)+len(aggArgs.StringArgs))
 	for _, agg := range aggArgs.FloatArgs {
 		names = append(names, agg.Name)
@@ -272,6 +273,7 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any) {
 	for _, agg := range aggArgs.StringArgs {
 		names = append(names, agg.Name)
 	}
+
 	mods := []qm.QueryMod{
 		qm.Select(vss.NameCol),
 		selectInterval(aggArgs.Interval),

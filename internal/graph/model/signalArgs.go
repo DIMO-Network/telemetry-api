@@ -13,7 +13,7 @@ const (
 type SignalArgs struct {
 	// Filter  optional filter for the signals.
 	Filter *SignalFilter
-	// TokenID is the vehicles NFT token ID.
+	// TokenID is the vehicles's NFT token ID.
 	TokenID uint32
 }
 

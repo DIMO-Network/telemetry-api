@@ -94,7 +94,7 @@ func (c *CHServiceTestSuite) TestGetSignalFloats() {
 				{
 					Name:        vss.FieldSpeed,
 					Timestamp:   c.dataStartTime,
-					ValueNumber: 5.0,
+					ValueNumber: 4.5,
 				},
 			},
 		},

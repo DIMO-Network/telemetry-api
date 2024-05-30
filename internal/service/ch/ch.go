@@ -47,7 +47,7 @@ func (s *Service) GetLatestSignals(ctx context.Context, latestArgs *model.Latest
 	stmt, args := getLatestQuery(latestArgs)
 	if latestArgs.IncludeLastSeen {
 		lastSeenStmt, lastSeenArgs := getLastSeenQuery(&latestArgs.SignalArgs)
-		stmt, args = unionALl([]string{stmt, lastSeenStmt}, [][]any{args, lastSeenArgs})
+		stmt, args = unionAll([]string{stmt, lastSeenStmt}, [][]any{args, lastSeenArgs})
 	}
 
 	signals, err := s.getSignals(ctx, stmt, args)
