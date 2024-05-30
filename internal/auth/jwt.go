@@ -29,7 +29,7 @@ func NewJWTMiddleware(issuer, jwksURI, contractAddress string, logger *zerolog.L
 		}
 		opts = append(opts, jwks.WithCustomJWKSURI(keysURI))
 	}
-	provider := jwks.NewCachingProvider(issuerURL, 1*time.Hour, opts...)
+	provider := jwks.NewCachingProvider(issuerURL, 1*time.Minute, opts...)
 	expectedAddr := common.HexToAddress(contractAddress)
 	newCustomClaims := func() validator.CustomClaims {
 		return &TelemetryClaim{expectedContractAddress: expectedAddr}
