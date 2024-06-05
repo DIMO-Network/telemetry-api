@@ -27,7 +27,7 @@ env:
   PORT: 8080
   MON_PORT: 8888
   CLICKHOUSE_TCP_PORT: 9440
-  CLICKHOUSE_DATABASE: dimo_dev
+  CLICKHOUSE_DATABASE: dimo
   TOKEN_EXCHANGE_JWK_KEY_SET_URL: http://dex-roles-rights.dev.svc.cluster.local:5556/keys
   TOKEN_EXCHANGE_ISSUER_URL: https://auth-roles-rights.dev.dimo.zone
   VEHICLE_NFT_ADDRESS: '0x45fbCD3ef7361d156e8b16F5538AE36DEdf61Da8'
