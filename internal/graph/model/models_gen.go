@@ -42,16 +42,16 @@ type SignalAggregations struct {
 	CurrentLocationTimestamp *string `json:"currentLocationTimestamp,omitempty"`
 	// Horizontal dilution of precision of GPS
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-	DIMOAftermarketHDOP *float64 `json:"dIMOAftermarketHDOP,omitempty"`
+	DIMOAftermarketHDOP *float64 `json:"dimoAftermarketHDOP,omitempty"`
 	// Number of sync satellites for GPS
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-	DIMOAftermarketNSAT *float64 `json:"dIMOAftermarketNSAT,omitempty"`
+	DIMOAftermarketNSAT *float64 `json:"dimoAftermarketNSAT,omitempty"`
 	// Service Set Ientifier for the wifi.
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-	DIMOAftermarketSSID *string `json:"dIMOAftermarketSSID,omitempty"`
+	DIMOAftermarketSSID *string `json:"dimoAftermarketSSID,omitempty"`
 	// Indicate the current wpa state for the devices wifi
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-	DIMOAftermarketWPAState *string `json:"dIMOAftermarketWPAState,omitempty"`
+	DIMOAftermarketWPAState *string `json:"dimoAftermarketWPAState,omitempty"`
 	// Air temperature outside the vehicle.
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	ExteriorAirTemperature *float64 `json:"exteriorAirTemperature,omitempty"`
@@ -60,16 +60,16 @@ type SignalAggregations struct {
 	LowVoltageBatteryCurrentVoltage *float64 `json:"lowVoltageBatteryCurrentVoltage,omitempty"`
 	// PID 33 - Barometric pressure
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-	OBDBarometricPressure *float64 `json:"oBDBarometricPressure,omitempty"`
+	OBDBarometricPressure *float64 `json:"obdBarometricPressure,omitempty"`
 	// PID 04 - Engine load in percent - 0 = no load, 100 = full load
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-	OBDEngineLoad *float64 `json:"oBDEngineLoad,omitempty"`
+	OBDEngineLoad *float64 `json:"obdEngineLoad,omitempty"`
 	// PID 0F - Intake temperature
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-	OBDIntakeTemp *float64 `json:"oBDIntakeTemp,omitempty"`
+	OBDIntakeTemp *float64 `json:"obdIntakeTemp,omitempty"`
 	// PID 1F - Engine run time
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-	OBDRunTime *float64 `json:"oBDRunTime,omitempty"`
+	OBDRunTime *float64 `json:"obdRunTime,omitempty"`
 	// Engine coolant temperature.
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainCombustionEngineECT *float64 `json:"powertrainCombustionEngineECT,omitempty"`
@@ -100,6 +100,9 @@ type SignalAggregations struct {
 	// True if charging is ongoing. Charging is considered to be ongoing if energy is flowing from charger to vehicle.
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainTractionBatteryChargingIsCharging *string `json:"powertrainTractionBatteryChargingIsCharging,omitempty"`
+	// Current electrical energy flowing in/out of battery. Positive = Energy flowing in to battery, e.g. during charging. Negative = Energy flowing out of battery, e.g. during driving.
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	PowertrainTractionBatteryCurrentPower *float64 `json:"powertrainTractionBatteryCurrentPower,omitempty"`
 	// Gross capacity of the battery.
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainTractionBatteryGrossCapacity *float64 `json:"powertrainTractionBatteryGrossCapacity,omitempty"`
@@ -155,16 +158,16 @@ type SignalCollection struct {
 	CurrentLocationTimestamp *SignalString `json:"currentLocationTimestamp,omitempty"`
 	// Horizontal dilution of precision of GPS
 	// Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
-	DIMOAftermarketHDOP *SignalFloat `json:"dIMOAftermarketHDOP,omitempty"`
+	DIMOAftermarketHDOP *SignalFloat `json:"dimoAftermarketHDOP,omitempty"`
 	// Number of sync satellites for GPS
 	// Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
-	DIMOAftermarketNSAT *SignalFloat `json:"dIMOAftermarketNSAT,omitempty"`
+	DIMOAftermarketNSAT *SignalFloat `json:"dimoAftermarketNSAT,omitempty"`
 	// Service Set Ientifier for the wifi.
 	// Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
-	DIMOAftermarketSSID *SignalString `json:"dIMOAftermarketSSID,omitempty"`
+	DIMOAftermarketSSID *SignalString `json:"dimoAftermarketSSID,omitempty"`
 	// Indicate the current wpa state for the devices wifi
 	// Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
-	DIMOAftermarketWPAState *SignalString `json:"dIMOAftermarketWPAState,omitempty"`
+	DIMOAftermarketWPAState *SignalString `json:"dimoAftermarketWPAState,omitempty"`
 	// Air temperature outside the vehicle.
 	// Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
 	ExteriorAirTemperature *SignalFloat `json:"exteriorAirTemperature,omitempty"`
@@ -173,16 +176,16 @@ type SignalCollection struct {
 	LowVoltageBatteryCurrentVoltage *SignalFloat `json:"lowVoltageBatteryCurrentVoltage,omitempty"`
 	// PID 33 - Barometric pressure
 	// Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
-	OBDBarometricPressure *SignalFloat `json:"oBDBarometricPressure,omitempty"`
+	OBDBarometricPressure *SignalFloat `json:"obdBarometricPressure,omitempty"`
 	// PID 04 - Engine load in percent - 0 = no load, 100 = full load
 	// Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
-	OBDEngineLoad *SignalFloat `json:"oBDEngineLoad,omitempty"`
+	OBDEngineLoad *SignalFloat `json:"obdEngineLoad,omitempty"`
 	// PID 0F - Intake temperature
 	// Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
-	OBDIntakeTemp *SignalFloat `json:"oBDIntakeTemp,omitempty"`
+	OBDIntakeTemp *SignalFloat `json:"obdIntakeTemp,omitempty"`
 	// PID 1F - Engine run time
 	// Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
-	OBDRunTime *SignalFloat `json:"oBDRunTime,omitempty"`
+	OBDRunTime *SignalFloat `json:"obdRunTime,omitempty"`
 	// Engine coolant temperature.
 	// Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainCombustionEngineECT *SignalFloat `json:"powertrainCombustionEngineECT,omitempty"`
@@ -213,6 +216,9 @@ type SignalCollection struct {
 	// True if charging is ongoing. Charging is considered to be ongoing if energy is flowing from charger to vehicle.
 	// Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainTractionBatteryChargingIsCharging *SignalString `json:"powertrainTractionBatteryChargingIsCharging,omitempty"`
+	// Current electrical energy flowing in/out of battery. Positive = Energy flowing in to battery, e.g. during charging. Negative = Energy flowing out of battery, e.g. during driving.
+	// Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+	PowertrainTractionBatteryCurrentPower *SignalFloat `json:"powertrainTractionBatteryCurrentPower,omitempty"`
 	// Gross capacity of the battery.
 	// Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainTractionBatteryGrossCapacity *SignalFloat `json:"powertrainTractionBatteryGrossCapacity,omitempty"`
