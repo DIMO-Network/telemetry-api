@@ -2,13 +2,10 @@ package repositories
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	"github.com/DIMO-Network/telemetry-api/internal/service/ch"
 )
-
-var twoWeeks = 14 * 24 * time.Hour
 
 // ValidationError is an error type for validation errors.
 type ValidationError string
@@ -24,11 +21,6 @@ func validateAggSigArgs(args *model.AggregatedSignalArgs) error {
 	}
 	if args.FromTS.After(args.ToTS) {
 		return ValidationError("from timestamp is after to timestamp")
-	}
-
-	// check if time range is greater than 2 weeks
-	if args.ToTS.Sub(args.FromTS) > twoWeeks {
-		return ValidationError("time range is greater than two weeks")
 	}
 
 	if args.Interval < 1 {

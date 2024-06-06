@@ -13,6 +13,13 @@ import (
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 )
 
+const (
+	defaultMaxExecutionTime                    = 5
+	defaultTimeoutBeforeCheckingExecutionSpeed = 2
+	// TimeoutErrCode is the error code returned by ClickHouse when a query is interrupted due to exceeding the max_execution_time.
+	TimeoutErrCode = int32(159)
+)
+
 // Service is a ClickHouse service that interacts with the ClickHouse database.
 type Service struct {
 	conn clickhouse.Conn
@@ -20,6 +27,10 @@ type Service struct {
 
 // NewService creates a new ClickHouse service.
 func NewService(settings config.Settings, rootCAs *x509.CertPool) (*Service, error) {
+	maxExecutionTime := settings.CLickHouseMaxExecutionTimeSec
+	if maxExecutionTime == 0 {
+		settings.CLickHouseMaxExecutionTimeSec = defaultMaxExecutionTime
+	}
 	addr := fmt.Sprintf("%s:%d", settings.ClickHouseHost, settings.ClickHouseTCPPort)
 	conn, err := clickhouse.Open(&clickhouse.Options{
 		Addr: []string{addr},
@@ -30,6 +41,13 @@ func NewService(settings config.Settings, rootCAs *x509.CertPool) (*Service, err
 		},
 		TLS: &tls.Config{
 			RootCAs: rootCAs,
+		},
+		Settings: map[string]any{
+			// ClickHouse will interrupt a query if the projected execution time exceeds the specified max_execution_time.
+			// The estimated execution time is calculated after `timeout_before_checking_execution_speed`
+			// More info: https://clickhouse.com/docs/en/operations/settings/query-complexity#max-execution-time
+			"max_execution_time":                      maxExecutionTime,
+			"timeout_before_checking_execution_speed": defaultTimeoutBeforeCheckingExecutionSpeed,
 		},
 	})
 	if err != nil {
@@ -84,6 +102,9 @@ func (s *Service) getSignals(ctx context.Context, stmt string, args []any) ([]*v
 			return nil, fmt.Errorf("failed scanning clickhouse row: %w", err)
 		}
 		signals = append(signals, &signal)
+	}
+	if rows.Err() != nil {
+		return nil, fmt.Errorf("clickhouse row error: %w", rows.Err())
 	}
 	return signals, nil
 }

@@ -1,17 +1,18 @@
-package ch_test
+package ch
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"testing"
 	"time"
 
+	"github.com/ClickHouse/clickhouse-go/v2/lib/proto"
 	"github.com/DIMO-Network/model-garage/pkg/clickhouseinfra"
 	"github.com/DIMO-Network/model-garage/pkg/migrations"
 	"github.com/DIMO-Network/model-garage/pkg/vss"
 	"github.com/DIMO-Network/telemetry-api/internal/config"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
-	"github.com/DIMO-Network/telemetry-api/internal/service/ch"
 	"github.com/stretchr/testify/suite"
 )
 
@@ -23,7 +24,7 @@ const (
 type CHServiceTestSuite struct {
 	suite.Suite
 	dataStartTime time.Time
-	chService     *ch.Service
+	chService     *Service
 	container     *clickhouseinfra.Container
 }
 
@@ -56,7 +57,7 @@ func (c *CHServiceTestSuite) SetupSuite() {
 		ClickHousePassword: c.container.Password,
 		ClickHouseDatabase: c.container.DbName,
 	}
-	c.chService, err = ch.NewService(settings, c.container.RootCAs)
+	c.chService, err = NewService(settings, c.container.RootCAs)
 	c.Require().NoError(err, "Failed to create repository")
 	c.dataStartTime = time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
 	c.insertTestData()
@@ -66,8 +67,8 @@ func (c *CHServiceTestSuite) TearDownSuite() {
 	c.container.Terminate(context.Background())
 }
 
-func (c *CHServiceTestSuite) TestGetSignalFloats() {
-	endTs := c.dataStartTime.Add(time.Hour * 24 * 14)
+func (c *CHServiceTestSuite) TestGetAggSignal() {
+	endTs := c.dataStartTime.Add(time.Second * time.Duration(30*dataPoints))
 	ctx := context.Background()
 	testCases := []struct {
 		name     string
@@ -189,7 +190,7 @@ func (c *CHServiceTestSuite) TestGetSignalFloats() {
 		})
 	}
 }
-func (c *CHServiceTestSuite) TestGetLatestSignalFloat() {
+func (c *CHServiceTestSuite) TestGetLatestSignal() {
 	ctx := context.Background()
 	testCases := []struct {
 		name       string
@@ -262,6 +263,40 @@ func (c *CHServiceTestSuite) TestGetLatestSignalFloat() {
 		})
 	}
 }
+func (c *CHServiceTestSuite) TestExecutionTimeout() {
+	ctx := context.Background()
+	host, err := c.container.Host(ctx)
+	c.Require().NoError(err, "Failed to get clickhouse host")
+
+	port, err := c.container.MappedPort(ctx, clickhouseinfra.SecureNativePort)
+	c.Require().NoError(err, "Failed to get clickhouse port")
+
+	settings := config.Settings{
+		ClickHouseHost:                host,
+		ClickHouseTCPPort:             port.Int(),
+		ClickHouseUser:                c.container.User,
+		ClickHousePassword:            c.container.Password,
+		ClickHouseDatabase:            c.container.DbName,
+		CLickHouseMaxExecutionTimeSec: 1,
+	}
+	chService, err := NewService(settings, c.container.RootCAs)
+	c.Require().NoError(err, "Failed to create repository")
+
+	var delay bool
+	err = chService.conn.QueryRow(ctx, "SELECT sleep(3) as delay").Scan(&delay)
+	c.Require().Error(err, "Query returned without an error")
+	protoErr := &proto.Exception{}
+	c.Require().ErrorAs(err, &protoErr, "Query returned without timeout error type: %T", err)
+	c.Require().Equalf(TimeoutErrCode, protoErr.Code, "Expected error code %d, got %d, err: %v ", TimeoutErrCode, protoErr.Code, protoErr)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+	defer cancel()
+
+	err = chService.conn.QueryRow(ctx, "SELECT sleep(2) as delay").Scan(&delay)
+	c.Require().Error(err, "Query returned without timeout error")
+	c.Require().True(errors.Is(err, context.DeadlineExceeded), "Expected error to be DeadlineExceeded, got %v", err)
+
+}
 
 // insertTestData inserts test data into the clickhouse database.
 // it loops for 10 iterations and inserts a 2 signals  with each iteration that have a value of i and a powertrain type of "value"+ n%3+1
@@ -297,6 +332,7 @@ func (c *CHServiceTestSuite) insertTestData() {
 	// insert the test data into the clickhouse database
 	batch, err := conn.PrepareBatch(ctx, fmt.Sprintf("INSERT INTO %s", vss.TableName))
 	c.Require().NoError(err, "Failed to prepare batch")
+
 	for _, sig := range testSignal {
 		err := batch.AppendStruct(&sig)
 		c.Require().NoError(err, "Failed to append struct")
