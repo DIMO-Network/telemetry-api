@@ -84,6 +84,7 @@ type ComplexityRoot struct {
 		PowertrainRange                               func(childComplexity int, agg model.FloatAggregation) int
 		PowertrainTractionBatteryChargingChargeLimit  func(childComplexity int, agg model.FloatAggregation) int
 		PowertrainTractionBatteryChargingIsCharging   func(childComplexity int, agg model.StringAggregation) int
+		PowertrainTractionBatteryCurrentPower         func(childComplexity int, agg model.FloatAggregation) int
 		PowertrainTractionBatteryGrossCapacity        func(childComplexity int, agg model.FloatAggregation) int
 		PowertrainTractionBatteryStateOfChargeCurrent func(childComplexity int, agg model.FloatAggregation) int
 		PowertrainTransmissionTravelledDistance       func(childComplexity int, agg model.FloatAggregation) int
@@ -125,6 +126,7 @@ type ComplexityRoot struct {
 		PowertrainRange                               func(childComplexity int) int
 		PowertrainTractionBatteryChargingChargeLimit  func(childComplexity int) int
 		PowertrainTractionBatteryChargingIsCharging   func(childComplexity int) int
+		PowertrainTractionBatteryCurrentPower         func(childComplexity int) int
 		PowertrainTractionBatteryGrossCapacity        func(childComplexity int) int
 		PowertrainTractionBatteryStateOfChargeCurrent func(childComplexity int) int
 		PowertrainTransmissionTravelledDistance       func(childComplexity int) int
@@ -290,48 +292,48 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.SignalAggregations.CurrentLocationTimestamp(childComplexity, args["agg"].(model.StringAggregation)), true
 
-	case "SignalAggregations.dIMOAftermarketHDOP":
+	case "SignalAggregations.dimoAftermarketHDOP":
 		if e.complexity.SignalAggregations.DIMOAftermarketHDOP == nil {
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_dIMOAftermarketHDOP_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_dimoAftermarketHDOP_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
 		return e.complexity.SignalAggregations.DIMOAftermarketHDOP(childComplexity, args["agg"].(model.FloatAggregation)), true
 
-	case "SignalAggregations.dIMOAftermarketNSAT":
+	case "SignalAggregations.dimoAftermarketNSAT":
 		if e.complexity.SignalAggregations.DIMOAftermarketNSAT == nil {
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_dIMOAftermarketNSAT_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_dimoAftermarketNSAT_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
 		return e.complexity.SignalAggregations.DIMOAftermarketNSAT(childComplexity, args["agg"].(model.FloatAggregation)), true
 
-	case "SignalAggregations.dIMOAftermarketSSID":
+	case "SignalAggregations.dimoAftermarketSSID":
 		if e.complexity.SignalAggregations.DIMOAftermarketSSID == nil {
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_dIMOAftermarketSSID_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_dimoAftermarketSSID_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
 		return e.complexity.SignalAggregations.DIMOAftermarketSSID(childComplexity, args["agg"].(model.StringAggregation)), true
 
-	case "SignalAggregations.dIMOAftermarketWPAState":
+	case "SignalAggregations.dimoAftermarketWPAState":
 		if e.complexity.SignalAggregations.DIMOAftermarketWPAState == nil {
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_dIMOAftermarketWPAState_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_dimoAftermarketWPAState_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -362,48 +364,48 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.SignalAggregations.LowVoltageBatteryCurrentVoltage(childComplexity, args["agg"].(model.FloatAggregation)), true
 
-	case "SignalAggregations.oBDBarometricPressure":
+	case "SignalAggregations.obdBarometricPressure":
 		if e.complexity.SignalAggregations.OBDBarometricPressure == nil {
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_oBDBarometricPressure_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_obdBarometricPressure_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
 		return e.complexity.SignalAggregations.OBDBarometricPressure(childComplexity, args["agg"].(model.FloatAggregation)), true
 
-	case "SignalAggregations.oBDEngineLoad":
+	case "SignalAggregations.obdEngineLoad":
 		if e.complexity.SignalAggregations.OBDEngineLoad == nil {
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_oBDEngineLoad_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_obdEngineLoad_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
 		return e.complexity.SignalAggregations.OBDEngineLoad(childComplexity, args["agg"].(model.FloatAggregation)), true
 
-	case "SignalAggregations.oBDIntakeTemp":
+	case "SignalAggregations.obdIntakeTemp":
 		if e.complexity.SignalAggregations.OBDIntakeTemp == nil {
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_oBDIntakeTemp_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_obdIntakeTemp_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
 		return e.complexity.SignalAggregations.OBDIntakeTemp(childComplexity, args["agg"].(model.FloatAggregation)), true
 
-	case "SignalAggregations.oBDRunTime":
+	case "SignalAggregations.obdRunTime":
 		if e.complexity.SignalAggregations.OBDRunTime == nil {
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_oBDRunTime_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_obdRunTime_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -529,6 +531,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.SignalAggregations.PowertrainTractionBatteryChargingIsCharging(childComplexity, args["agg"].(model.StringAggregation)), true
+
+	case "SignalAggregations.powertrainTractionBatteryCurrentPower":
+		if e.complexity.SignalAggregations.PowertrainTractionBatteryCurrentPower == nil {
+			break
+		}
+
+		args, err := ec.field_SignalAggregations_powertrainTractionBatteryCurrentPower_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.SignalAggregations.PowertrainTractionBatteryCurrentPower(childComplexity, args["agg"].(model.FloatAggregation)), true
 
 	case "SignalAggregations.powertrainTractionBatteryGrossCapacity":
 		if e.complexity.SignalAggregations.PowertrainTractionBatteryGrossCapacity == nil {
@@ -689,28 +703,28 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.SignalCollection.CurrentLocationTimestamp(childComplexity), true
 
-	case "SignalCollection.dIMOAftermarketHDOP":
+	case "SignalCollection.dimoAftermarketHDOP":
 		if e.complexity.SignalCollection.DIMOAftermarketHDOP == nil {
 			break
 		}
 
 		return e.complexity.SignalCollection.DIMOAftermarketHDOP(childComplexity), true
 
-	case "SignalCollection.dIMOAftermarketNSAT":
+	case "SignalCollection.dimoAftermarketNSAT":
 		if e.complexity.SignalCollection.DIMOAftermarketNSAT == nil {
 			break
 		}
 
 		return e.complexity.SignalCollection.DIMOAftermarketNSAT(childComplexity), true
 
-	case "SignalCollection.dIMOAftermarketSSID":
+	case "SignalCollection.dimoAftermarketSSID":
 		if e.complexity.SignalCollection.DIMOAftermarketSSID == nil {
 			break
 		}
 
 		return e.complexity.SignalCollection.DIMOAftermarketSSID(childComplexity), true
 
-	case "SignalCollection.dIMOAftermarketWPAState":
+	case "SignalCollection.dimoAftermarketWPAState":
 		if e.complexity.SignalCollection.DIMOAftermarketWPAState == nil {
 			break
 		}
@@ -738,28 +752,28 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.SignalCollection.LowVoltageBatteryCurrentVoltage(childComplexity), true
 
-	case "SignalCollection.oBDBarometricPressure":
+	case "SignalCollection.obdBarometricPressure":
 		if e.complexity.SignalCollection.OBDBarometricPressure == nil {
 			break
 		}
 
 		return e.complexity.SignalCollection.OBDBarometricPressure(childComplexity), true
 
-	case "SignalCollection.oBDEngineLoad":
+	case "SignalCollection.obdEngineLoad":
 		if e.complexity.SignalCollection.OBDEngineLoad == nil {
 			break
 		}
 
 		return e.complexity.SignalCollection.OBDEngineLoad(childComplexity), true
 
-	case "SignalCollection.oBDIntakeTemp":
+	case "SignalCollection.obdIntakeTemp":
 		if e.complexity.SignalCollection.OBDIntakeTemp == nil {
 			break
 		}
 
 		return e.complexity.SignalCollection.OBDIntakeTemp(childComplexity), true
 
-	case "SignalCollection.oBDRunTime":
+	case "SignalCollection.obdRunTime":
 		if e.complexity.SignalCollection.OBDRunTime == nil {
 			break
 		}
@@ -835,6 +849,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.SignalCollection.PowertrainTractionBatteryChargingIsCharging(childComplexity), true
+
+	case "SignalCollection.powertrainTractionBatteryCurrentPower":
+		if e.complexity.SignalCollection.PowertrainTractionBatteryCurrentPower == nil {
+			break
+		}
+
+		return e.complexity.SignalCollection.PowertrainTractionBatteryCurrentPower(childComplexity), true
 
 	case "SignalCollection.powertrainTractionBatteryGrossCapacity":
 		if e.complexity.SignalCollection.PowertrainTractionBatteryGrossCapacity == nil {
@@ -1206,7 +1227,7 @@ extend type SignalAggregations {
   Horizontal dilution of precision of GPS
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
-  dIMOAftermarketHDOP(
+  dimoAftermarketHDOP(
     agg: FloatAggregation!
   ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketHDOP") @isSignal @hasAggregation
   
@@ -1214,7 +1235,7 @@ extend type SignalAggregations {
   Number of sync satellites for GPS
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
-  dIMOAftermarketNSAT(
+  dimoAftermarketNSAT(
     agg: FloatAggregation!
   ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketNSAT") @isSignal @hasAggregation
   
@@ -1222,7 +1243,7 @@ extend type SignalAggregations {
   Service Set Ientifier for the wifi.
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
-  dIMOAftermarketSSID(
+  dimoAftermarketSSID(
     agg: StringAggregation!
   ):  String @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketSSID") @isSignal @hasAggregation
   
@@ -1230,7 +1251,7 @@ extend type SignalAggregations {
   Indicate the current wpa state for the devices wifi
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
-  dIMOAftermarketWPAState(
+  dimoAftermarketWPAState(
     agg: StringAggregation!
   ):  String @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketWPAState") @isSignal @hasAggregation
   
@@ -1254,7 +1275,7 @@ extend type SignalAggregations {
   PID 33 - Barometric pressure
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
-  oBDBarometricPressure(
+  obdBarometricPressure(
     agg: FloatAggregation!
   ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDBarometricPressure") @isSignal @hasAggregation
   
@@ -1262,7 +1283,7 @@ extend type SignalAggregations {
   PID 04 - Engine load in percent - 0 = no load, 100 = full load
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
-  oBDEngineLoad(
+  obdEngineLoad(
     agg: FloatAggregation!
   ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDEngineLoad") @isSignal @hasAggregation
   
@@ -1270,7 +1291,7 @@ extend type SignalAggregations {
   PID 0F - Intake temperature
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
-  oBDIntakeTemp(
+  obdIntakeTemp(
     agg: FloatAggregation!
   ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDIntakeTemp") @isSignal @hasAggregation
   
@@ -1278,7 +1299,7 @@ extend type SignalAggregations {
   PID 1F - Engine run time
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
-  oBDRunTime(
+  obdRunTime(
     agg: FloatAggregation!
   ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDRunTime") @isSignal @hasAggregation
   
@@ -1361,6 +1382,14 @@ extend type SignalAggregations {
   powertrainTractionBatteryChargingIsCharging(
     agg: StringAggregation!
   ):  String @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryChargingIsCharging") @isSignal @hasAggregation
+  
+  """
+  Current electrical energy flowing in/out of battery. Positive = Energy flowing in to battery, e.g. during charging. Negative = Energy flowing out of battery, e.g. during driving.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  powertrainTractionBatteryCurrentPower(
+    agg: FloatAggregation!
+  ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryCurrentPower") @isSignal @hasAggregation
   
   """
   Gross capacity of the battery.
@@ -1481,25 +1510,25 @@ extend type SignalCollection {
   Horizontal dilution of precision of GPS
   Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
   """
-  dIMOAftermarketHDOP: SignalFloat @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketHDOP") @isSignal
+  dimoAftermarketHDOP: SignalFloat @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketHDOP") @isSignal
   
   """
   Number of sync satellites for GPS
   Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
   """
-  dIMOAftermarketNSAT: SignalFloat @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketNSAT") @isSignal
+  dimoAftermarketNSAT: SignalFloat @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketNSAT") @isSignal
   
   """
   Service Set Ientifier for the wifi.
   Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
   """
-  dIMOAftermarketSSID: SignalString @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketSSID") @isSignal
+  dimoAftermarketSSID: SignalString @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketSSID") @isSignal
   
   """
   Indicate the current wpa state for the devices wifi
   Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
   """
-  dIMOAftermarketWPAState: SignalString @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketWPAState") @isSignal
+  dimoAftermarketWPAState: SignalString @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketWPAState") @isSignal
   
   """
   Air temperature outside the vehicle.
@@ -1517,25 +1546,25 @@ extend type SignalCollection {
   PID 33 - Barometric pressure
   Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
   """
-  oBDBarometricPressure: SignalFloat @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDBarometricPressure") @isSignal
+  obdBarometricPressure: SignalFloat @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDBarometricPressure") @isSignal
   
   """
   PID 04 - Engine load in percent - 0 = no load, 100 = full load
   Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
   """
-  oBDEngineLoad: SignalFloat @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDEngineLoad") @isSignal
+  obdEngineLoad: SignalFloat @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDEngineLoad") @isSignal
   
   """
   PID 0F - Intake temperature
   Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
   """
-  oBDIntakeTemp: SignalFloat @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDIntakeTemp") @isSignal
+  obdIntakeTemp: SignalFloat @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDIntakeTemp") @isSignal
   
   """
   PID 1F - Engine run time
   Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
   """
-  oBDRunTime: SignalFloat @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDRunTime") @isSignal
+  obdRunTime: SignalFloat @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDRunTime") @isSignal
   
   """
   Engine coolant temperature.
@@ -1596,6 +1625,12 @@ extend type SignalCollection {
   Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainTractionBatteryChargingIsCharging: SignalString @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryChargingIsCharging") @isSignal
+  
+  """
+  Current electrical energy flowing in/out of battery. Positive = Energy flowing in to battery, e.g. during charging. Negative = Energy flowing out of battery, e.g. during driving.
+  Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  powertrainTractionBatteryCurrentPower: SignalFloat @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryCurrentPower") @isSignal
   
   """
   Gross capacity of the battery.
@@ -1880,7 +1915,7 @@ func (ec *executionContext) field_SignalAggregations_currentLocationTimestamp_ar
 	return args, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_dIMOAftermarketHDOP_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_dimoAftermarketHDOP_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 model.FloatAggregation
@@ -1895,7 +1930,7 @@ func (ec *executionContext) field_SignalAggregations_dIMOAftermarketHDOP_args(ct
 	return args, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_dIMOAftermarketNSAT_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_dimoAftermarketNSAT_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 model.FloatAggregation
@@ -1910,7 +1945,7 @@ func (ec *executionContext) field_SignalAggregations_dIMOAftermarketNSAT_args(ct
 	return args, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_dIMOAftermarketSSID_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_dimoAftermarketSSID_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 model.StringAggregation
@@ -1925,7 +1960,7 @@ func (ec *executionContext) field_SignalAggregations_dIMOAftermarketSSID_args(ct
 	return args, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_dIMOAftermarketWPAState_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_dimoAftermarketWPAState_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 model.StringAggregation
@@ -1970,7 +2005,7 @@ func (ec *executionContext) field_SignalAggregations_lowVoltageBatteryCurrentVol
 	return args, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_oBDBarometricPressure_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_obdBarometricPressure_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 model.FloatAggregation
@@ -1985,7 +2020,7 @@ func (ec *executionContext) field_SignalAggregations_oBDBarometricPressure_args(
 	return args, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_oBDEngineLoad_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_obdEngineLoad_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 model.FloatAggregation
@@ -2000,7 +2035,7 @@ func (ec *executionContext) field_SignalAggregations_oBDEngineLoad_args(ctx cont
 	return args, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_oBDIntakeTemp_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_obdIntakeTemp_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 model.FloatAggregation
@@ -2015,7 +2050,7 @@ func (ec *executionContext) field_SignalAggregations_oBDIntakeTemp_args(ctx cont
 	return args, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_oBDRunTime_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_obdRunTime_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 model.FloatAggregation
@@ -2172,6 +2207,21 @@ func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryCh
 	if tmp, ok := rawArgs["agg"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
 		arg0, err = ec.unmarshalNStringAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐStringAggregation(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["agg"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryCurrentPower_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.FloatAggregation
+	if tmp, ok := rawArgs["agg"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
+		arg0, err = ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2412,26 +2462,26 @@ func (ec *executionContext) fieldContext_Query_signals(ctx context.Context, fiel
 				return ec.fieldContext_SignalAggregations_currentLocationLongitude(ctx, field)
 			case "currentLocationTimestamp":
 				return ec.fieldContext_SignalAggregations_currentLocationTimestamp(ctx, field)
-			case "dIMOAftermarketHDOP":
-				return ec.fieldContext_SignalAggregations_dIMOAftermarketHDOP(ctx, field)
-			case "dIMOAftermarketNSAT":
-				return ec.fieldContext_SignalAggregations_dIMOAftermarketNSAT(ctx, field)
-			case "dIMOAftermarketSSID":
-				return ec.fieldContext_SignalAggregations_dIMOAftermarketSSID(ctx, field)
-			case "dIMOAftermarketWPAState":
-				return ec.fieldContext_SignalAggregations_dIMOAftermarketWPAState(ctx, field)
+			case "dimoAftermarketHDOP":
+				return ec.fieldContext_SignalAggregations_dimoAftermarketHDOP(ctx, field)
+			case "dimoAftermarketNSAT":
+				return ec.fieldContext_SignalAggregations_dimoAftermarketNSAT(ctx, field)
+			case "dimoAftermarketSSID":
+				return ec.fieldContext_SignalAggregations_dimoAftermarketSSID(ctx, field)
+			case "dimoAftermarketWPAState":
+				return ec.fieldContext_SignalAggregations_dimoAftermarketWPAState(ctx, field)
 			case "exteriorAirTemperature":
 				return ec.fieldContext_SignalAggregations_exteriorAirTemperature(ctx, field)
 			case "lowVoltageBatteryCurrentVoltage":
 				return ec.fieldContext_SignalAggregations_lowVoltageBatteryCurrentVoltage(ctx, field)
-			case "oBDBarometricPressure":
-				return ec.fieldContext_SignalAggregations_oBDBarometricPressure(ctx, field)
-			case "oBDEngineLoad":
-				return ec.fieldContext_SignalAggregations_oBDEngineLoad(ctx, field)
-			case "oBDIntakeTemp":
-				return ec.fieldContext_SignalAggregations_oBDIntakeTemp(ctx, field)
-			case "oBDRunTime":
-				return ec.fieldContext_SignalAggregations_oBDRunTime(ctx, field)
+			case "obdBarometricPressure":
+				return ec.fieldContext_SignalAggregations_obdBarometricPressure(ctx, field)
+			case "obdEngineLoad":
+				return ec.fieldContext_SignalAggregations_obdEngineLoad(ctx, field)
+			case "obdIntakeTemp":
+				return ec.fieldContext_SignalAggregations_obdIntakeTemp(ctx, field)
+			case "obdRunTime":
+				return ec.fieldContext_SignalAggregations_obdRunTime(ctx, field)
 			case "powertrainCombustionEngineECT":
 				return ec.fieldContext_SignalAggregations_powertrainCombustionEngineECT(ctx, field)
 			case "powertrainCombustionEngineEngineOilLevel":
@@ -2452,6 +2502,8 @@ func (ec *executionContext) fieldContext_Query_signals(ctx context.Context, fiel
 				return ec.fieldContext_SignalAggregations_powertrainTractionBatteryChargingChargeLimit(ctx, field)
 			case "powertrainTractionBatteryChargingIsCharging":
 				return ec.fieldContext_SignalAggregations_powertrainTractionBatteryChargingIsCharging(ctx, field)
+			case "powertrainTractionBatteryCurrentPower":
+				return ec.fieldContext_SignalAggregations_powertrainTractionBatteryCurrentPower(ctx, field)
 			case "powertrainTractionBatteryGrossCapacity":
 				return ec.fieldContext_SignalAggregations_powertrainTractionBatteryGrossCapacity(ctx, field)
 			case "powertrainTractionBatteryStateOfChargeCurrent":
@@ -2560,26 +2612,26 @@ func (ec *executionContext) fieldContext_Query_signalsLatest(ctx context.Context
 				return ec.fieldContext_SignalCollection_currentLocationLongitude(ctx, field)
 			case "currentLocationTimestamp":
 				return ec.fieldContext_SignalCollection_currentLocationTimestamp(ctx, field)
-			case "dIMOAftermarketHDOP":
-				return ec.fieldContext_SignalCollection_dIMOAftermarketHDOP(ctx, field)
-			case "dIMOAftermarketNSAT":
-				return ec.fieldContext_SignalCollection_dIMOAftermarketNSAT(ctx, field)
-			case "dIMOAftermarketSSID":
-				return ec.fieldContext_SignalCollection_dIMOAftermarketSSID(ctx, field)
-			case "dIMOAftermarketWPAState":
-				return ec.fieldContext_SignalCollection_dIMOAftermarketWPAState(ctx, field)
+			case "dimoAftermarketHDOP":
+				return ec.fieldContext_SignalCollection_dimoAftermarketHDOP(ctx, field)
+			case "dimoAftermarketNSAT":
+				return ec.fieldContext_SignalCollection_dimoAftermarketNSAT(ctx, field)
+			case "dimoAftermarketSSID":
+				return ec.fieldContext_SignalCollection_dimoAftermarketSSID(ctx, field)
+			case "dimoAftermarketWPAState":
+				return ec.fieldContext_SignalCollection_dimoAftermarketWPAState(ctx, field)
 			case "exteriorAirTemperature":
 				return ec.fieldContext_SignalCollection_exteriorAirTemperature(ctx, field)
 			case "lowVoltageBatteryCurrentVoltage":
 				return ec.fieldContext_SignalCollection_lowVoltageBatteryCurrentVoltage(ctx, field)
-			case "oBDBarometricPressure":
-				return ec.fieldContext_SignalCollection_oBDBarometricPressure(ctx, field)
-			case "oBDEngineLoad":
-				return ec.fieldContext_SignalCollection_oBDEngineLoad(ctx, field)
-			case "oBDIntakeTemp":
-				return ec.fieldContext_SignalCollection_oBDIntakeTemp(ctx, field)
-			case "oBDRunTime":
-				return ec.fieldContext_SignalCollection_oBDRunTime(ctx, field)
+			case "obdBarometricPressure":
+				return ec.fieldContext_SignalCollection_obdBarometricPressure(ctx, field)
+			case "obdEngineLoad":
+				return ec.fieldContext_SignalCollection_obdEngineLoad(ctx, field)
+			case "obdIntakeTemp":
+				return ec.fieldContext_SignalCollection_obdIntakeTemp(ctx, field)
+			case "obdRunTime":
+				return ec.fieldContext_SignalCollection_obdRunTime(ctx, field)
 			case "powertrainCombustionEngineECT":
 				return ec.fieldContext_SignalCollection_powertrainCombustionEngineECT(ctx, field)
 			case "powertrainCombustionEngineEngineOilLevel":
@@ -2600,6 +2652,8 @@ func (ec *executionContext) fieldContext_Query_signalsLatest(ctx context.Context
 				return ec.fieldContext_SignalCollection_powertrainTractionBatteryChargingChargeLimit(ctx, field)
 			case "powertrainTractionBatteryChargingIsCharging":
 				return ec.fieldContext_SignalCollection_powertrainTractionBatteryChargingIsCharging(ctx, field)
+			case "powertrainTractionBatteryCurrentPower":
+				return ec.fieldContext_SignalCollection_powertrainTractionBatteryCurrentPower(ctx, field)
 			case "powertrainTractionBatteryGrossCapacity":
 				return ec.fieldContext_SignalCollection_powertrainTractionBatteryGrossCapacity(ctx, field)
 			case "powertrainTractionBatteryStateOfChargeCurrent":
@@ -3511,8 +3565,8 @@ func (ec *executionContext) fieldContext_SignalAggregations_currentLocationTimes
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalAggregations_dIMOAftermarketHDOP(ctx context.Context, field graphql.CollectedField, obj *model.SignalAggregations) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_SignalAggregations_dIMOAftermarketHDOP(ctx, field)
+func (ec *executionContext) _SignalAggregations_dimoAftermarketHDOP(ctx context.Context, field graphql.CollectedField, obj *model.SignalAggregations) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignalAggregations_dimoAftermarketHDOP(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -3575,7 +3629,7 @@ func (ec *executionContext) _SignalAggregations_dIMOAftermarketHDOP(ctx context.
 	return ec.marshalOFloat2ᚖfloat64(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SignalAggregations_dIMOAftermarketHDOP(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SignalAggregations_dimoAftermarketHDOP(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalAggregations",
 		Field:      field,
@@ -3592,15 +3646,15 @@ func (ec *executionContext) fieldContext_SignalAggregations_dIMOAftermarketHDOP(
 		}
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_SignalAggregations_dIMOAftermarketHDOP_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+	if fc.Args, err = ec.field_SignalAggregations_dimoAftermarketHDOP_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalAggregations_dIMOAftermarketNSAT(ctx context.Context, field graphql.CollectedField, obj *model.SignalAggregations) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_SignalAggregations_dIMOAftermarketNSAT(ctx, field)
+func (ec *executionContext) _SignalAggregations_dimoAftermarketNSAT(ctx context.Context, field graphql.CollectedField, obj *model.SignalAggregations) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignalAggregations_dimoAftermarketNSAT(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -3663,7 +3717,7 @@ func (ec *executionContext) _SignalAggregations_dIMOAftermarketNSAT(ctx context.
 	return ec.marshalOFloat2ᚖfloat64(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SignalAggregations_dIMOAftermarketNSAT(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SignalAggregations_dimoAftermarketNSAT(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalAggregations",
 		Field:      field,
@@ -3680,15 +3734,15 @@ func (ec *executionContext) fieldContext_SignalAggregations_dIMOAftermarketNSAT(
 		}
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_SignalAggregations_dIMOAftermarketNSAT_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+	if fc.Args, err = ec.field_SignalAggregations_dimoAftermarketNSAT_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalAggregations_dIMOAftermarketSSID(ctx context.Context, field graphql.CollectedField, obj *model.SignalAggregations) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_SignalAggregations_dIMOAftermarketSSID(ctx, field)
+func (ec *executionContext) _SignalAggregations_dimoAftermarketSSID(ctx context.Context, field graphql.CollectedField, obj *model.SignalAggregations) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignalAggregations_dimoAftermarketSSID(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -3751,7 +3805,7 @@ func (ec *executionContext) _SignalAggregations_dIMOAftermarketSSID(ctx context.
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SignalAggregations_dIMOAftermarketSSID(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SignalAggregations_dimoAftermarketSSID(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalAggregations",
 		Field:      field,
@@ -3768,15 +3822,15 @@ func (ec *executionContext) fieldContext_SignalAggregations_dIMOAftermarketSSID(
 		}
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_SignalAggregations_dIMOAftermarketSSID_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+	if fc.Args, err = ec.field_SignalAggregations_dimoAftermarketSSID_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalAggregations_dIMOAftermarketWPAState(ctx context.Context, field graphql.CollectedField, obj *model.SignalAggregations) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_SignalAggregations_dIMOAftermarketWPAState(ctx, field)
+func (ec *executionContext) _SignalAggregations_dimoAftermarketWPAState(ctx context.Context, field graphql.CollectedField, obj *model.SignalAggregations) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignalAggregations_dimoAftermarketWPAState(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -3839,7 +3893,7 @@ func (ec *executionContext) _SignalAggregations_dIMOAftermarketWPAState(ctx cont
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SignalAggregations_dIMOAftermarketWPAState(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SignalAggregations_dimoAftermarketWPAState(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalAggregations",
 		Field:      field,
@@ -3856,7 +3910,7 @@ func (ec *executionContext) fieldContext_SignalAggregations_dIMOAftermarketWPASt
 		}
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_SignalAggregations_dIMOAftermarketWPAState_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+	if fc.Args, err = ec.field_SignalAggregations_dimoAftermarketWPAState_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -4039,8 +4093,8 @@ func (ec *executionContext) fieldContext_SignalAggregations_lowVoltageBatteryCur
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalAggregations_oBDBarometricPressure(ctx context.Context, field graphql.CollectedField, obj *model.SignalAggregations) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_SignalAggregations_oBDBarometricPressure(ctx, field)
+func (ec *executionContext) _SignalAggregations_obdBarometricPressure(ctx context.Context, field graphql.CollectedField, obj *model.SignalAggregations) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignalAggregations_obdBarometricPressure(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -4103,7 +4157,7 @@ func (ec *executionContext) _SignalAggregations_oBDBarometricPressure(ctx contex
 	return ec.marshalOFloat2ᚖfloat64(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SignalAggregations_oBDBarometricPressure(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SignalAggregations_obdBarometricPressure(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalAggregations",
 		Field:      field,
@@ -4120,15 +4174,15 @@ func (ec *executionContext) fieldContext_SignalAggregations_oBDBarometricPressur
 		}
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_SignalAggregations_oBDBarometricPressure_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+	if fc.Args, err = ec.field_SignalAggregations_obdBarometricPressure_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalAggregations_oBDEngineLoad(ctx context.Context, field graphql.CollectedField, obj *model.SignalAggregations) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_SignalAggregations_oBDEngineLoad(ctx, field)
+func (ec *executionContext) _SignalAggregations_obdEngineLoad(ctx context.Context, field graphql.CollectedField, obj *model.SignalAggregations) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignalAggregations_obdEngineLoad(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -4191,7 +4245,7 @@ func (ec *executionContext) _SignalAggregations_oBDEngineLoad(ctx context.Contex
 	return ec.marshalOFloat2ᚖfloat64(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SignalAggregations_oBDEngineLoad(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SignalAggregations_obdEngineLoad(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalAggregations",
 		Field:      field,
@@ -4208,15 +4262,15 @@ func (ec *executionContext) fieldContext_SignalAggregations_oBDEngineLoad(ctx co
 		}
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_SignalAggregations_oBDEngineLoad_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+	if fc.Args, err = ec.field_SignalAggregations_obdEngineLoad_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalAggregations_oBDIntakeTemp(ctx context.Context, field graphql.CollectedField, obj *model.SignalAggregations) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_SignalAggregations_oBDIntakeTemp(ctx, field)
+func (ec *executionContext) _SignalAggregations_obdIntakeTemp(ctx context.Context, field graphql.CollectedField, obj *model.SignalAggregations) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignalAggregations_obdIntakeTemp(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -4279,7 +4333,7 @@ func (ec *executionContext) _SignalAggregations_oBDIntakeTemp(ctx context.Contex
 	return ec.marshalOFloat2ᚖfloat64(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SignalAggregations_oBDIntakeTemp(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SignalAggregations_obdIntakeTemp(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalAggregations",
 		Field:      field,
@@ -4296,15 +4350,15 @@ func (ec *executionContext) fieldContext_SignalAggregations_oBDIntakeTemp(ctx co
 		}
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_SignalAggregations_oBDIntakeTemp_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+	if fc.Args, err = ec.field_SignalAggregations_obdIntakeTemp_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalAggregations_oBDRunTime(ctx context.Context, field graphql.CollectedField, obj *model.SignalAggregations) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_SignalAggregations_oBDRunTime(ctx, field)
+func (ec *executionContext) _SignalAggregations_obdRunTime(ctx context.Context, field graphql.CollectedField, obj *model.SignalAggregations) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignalAggregations_obdRunTime(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -4367,7 +4421,7 @@ func (ec *executionContext) _SignalAggregations_oBDRunTime(ctx context.Context, 
 	return ec.marshalOFloat2ᚖfloat64(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SignalAggregations_oBDRunTime(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SignalAggregations_obdRunTime(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalAggregations",
 		Field:      field,
@@ -4384,7 +4438,7 @@ func (ec *executionContext) fieldContext_SignalAggregations_oBDRunTime(ctx conte
 		}
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_SignalAggregations_oBDRunTime_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+	if fc.Args, err = ec.field_SignalAggregations_obdRunTime_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -5265,6 +5319,94 @@ func (ec *executionContext) fieldContext_SignalAggregations_powertrainTractionBa
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_SignalAggregations_powertrainTractionBatteryChargingIsCharging_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryCurrentPower(ctx context.Context, field graphql.CollectedField, obj *model.SignalAggregations) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignalAggregations_powertrainTractionBatteryCurrentPower(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return obj.PowertrainTractionBatteryCurrentPower, nil
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.RequiresPrivilege == nil {
+				return nil, errors.New("directive requiresPrivilege is not implemented")
+			}
+			return ec.directives.RequiresPrivilege(ctx, obj, directive0, privileges)
+		}
+		directive2 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.IsSignal == nil {
+				return nil, errors.New("directive isSignal is not implemented")
+			}
+			return ec.directives.IsSignal(ctx, obj, directive1)
+		}
+		directive3 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.HasAggregation == nil {
+				return nil, errors.New("directive hasAggregation is not implemented")
+			}
+			return ec.directives.HasAggregation(ctx, obj, directive2)
+		}
+
+		tmp, err := directive3(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*float64); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*float64)
+	fc.Result = res
+	return ec.marshalOFloat2ᚖfloat64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SignalAggregations_powertrainTractionBatteryCurrentPower(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignalAggregations",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_SignalAggregations_powertrainTractionBatteryCurrentPower_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -6632,8 +6774,8 @@ func (ec *executionContext) fieldContext_SignalCollection_currentLocationTimesta
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalCollection_dIMOAftermarketHDOP(ctx context.Context, field graphql.CollectedField, obj *model.SignalCollection) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_SignalCollection_dIMOAftermarketHDOP(ctx, field)
+func (ec *executionContext) _SignalCollection_dimoAftermarketHDOP(ctx context.Context, field graphql.CollectedField, obj *model.SignalCollection) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignalCollection_dimoAftermarketHDOP(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -6690,7 +6832,7 @@ func (ec *executionContext) _SignalCollection_dIMOAftermarketHDOP(ctx context.Co
 	return ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SignalCollection_dIMOAftermarketHDOP(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SignalCollection_dimoAftermarketHDOP(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalCollection",
 		Field:      field,
@@ -6709,8 +6851,8 @@ func (ec *executionContext) fieldContext_SignalCollection_dIMOAftermarketHDOP(ct
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalCollection_dIMOAftermarketNSAT(ctx context.Context, field graphql.CollectedField, obj *model.SignalCollection) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_SignalCollection_dIMOAftermarketNSAT(ctx, field)
+func (ec *executionContext) _SignalCollection_dimoAftermarketNSAT(ctx context.Context, field graphql.CollectedField, obj *model.SignalCollection) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignalCollection_dimoAftermarketNSAT(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -6767,7 +6909,7 @@ func (ec *executionContext) _SignalCollection_dIMOAftermarketNSAT(ctx context.Co
 	return ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SignalCollection_dIMOAftermarketNSAT(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SignalCollection_dimoAftermarketNSAT(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalCollection",
 		Field:      field,
@@ -6786,8 +6928,8 @@ func (ec *executionContext) fieldContext_SignalCollection_dIMOAftermarketNSAT(ct
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalCollection_dIMOAftermarketSSID(ctx context.Context, field graphql.CollectedField, obj *model.SignalCollection) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_SignalCollection_dIMOAftermarketSSID(ctx, field)
+func (ec *executionContext) _SignalCollection_dimoAftermarketSSID(ctx context.Context, field graphql.CollectedField, obj *model.SignalCollection) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignalCollection_dimoAftermarketSSID(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -6844,7 +6986,7 @@ func (ec *executionContext) _SignalCollection_dIMOAftermarketSSID(ctx context.Co
 	return ec.marshalOSignalString2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalString(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SignalCollection_dIMOAftermarketSSID(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SignalCollection_dimoAftermarketSSID(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalCollection",
 		Field:      field,
@@ -6863,8 +7005,8 @@ func (ec *executionContext) fieldContext_SignalCollection_dIMOAftermarketSSID(ct
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalCollection_dIMOAftermarketWPAState(ctx context.Context, field graphql.CollectedField, obj *model.SignalCollection) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_SignalCollection_dIMOAftermarketWPAState(ctx, field)
+func (ec *executionContext) _SignalCollection_dimoAftermarketWPAState(ctx context.Context, field graphql.CollectedField, obj *model.SignalCollection) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignalCollection_dimoAftermarketWPAState(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -6921,7 +7063,7 @@ func (ec *executionContext) _SignalCollection_dIMOAftermarketWPAState(ctx contex
 	return ec.marshalOSignalString2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalString(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SignalCollection_dIMOAftermarketWPAState(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SignalCollection_dimoAftermarketWPAState(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalCollection",
 		Field:      field,
@@ -7094,8 +7236,8 @@ func (ec *executionContext) fieldContext_SignalCollection_lowVoltageBatteryCurre
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalCollection_oBDBarometricPressure(ctx context.Context, field graphql.CollectedField, obj *model.SignalCollection) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_SignalCollection_oBDBarometricPressure(ctx, field)
+func (ec *executionContext) _SignalCollection_obdBarometricPressure(ctx context.Context, field graphql.CollectedField, obj *model.SignalCollection) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignalCollection_obdBarometricPressure(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -7152,7 +7294,7 @@ func (ec *executionContext) _SignalCollection_oBDBarometricPressure(ctx context.
 	return ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SignalCollection_oBDBarometricPressure(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SignalCollection_obdBarometricPressure(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalCollection",
 		Field:      field,
@@ -7171,8 +7313,8 @@ func (ec *executionContext) fieldContext_SignalCollection_oBDBarometricPressure(
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalCollection_oBDEngineLoad(ctx context.Context, field graphql.CollectedField, obj *model.SignalCollection) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_SignalCollection_oBDEngineLoad(ctx, field)
+func (ec *executionContext) _SignalCollection_obdEngineLoad(ctx context.Context, field graphql.CollectedField, obj *model.SignalCollection) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignalCollection_obdEngineLoad(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -7229,7 +7371,7 @@ func (ec *executionContext) _SignalCollection_oBDEngineLoad(ctx context.Context,
 	return ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SignalCollection_oBDEngineLoad(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SignalCollection_obdEngineLoad(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalCollection",
 		Field:      field,
@@ -7248,8 +7390,8 @@ func (ec *executionContext) fieldContext_SignalCollection_oBDEngineLoad(ctx cont
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalCollection_oBDIntakeTemp(ctx context.Context, field graphql.CollectedField, obj *model.SignalCollection) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_SignalCollection_oBDIntakeTemp(ctx, field)
+func (ec *executionContext) _SignalCollection_obdIntakeTemp(ctx context.Context, field graphql.CollectedField, obj *model.SignalCollection) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignalCollection_obdIntakeTemp(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -7306,7 +7448,7 @@ func (ec *executionContext) _SignalCollection_oBDIntakeTemp(ctx context.Context,
 	return ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SignalCollection_oBDIntakeTemp(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SignalCollection_obdIntakeTemp(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalCollection",
 		Field:      field,
@@ -7325,8 +7467,8 @@ func (ec *executionContext) fieldContext_SignalCollection_oBDIntakeTemp(ctx cont
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalCollection_oBDRunTime(ctx context.Context, field graphql.CollectedField, obj *model.SignalCollection) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_SignalCollection_oBDRunTime(ctx, field)
+func (ec *executionContext) _SignalCollection_obdRunTime(ctx context.Context, field graphql.CollectedField, obj *model.SignalCollection) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignalCollection_obdRunTime(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -7383,7 +7525,7 @@ func (ec *executionContext) _SignalCollection_oBDRunTime(ctx context.Context, fi
 	return ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SignalCollection_oBDRunTime(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SignalCollection_obdRunTime(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalCollection",
 		Field:      field,
@@ -8167,6 +8309,83 @@ func (ec *executionContext) fieldContext_SignalCollection_powertrainTractionBatt
 				return ec.fieldContext_SignalString_value(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type SignalString", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SignalCollection_powertrainTractionBatteryCurrentPower(ctx context.Context, field graphql.CollectedField, obj *model.SignalCollection) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignalCollection_powertrainTractionBatteryCurrentPower(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return obj.PowertrainTractionBatteryCurrentPower, nil
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.RequiresPrivilege == nil {
+				return nil, errors.New("directive requiresPrivilege is not implemented")
+			}
+			return ec.directives.RequiresPrivilege(ctx, obj, directive0, privileges)
+		}
+		directive2 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.IsSignal == nil {
+				return nil, errors.New("directive isSignal is not implemented")
+			}
+			return ec.directives.IsSignal(ctx, obj, directive1)
+		}
+
+		tmp, err := directive2(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*model.SignalFloat); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.SignalFloat)
+	fc.Result = res
+	return ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SignalCollection_powertrainTractionBatteryCurrentPower(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignalCollection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "timestamp":
+				return ec.fieldContext_SignalFloat_timestamp(ctx, field)
+			case "value":
+				return ec.fieldContext_SignalFloat_value(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SignalFloat", field.Name)
 		},
 	}
 	return fc, nil
@@ -10892,26 +11111,26 @@ func (ec *executionContext) _SignalAggregations(ctx context.Context, sel ast.Sel
 			out.Values[i] = ec._SignalAggregations_currentLocationLongitude(ctx, field, obj)
 		case "currentLocationTimestamp":
 			out.Values[i] = ec._SignalAggregations_currentLocationTimestamp(ctx, field, obj)
-		case "dIMOAftermarketHDOP":
-			out.Values[i] = ec._SignalAggregations_dIMOAftermarketHDOP(ctx, field, obj)
-		case "dIMOAftermarketNSAT":
-			out.Values[i] = ec._SignalAggregations_dIMOAftermarketNSAT(ctx, field, obj)
-		case "dIMOAftermarketSSID":
-			out.Values[i] = ec._SignalAggregations_dIMOAftermarketSSID(ctx, field, obj)
-		case "dIMOAftermarketWPAState":
-			out.Values[i] = ec._SignalAggregations_dIMOAftermarketWPAState(ctx, field, obj)
+		case "dimoAftermarketHDOP":
+			out.Values[i] = ec._SignalAggregations_dimoAftermarketHDOP(ctx, field, obj)
+		case "dimoAftermarketNSAT":
+			out.Values[i] = ec._SignalAggregations_dimoAftermarketNSAT(ctx, field, obj)
+		case "dimoAftermarketSSID":
+			out.Values[i] = ec._SignalAggregations_dimoAftermarketSSID(ctx, field, obj)
+		case "dimoAftermarketWPAState":
+			out.Values[i] = ec._SignalAggregations_dimoAftermarketWPAState(ctx, field, obj)
 		case "exteriorAirTemperature":
 			out.Values[i] = ec._SignalAggregations_exteriorAirTemperature(ctx, field, obj)
 		case "lowVoltageBatteryCurrentVoltage":
 			out.Values[i] = ec._SignalAggregations_lowVoltageBatteryCurrentVoltage(ctx, field, obj)
-		case "oBDBarometricPressure":
-			out.Values[i] = ec._SignalAggregations_oBDBarometricPressure(ctx, field, obj)
-		case "oBDEngineLoad":
-			out.Values[i] = ec._SignalAggregations_oBDEngineLoad(ctx, field, obj)
-		case "oBDIntakeTemp":
-			out.Values[i] = ec._SignalAggregations_oBDIntakeTemp(ctx, field, obj)
-		case "oBDRunTime":
-			out.Values[i] = ec._SignalAggregations_oBDRunTime(ctx, field, obj)
+		case "obdBarometricPressure":
+			out.Values[i] = ec._SignalAggregations_obdBarometricPressure(ctx, field, obj)
+		case "obdEngineLoad":
+			out.Values[i] = ec._SignalAggregations_obdEngineLoad(ctx, field, obj)
+		case "obdIntakeTemp":
+			out.Values[i] = ec._SignalAggregations_obdIntakeTemp(ctx, field, obj)
+		case "obdRunTime":
+			out.Values[i] = ec._SignalAggregations_obdRunTime(ctx, field, obj)
 		case "powertrainCombustionEngineECT":
 			out.Values[i] = ec._SignalAggregations_powertrainCombustionEngineECT(ctx, field, obj)
 		case "powertrainCombustionEngineEngineOilLevel":
@@ -10932,6 +11151,8 @@ func (ec *executionContext) _SignalAggregations(ctx context.Context, sel ast.Sel
 			out.Values[i] = ec._SignalAggregations_powertrainTractionBatteryChargingChargeLimit(ctx, field, obj)
 		case "powertrainTractionBatteryChargingIsCharging":
 			out.Values[i] = ec._SignalAggregations_powertrainTractionBatteryChargingIsCharging(ctx, field, obj)
+		case "powertrainTractionBatteryCurrentPower":
+			out.Values[i] = ec._SignalAggregations_powertrainTractionBatteryCurrentPower(ctx, field, obj)
 		case "powertrainTractionBatteryGrossCapacity":
 			out.Values[i] = ec._SignalAggregations_powertrainTractionBatteryGrossCapacity(ctx, field, obj)
 		case "powertrainTractionBatteryStateOfChargeCurrent":
@@ -11000,26 +11221,26 @@ func (ec *executionContext) _SignalCollection(ctx context.Context, sel ast.Selec
 			out.Values[i] = ec._SignalCollection_currentLocationLongitude(ctx, field, obj)
 		case "currentLocationTimestamp":
 			out.Values[i] = ec._SignalCollection_currentLocationTimestamp(ctx, field, obj)
-		case "dIMOAftermarketHDOP":
-			out.Values[i] = ec._SignalCollection_dIMOAftermarketHDOP(ctx, field, obj)
-		case "dIMOAftermarketNSAT":
-			out.Values[i] = ec._SignalCollection_dIMOAftermarketNSAT(ctx, field, obj)
-		case "dIMOAftermarketSSID":
-			out.Values[i] = ec._SignalCollection_dIMOAftermarketSSID(ctx, field, obj)
-		case "dIMOAftermarketWPAState":
-			out.Values[i] = ec._SignalCollection_dIMOAftermarketWPAState(ctx, field, obj)
+		case "dimoAftermarketHDOP":
+			out.Values[i] = ec._SignalCollection_dimoAftermarketHDOP(ctx, field, obj)
+		case "dimoAftermarketNSAT":
+			out.Values[i] = ec._SignalCollection_dimoAftermarketNSAT(ctx, field, obj)
+		case "dimoAftermarketSSID":
+			out.Values[i] = ec._SignalCollection_dimoAftermarketSSID(ctx, field, obj)
+		case "dimoAftermarketWPAState":
+			out.Values[i] = ec._SignalCollection_dimoAftermarketWPAState(ctx, field, obj)
 		case "exteriorAirTemperature":
 			out.Values[i] = ec._SignalCollection_exteriorAirTemperature(ctx, field, obj)
 		case "lowVoltageBatteryCurrentVoltage":
 			out.Values[i] = ec._SignalCollection_lowVoltageBatteryCurrentVoltage(ctx, field, obj)
-		case "oBDBarometricPressure":
-			out.Values[i] = ec._SignalCollection_oBDBarometricPressure(ctx, field, obj)
-		case "oBDEngineLoad":
-			out.Values[i] = ec._SignalCollection_oBDEngineLoad(ctx, field, obj)
-		case "oBDIntakeTemp":
-			out.Values[i] = ec._SignalCollection_oBDIntakeTemp(ctx, field, obj)
-		case "oBDRunTime":
-			out.Values[i] = ec._SignalCollection_oBDRunTime(ctx, field, obj)
+		case "obdBarometricPressure":
+			out.Values[i] = ec._SignalCollection_obdBarometricPressure(ctx, field, obj)
+		case "obdEngineLoad":
+			out.Values[i] = ec._SignalCollection_obdEngineLoad(ctx, field, obj)
+		case "obdIntakeTemp":
+			out.Values[i] = ec._SignalCollection_obdIntakeTemp(ctx, field, obj)
+		case "obdRunTime":
+			out.Values[i] = ec._SignalCollection_obdRunTime(ctx, field, obj)
 		case "powertrainCombustionEngineECT":
 			out.Values[i] = ec._SignalCollection_powertrainCombustionEngineECT(ctx, field, obj)
 		case "powertrainCombustionEngineEngineOilLevel":
@@ -11040,6 +11261,8 @@ func (ec *executionContext) _SignalCollection(ctx context.Context, sel ast.Selec
 			out.Values[i] = ec._SignalCollection_powertrainTractionBatteryChargingChargeLimit(ctx, field, obj)
 		case "powertrainTractionBatteryChargingIsCharging":
 			out.Values[i] = ec._SignalCollection_powertrainTractionBatteryChargingIsCharging(ctx, field, obj)
+		case "powertrainTractionBatteryCurrentPower":
+			out.Values[i] = ec._SignalCollection_powertrainTractionBatteryCurrentPower(ctx, field, obj)
 		case "powertrainTractionBatteryGrossCapacity":
 			out.Values[i] = ec._SignalCollection_powertrainTractionBatteryGrossCapacity(ctx, field, obj)
 		case "powertrainTractionBatteryStateOfChargeCurrent":

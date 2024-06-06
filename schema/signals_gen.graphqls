@@ -68,7 +68,7 @@ extend type SignalAggregations {
   Horizontal dilution of precision of GPS
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
-  dIMOAftermarketHDOP(
+  dimoAftermarketHDOP(
     agg: FloatAggregation!
   ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketHDOP") @isSignal @hasAggregation
   
@@ -76,7 +76,7 @@ extend type SignalAggregations {
   Number of sync satellites for GPS
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
-  dIMOAftermarketNSAT(
+  dimoAftermarketNSAT(
     agg: FloatAggregation!
   ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketNSAT") @isSignal @hasAggregation
   
@@ -84,7 +84,7 @@ extend type SignalAggregations {
   Service Set Ientifier for the wifi.
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
-  dIMOAftermarketSSID(
+  dimoAftermarketSSID(
     agg: StringAggregation!
   ):  String @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketSSID") @isSignal @hasAggregation
   
@@ -92,7 +92,7 @@ extend type SignalAggregations {
   Indicate the current wpa state for the devices wifi
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
-  dIMOAftermarketWPAState(
+  dimoAftermarketWPAState(
     agg: StringAggregation!
   ):  String @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketWPAState") @isSignal @hasAggregation
   
@@ -116,7 +116,7 @@ extend type SignalAggregations {
   PID 33 - Barometric pressure
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
-  oBDBarometricPressure(
+  obdBarometricPressure(
     agg: FloatAggregation!
   ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDBarometricPressure") @isSignal @hasAggregation
   
@@ -124,7 +124,7 @@ extend type SignalAggregations {
   PID 04 - Engine load in percent - 0 = no load, 100 = full load
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
-  oBDEngineLoad(
+  obdEngineLoad(
     agg: FloatAggregation!
   ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDEngineLoad") @isSignal @hasAggregation
   
@@ -132,7 +132,7 @@ extend type SignalAggregations {
   PID 0F - Intake temperature
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
-  oBDIntakeTemp(
+  obdIntakeTemp(
     agg: FloatAggregation!
   ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDIntakeTemp") @isSignal @hasAggregation
   
@@ -140,7 +140,7 @@ extend type SignalAggregations {
   PID 1F - Engine run time
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
-  oBDRunTime(
+  obdRunTime(
     agg: FloatAggregation!
   ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDRunTime") @isSignal @hasAggregation
   
@@ -223,6 +223,14 @@ extend type SignalAggregations {
   powertrainTractionBatteryChargingIsCharging(
     agg: StringAggregation!
   ):  String @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryChargingIsCharging") @isSignal @hasAggregation
+  
+  """
+  Current electrical energy flowing in/out of battery. Positive = Energy flowing in to battery, e.g. during charging. Negative = Energy flowing out of battery, e.g. during driving.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  powertrainTractionBatteryCurrentPower(
+    agg: FloatAggregation!
+  ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryCurrentPower") @isSignal @hasAggregation
   
   """
   Gross capacity of the battery.
@@ -343,25 +351,25 @@ extend type SignalCollection {
   Horizontal dilution of precision of GPS
   Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
   """
-  dIMOAftermarketHDOP: SignalFloat @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketHDOP") @isSignal
+  dimoAftermarketHDOP: SignalFloat @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketHDOP") @isSignal
   
   """
   Number of sync satellites for GPS
   Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
   """
-  dIMOAftermarketNSAT: SignalFloat @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketNSAT") @isSignal
+  dimoAftermarketNSAT: SignalFloat @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketNSAT") @isSignal
   
   """
   Service Set Ientifier for the wifi.
   Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
   """
-  dIMOAftermarketSSID: SignalString @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketSSID") @isSignal
+  dimoAftermarketSSID: SignalString @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketSSID") @isSignal
   
   """
   Indicate the current wpa state for the devices wifi
   Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
   """
-  dIMOAftermarketWPAState: SignalString @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketWPAState") @isSignal
+  dimoAftermarketWPAState: SignalString @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketWPAState") @isSignal
   
   """
   Air temperature outside the vehicle.
@@ -379,25 +387,25 @@ extend type SignalCollection {
   PID 33 - Barometric pressure
   Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
   """
-  oBDBarometricPressure: SignalFloat @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDBarometricPressure") @isSignal
+  obdBarometricPressure: SignalFloat @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDBarometricPressure") @isSignal
   
   """
   PID 04 - Engine load in percent - 0 = no load, 100 = full load
   Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
   """
-  oBDEngineLoad: SignalFloat @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDEngineLoad") @isSignal
+  obdEngineLoad: SignalFloat @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDEngineLoad") @isSignal
   
   """
   PID 0F - Intake temperature
   Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
   """
-  oBDIntakeTemp: SignalFloat @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDIntakeTemp") @isSignal
+  obdIntakeTemp: SignalFloat @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDIntakeTemp") @isSignal
   
   """
   PID 1F - Engine run time
   Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
   """
-  oBDRunTime: SignalFloat @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDRunTime") @isSignal
+  obdRunTime: SignalFloat @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDRunTime") @isSignal
   
   """
   Engine coolant temperature.
@@ -458,6 +466,12 @@ extend type SignalCollection {
   Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainTractionBatteryChargingIsCharging: SignalString @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryChargingIsCharging") @isSignal
+  
+  """
+  Current electrical energy flowing in/out of battery. Positive = Energy flowing in to battery, e.g. during charging. Negative = Energy flowing out of battery, e.g. during driving.
+  Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  powertrainTractionBatteryCurrentPower: SignalFloat @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryCurrentPower") @isSignal
   
   """
   Gross capacity of the battery.

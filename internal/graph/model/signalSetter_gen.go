@@ -49,22 +49,22 @@ func SetCollectionField(collection *SignalCollection, signal *vss.Signal) {
 			Timestamp: signal.Timestamp,
 			Value:     signal.ValueString,
 		}
-	case "dIMOAftermarketHDOP":
+	case "dimoAftermarketHDOP":
 		collection.DIMOAftermarketHDOP = &SignalFloat{
 			Timestamp: signal.Timestamp,
 			Value:     signal.ValueNumber,
 		}
-	case "dIMOAftermarketNSAT":
+	case "dimoAftermarketNSAT":
 		collection.DIMOAftermarketNSAT = &SignalFloat{
 			Timestamp: signal.Timestamp,
 			Value:     signal.ValueNumber,
 		}
-	case "dIMOAftermarketSSID":
+	case "dimoAftermarketSSID":
 		collection.DIMOAftermarketSSID = &SignalString{
 			Timestamp: signal.Timestamp,
 			Value:     signal.ValueString,
 		}
-	case "dIMOAftermarketWPAState":
+	case "dimoAftermarketWPAState":
 		collection.DIMOAftermarketWPAState = &SignalString{
 			Timestamp: signal.Timestamp,
 			Value:     signal.ValueString,
@@ -79,22 +79,22 @@ func SetCollectionField(collection *SignalCollection, signal *vss.Signal) {
 			Timestamp: signal.Timestamp,
 			Value:     signal.ValueNumber,
 		}
-	case "oBDBarometricPressure":
+	case "obdBarometricPressure":
 		collection.OBDBarometricPressure = &SignalFloat{
 			Timestamp: signal.Timestamp,
 			Value:     signal.ValueNumber,
 		}
-	case "oBDEngineLoad":
+	case "obdEngineLoad":
 		collection.OBDEngineLoad = &SignalFloat{
 			Timestamp: signal.Timestamp,
 			Value:     signal.ValueNumber,
 		}
-	case "oBDIntakeTemp":
+	case "obdIntakeTemp":
 		collection.OBDIntakeTemp = &SignalFloat{
 			Timestamp: signal.Timestamp,
 			Value:     signal.ValueNumber,
 		}
-	case "oBDRunTime":
+	case "obdRunTime":
 		collection.OBDRunTime = &SignalFloat{
 			Timestamp: signal.Timestamp,
 			Value:     signal.ValueNumber,
@@ -148,6 +148,11 @@ func SetCollectionField(collection *SignalCollection, signal *vss.Signal) {
 		collection.PowertrainTractionBatteryChargingIsCharging = &SignalString{
 			Timestamp: signal.Timestamp,
 			Value:     signal.ValueString,
+		}
+	case "powertrainTractionBatteryCurrentPower":
+		collection.PowertrainTractionBatteryCurrentPower = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
 		}
 	case "powertrainTractionBatteryGrossCapacity":
 		collection.PowertrainTractionBatteryGrossCapacity = &SignalFloat{
@@ -214,25 +219,25 @@ func SetAggregationField(aggregations *SignalAggregations, signal *vss.Signal) {
 		aggregations.CurrentLocationLongitude = &signal.ValueNumber
 	case "currentLocationTimestamp":
 		aggregations.CurrentLocationTimestamp = &signal.ValueString
-	case "dIMOAftermarketHDOP":
+	case "dimoAftermarketHDOP":
 		aggregations.DIMOAftermarketHDOP = &signal.ValueNumber
-	case "dIMOAftermarketNSAT":
+	case "dimoAftermarketNSAT":
 		aggregations.DIMOAftermarketNSAT = &signal.ValueNumber
-	case "dIMOAftermarketSSID":
+	case "dimoAftermarketSSID":
 		aggregations.DIMOAftermarketSSID = &signal.ValueString
-	case "dIMOAftermarketWPAState":
+	case "dimoAftermarketWPAState":
 		aggregations.DIMOAftermarketWPAState = &signal.ValueString
 	case "exteriorAirTemperature":
 		aggregations.ExteriorAirTemperature = &signal.ValueNumber
 	case "lowVoltageBatteryCurrentVoltage":
 		aggregations.LowVoltageBatteryCurrentVoltage = &signal.ValueNumber
-	case "oBDBarometricPressure":
+	case "obdBarometricPressure":
 		aggregations.OBDBarometricPressure = &signal.ValueNumber
-	case "oBDEngineLoad":
+	case "obdEngineLoad":
 		aggregations.OBDEngineLoad = &signal.ValueNumber
-	case "oBDIntakeTemp":
+	case "obdIntakeTemp":
 		aggregations.OBDIntakeTemp = &signal.ValueNumber
-	case "oBDRunTime":
+	case "obdRunTime":
 		aggregations.OBDRunTime = &signal.ValueNumber
 	case "powertrainCombustionEngineECT":
 		aggregations.PowertrainCombustionEngineECT = &signal.ValueNumber
@@ -254,6 +259,8 @@ func SetAggregationField(aggregations *SignalAggregations, signal *vss.Signal) {
 		aggregations.PowertrainTractionBatteryChargingChargeLimit = &signal.ValueNumber
 	case "powertrainTractionBatteryChargingIsCharging":
 		aggregations.PowertrainTractionBatteryChargingIsCharging = &signal.ValueString
+	case "powertrainTractionBatteryCurrentPower":
+		aggregations.PowertrainTractionBatteryCurrentPower = &signal.ValueNumber
 	case "powertrainTractionBatteryGrossCapacity":
 		aggregations.PowertrainTractionBatteryGrossCapacity = &signal.ValueNumber
 	case "powertrainTractionBatteryStateOfChargeCurrent":
