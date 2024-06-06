@@ -6,6 +6,7 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
+	"time"
 
 	"github.com/ClickHouse/clickhouse-go/v2"
 	"github.com/DIMO-Network/model-garage/pkg/vss"
@@ -27,9 +28,9 @@ type Service struct {
 
 // NewService creates a new ClickHouse service.
 func NewService(settings config.Settings, rootCAs *x509.CertPool) (*Service, error) {
-	maxExecutionTime := settings.CLickHouseMaxExecutionTimeSec
-	if maxExecutionTime == 0 {
-		settings.CLickHouseMaxExecutionTimeSec = defaultMaxExecutionTime
+	maxExecutionTime, err := getMaxExecutionTime(settings.MaxRequestDuration)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get max execution time: %w", err)
 	}
 	addr := fmt.Sprintf("%s:%d", settings.ClickHouseHost, settings.ClickHouseTCPPort)
 	conn, err := clickhouse.Open(&clickhouse.Options{
@@ -58,6 +59,17 @@ func NewService(settings config.Settings, rootCAs *x509.CertPool) (*Service, err
 		return nil, fmt.Errorf("failed to ping clickhouse: %w", err)
 	}
 	return &Service{conn: conn}, nil
+}
+
+func getMaxExecutionTime(maxRequestDuration string) (int, error) {
+	if maxRequestDuration == "" {
+		return defaultMaxExecutionTime, nil
+	}
+	maxExecutionTime, err := time.ParseDuration(maxRequestDuration)
+	if err != nil {
+		return 0, fmt.Errorf("failed to parse max request duration: %w", err)
+	}
+	return int(maxExecutionTime.Seconds()), nil
 }
 
 // GetLatestSignals returns the latest signals based on the provided arguments from the ClickHouse database.

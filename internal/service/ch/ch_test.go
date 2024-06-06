@@ -272,12 +272,12 @@ func (c *CHServiceTestSuite) TestExecutionTimeout() {
 	c.Require().NoError(err, "Failed to get clickhouse port")
 
 	settings := config.Settings{
-		ClickHouseHost:                host,
-		ClickHouseTCPPort:             port.Int(),
-		ClickHouseUser:                c.container.User,
-		ClickHousePassword:            c.container.Password,
-		ClickHouseDatabase:            c.container.DbName,
-		CLickHouseMaxExecutionTimeSec: 1,
+		ClickHouseHost:     host,
+		ClickHouseTCPPort:  port.Int(),
+		ClickHouseUser:     c.container.User,
+		ClickHousePassword: c.container.Password,
+		ClickHouseDatabase: c.container.DbName,
+		MaxRequestDuration: "1s",
 	}
 	chService, err := NewService(settings, c.container.RootCAs)
 	c.Require().NoError(err, "Failed to create repository")
