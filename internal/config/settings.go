@@ -13,4 +13,5 @@ type Settings struct {
 	TokenExchangeJWTKeySetURL     string `yaml:"TOKEN_EXCHANGE_JWK_KEY_SET_URL"`
 	TokenExchangeIssuer           string `yaml:"TOKEN_EXCHANGE_ISSUER_URL"`
 	VehicleNFTAddress             string `yaml:"VEHICLE_NFT_ADDRESS"`
+	MaxRequestDuration            string `yaml:"MAX_REQUEST_DURATION"`
 }

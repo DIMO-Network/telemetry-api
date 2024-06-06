@@ -16,6 +16,7 @@ import (
 	"github.com/DIMO-Network/telemetry-api/internal/auth"
 	"github.com/DIMO-Network/telemetry-api/internal/config"
 	"github.com/DIMO-Network/telemetry-api/internal/graph"
+	"github.com/DIMO-Network/telemetry-api/internal/limits"
 	"github.com/DIMO-Network/telemetry-api/internal/repositories"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/adaptor"
@@ -62,9 +63,18 @@ func main() {
 		logger.Fatal().Err(err).Msg("Couldn't create JWT middleware.")
 	}
 
+	limiter, err := limits.New(settings.MaxRequestDuration)
+	if err != nil {
+		logger.Fatal().Err(err).Msg("Couldn't create request time limit middleware.")
+	}
+
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
 
-	authedHandler := authMiddleware.CheckJWT(auth.AddClaimHandler(server, &logger))
+	authedHandler := limiter.AddRequestTimeout(
+		authMiddleware.CheckJWT(
+			auth.AddClaimHandler(server, &logger),
+		),
+	)
 	http.Handle("/query", authedHandler)
 
 	logger.Info().Msgf("Server started on port: %d", settings.Port)
