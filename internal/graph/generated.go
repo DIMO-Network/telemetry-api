@@ -83,7 +83,7 @@ type ComplexityRoot struct {
 		PowertrainFuelSystemSupportedFuelTypes        func(childComplexity int, agg model.StringAggregation) int
 		PowertrainRange                               func(childComplexity int, agg model.FloatAggregation) int
 		PowertrainTractionBatteryChargingChargeLimit  func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainTractionBatteryChargingIsCharging   func(childComplexity int, agg model.StringAggregation) int
+		PowertrainTractionBatteryChargingIsCharging   func(childComplexity int, agg model.FloatAggregation) int
 		PowertrainTractionBatteryCurrentPower         func(childComplexity int, agg model.FloatAggregation) int
 		PowertrainTractionBatteryGrossCapacity        func(childComplexity int, agg model.FloatAggregation) int
 		PowertrainTractionBatteryStateOfChargeCurrent func(childComplexity int, agg model.FloatAggregation) int
@@ -530,7 +530,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainTractionBatteryChargingIsCharging(childComplexity, args["agg"].(model.StringAggregation)), true
+		return e.complexity.SignalAggregations.PowertrainTractionBatteryChargingIsCharging(childComplexity, args["agg"].(model.FloatAggregation)), true
 
 	case "SignalAggregations.powertrainTractionBatteryCurrentPower":
 		if e.complexity.SignalAggregations.PowertrainTractionBatteryCurrentPower == nil {
@@ -1380,8 +1380,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainTractionBatteryChargingIsCharging(
-    agg: StringAggregation!
-  ):  String @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryChargingIsCharging") @isSignal @hasAggregation
+    agg: FloatAggregation!
+  ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryChargingIsCharging") @isSignal @hasAggregation
   
   """
   Current electrical energy flowing in/out of battery. Positive = Energy flowing in to battery, e.g. during charging. Negative = Energy flowing out of battery, e.g. during driving.
@@ -1624,7 +1624,7 @@ extend type SignalCollection {
   True if charging is ongoing. Charging is considered to be ongoing if energy is flowing from charger to vehicle.
   Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
   """
-  powertrainTractionBatteryChargingIsCharging: SignalString @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryChargingIsCharging") @isSignal
+  powertrainTractionBatteryChargingIsCharging: SignalFloat @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryChargingIsCharging") @isSignal
   
   """
   Current electrical energy flowing in/out of battery. Positive = Energy flowing in to battery, e.g. during charging. Negative = Energy flowing out of battery, e.g. during driving.
@@ -2203,10 +2203,10 @@ func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryCh
 func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryChargingIsCharging_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 model.StringAggregation
+	var arg0 model.FloatAggregation
 	if tmp, ok := rawArgs["agg"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-		arg0, err = ec.unmarshalNStringAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐStringAggregation(ctx, tmp)
+		arg0, err = ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -5284,10 +5284,10 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryChargin
 		if tmp == nil {
 			return nil, nil
 		}
-		if data, ok := tmp.(*string); ok {
+		if data, ok := tmp.(*float64); ok {
 			return data, nil
 		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be *string`, tmp)
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5296,9 +5296,9 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryChargin
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*string)
+	res := resTmp.(*float64)
 	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+	return ec.marshalOFloat2ᚖfloat64(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_SignalAggregations_powertrainTractionBatteryChargingIsCharging(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -5308,7 +5308,7 @@ func (ec *executionContext) fieldContext_SignalAggregations_powertrainTractionBa
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
+			return nil, errors.New("field of type Float does not have child fields")
 		},
 	}
 	defer func() {
@@ -8278,10 +8278,10 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryChargingI
 		if tmp == nil {
 			return nil, nil
 		}
-		if data, ok := tmp.(*model.SignalString); ok {
+		if data, ok := tmp.(*model.SignalFloat); ok {
 			return data, nil
 		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalString`, tmp)
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -8290,9 +8290,9 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryChargingI
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*model.SignalString)
+	res := resTmp.(*model.SignalFloat)
 	fc.Result = res
-	return ec.marshalOSignalString2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalString(ctx, field.Selections, res)
+	return ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_SignalCollection_powertrainTractionBatteryChargingIsCharging(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -8304,11 +8304,11 @@ func (ec *executionContext) fieldContext_SignalCollection_powertrainTractionBatt
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "timestamp":
-				return ec.fieldContext_SignalString_timestamp(ctx, field)
+				return ec.fieldContext_SignalFloat_timestamp(ctx, field)
 			case "value":
-				return ec.fieldContext_SignalString_value(ctx, field)
+				return ec.fieldContext_SignalFloat_value(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type SignalString", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type SignalFloat", field.Name)
 		},
 	}
 	return fc, nil

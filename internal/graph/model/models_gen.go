@@ -99,7 +99,7 @@ type SignalAggregations struct {
 	PowertrainTractionBatteryChargingChargeLimit *float64 `json:"powertrainTractionBatteryChargingChargeLimit,omitempty"`
 	// True if charging is ongoing. Charging is considered to be ongoing if energy is flowing from charger to vehicle.
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-	PowertrainTractionBatteryChargingIsCharging *string `json:"powertrainTractionBatteryChargingIsCharging,omitempty"`
+	PowertrainTractionBatteryChargingIsCharging *float64 `json:"powertrainTractionBatteryChargingIsCharging,omitempty"`
 	// Current electrical energy flowing in/out of battery. Positive = Energy flowing in to battery, e.g. during charging. Negative = Energy flowing out of battery, e.g. during driving.
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainTractionBatteryCurrentPower *float64 `json:"powertrainTractionBatteryCurrentPower,omitempty"`
@@ -215,7 +215,7 @@ type SignalCollection struct {
 	PowertrainTractionBatteryChargingChargeLimit *SignalFloat `json:"powertrainTractionBatteryChargingChargeLimit,omitempty"`
 	// True if charging is ongoing. Charging is considered to be ongoing if energy is flowing from charger to vehicle.
 	// Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
-	PowertrainTractionBatteryChargingIsCharging *SignalString `json:"powertrainTractionBatteryChargingIsCharging,omitempty"`
+	PowertrainTractionBatteryChargingIsCharging *SignalFloat `json:"powertrainTractionBatteryChargingIsCharging,omitempty"`
 	// Current electrical energy flowing in/out of battery. Positive = Energy flowing in to battery, e.g. during charging. Negative = Energy flowing out of battery, e.g. during driving.
 	// Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainTractionBatteryCurrentPower *SignalFloat `json:"powertrainTractionBatteryCurrentPower,omitempty"`

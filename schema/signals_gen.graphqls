@@ -221,8 +221,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainTractionBatteryChargingIsCharging(
-    agg: StringAggregation!
-  ):  String @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryChargingIsCharging") @isSignal @hasAggregation
+    agg: FloatAggregation!
+  ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryChargingIsCharging") @isSignal @hasAggregation
   
   """
   Current electrical energy flowing in/out of battery. Positive = Energy flowing in to battery, e.g. during charging. Negative = Energy flowing out of battery, e.g. during driving.
@@ -465,7 +465,7 @@ extend type SignalCollection {
   True if charging is ongoing. Charging is considered to be ongoing if energy is flowing from charger to vehicle.
   Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
   """
-  powertrainTractionBatteryChargingIsCharging: SignalString @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryChargingIsCharging") @isSignal
+  powertrainTractionBatteryChargingIsCharging: SignalFloat @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryChargingIsCharging") @isSignal
   
   """
   Current electrical energy flowing in/out of battery. Positive = Energy flowing in to battery, e.g. during charging. Negative = Energy flowing out of battery, e.g. during driving.

@@ -145,9 +145,9 @@ func SetCollectionField(collection *SignalCollection, signal *vss.Signal) {
 			Value:     signal.ValueNumber,
 		}
 	case "powertrainTractionBatteryChargingIsCharging":
-		collection.PowertrainTractionBatteryChargingIsCharging = &SignalString{
+		collection.PowertrainTractionBatteryChargingIsCharging = &SignalFloat{
 			Timestamp: signal.Timestamp,
-			Value:     signal.ValueString,
+			Value:     signal.ValueNumber,
 		}
 	case "powertrainTractionBatteryCurrentPower":
 		collection.PowertrainTractionBatteryCurrentPower = &SignalFloat{
@@ -258,7 +258,7 @@ func SetAggregationField(aggregations *SignalAggregations, signal *vss.Signal) {
 	case "powertrainTractionBatteryChargingChargeLimit":
 		aggregations.PowertrainTractionBatteryChargingChargeLimit = &signal.ValueNumber
 	case "powertrainTractionBatteryChargingIsCharging":
-		aggregations.PowertrainTractionBatteryChargingIsCharging = &signal.ValueString
+		aggregations.PowertrainTractionBatteryChargingIsCharging = &signal.ValueNumber
 	case "powertrainTractionBatteryCurrentPower":
 		aggregations.PowertrainTractionBatteryCurrentPower = &signal.ValueNumber
 	case "powertrainTractionBatteryGrossCapacity":
