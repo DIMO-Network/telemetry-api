@@ -45,7 +45,7 @@ func RequiresTokenCheck(ctx context.Context, _ any, next graphql.Resolver) (any,
 	if fCtx == nil {
 		return nil, fmt.Errorf("%w: no field context found", errUnauthorized)
 	}
-	tokenID, ok := fCtx.Args["tokenID"].(int)
+	tokenID, ok := fCtx.Args["tokenId"].(int)
 	if !ok {
 		return nil, fmt.Errorf("%w: failed to get tokenID from args", errUnauthorized)
 	}
