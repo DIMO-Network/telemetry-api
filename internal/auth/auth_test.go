@@ -29,7 +29,7 @@ func TestRequiresTokenCheck(t *testing.T) {
 		{
 			name: "valid_token",
 			args: map[string]any{
-				"tokenID": 123,
+				"tokenId": 123,
 			},
 			telmetryClaim: &auth.TelemetryClaim{
 				CustomClaims: privilegetoken.CustomClaims{
@@ -40,7 +40,7 @@ func TestRequiresTokenCheck(t *testing.T) {
 		{
 			name: "invalid_token",
 			args: map[string]any{
-				"tokenID": 456,
+				"tokenId": 456,
 			},
 			telmetryClaim: &auth.TelemetryClaim{
 				CustomClaims: privilegetoken.CustomClaims{
@@ -50,7 +50,7 @@ func TestRequiresTokenCheck(t *testing.T) {
 			expectedError: true,
 		},
 		{
-			name:          "missing_tokenID",
+			name:          "missing_tokenId",
 			args:          map[string]any{},
 			expectedError: true,
 			telmetryClaim: &auth.TelemetryClaim{
@@ -62,7 +62,7 @@ func TestRequiresTokenCheck(t *testing.T) {
 		{
 			name: "missing claim",
 			args: map[string]any{
-				"tokenID": 123,
+				"tokenId": 123,
 			},
 			expectedError: true,
 			telmetryClaim: nil,
