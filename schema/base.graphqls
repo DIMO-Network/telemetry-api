@@ -19,7 +19,7 @@ type Query {
   signals returns a collection of signals for a given token in a given time range.
   """
   signals(
-    tokenID: Int!
+    tokenId: Int!
     """
     interval is a time span that used for aggregatting the data with.
     A duration string is a sequence of decimal numbers, each with optional fraction and a unit suffix,
@@ -33,7 +33,7 @@ type Query {
   """
   SignalsLatest returns the latest signals for a given token.
   """
-  signalsLatest(tokenID: Int!, filter: SignalFilter): SignalCollection
+  signalsLatest(tokenId: Int!, filter: SignalFilter): SignalCollection
     @requiresToken
 }
 type SignalAggregations {

@@ -182,7 +182,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Signals(childComplexity, args["tokenID"].(int), args["interval"].(string), args["from"].(time.Time), args["to"].(time.Time), args["filter"].(*model.SignalFilter)), true
+		return e.complexity.Query.Signals(childComplexity, args["tokenId"].(int), args["interval"].(string), args["from"].(time.Time), args["to"].(time.Time), args["filter"].(*model.SignalFilter)), true
 
 	case "Query.signalsLatest":
 		if e.complexity.Query.SignalsLatest == nil {
@@ -194,7 +194,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.SignalsLatest(childComplexity, args["tokenID"].(int), args["filter"].(*model.SignalFilter)), true
+		return e.complexity.Query.SignalsLatest(childComplexity, args["tokenId"].(int), args["filter"].(*model.SignalFilter)), true
 
 	case "SignalAggregations.chassisAxleRow1WheelLeftTirePressure":
 		if e.complexity.SignalAggregations.ChassisAxleRow1WheelLeftTirePressure == nil {
@@ -1069,7 +1069,7 @@ type Query {
   signals returns a collection of signals for a given token in a given time range.
   """
   signals(
-    tokenID: Int!
+    tokenId: Int!
     """
     interval is a time span that used for aggregatting the data with.
     A duration string is a sequence of decimal numbers, each with optional fraction and a unit suffix,
@@ -1083,7 +1083,7 @@ type Query {
   """
   SignalsLatest returns the latest signals for a given token.
   """
-  signalsLatest(tokenID: Int!, filter: SignalFilter): SignalCollection
+  signalsLatest(tokenId: Int!, filter: SignalFilter): SignalCollection
     @requiresToken
 }
 type SignalAggregations {
@@ -1724,14 +1724,14 @@ func (ec *executionContext) field_Query_signalsLatest_args(ctx context.Context, 
 	var err error
 	args := map[string]interface{}{}
 	var arg0 int
-	if tmp, ok := rawArgs["tokenID"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tokenID"))
+	if tmp, ok := rawArgs["tokenId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tokenId"))
 		arg0, err = ec.unmarshalNInt2int(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["tokenID"] = arg0
+	args["tokenId"] = arg0
 	var arg1 *model.SignalFilter
 	if tmp, ok := rawArgs["filter"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
@@ -1748,14 +1748,14 @@ func (ec *executionContext) field_Query_signals_args(ctx context.Context, rawArg
 	var err error
 	args := map[string]interface{}{}
 	var arg0 int
-	if tmp, ok := rawArgs["tokenID"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tokenID"))
+	if tmp, ok := rawArgs["tokenId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tokenId"))
 		arg0, err = ec.unmarshalNInt2int(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["tokenID"] = arg0
+	args["tokenId"] = arg0
 	var arg1 string
 	if tmp, ok := rawArgs["interval"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("interval"))
@@ -2403,7 +2403,7 @@ func (ec *executionContext) _Query_signals(ctx context.Context, field graphql.Co
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Query().Signals(rctx, fc.Args["tokenID"].(int), fc.Args["interval"].(string), fc.Args["from"].(time.Time), fc.Args["to"].(time.Time), fc.Args["filter"].(*model.SignalFilter))
+			return ec.resolvers.Query().Signals(rctx, fc.Args["tokenId"].(int), fc.Args["interval"].(string), fc.Args["from"].(time.Time), fc.Args["to"].(time.Time), fc.Args["filter"].(*model.SignalFilter))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.RequiresToken == nil {
@@ -2553,7 +2553,7 @@ func (ec *executionContext) _Query_signalsLatest(ctx context.Context, field grap
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Query().SignalsLatest(rctx, fc.Args["tokenID"].(int), fc.Args["filter"].(*model.SignalFilter))
+			return ec.resolvers.Query().SignalsLatest(rctx, fc.Args["tokenId"].(int), fc.Args["filter"].(*model.SignalFilter))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.RequiresToken == nil {
