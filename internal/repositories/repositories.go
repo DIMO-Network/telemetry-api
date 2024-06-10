@@ -7,13 +7,17 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/ClickHouse/clickhouse-go/v2/lib/proto"
 	"github.com/DIMO-Network/telemetry-api/internal/config"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	"github.com/DIMO-Network/telemetry-api/internal/service/ch"
 	"github.com/rs/zerolog"
 )
 
-var errInternal = errors.New("internal error")
+var (
+	errInternal = errors.New("internal error")
+	errTimeout  = errors.New("request exceeded or is estimated to exceed the maximum execution time")
+)
 
 // Repository is the base repository for all repositories.
 type Repository struct {
@@ -41,9 +45,7 @@ func (r *Repository) GetSignal(ctx context.Context, aggArgs *model.AggregatedSig
 	}
 	signals, err := r.chService.GetAggregatedSignals(ctx, aggArgs)
 	if err != nil {
-		// Do not return the database error to the client, but log it.
-		r.log.Error().Err(err).Msg("failed to query signals")
-		return nil, errInternal
+		return nil, handleDBError(err, r.log)
 	}
 
 	// combine signals with the same timestamp by iterating over all signals
@@ -78,9 +80,7 @@ func (r *Repository) GetSignalLatest(ctx context.Context, latestArgs *model.Late
 	}
 	signals, err := r.chService.GetLatestSignals(ctx, latestArgs)
 	if err != nil {
-		// Do not return the database error to the client, but log it.
-		r.log.Error().Err(err).Msg("failed to query latest signals")
-		return nil, errInternal
+		return nil, handleDBError(err, r.log)
 	}
 	coll := &model.SignalCollection{}
 	for _, signal := range signals {
@@ -92,4 +92,15 @@ func (r *Repository) GetSignalLatest(ctx context.Context, latestArgs *model.Late
 	}
 
 	return coll, nil
+}
+
+// handleDBError logs the error and returns a generic error message.
+func handleDBError(err error, log *zerolog.Logger) error {
+	exceptionErr := &proto.Exception{}
+	if errors.Is(err, context.DeadlineExceeded) || (errors.As(err, &exceptionErr) && exceptionErr.Code == ch.TimeoutErrCode) {
+		log.Error().Err(err).Msg("failed to query db")
+		return errTimeout
+	}
+	log.Error().Err(err).Msg("failed to query db")
+	return errInternal
 }

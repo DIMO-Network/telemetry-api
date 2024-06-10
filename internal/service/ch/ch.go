@@ -6,11 +6,19 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
+	"time"
 
 	"github.com/ClickHouse/clickhouse-go/v2"
 	"github.com/DIMO-Network/model-garage/pkg/vss"
 	"github.com/DIMO-Network/telemetry-api/internal/config"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
+)
+
+const (
+	defaultMaxExecutionTime                    = 5
+	defaultTimeoutBeforeCheckingExecutionSpeed = 2
+	// TimeoutErrCode is the error code returned by ClickHouse when a query is interrupted due to exceeding the max_execution_time.
+	TimeoutErrCode = int32(159)
 )
 
 // Service is a ClickHouse service that interacts with the ClickHouse database.
@@ -20,6 +28,10 @@ type Service struct {
 
 // NewService creates a new ClickHouse service.
 func NewService(settings config.Settings, rootCAs *x509.CertPool) (*Service, error) {
+	maxExecutionTime, err := getMaxExecutionTime(settings.MaxRequestDuration)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get max execution time: %w", err)
+	}
 	addr := fmt.Sprintf("%s:%d", settings.ClickHouseHost, settings.ClickHouseTCPPort)
 	conn, err := clickhouse.Open(&clickhouse.Options{
 		Addr: []string{addr},
@@ -31,6 +43,13 @@ func NewService(settings config.Settings, rootCAs *x509.CertPool) (*Service, err
 		TLS: &tls.Config{
 			RootCAs: rootCAs,
 		},
+		Settings: map[string]any{
+			// ClickHouse will interrupt a query if the projected execution time exceeds the specified max_execution_time.
+			// The estimated execution time is calculated after `timeout_before_checking_execution_speed`
+			// More info: https://clickhouse.com/docs/en/operations/settings/query-complexity#max-execution-time
+			"max_execution_time":                      maxExecutionTime,
+			"timeout_before_checking_execution_speed": defaultTimeoutBeforeCheckingExecutionSpeed,
+		},
 	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to open clickhouse connection: %w", err)
@@ -40,6 +59,17 @@ func NewService(settings config.Settings, rootCAs *x509.CertPool) (*Service, err
 		return nil, fmt.Errorf("failed to ping clickhouse: %w", err)
 	}
 	return &Service{conn: conn}, nil
+}
+
+func getMaxExecutionTime(maxRequestDuration string) (int, error) {
+	if maxRequestDuration == "" {
+		return defaultMaxExecutionTime, nil
+	}
+	maxExecutionTime, err := time.ParseDuration(maxRequestDuration)
+	if err != nil {
+		return 0, fmt.Errorf("failed to parse max request duration: %w", err)
+	}
+	return int(maxExecutionTime.Seconds()), nil
 }
 
 // GetLatestSignals returns the latest signals based on the provided arguments from the ClickHouse database.
@@ -84,6 +114,9 @@ func (s *Service) getSignals(ctx context.Context, stmt string, args []any) ([]*v
 			return nil, fmt.Errorf("failed scanning clickhouse row: %w", err)
 		}
 		signals = append(signals, &signal)
+	}
+	if rows.Err() != nil {
+		return nil, fmt.Errorf("clickhouse row error: %w", rows.Err())
 	}
 	return signals, nil
 }
