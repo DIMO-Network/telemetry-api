@@ -18,6 +18,7 @@ import (
 	"github.com/DIMO-Network/telemetry-api/internal/graph"
 	"github.com/DIMO-Network/telemetry-api/internal/limits"
 	"github.com/DIMO-Network/telemetry-api/internal/repositories"
+	"github.com/DIMO-Network/telemetry-api/internal/service/ch"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/adaptor"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -39,10 +40,11 @@ func main() {
 	_ = ctx
 
 	repoLogger := logger.With().Str("component", "repository").Logger()
-	baseRepo, err := repositories.NewRepository(&repoLogger, settings, nil)
+	chService, err := ch.NewService(settings, nil)
 	if err != nil {
-		logger.Fatal().Err(err).Msg("Couldn't create repository.")
+		logger.Fatal().Err(err).Msg("Couldn't create ClickHouse service.")
 	}
+	baseRepo := repositories.NewRepository(&repoLogger, chService)
 
 	cfg := graph.Config{Resolvers: &graph.Resolver{Repository: baseRepo}}
 	cfg.Directives.RequiresPrivilege = auth.RequiresPrivilegeCheck
