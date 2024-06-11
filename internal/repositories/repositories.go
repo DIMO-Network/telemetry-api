@@ -2,13 +2,12 @@ package repositories
 
 import (
 	"context"
-	"crypto/x509"
 	"errors"
 	"fmt"
 	"time"
 
 	"github.com/ClickHouse/clickhouse-go/v2/lib/proto"
-	"github.com/DIMO-Network/telemetry-api/internal/config"
+	"github.com/DIMO-Network/model-garage/pkg/vss"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	"github.com/DIMO-Network/telemetry-api/internal/service/ch"
 	"github.com/rs/zerolog"
@@ -19,23 +18,27 @@ var (
 	errTimeout  = errors.New("request exceeded or is estimated to exceed the maximum execution time")
 )
 
+// CHService is the interface for the ClickHouse service.
+//
+//go:generate mockgen -source=./repositories.go -destination=repositories_mocks_test.go -package=repositories_test
+type CHService interface {
+	GetAggregatedSignals(ctx context.Context, aggArgs *model.AggregatedSignalArgs) ([]*vss.Signal, error)
+	GetLatestSignals(ctx context.Context, latestArgs *model.LatestSignalsArgs) ([]*vss.Signal, error)
+}
+
 // Repository is the base repository for all repositories.
 type Repository struct {
-	chService *ch.Service
+	chService CHService
 	log       *zerolog.Logger
 }
 
 // NewRepository creates a new base repository.
 // clientCAs is optional and can be nil.
-func NewRepository(logger *zerolog.Logger, settings config.Settings, rootCAs *x509.CertPool) (*Repository, error) {
-	chService, err := ch.NewService(settings, rootCAs)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create ch service: %w", err)
-	}
+func NewRepository(logger *zerolog.Logger, chService CHService) *Repository {
 	return &Repository{
 		chService: chService,
 		log:       logger,
-	}, nil
+	}
 }
 
 // GetSignal returns the aggregated signals for the given tokenID, interval, from, to and filter.
@@ -66,16 +69,12 @@ func (r *Repository) GetSignal(ctx context.Context, aggArgs *model.AggregatedSig
 		model.SetAggregationField(currAggs, signal)
 	}
 
-	// add the aggregations to the last SignalAggregations object
-	if currAggs != nil {
-		allAggs = append(allAggs, currAggs)
-	}
 	return allAggs, nil
 }
 
 // GetSignalLatest returns the latest signals for the given tokenID and filter.
 func (r *Repository) GetSignalLatest(ctx context.Context, latestArgs *model.LatestSignalsArgs) (*model.SignalCollection, error) {
-	if err := validateSignalArgs(&latestArgs.SignalArgs); err != nil {
+	if err := validateLatestSigArgs(latestArgs); err != nil {
 		return nil, fmt.Errorf("invalid arguments: %w", err)
 	}
 	signals, err := r.chService.GetLatestSignals(ctx, latestArgs)

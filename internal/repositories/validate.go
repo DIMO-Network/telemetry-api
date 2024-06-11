@@ -13,6 +13,10 @@ type ValidationError string
 func (v ValidationError) Error() string { return "invalid argument: " + string(v) }
 
 func validateAggSigArgs(args *model.AggregatedSignalArgs) error {
+	if args == nil {
+		return ValidationError("aggregated signal args not provided")
+	}
+
 	if args.FromTS.IsZero() {
 		return ValidationError("from timestamp is zero")
 	}
@@ -29,7 +33,18 @@ func validateAggSigArgs(args *model.AggregatedSignalArgs) error {
 	return validateSignalArgs(&args.SignalArgs)
 }
 
+func validateLatestSigArgs(args *model.LatestSignalsArgs) error {
+	if args == nil {
+		return ValidationError("latest signal args not provided")
+	}
+	return validateSignalArgs(&args.SignalArgs)
+}
+
 func validateSignalArgs(args *model.SignalArgs) error {
+	if args == nil {
+		return ValidationError("signal args not provided")
+	}
+
 	if args.TokenID < 1 {
 		return ValidationError("tokenID is not a positive integer")
 	}
