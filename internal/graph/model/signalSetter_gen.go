@@ -69,6 +69,11 @@ func SetCollectionField(collection *SignalCollection, signal *vss.Signal) {
 			Timestamp: signal.Timestamp,
 			Value:     signal.ValueString,
 		}
+	case "dimoIsLocationRedacted":
+		collection.DIMOIsLocationRedacted = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
 	case "exteriorAirTemperature":
 		collection.ExteriorAirTemperature = &SignalFloat{
 			Timestamp: signal.Timestamp,
@@ -227,6 +232,8 @@ func SetAggregationField(aggregations *SignalAggregations, signal *vss.Signal) {
 		aggregations.DIMOAftermarketSSID = &signal.ValueString
 	case "dimoAftermarketWPAState":
 		aggregations.DIMOAftermarketWPAState = &signal.ValueString
+	case "dimoIsLocationRedacted":
+		aggregations.DIMOIsLocationRedacted = &signal.ValueNumber
 	case "exteriorAirTemperature":
 		aggregations.ExteriorAirTemperature = &signal.ValueNumber
 	case "lowVoltageBatteryCurrentVoltage":
