@@ -68,6 +68,7 @@ type ComplexityRoot struct {
 		DIMOAftermarketNSAT                           func(childComplexity int, agg model.FloatAggregation) int
 		DIMOAftermarketSSID                           func(childComplexity int, agg model.StringAggregation) int
 		DIMOAftermarketWPAState                       func(childComplexity int, agg model.StringAggregation) int
+		DIMOIsLocationRedacted                        func(childComplexity int, agg model.FloatAggregation) int
 		ExteriorAirTemperature                        func(childComplexity int, agg model.FloatAggregation) int
 		LowVoltageBatteryCurrentVoltage               func(childComplexity int, agg model.FloatAggregation) int
 		OBDBarometricPressure                         func(childComplexity int, agg model.FloatAggregation) int
@@ -109,6 +110,7 @@ type ComplexityRoot struct {
 		DIMOAftermarketNSAT                           func(childComplexity int) int
 		DIMOAftermarketSSID                           func(childComplexity int) int
 		DIMOAftermarketWPAState                       func(childComplexity int) int
+		DIMOIsLocationRedacted                        func(childComplexity int) int
 		ExteriorAirTemperature                        func(childComplexity int) int
 		LastSeen                                      func(childComplexity int) int
 		LowVoltageBatteryCurrentVoltage               func(childComplexity int) int
@@ -339,6 +341,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.SignalAggregations.DIMOAftermarketWPAState(childComplexity, args["agg"].(model.StringAggregation)), true
+
+	case "SignalAggregations.dimoIsLocationRedacted":
+		if e.complexity.SignalAggregations.DIMOIsLocationRedacted == nil {
+			break
+		}
+
+		args, err := ec.field_SignalAggregations_dimoIsLocationRedacted_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.SignalAggregations.DIMOIsLocationRedacted(childComplexity, args["agg"].(model.FloatAggregation)), true
 
 	case "SignalAggregations.exteriorAirTemperature":
 		if e.complexity.SignalAggregations.ExteriorAirTemperature == nil {
@@ -730,6 +744,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.SignalCollection.DIMOAftermarketWPAState(childComplexity), true
+
+	case "SignalCollection.dimoIsLocationRedacted":
+		if e.complexity.SignalCollection.DIMOIsLocationRedacted == nil {
+			break
+		}
+
+		return e.complexity.SignalCollection.DIMOIsLocationRedacted(childComplexity), true
 
 	case "SignalCollection.exteriorAirTemperature":
 		if e.complexity.SignalCollection.ExteriorAirTemperature == nil {
@@ -1256,6 +1277,14 @@ extend type SignalAggregations {
   ):  String @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketWPAState") @isSignal @hasAggregation
   
   """
+  Indicates if the latitude and longitude signals at the current timestamp have been redacted using a privacy zone.
+  Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
+  """
+  dimoIsLocationRedacted(
+    agg: FloatAggregation!
+  ):  Float @requiresPrivilege(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "DIMOIsLocationRedacted") @isSignal @hasAggregation
+  
+  """
   Air temperature outside the vehicle.
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
@@ -1529,6 +1558,12 @@ extend type SignalCollection {
   Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
   """
   dimoAftermarketWPAState: SignalString @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketWPAState") @isSignal
+  
+  """
+  Indicates if the latitude and longitude signals at the current timestamp have been redacted using a privacy zone.
+  Required Privlieges: [VEHICLE_ALL_TIME_LOCATION]
+  """
+  dimoIsLocationRedacted: SignalFloat @requiresPrivilege(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "DIMOIsLocationRedacted") @isSignal
   
   """
   Air temperature outside the vehicle.
@@ -1967,6 +2002,21 @@ func (ec *executionContext) field_SignalAggregations_dimoAftermarketWPAState_arg
 	if tmp, ok := rawArgs["agg"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
 		arg0, err = ec.unmarshalNStringAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐStringAggregation(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["agg"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_SignalAggregations_dimoIsLocationRedacted_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.FloatAggregation
+	if tmp, ok := rawArgs["agg"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
+		arg0, err = ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2470,6 +2520,8 @@ func (ec *executionContext) fieldContext_Query_signals(ctx context.Context, fiel
 				return ec.fieldContext_SignalAggregations_dimoAftermarketSSID(ctx, field)
 			case "dimoAftermarketWPAState":
 				return ec.fieldContext_SignalAggregations_dimoAftermarketWPAState(ctx, field)
+			case "dimoIsLocationRedacted":
+				return ec.fieldContext_SignalAggregations_dimoIsLocationRedacted(ctx, field)
 			case "exteriorAirTemperature":
 				return ec.fieldContext_SignalAggregations_exteriorAirTemperature(ctx, field)
 			case "lowVoltageBatteryCurrentVoltage":
@@ -2620,6 +2672,8 @@ func (ec *executionContext) fieldContext_Query_signalsLatest(ctx context.Context
 				return ec.fieldContext_SignalCollection_dimoAftermarketSSID(ctx, field)
 			case "dimoAftermarketWPAState":
 				return ec.fieldContext_SignalCollection_dimoAftermarketWPAState(ctx, field)
+			case "dimoIsLocationRedacted":
+				return ec.fieldContext_SignalCollection_dimoIsLocationRedacted(ctx, field)
 			case "exteriorAirTemperature":
 				return ec.fieldContext_SignalCollection_exteriorAirTemperature(ctx, field)
 			case "lowVoltageBatteryCurrentVoltage":
@@ -3911,6 +3965,94 @@ func (ec *executionContext) fieldContext_SignalAggregations_dimoAftermarketWPASt
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_SignalAggregations_dimoAftermarketWPAState_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SignalAggregations_dimoIsLocationRedacted(ctx context.Context, field graphql.CollectedField, obj *model.SignalAggregations) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignalAggregations_dimoIsLocationRedacted(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return obj.DIMOIsLocationRedacted, nil
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_ALL_TIME_LOCATION"})
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.RequiresPrivilege == nil {
+				return nil, errors.New("directive requiresPrivilege is not implemented")
+			}
+			return ec.directives.RequiresPrivilege(ctx, obj, directive0, privileges)
+		}
+		directive2 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.IsSignal == nil {
+				return nil, errors.New("directive isSignal is not implemented")
+			}
+			return ec.directives.IsSignal(ctx, obj, directive1)
+		}
+		directive3 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.HasAggregation == nil {
+				return nil, errors.New("directive hasAggregation is not implemented")
+			}
+			return ec.directives.HasAggregation(ctx, obj, directive2)
+		}
+
+		tmp, err := directive3(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*float64); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*float64)
+	fc.Result = res
+	return ec.marshalOFloat2ᚖfloat64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SignalAggregations_dimoIsLocationRedacted(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignalAggregations",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_SignalAggregations_dimoIsLocationRedacted_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -7077,6 +7219,83 @@ func (ec *executionContext) fieldContext_SignalCollection_dimoAftermarketWPAStat
 				return ec.fieldContext_SignalString_value(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type SignalString", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SignalCollection_dimoIsLocationRedacted(ctx context.Context, field graphql.CollectedField, obj *model.SignalCollection) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignalCollection_dimoIsLocationRedacted(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return obj.DIMOIsLocationRedacted, nil
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_ALL_TIME_LOCATION"})
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.RequiresPrivilege == nil {
+				return nil, errors.New("directive requiresPrivilege is not implemented")
+			}
+			return ec.directives.RequiresPrivilege(ctx, obj, directive0, privileges)
+		}
+		directive2 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.IsSignal == nil {
+				return nil, errors.New("directive isSignal is not implemented")
+			}
+			return ec.directives.IsSignal(ctx, obj, directive1)
+		}
+
+		tmp, err := directive2(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*model.SignalFloat); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.SignalFloat)
+	fc.Result = res
+	return ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SignalCollection_dimoIsLocationRedacted(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignalCollection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "timestamp":
+				return ec.fieldContext_SignalFloat_timestamp(ctx, field)
+			case "value":
+				return ec.fieldContext_SignalFloat_value(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SignalFloat", field.Name)
 		},
 	}
 	return fc, nil
@@ -11119,6 +11338,8 @@ func (ec *executionContext) _SignalAggregations(ctx context.Context, sel ast.Sel
 			out.Values[i] = ec._SignalAggregations_dimoAftermarketSSID(ctx, field, obj)
 		case "dimoAftermarketWPAState":
 			out.Values[i] = ec._SignalAggregations_dimoAftermarketWPAState(ctx, field, obj)
+		case "dimoIsLocationRedacted":
+			out.Values[i] = ec._SignalAggregations_dimoIsLocationRedacted(ctx, field, obj)
 		case "exteriorAirTemperature":
 			out.Values[i] = ec._SignalAggregations_exteriorAirTemperature(ctx, field, obj)
 		case "lowVoltageBatteryCurrentVoltage":
@@ -11229,6 +11450,8 @@ func (ec *executionContext) _SignalCollection(ctx context.Context, sel ast.Selec
 			out.Values[i] = ec._SignalCollection_dimoAftermarketSSID(ctx, field, obj)
 		case "dimoAftermarketWPAState":
 			out.Values[i] = ec._SignalCollection_dimoAftermarketWPAState(ctx, field, obj)
+		case "dimoIsLocationRedacted":
+			out.Values[i] = ec._SignalCollection_dimoIsLocationRedacted(ctx, field, obj)
 		case "exteriorAirTemperature":
 			out.Values[i] = ec._SignalCollection_exteriorAirTemperature(ctx, field, obj)
 		case "lowVoltageBatteryCurrentVoltage":

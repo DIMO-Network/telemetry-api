@@ -97,6 +97,14 @@ extend type SignalAggregations {
   ):  String @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketWPAState") @isSignal @hasAggregation
   
   """
+  Indicates if the latitude and longitude signals at the current timestamp have been redacted using a privacy zone.
+  Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
+  """
+  dimoIsLocationRedacted(
+    agg: FloatAggregation!
+  ):  Float @requiresPrivilege(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "DIMOIsLocationRedacted") @isSignal @hasAggregation
+  
+  """
   Air temperature outside the vehicle.
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
@@ -370,6 +378,12 @@ extend type SignalCollection {
   Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
   """
   dimoAftermarketWPAState: SignalString @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketWPAState") @isSignal
+  
+  """
+  Indicates if the latitude and longitude signals at the current timestamp have been redacted using a privacy zone.
+  Required Privlieges: [VEHICLE_ALL_TIME_LOCATION]
+  """
+  dimoIsLocationRedacted: SignalFloat @requiresPrivilege(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "DIMOIsLocationRedacted") @isSignal
   
   """
   Air temperature outside the vehicle.

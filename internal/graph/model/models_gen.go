@@ -52,6 +52,9 @@ type SignalAggregations struct {
 	// Indicate the current wpa state for the devices wifi
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	DIMOAftermarketWPAState *string `json:"dimoAftermarketWPAState,omitempty"`
+	// Indicates if the latitude and longitude signals at the current timestamp have been redacted using a privacy zone.
+	// Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
+	DIMOIsLocationRedacted *float64 `json:"dimoIsLocationRedacted,omitempty"`
 	// Air temperature outside the vehicle.
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	ExteriorAirTemperature *float64 `json:"exteriorAirTemperature,omitempty"`
@@ -168,6 +171,9 @@ type SignalCollection struct {
 	// Indicate the current wpa state for the devices wifi
 	// Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
 	DIMOAftermarketWPAState *SignalString `json:"dimoAftermarketWPAState,omitempty"`
+	// Indicates if the latitude and longitude signals at the current timestamp have been redacted using a privacy zone.
+	// Required Privlieges: [VEHICLE_ALL_TIME_LOCATION]
+	DIMOIsLocationRedacted *SignalFloat `json:"dimoIsLocationRedacted,omitempty"`
 	// Air temperature outside the vehicle.
 	// Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
 	ExteriorAirTemperature *SignalFloat `json:"exteriorAirTemperature,omitempty"`
