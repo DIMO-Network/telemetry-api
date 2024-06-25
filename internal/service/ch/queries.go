@@ -173,7 +173,7 @@ FROM
 WHERE
   token_id = 15 AND
   (name = 'speed' OR name = 'currentLocationLatitude' OR name = 'currentLocationLongitude' OR name = 'powertrainFuelSystemSupportedFuelTypes' OR name = 'none')
-Group BY
+GROUP BY
   name
 */
 func getLatestQuery(latestArgs *model.LatestSignalsArgs) (string, []any) {
@@ -251,7 +251,7 @@ SELECT
 FROM
     `signal`
 WHERE
-    `name` IN ['speed', 'oBDRunTime', 'powertrainType', 'powertrainFuelSystemSupportedFuelTypes']
+    `name` IN ['speed', 'obdRunTime', 'powertrainType', 'powertrainFuelSystemSupportedFuelTypes']
     AND token_id = 15
     AND timestamp > toDateTime('2024-04-15 09:21:19')
     AND timestamp < toDateTime('2024-04-27 09:21:19')
