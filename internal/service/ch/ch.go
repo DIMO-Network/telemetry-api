@@ -121,6 +121,7 @@ func (s *Service) getSignals(ctx context.Context, stmt string, args []any) ([]*v
 	return signals, nil
 }
 
+// TODO(elffjs): Ugly duplication.
 func (s *Service) getAggSignals(ctx context.Context, stmt string, args []any) ([]*AggSignal, error) {
 	rows, err := s.conn.Query(ctx, stmt, args...)
 	if err != nil {
