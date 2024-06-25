@@ -1,0 +1,28 @@
+package graph
+
+import (
+	"context"
+	"fmt"
+
+	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
+)
+
+{{ range .Signals }}
+{{ if eq .GQLType "Float" }}
+func (r *signalAggregationsResolver) {{ .GOName }}(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
+    x, ok := obj.NumberValues[model.AliasKey{Name: "{{ .JSONName }}", Agg: agg.String()}]
+	if !ok {
+		return nil, nil
+	}
+	return &x, nil
+}
+{{ else }}
+func (r *signalAggregationsResolver) {{ .GOName }}(ctx context.Context, obj *model.SignalAggregations, agg model.StringAggregation) (*string, error) {
+    x, ok := obj.StringValues[model.AliasKey{Name: "{{ .JSONName }}", Agg: agg.String()}]
+	if !ok {
+		return nil, nil
+	}
+	return &x, nil
+}
+{{ end }}
+{{ end }}
