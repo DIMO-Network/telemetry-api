@@ -1,0 +1,8 @@
+SELECT toStartOfInterval(timestamp, toIntervalMillisecond(300000)) AS group_timestamp, 
+name,
+CASE
+WHEN name = 'speed' THEN [min(value_number), max(value_number)]
+ELSE
+[]
+END
+ FROM signal WHERE token_id = 22279 AND name = 'speed' AND `timestamp` > now() - INTERVAL 7 DAY  GROUP BY group_timestamp, name ORDER BY group_timestamp, name;

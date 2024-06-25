@@ -240,7 +240,7 @@ SELECT
     toStartOfInterval(timestamp, toIntervalMillisecond(30000)) AS group_timestamp,
     CASE
         WHEN name = 'speed' THEN max(value_number)
-        WHEN name = 'oBDRunTime' THEN median(value_number)
+        WHEN name = 'obdRunTime' THEN median(value_number)
         ELSE NULL
     END AS value_number,
     CASE
