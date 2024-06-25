@@ -267,12 +267,12 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any) {
 		return "", nil
 	}
 
-	names := make([]string, 0, len(aggArgs.FloatArgs)+len(aggArgs.StringArgs))
+	aggs := make([]string, 0, len(aggArgs.FloatArgs)+len(aggArgs.StringArgs))
 	for _, agg := range aggArgs.FloatArgs {
-		names = append(names, agg.Name)
+		aggs = append(aggs, fmt.Sprintf("('%s', '%s')", agg.Name, agg.Agg))
 	}
 	for _, agg := range aggArgs.StringArgs {
-		names = append(names, agg.Name)
+		aggs = append(aggs, fmt.Sprintf("('%s', '%s')", agg.Name, agg.Agg))
 	}
 
 	mods := []qm.QueryMod{
@@ -281,11 +281,13 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any) {
 		selectInterval(aggArgs.Interval),
 		selectNumberAggs(aggArgs.FloatArgs),
 		selectStringAggs(aggArgs.StringArgs),
-		qm.WhereIn(nameIn, names),
 		qm.Where(tokenIDWhere, aggArgs.TokenID),
 		qm.Where(timestampFrom, aggArgs.FromTS),
 		qm.Where(timestampTo, aggArgs.ToTS),
 		qm.From(vss.TableName),
+		// TODO(elffjs): Does this have problems if the list is empty?
+		// TODO(elffjs): More constant use.
+		qm.InnerJoin(fmt.Sprintf("VALUES('name String, agg String', %s) AS agg_table ON signal.name = agg_table.name", strings.Join(aggs, ", "))),
 		qm.GroupBy(IntervalGroup),
 		qm.GroupBy(vss.NameCol),
 		qm.GroupBy(AggCol),
