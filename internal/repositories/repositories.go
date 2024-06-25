@@ -22,7 +22,7 @@ var (
 //
 //go:generate mockgen -source=./repositories.go -destination=repositories_mocks_test.go -package=repositories_test
 type CHService interface {
-	GetAggregatedSignals(ctx context.Context, aggArgs *model.AggregatedSignalArgs) ([]*ch.AggSignal, error)
+	GetAggregatedSignals(ctx context.Context, aggArgs *model.AggregatedSignalArgs) ([]*model.AggSignal, error)
 	GetLatestSignals(ctx context.Context, latestArgs *model.LatestSignalsArgs) ([]*vss.Signal, error)
 }
 
@@ -66,9 +66,7 @@ func (r *Repository) GetSignal(ctx context.Context, aggArgs *model.AggregatedSig
 			allAggs = append(allAggs, currAggs)
 		}
 
-		// TODO(elffjs): Obviously this does not work.
-		currAggs.NumberValues[model.AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
-		currAggs.StringValues[model.AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueString
+		model.SetAggregationField(currAggs, signal)
 	}
 
 	return allAggs, nil

@@ -13,7 +13,7 @@ import (
 
 // ChassisAxleRow1WheelLeftTirePressure is the resolver for the chassisAxleRow1WheelLeftTirePressure field.
 func (r *signalAggregationsResolver) ChassisAxleRow1WheelLeftTirePressure(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
-	x, ok := obj.NumberValues[model.AliasKey{"chassisAxleRow1WheelLeftTirePressure", agg.String()}]
+	x, ok := obj.NumberValues[model.AliasKey{Name: "chassisAxleRow1WheelLeftTirePressure", Agg: agg.String()}]
 	if !ok {
 		return nil, nil
 	}

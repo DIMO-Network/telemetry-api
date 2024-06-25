@@ -203,86 +203,86 @@ func SetCollectionField(collection *SignalCollection, signal *vss.Signal) {
 }
 
 // SetAggregationField find the matching field based on the signal name and set the value based on the signal value.
-// func SetAggregationField(aggregations *SignalAggregations, signal *vss.Signal) {
-// 	if aggregations == nil || signal == nil {
-// 		return
-// 	}
-// 	switch signal.Name {
-// 	case "chassisAxleRow1WheelLeftTirePressure":
-// 		aggregations.ChassisAxleRow1WheelLeftTirePressure = &signal.ValueNumber
-// 	case "chassisAxleRow1WheelRightTirePressure":
-// 		aggregations.ChassisAxleRow1WheelRightTirePressure = &signal.ValueNumber
-// 	case "chassisAxleRow2WheelLeftTirePressure":
-// 		aggregations.ChassisAxleRow2WheelLeftTirePressure = &signal.ValueNumber
-// 	case "chassisAxleRow2WheelRightTirePressure":
-// 		aggregations.ChassisAxleRow2WheelRightTirePressure = &signal.ValueNumber
-// 	case "currentLocationAltitude":
-// 		aggregations.CurrentLocationAltitude = &signal.ValueNumber
-// 	case "currentLocationLatitude":
-// 		aggregations.CurrentLocationLatitude = &signal.ValueNumber
-// 	case "currentLocationLongitude":
-// 		aggregations.CurrentLocationLongitude = &signal.ValueNumber
-// 	case "currentLocationTimestamp":
-// 		aggregations.CurrentLocationTimestamp = &signal.ValueString
-// 	case "dimoAftermarketHDOP":
-// 		aggregations.DIMOAftermarketHDOP = &signal.ValueNumber
-// 	case "dimoAftermarketNSAT":
-// 		aggregations.DIMOAftermarketNSAT = &signal.ValueNumber
-// 	case "dimoAftermarketSSID":
-// 		aggregations.DIMOAftermarketSSID = &signal.ValueString
-// 	case "dimoAftermarketWPAState":
-// 		aggregations.DIMOAftermarketWPAState = &signal.ValueString
-// 	case "dimoIsLocationRedacted":
-// 		aggregations.DIMOIsLocationRedacted = &signal.ValueNumber
-// 	case "exteriorAirTemperature":
-// 		aggregations.ExteriorAirTemperature = &signal.ValueNumber
-// 	case "lowVoltageBatteryCurrentVoltage":
-// 		aggregations.LowVoltageBatteryCurrentVoltage = &signal.ValueNumber
-// 	case "obdBarometricPressure":
-// 		aggregations.OBDBarometricPressure = &signal.ValueNumber
-// 	case "obdEngineLoad":
-// 		aggregations.OBDEngineLoad = &signal.ValueNumber
-// 	case "obdIntakeTemp":
-// 		aggregations.OBDIntakeTemp = &signal.ValueNumber
-// 	case "obdRunTime":
-// 		aggregations.OBDRunTime = &signal.ValueNumber
-// 	case "powertrainCombustionEngineECT":
-// 		aggregations.PowertrainCombustionEngineECT = &signal.ValueNumber
-// 	case "powertrainCombustionEngineEngineOilLevel":
-// 		aggregations.PowertrainCombustionEngineEngineOilLevel = &signal.ValueString
-// 	case "powertrainCombustionEngineMAF":
-// 		aggregations.PowertrainCombustionEngineMAF = &signal.ValueNumber
-// 	case "powertrainCombustionEngineSpeed":
-// 		aggregations.PowertrainCombustionEngineSpeed = &signal.ValueNumber
-// 	case "powertrainCombustionEngineTPS":
-// 		aggregations.PowertrainCombustionEngineTPS = &signal.ValueNumber
-// 	case "powertrainFuelSystemAbsoluteLevel":
-// 		aggregations.PowertrainFuelSystemAbsoluteLevel = &signal.ValueNumber
-// 	case "powertrainFuelSystemSupportedFuelTypes":
-// 		aggregations.PowertrainFuelSystemSupportedFuelTypes = &signal.ValueString
-// 	case "powertrainRange":
-// 		aggregations.PowertrainRange = &signal.ValueNumber
-// 	case "powertrainTractionBatteryChargingChargeLimit":
-// 		aggregations.PowertrainTractionBatteryChargingChargeLimit = &signal.ValueNumber
-// 	case "powertrainTractionBatteryChargingIsCharging":
-// 		aggregations.PowertrainTractionBatteryChargingIsCharging = &signal.ValueNumber
-// 	case "powertrainTractionBatteryCurrentPower":
-// 		aggregations.PowertrainTractionBatteryCurrentPower = &signal.ValueNumber
-// 	case "powertrainTractionBatteryGrossCapacity":
-// 		aggregations.PowertrainTractionBatteryGrossCapacity = &signal.ValueNumber
-// 	case "powertrainTractionBatteryStateOfChargeCurrent":
-// 		aggregations.PowertrainTractionBatteryStateOfChargeCurrent = &signal.ValueNumber
-// 	case "powertrainTransmissionTravelledDistance":
-// 		aggregations.PowertrainTransmissionTravelledDistance = &signal.ValueNumber
-// 	case "powertrainType":
-// 		aggregations.PowertrainType = &signal.ValueString
-// 	case "speed":
-// 		aggregations.Speed = &signal.ValueNumber
-// 	case "vehicleIdentificationBrand":
-// 		aggregations.VehicleIdentificationBrand = &signal.ValueString
-// 	case "vehicleIdentificationModel":
-// 		aggregations.VehicleIdentificationModel = &signal.ValueString
-// 	case "vehicleIdentificationYear":
-// 		aggregations.VehicleIdentificationYear = &signal.ValueNumber
-// 	}
-// }
+func SetAggregationField(aggregations *SignalAggregations, signal *AggSignal) {
+	if aggregations == nil || signal == nil {
+		return
+	}
+	switch signal.Name {
+	case "chassisAxleRow1WheelLeftTirePressure":
+		aggregations.NumberValues[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
+	case "chassisAxleRow1WheelRightTirePressure":
+		aggregations.NumberValues[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
+	case "chassisAxleRow2WheelLeftTirePressure":
+		aggregations.NumberValues[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
+	case "chassisAxleRow2WheelRightTirePressure":
+		aggregations.NumberValues[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
+	case "currentLocationAltitude":
+		aggregations.NumberValues[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
+	case "currentLocationLatitude":
+		aggregations.NumberValues[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
+	case "currentLocationLongitude":
+		aggregations.NumberValues[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
+	case "currentLocationTimestamp":
+		aggregations.StringValues[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueString
+	case "dimoAftermarketHDOP":
+		aggregations.NumberValues[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
+	case "dimoAftermarketNSAT":
+		aggregations.NumberValues[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
+	case "dimoAftermarketSSID":
+		aggregations.StringValues[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueString
+	case "dimoAftermarketWPAState":
+		aggregations.StringValues[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueString
+	case "dimoIsLocationRedacted":
+		aggregations.NumberValues[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
+	case "exteriorAirTemperature":
+		aggregations.NumberValues[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
+	case "lowVoltageBatteryCurrentVoltage":
+		aggregations.NumberValues[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
+	case "obdBarometricPressure":
+		aggregations.NumberValues[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
+	case "obdEngineLoad":
+		aggregations.NumberValues[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
+	case "obdIntakeTemp":
+		aggregations.NumberValues[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
+	case "obdRunTime":
+		aggregations.NumberValues[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
+	case "powertrainCombustionEngineECT":
+		aggregations.NumberValues[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
+	case "powertrainCombustionEngineEngineOilLevel":
+		aggregations.StringValues[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueString
+	case "powertrainCombustionEngineMAF":
+		aggregations.NumberValues[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
+	case "powertrainCombustionEngineSpeed":
+		aggregations.NumberValues[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
+	case "powertrainCombustionEngineTPS":
+		aggregations.NumberValues[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
+	case "powertrainFuelSystemAbsoluteLevel":
+		aggregations.NumberValues[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
+	case "powertrainFuelSystemSupportedFuelTypes":
+		aggregations.StringValues[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueString
+	case "powertrainRange":
+		aggregations.NumberValues[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
+	case "powertrainTractionBatteryChargingChargeLimit":
+		aggregations.NumberValues[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
+	case "powertrainTractionBatteryChargingIsCharging":
+		aggregations.NumberValues[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
+	case "powertrainTractionBatteryCurrentPower":
+		aggregations.NumberValues[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
+	case "powertrainTractionBatteryGrossCapacity":
+		aggregations.NumberValues[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
+	case "powertrainTractionBatteryStateOfChargeCurrent":
+		aggregations.NumberValues[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
+	case "powertrainTransmissionTravelledDistance":
+		aggregations.NumberValues[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
+	case "powertrainType":
+		aggregations.StringValues[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueString
+	case "speed":
+		aggregations.NumberValues[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
+	case "vehicleIdentificationBrand":
+		aggregations.StringValues[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueString
+	case "vehicleIdentificationModel":
+		aggregations.StringValues[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueString
+	case "vehicleIdentificationYear":
+		aggregations.NumberValues[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
+	}
+}

@@ -90,7 +90,7 @@ func (s *Service) GetLatestSignals(ctx context.Context, latestArgs *model.Latest
 // GetAggregatedSignals returns a slice of aggregated signals based on the provided arguments from the ClickHouse database.
 // The signals are sorted by timestamp in ascending order.
 // The timestamp on each signal is for the start of the interval.
-func (s *Service) GetAggregatedSignals(ctx context.Context, aggArgs *model.AggregatedSignalArgs) ([]*AggSignal, error) {
+func (s *Service) GetAggregatedSignals(ctx context.Context, aggArgs *model.AggregatedSignalArgs) ([]*model.AggSignal, error) {
 	stmt, args := getAggQuery(aggArgs)
 	signals, err := s.getAggSignals(ctx, stmt, args)
 	if err != nil {
@@ -122,15 +122,15 @@ func (s *Service) getSignals(ctx context.Context, stmt string, args []any) ([]*v
 }
 
 // TODO(elffjs): Ugly duplication.
-func (s *Service) getAggSignals(ctx context.Context, stmt string, args []any) ([]*AggSignal, error) {
+func (s *Service) getAggSignals(ctx context.Context, stmt string, args []any) ([]*model.AggSignal, error) {
 	rows, err := s.conn.Query(ctx, stmt, args...)
 	if err != nil {
 		return nil, fmt.Errorf("failed querying clickhouse: %w", err)
 	}
 	defer rows.Close() //nolint:errcheck // we don't care about the error here
-	signals := []*AggSignal{}
+	signals := []*model.AggSignal{}
 	for rows.Next() {
-		var signal AggSignal
+		var signal model.AggSignal
 		err := rows.Scan(&signal.Name, &signal.Agg, &signal.Timestamp, &signal.ValueNumber, &signal.ValueString)
 		if err != nil {
 			return nil, fmt.Errorf("failed scanning clickhouse row: %w", err)
@@ -141,12 +141,4 @@ func (s *Service) getAggSignals(ctx context.Context, stmt string, args []any) ([
 		return nil, fmt.Errorf("clickhouse row error: %w", rows.Err())
 	}
 	return signals, nil
-}
-
-type AggSignal struct {
-	Name        string
-	Agg         string
-	Timestamp   time.Time
-	ValueNumber float64
-	ValueString string
 }
