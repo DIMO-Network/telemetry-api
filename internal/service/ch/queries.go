@@ -15,6 +15,7 @@ import (
 const (
 	// IntervalGroup is the column alias for the interval group.
 	IntervalGroup = "group_timestamp"
+	AggCol        = "agg"
 	tokenIDWhere  = vss.TokenIDCol + " = ?"
 	nameIn        = vss.NameCol + " IN ?"
 	timestampFrom = vss.TimestampCol + " >= ?"
@@ -107,7 +108,7 @@ func selectNumberAggs(numberAggs []model.FloatSignalArgs) qm.QueryMod {
 	// Add a CASE statement for each name and its corresponding aggregation function
 	caseStmts := make([]string, len(numberAggs))
 	for i := range numberAggs {
-		caseStmts[i] = fmt.Sprintf("WHEN %s = '%s' THEN %s", vss.NameCol, numberAggs[i].Name, getFloatAggFunc(numberAggs[i].Agg))
+		caseStmts[i] = fmt.Sprintf("WHEN %s = '%s' AND %s = '%s' THEN %s", vss.NameCol, numberAggs[i].Name, AggCol, numberAggs[i].Agg, getFloatAggFunc(numberAggs[i].Agg))
 	}
 	caseStmt := fmt.Sprintf("CASE %s ELSE NULL END AS %s", strings.Join(caseStmts, " "), vss.ValueNumberCol)
 	return qm.Select(caseStmt)
@@ -120,7 +121,7 @@ func selectStringAggs(stringAggs []model.StringSignalArgs) qm.QueryMod {
 	// Add a CASE statement for each name and its corresponding aggregation function
 	caseStmts := make([]string, len(stringAggs))
 	for i := range stringAggs {
-		caseStmts[i] = fmt.Sprintf("WHEN %s = '%s' THEN %s", vss.NameCol, stringAggs[i].Name, getStringAgg(stringAggs[i].Agg))
+		caseStmts[i] = fmt.Sprintf("WHEN %s = '%s' AND %s = '%s' THEN %s", vss.NameCol, stringAggs[i].Name, AggCol, stringAggs[i].Agg, getStringAgg(stringAggs[i].Agg))
 	}
 	caseStmt := fmt.Sprintf("CASE %s ELSE NULL END AS %s", strings.Join(caseStmts, " "), vss.ValueStringCol)
 	return qm.Select(caseStmt)
@@ -276,6 +277,7 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any) {
 
 	mods := []qm.QueryMod{
 		qm.Select(vss.NameCol),
+		qm.Select(AggCol),
 		selectInterval(aggArgs.Interval),
 		selectNumberAggs(aggArgs.FloatArgs),
 		selectStringAggs(aggArgs.StringArgs),
@@ -286,6 +288,7 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any) {
 		qm.From(vss.TableName),
 		qm.GroupBy(IntervalGroup),
 		qm.GroupBy(vss.NameCol),
+		qm.GroupBy(AggCol),
 		qm.OrderBy(groupAsc),
 	}
 	mods = append(mods, getFilterMods(aggArgs.Filter)...)
