@@ -13,6 +13,13 @@ import (
 type Query struct {
 }
 
+type SignalAggregations struct {
+	// Timestamp of the aggregated data.
+	Timestamp    time.Time       `json:"timestamp"`
+	NumberValues FloatSignalMap  `json:"-"`
+	StringValues StringSignalMap `json:"-"`
+}
+
 type SignalCollection struct {
 	// The last time any signal was seen matching the filter.
 	LastSeen *time.Time `json:"lastSeen,omitempty"`
