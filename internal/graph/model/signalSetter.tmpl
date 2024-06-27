@@ -32,9 +32,9 @@ func SetAggregationField(aggregations *SignalAggregations, signal *AggSignal) {
 {{- range .Signals }}
     case "{{ .JSONName }}":
         {{- if eq .GQLType "Float" }}
-        aggregations.NumberValues[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
+        aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
         {{- else }}
-        aggregations.StringValues[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueString
+        aggregations.ValueStrings[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueString
         {{- end }}
 {{- end }}
     }
