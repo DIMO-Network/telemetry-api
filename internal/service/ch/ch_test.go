@@ -10,7 +10,6 @@ import (
 	"github.com/ClickHouse/clickhouse-go/v2/lib/proto"
 	chconfig "github.com/DIMO-Network/clickhouse-infra/pkg/connect/config"
 	"github.com/DIMO-Network/clickhouse-infra/pkg/container"
-	"github.com/DIMO-Network/clickhouse-infra/pkg/migrate"
 	"github.com/DIMO-Network/model-garage/pkg/migrations"
 	"github.com/DIMO-Network/model-garage/pkg/vss"
 	"github.com/DIMO-Network/telemetry-api/internal/config"
@@ -45,7 +44,7 @@ func (c *CHServiceTestSuite) SetupSuite() {
 
 	cfg := c.container.Config()
 
-	err = migrate.RunGoose(ctx, []string{"up", "-v"}, migrations.RegisterFuncs(), db)
+	err = migrations.RunGoose(ctx, []string{"up", "-v"}, db)
 	c.Require().NoError(err, "Failed to run migrations")
 
 	settings := config.Settings{
