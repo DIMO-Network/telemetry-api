@@ -263,21 +263,18 @@ func (c *CHServiceTestSuite) TestGetLatestSignal() {
 }
 func (c *CHServiceTestSuite) TestExecutionTimeout() {
 	ctx := context.Background()
-	host, err := c.container.Host(ctx)
-	c.Require().NoError(err, "Failed to get clickhouse host")
 
-	port, err := c.container.MappedPort(ctx, container.SecureNativePort)
-	c.Require().NoError(err, "Failed to get clickhouse port")
+	cfg := c.container.Config()
 
 	settings := config.Settings{
-		ClickHouseHost:     host,
-		ClickHouseTCPPort:  port.Int(),
-		ClickHouseUser:     c.container.User,
-		ClickHousePassword: c.container.Password,
-		ClickHouseDatabase: c.container.DbName,
+		ClickHouseHost:     cfg.Host,
+		ClickHouseTCPPort:  cfg.Port,
+		ClickHouseUser:     cfg.User,
+		ClickHousePassword: cfg.Password,
+		ClickHouseDatabase: cfg.Database,
 		MaxRequestDuration: "1s",
 	}
-	chService, err := NewService(settings, c.container.Config().RootCAs)
+	chService, err := NewService(settings, cfg.RootCAs)
 	c.Require().NoError(err, "Failed to create repository")
 
 	var delay bool
