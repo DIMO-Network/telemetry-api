@@ -8,7 +8,9 @@ import (
 	"time"
 
 	"github.com/ClickHouse/clickhouse-go/v2/lib/proto"
-	"github.com/DIMO-Network/model-garage/pkg/clickhouseinfra"
+	chconfig "github.com/DIMO-Network/clickhouse-infra/pkg/connect/config"
+	"github.com/DIMO-Network/clickhouse-infra/pkg/container"
+	"github.com/DIMO-Network/clickhouse-infra/pkg/migrate"
 	"github.com/DIMO-Network/model-garage/pkg/migrations"
 	"github.com/DIMO-Network/model-garage/pkg/vss"
 	"github.com/DIMO-Network/telemetry-api/internal/config"
@@ -25,7 +27,7 @@ type CHServiceTestSuite struct {
 	suite.Suite
 	dataStartTime time.Time
 	chService     *Service
-	container     *clickhouseinfra.Container
+	container     *container.Container
 }
 
 func TestCHService(t *testing.T) {
@@ -35,29 +37,26 @@ func TestCHService(t *testing.T) {
 func (c *CHServiceTestSuite) SetupSuite() {
 	ctx := context.Background()
 	var err error
-	c.container, err = clickhouseinfra.CreateClickHouseContainer(ctx, "", "")
+	c.container, err = container.CreateClickHouseContainer(ctx, chconfig.Settings{})
 	c.Require().NoError(err, "Failed to create clickhouse container")
 
-	db, err := c.container.GetClickhouseAsDB(ctx)
+	db, err := c.container.GetClickhouseAsDB()
 	c.Require().NoError(err, "Failed to get clickhouse connection")
 
-	err = migrations.RunGoose(ctx, []string{"up", "-v"}, db)
+	cfg := c.container.Config()
+
+	err = migrate.RunGoose(ctx, []string{"up", "-v"}, migrations.RegisterFuncs(), db)
 	c.Require().NoError(err, "Failed to run migrations")
 
-	host, err := c.container.Host(ctx)
-	c.Require().NoError(err, "Failed to get clickhouse host")
-
-	port, err := c.container.MappedPort(ctx, clickhouseinfra.SecureNativePort)
-	c.Require().NoError(err, "Failed to get clickhouse port")
-
 	settings := config.Settings{
-		ClickHouseHost:     host,
-		ClickHouseTCPPort:  port.Int(),
-		ClickHouseUser:     c.container.User,
-		ClickHousePassword: c.container.Password,
-		ClickHouseDatabase: c.container.DbName,
+		ClickHouseHost:     cfg.Host,
+		ClickHouseTCPPort:  cfg.Port,
+		ClickHouseUser:     cfg.User,
+		ClickHousePassword: cfg.Password,
+		ClickHouseDatabase: cfg.Database,
+		MaxRequestDuration: "1s",
 	}
-	c.chService, err = NewService(settings, c.container.RootCAs)
+	c.chService, err = NewService(settings, cfg.RootCAs)
 	c.Require().NoError(err, "Failed to create repository")
 	c.dataStartTime = time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
 	c.insertTestData()
@@ -268,7 +267,7 @@ func (c *CHServiceTestSuite) TestExecutionTimeout() {
 	host, err := c.container.Host(ctx)
 	c.Require().NoError(err, "Failed to get clickhouse host")
 
-	port, err := c.container.MappedPort(ctx, clickhouseinfra.SecureNativePort)
+	port, err := c.container.MappedPort(ctx, container.SecureNativePort)
 	c.Require().NoError(err, "Failed to get clickhouse port")
 
 	settings := config.Settings{
@@ -279,7 +278,7 @@ func (c *CHServiceTestSuite) TestExecutionTimeout() {
 		ClickHouseDatabase: c.container.DbName,
 		MaxRequestDuration: "1s",
 	}
-	chService, err := NewService(settings, c.container.RootCAs)
+	chService, err := NewService(settings, c.container.Config().RootCAs)
 	c.Require().NoError(err, "Failed to create repository")
 
 	var delay bool
