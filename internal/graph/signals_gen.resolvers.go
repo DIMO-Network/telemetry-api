@@ -71,7 +71,7 @@ func (r *signalAggregationsResolver) CurrentLocationTimestamp(ctx context.Contex
 	return &vs, nil
 }
 
-func (r *signalAggregationsResolver) DIMOAftermarketHDOP(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
+func (r *signalAggregationsResolver) DimoAftermarketHdop(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
 	vn, ok := obj.ValueNumbers[model.AliasKey{Name: "dimoAftermarketHDOP", Agg: agg.String()}]
 	if !ok {
 		return nil, nil
@@ -79,7 +79,7 @@ func (r *signalAggregationsResolver) DIMOAftermarketHDOP(ctx context.Context, ob
 	return &vn, nil
 }
 
-func (r *signalAggregationsResolver) DIMOAftermarketNSAT(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
+func (r *signalAggregationsResolver) DimoAftermarketNsat(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
 	vn, ok := obj.ValueNumbers[model.AliasKey{Name: "dimoAftermarketNSAT", Agg: agg.String()}]
 	if !ok {
 		return nil, nil
@@ -87,7 +87,7 @@ func (r *signalAggregationsResolver) DIMOAftermarketNSAT(ctx context.Context, ob
 	return &vn, nil
 }
 
-func (r *signalAggregationsResolver) DIMOAftermarketSSID(ctx context.Context, obj *model.SignalAggregations, agg model.StringAggregation) (*string, error) {
+func (r *signalAggregationsResolver) DimoAftermarketSsid(ctx context.Context, obj *model.SignalAggregations, agg model.StringAggregation) (*string, error) {
 	vs, ok := obj.ValueStrings[model.AliasKey{Name: "dimoAftermarketSSID", Agg: agg.String()}]
 	if !ok {
 		return nil, nil
@@ -95,7 +95,7 @@ func (r *signalAggregationsResolver) DIMOAftermarketSSID(ctx context.Context, ob
 	return &vs, nil
 }
 
-func (r *signalAggregationsResolver) DIMOAftermarketWPAState(ctx context.Context, obj *model.SignalAggregations, agg model.StringAggregation) (*string, error) {
+func (r *signalAggregationsResolver) DimoAftermarketWPAState(ctx context.Context, obj *model.SignalAggregations, agg model.StringAggregation) (*string, error) {
 	vs, ok := obj.ValueStrings[model.AliasKey{Name: "dimoAftermarketWPAState", Agg: agg.String()}]
 	if !ok {
 		return nil, nil
@@ -103,7 +103,7 @@ func (r *signalAggregationsResolver) DIMOAftermarketWPAState(ctx context.Context
 	return &vs, nil
 }
 
-func (r *signalAggregationsResolver) DIMOIsLocationRedacted(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
+func (r *signalAggregationsResolver) DimoIsLocationRedacted(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
 	vn, ok := obj.ValueNumbers[model.AliasKey{Name: "dimoIsLocationRedacted", Agg: agg.String()}]
 	if !ok {
 		return nil, nil
@@ -127,7 +127,7 @@ func (r *signalAggregationsResolver) LowVoltageBatteryCurrentVoltage(ctx context
 	return &vn, nil
 }
 
-func (r *signalAggregationsResolver) OBDBarometricPressure(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
+func (r *signalAggregationsResolver) ObdBarometricPressure(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
 	vn, ok := obj.ValueNumbers[model.AliasKey{Name: "obdBarometricPressure", Agg: agg.String()}]
 	if !ok {
 		return nil, nil
@@ -135,7 +135,7 @@ func (r *signalAggregationsResolver) OBDBarometricPressure(ctx context.Context, 
 	return &vn, nil
 }
 
-func (r *signalAggregationsResolver) OBDEngineLoad(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
+func (r *signalAggregationsResolver) ObdEngineLoad(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
 	vn, ok := obj.ValueNumbers[model.AliasKey{Name: "obdEngineLoad", Agg: agg.String()}]
 	if !ok {
 		return nil, nil
@@ -143,7 +143,7 @@ func (r *signalAggregationsResolver) OBDEngineLoad(ctx context.Context, obj *mod
 	return &vn, nil
 }
 
-func (r *signalAggregationsResolver) OBDIntakeTemp(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
+func (r *signalAggregationsResolver) ObdIntakeTemp(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
 	vn, ok := obj.ValueNumbers[model.AliasKey{Name: "obdIntakeTemp", Agg: agg.String()}]
 	if !ok {
 		return nil, nil
@@ -151,7 +151,7 @@ func (r *signalAggregationsResolver) OBDIntakeTemp(ctx context.Context, obj *mod
 	return &vn, nil
 }
 
-func (r *signalAggregationsResolver) OBDRunTime(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
+func (r *signalAggregationsResolver) ObdRunTime(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
 	vn, ok := obj.ValueNumbers[model.AliasKey{Name: "obdRunTime", Agg: agg.String()}]
 	if !ok {
 		return nil, nil
@@ -159,7 +159,7 @@ func (r *signalAggregationsResolver) OBDRunTime(ctx context.Context, obj *model.
 	return &vn, nil
 }
 
-func (r *signalAggregationsResolver) PowertrainCombustionEngineECT(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
+func (r *signalAggregationsResolver) PowertrainCombustionEngineEct(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
 	vn, ok := obj.ValueNumbers[model.AliasKey{Name: "powertrainCombustionEngineECT", Agg: agg.String()}]
 	if !ok {
 		return nil, nil
@@ -175,7 +175,7 @@ func (r *signalAggregationsResolver) PowertrainCombustionEngineEngineOilLevel(ct
 	return &vs, nil
 }
 
-func (r *signalAggregationsResolver) PowertrainCombustionEngineMAF(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
+func (r *signalAggregationsResolver) PowertrainCombustionEngineMaf(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
 	vn, ok := obj.ValueNumbers[model.AliasKey{Name: "powertrainCombustionEngineMAF", Agg: agg.String()}]
 	if !ok {
 		return nil, nil
@@ -191,7 +191,7 @@ func (r *signalAggregationsResolver) PowertrainCombustionEngineSpeed(ctx context
 	return &vn, nil
 }
 
-func (r *signalAggregationsResolver) PowertrainCombustionEngineTPS(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
+func (r *signalAggregationsResolver) PowertrainCombustionEngineTps(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
 	vn, ok := obj.ValueNumbers[model.AliasKey{Name: "powertrainCombustionEngineTPS", Agg: agg.String()}]
 	if !ok {
 		return nil, nil
