@@ -7,9 +7,12 @@ type AliasKey struct {
 	Agg  string
 }
 
-type StringSignalMap map[AliasKey]string
+type SignalAggregations struct {
+	Timestamp time.Time `json:"timestamp"`
 
-type FloatSignalMap map[AliasKey]float64
+	ValueNumbers map[AliasKey]float64
+	ValueStrings map[AliasKey]string
+}
 
 type AggSignal struct {
 	Name        string
