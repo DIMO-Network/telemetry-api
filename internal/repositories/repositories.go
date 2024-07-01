@@ -22,7 +22,7 @@ var (
 //
 //go:generate mockgen -source=./repositories.go -destination=repositories_mocks_test.go -package=repositories_test
 type CHService interface {
-	GetAggregatedSignals(ctx context.Context, aggArgs *model.AggregatedSignalArgs) ([]*vss.Signal, error)
+	GetAggregatedSignals(ctx context.Context, aggArgs *model.AggregatedSignalArgs) ([]*model.AggSignal, error)
 	GetLatestSignals(ctx context.Context, latestArgs *model.LatestSignalsArgs) ([]*vss.Signal, error)
 }
 
@@ -46,6 +46,7 @@ func (r *Repository) GetSignal(ctx context.Context, aggArgs *model.AggregatedSig
 	if err := validateAggSigArgs(aggArgs); err != nil {
 		return nil, fmt.Errorf("invalid arguments: %w", err)
 	}
+
 	signals, err := r.chService.GetAggregatedSignals(ctx, aggArgs)
 	if err != nil {
 		return nil, handleDBError(err, r.log)
@@ -61,7 +62,9 @@ func (r *Repository) GetSignal(ctx context.Context, aggArgs *model.AggregatedSig
 		if !lastTS.Equal(signal.Timestamp) {
 			lastTS = signal.Timestamp
 			currAggs = &model.SignalAggregations{
-				Timestamp: signal.Timestamp,
+				Timestamp:    signal.Timestamp,
+				ValueNumbers: make(map[model.AliasKey]float64),
+				ValueStrings: make(map[model.AliasKey]string),
 			}
 			allAggs = append(allAggs, currAggs)
 		}

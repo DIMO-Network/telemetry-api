@@ -1,0 +1,30 @@
+// Code generated  with `make gql-model` DO NOT EDIT.
+package graph
+
+import (
+	"context"
+	"fmt"
+
+	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
+)
+
+{{ range .Signals }}
+// {{ GQLGenResolverName .JSONName }} is the resolver for the {{ .JSONName }}
+{{- if eq .GQLType "Float" }}
+func (r *signalAggregationsResolver) {{ GQLGenResolverName .JSONName }}(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
+    vn, ok := obj.ValueNumbers[model.AliasKey{Name: "{{ .JSONName }}", Agg: agg.String()}]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+{{ else }}
+func (r *signalAggregationsResolver) {{ GQLGenResolverName .JSONName }}(ctx context.Context, obj *model.SignalAggregations, agg model.StringAggregation) (*string, error) {
+    vs, ok := obj.ValueStrings[model.AliasKey{Name: "{{ .JSONName }}", Agg: agg.String()}]
+	if !ok {
+		return nil, nil
+	}
+	return &vs, nil
+}
+{{ end }}
+{{ end }}

@@ -32,4 +32,10 @@ func (r *queryResolver) SignalsLatest(ctx context.Context, tokenID int, filter *
 // Query returns QueryResolver implementation.
 func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
+// SignalAggregations returns SignalAggregationsResolver implementation.
+func (r *Resolver) SignalAggregations() SignalAggregationsResolver {
+	return &signalAggregationsResolver{r}
+}
+
 type queryResolver struct{ *Resolver }
+type signalAggregationsResolver struct{ *Resolver }

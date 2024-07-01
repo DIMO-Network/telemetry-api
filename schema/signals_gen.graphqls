@@ -6,7 +6,7 @@ extend type SignalAggregations {
   """
   chassisAxleRow1WheelLeftTirePressure(
     agg: FloatAggregation!
-  ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisAxleRow1WheelLeftTirePressure") @isSignal @hasAggregation
+  ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisAxleRow1WheelLeftTirePressure", forceResolver: true) @isSignal @hasAggregation
   
   """
   Tire pressure in kilo-Pascal.
@@ -14,7 +14,7 @@ extend type SignalAggregations {
   """
   chassisAxleRow1WheelRightTirePressure(
     agg: FloatAggregation!
-  ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisAxleRow1WheelRightTirePressure") @isSignal @hasAggregation
+  ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisAxleRow1WheelRightTirePressure", forceResolver: true) @isSignal @hasAggregation
   
   """
   Tire pressure in kilo-Pascal.
@@ -22,7 +22,7 @@ extend type SignalAggregations {
   """
   chassisAxleRow2WheelLeftTirePressure(
     agg: FloatAggregation!
-  ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisAxleRow2WheelLeftTirePressure") @isSignal @hasAggregation
+  ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisAxleRow2WheelLeftTirePressure", forceResolver: true) @isSignal @hasAggregation
   
   """
   Tire pressure in kilo-Pascal.
@@ -30,7 +30,7 @@ extend type SignalAggregations {
   """
   chassisAxleRow2WheelRightTirePressure(
     agg: FloatAggregation!
-  ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisAxleRow2WheelRightTirePressure") @isSignal @hasAggregation
+  ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisAxleRow2WheelRightTirePressure", forceResolver: true) @isSignal @hasAggregation
   
   """
   Current altitude relative to WGS 84 reference ellipsoid, as measured at the position of GNSS receiver antenna.
@@ -38,7 +38,7 @@ extend type SignalAggregations {
   """
   currentLocationAltitude(
     agg: FloatAggregation!
-  ):  Float @requiresPrivilege(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationAltitude") @isSignal @hasAggregation
+  ):  Float @requiresPrivilege(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationAltitude", forceResolver: true) @isSignal @hasAggregation
   
   """
   Current latitude of vehicle in WGS 84 geodetic coordinates, as measured at the position of GNSS receiver antenna.
@@ -46,7 +46,7 @@ extend type SignalAggregations {
   """
   currentLocationLatitude(
     agg: FloatAggregation!
-  ):  Float @requiresPrivilege(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationLatitude") @isSignal @hasAggregation
+  ):  Float @requiresPrivilege(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationLatitude", forceResolver: true) @isSignal @hasAggregation
   
   """
   Current longitude of vehicle in WGS 84 geodetic coordinates, as measured at the position of GNSS receiver antenna.
@@ -54,7 +54,7 @@ extend type SignalAggregations {
   """
   currentLocationLongitude(
     agg: FloatAggregation!
-  ):  Float @requiresPrivilege(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationLongitude") @isSignal @hasAggregation
+  ):  Float @requiresPrivilege(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationLongitude", forceResolver: true) @isSignal @hasAggregation
   
   """
   Timestamp from GNSS system for current location, formatted according to ISO 8601 with UTC time zone.
@@ -62,7 +62,7 @@ extend type SignalAggregations {
   """
   currentLocationTimestamp(
     agg: StringAggregation!
-  ):  String @requiresPrivilege(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationTimestamp") @isSignal @hasAggregation
+  ):  String @requiresPrivilege(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationTimestamp", forceResolver: true) @isSignal @hasAggregation
   
   """
   Horizontal dilution of precision of GPS
@@ -70,7 +70,7 @@ extend type SignalAggregations {
   """
   dimoAftermarketHDOP(
     agg: FloatAggregation!
-  ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketHDOP") @isSignal @hasAggregation
+  ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketHDOP", forceResolver: true) @isSignal @hasAggregation
   
   """
   Number of sync satellites for GPS
@@ -78,7 +78,7 @@ extend type SignalAggregations {
   """
   dimoAftermarketNSAT(
     agg: FloatAggregation!
-  ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketNSAT") @isSignal @hasAggregation
+  ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketNSAT", forceResolver: true) @isSignal @hasAggregation
   
   """
   Service Set Ientifier for the wifi.
@@ -86,7 +86,7 @@ extend type SignalAggregations {
   """
   dimoAftermarketSSID(
     agg: StringAggregation!
-  ):  String @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketSSID") @isSignal @hasAggregation
+  ):  String @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketSSID", forceResolver: true) @isSignal @hasAggregation
   
   """
   Indicate the current wpa state for the devices wifi
@@ -94,7 +94,7 @@ extend type SignalAggregations {
   """
   dimoAftermarketWPAState(
     agg: StringAggregation!
-  ):  String @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketWPAState") @isSignal @hasAggregation
+  ):  String @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketWPAState", forceResolver: true) @isSignal @hasAggregation
   
   """
   Indicates if the latitude and longitude signals at the current timestamp have been redacted using a privacy zone.
@@ -102,7 +102,7 @@ extend type SignalAggregations {
   """
   dimoIsLocationRedacted(
     agg: FloatAggregation!
-  ):  Float @requiresPrivilege(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "DIMOIsLocationRedacted") @isSignal @hasAggregation
+  ):  Float @requiresPrivilege(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "DIMOIsLocationRedacted", forceResolver: true) @isSignal @hasAggregation
   
   """
   Air temperature outside the vehicle.
@@ -110,7 +110,7 @@ extend type SignalAggregations {
   """
   exteriorAirTemperature(
     agg: FloatAggregation!
-  ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ExteriorAirTemperature") @isSignal @hasAggregation
+  ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ExteriorAirTemperature", forceResolver: true) @isSignal @hasAggregation
   
   """
   Current Voltage of the low voltage battery.
@@ -118,7 +118,7 @@ extend type SignalAggregations {
   """
   lowVoltageBatteryCurrentVoltage(
     agg: FloatAggregation!
-  ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "LowVoltageBatteryCurrentVoltage") @isSignal @hasAggregation
+  ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "LowVoltageBatteryCurrentVoltage", forceResolver: true) @isSignal @hasAggregation
   
   """
   PID 33 - Barometric pressure
@@ -126,7 +126,7 @@ extend type SignalAggregations {
   """
   obdBarometricPressure(
     agg: FloatAggregation!
-  ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDBarometricPressure") @isSignal @hasAggregation
+  ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDBarometricPressure", forceResolver: true) @isSignal @hasAggregation
   
   """
   PID 04 - Engine load in percent - 0 = no load, 100 = full load
@@ -134,7 +134,7 @@ extend type SignalAggregations {
   """
   obdEngineLoad(
     agg: FloatAggregation!
-  ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDEngineLoad") @isSignal @hasAggregation
+  ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDEngineLoad", forceResolver: true) @isSignal @hasAggregation
   
   """
   PID 0F - Intake temperature
@@ -142,7 +142,7 @@ extend type SignalAggregations {
   """
   obdIntakeTemp(
     agg: FloatAggregation!
-  ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDIntakeTemp") @isSignal @hasAggregation
+  ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDIntakeTemp", forceResolver: true) @isSignal @hasAggregation
   
   """
   PID 1F - Engine run time
@@ -150,7 +150,7 @@ extend type SignalAggregations {
   """
   obdRunTime(
     agg: FloatAggregation!
-  ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDRunTime") @isSignal @hasAggregation
+  ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDRunTime", forceResolver: true) @isSignal @hasAggregation
   
   """
   Engine coolant temperature.
@@ -158,7 +158,7 @@ extend type SignalAggregations {
   """
   powertrainCombustionEngineECT(
     agg: FloatAggregation!
-  ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineECT") @isSignal @hasAggregation
+  ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineECT", forceResolver: true) @isSignal @hasAggregation
   
   """
   Engine oil level.
@@ -166,7 +166,7 @@ extend type SignalAggregations {
   """
   powertrainCombustionEngineEngineOilLevel(
     agg: StringAggregation!
-  ):  String @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineEngineOilLevel") @isSignal @hasAggregation
+  ):  String @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineEngineOilLevel", forceResolver: true) @isSignal @hasAggregation
   
   """
   Grams of air drawn into engine per second.
@@ -174,7 +174,7 @@ extend type SignalAggregations {
   """
   powertrainCombustionEngineMAF(
     agg: FloatAggregation!
-  ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineMAF") @isSignal @hasAggregation
+  ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineMAF", forceResolver: true) @isSignal @hasAggregation
   
   """
   Engine speed measured as rotations per minute.
@@ -182,7 +182,7 @@ extend type SignalAggregations {
   """
   powertrainCombustionEngineSpeed(
     agg: FloatAggregation!
-  ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineSpeed") @isSignal @hasAggregation
+  ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineSpeed", forceResolver: true) @isSignal @hasAggregation
   
   """
   Current throttle position.
@@ -190,7 +190,7 @@ extend type SignalAggregations {
   """
   powertrainCombustionEngineTPS(
     agg: FloatAggregation!
-  ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineTPS") @isSignal @hasAggregation
+  ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineTPS", forceResolver: true) @isSignal @hasAggregation
   
   """
   Current available fuel in the fuel tank expressed in liters.
@@ -198,7 +198,7 @@ extend type SignalAggregations {
   """
   powertrainFuelSystemAbsoluteLevel(
     agg: FloatAggregation!
-  ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainFuelSystemAbsoluteLevel") @isSignal @hasAggregation
+  ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainFuelSystemAbsoluteLevel", forceResolver: true) @isSignal @hasAggregation
   
   """
   High level information of fuel types supported
@@ -206,7 +206,7 @@ extend type SignalAggregations {
   """
   powertrainFuelSystemSupportedFuelTypes(
     agg: StringAggregation!
-  ):  String @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainFuelSystemSupportedFuelTypes") @isSignal @hasAggregation
+  ):  String @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainFuelSystemSupportedFuelTypes", forceResolver: true) @isSignal @hasAggregation
   
   """
   Remaining range in meters using all energy sources available in the vehicle.
@@ -214,7 +214,7 @@ extend type SignalAggregations {
   """
   powertrainRange(
     agg: FloatAggregation!
-  ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainRange") @isSignal @hasAggregation
+  ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainRange", forceResolver: true) @isSignal @hasAggregation
   
   """
   Target charge limit (state of charge) for battery.
@@ -222,7 +222,7 @@ extend type SignalAggregations {
   """
   powertrainTractionBatteryChargingChargeLimit(
     agg: FloatAggregation!
-  ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryChargingChargeLimit") @isSignal @hasAggregation
+  ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryChargingChargeLimit", forceResolver: true) @isSignal @hasAggregation
   
   """
   True if charging is ongoing. Charging is considered to be ongoing if energy is flowing from charger to vehicle.
@@ -230,7 +230,7 @@ extend type SignalAggregations {
   """
   powertrainTractionBatteryChargingIsCharging(
     agg: FloatAggregation!
-  ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryChargingIsCharging") @isSignal @hasAggregation
+  ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryChargingIsCharging", forceResolver: true) @isSignal @hasAggregation
   
   """
   Current electrical energy flowing in/out of battery. Positive = Energy flowing in to battery, e.g. during charging. Negative = Energy flowing out of battery, e.g. during driving.
@@ -238,7 +238,7 @@ extend type SignalAggregations {
   """
   powertrainTractionBatteryCurrentPower(
     agg: FloatAggregation!
-  ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryCurrentPower") @isSignal @hasAggregation
+  ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryCurrentPower", forceResolver: true) @isSignal @hasAggregation
   
   """
   Gross capacity of the battery.
@@ -246,7 +246,7 @@ extend type SignalAggregations {
   """
   powertrainTractionBatteryGrossCapacity(
     agg: FloatAggregation!
-  ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryGrossCapacity") @isSignal @hasAggregation
+  ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryGrossCapacity", forceResolver: true) @isSignal @hasAggregation
   
   """
   Physical state of charge of the high voltage battery, relative to net capacity. This is not necessarily the state of charge being displayed to the customer.
@@ -254,7 +254,7 @@ extend type SignalAggregations {
   """
   powertrainTractionBatteryStateOfChargeCurrent(
     agg: FloatAggregation!
-  ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryStateOfChargeCurrent") @isSignal @hasAggregation
+  ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryStateOfChargeCurrent", forceResolver: true) @isSignal @hasAggregation
   
   """
   Odometer reading, total distance travelled during the lifetime of the transmission.
@@ -262,7 +262,7 @@ extend type SignalAggregations {
   """
   powertrainTransmissionTravelledDistance(
     agg: FloatAggregation!
-  ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTransmissionTravelledDistance") @isSignal @hasAggregation
+  ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTransmissionTravelledDistance", forceResolver: true) @isSignal @hasAggregation
   
   """
   Defines the powertrain type of the vehicle.
@@ -270,7 +270,7 @@ extend type SignalAggregations {
   """
   powertrainType(
     agg: StringAggregation!
-  ):  String @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainType") @isSignal @hasAggregation
+  ):  String @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainType", forceResolver: true) @isSignal @hasAggregation
   
   """
   Vehicle speed.
@@ -278,7 +278,7 @@ extend type SignalAggregations {
   """
   speed(
     agg: FloatAggregation!
-  ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "Speed") @isSignal @hasAggregation
+  ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "Speed", forceResolver: true) @isSignal @hasAggregation
   
   """
   Vehicle brand or manufacturer.
@@ -286,7 +286,7 @@ extend type SignalAggregations {
   """
   vehicleIdentificationBrand(
     agg: StringAggregation!
-  ):  String @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "VehicleIdentificationBrand") @isSignal @hasAggregation
+  ):  String @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "VehicleIdentificationBrand", forceResolver: true) @isSignal @hasAggregation
   
   """
   Vehicle model.
@@ -294,7 +294,7 @@ extend type SignalAggregations {
   """
   vehicleIdentificationModel(
     agg: StringAggregation!
-  ):  String @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "VehicleIdentificationModel") @isSignal @hasAggregation
+  ):  String @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "VehicleIdentificationModel", forceResolver: true) @isSignal @hasAggregation
   
   """
   Model year of the vehicle.
@@ -302,236 +302,236 @@ extend type SignalAggregations {
   """
   vehicleIdentificationYear(
     agg: FloatAggregation!
-  ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "VehicleIdentificationYear") @isSignal @hasAggregation
+  ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "VehicleIdentificationYear", forceResolver: true) @isSignal @hasAggregation
   
 }
 
 extend type SignalCollection {
   """
   Tire pressure in kilo-Pascal.
-  Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   chassisAxleRow1WheelLeftTirePressure: SignalFloat @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisAxleRow1WheelLeftTirePressure") @isSignal
   
   """
   Tire pressure in kilo-Pascal.
-  Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   chassisAxleRow1WheelRightTirePressure: SignalFloat @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisAxleRow1WheelRightTirePressure") @isSignal
   
   """
   Tire pressure in kilo-Pascal.
-  Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   chassisAxleRow2WheelLeftTirePressure: SignalFloat @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisAxleRow2WheelLeftTirePressure") @isSignal
   
   """
   Tire pressure in kilo-Pascal.
-  Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   chassisAxleRow2WheelRightTirePressure: SignalFloat @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisAxleRow2WheelRightTirePressure") @isSignal
   
   """
   Current altitude relative to WGS 84 reference ellipsoid, as measured at the position of GNSS receiver antenna.
-  Required Privlieges: [VEHICLE_ALL_TIME_LOCATION]
+  Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
   """
   currentLocationAltitude: SignalFloat @requiresPrivilege(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationAltitude") @isSignal
   
   """
   Current latitude of vehicle in WGS 84 geodetic coordinates, as measured at the position of GNSS receiver antenna.
-  Required Privlieges: [VEHICLE_ALL_TIME_LOCATION]
+  Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
   """
   currentLocationLatitude: SignalFloat @requiresPrivilege(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationLatitude") @isSignal
   
   """
   Current longitude of vehicle in WGS 84 geodetic coordinates, as measured at the position of GNSS receiver antenna.
-  Required Privlieges: [VEHICLE_ALL_TIME_LOCATION]
+  Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
   """
   currentLocationLongitude: SignalFloat @requiresPrivilege(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationLongitude") @isSignal
   
   """
   Timestamp from GNSS system for current location, formatted according to ISO 8601 with UTC time zone.
-  Required Privlieges: [VEHICLE_ALL_TIME_LOCATION]
+  Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
   """
   currentLocationTimestamp: SignalString @requiresPrivilege(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationTimestamp") @isSignal
   
   """
   Horizontal dilution of precision of GPS
-  Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   dimoAftermarketHDOP: SignalFloat @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketHDOP") @isSignal
   
   """
   Number of sync satellites for GPS
-  Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   dimoAftermarketNSAT: SignalFloat @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketNSAT") @isSignal
   
   """
   Service Set Ientifier for the wifi.
-  Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   dimoAftermarketSSID: SignalString @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketSSID") @isSignal
   
   """
   Indicate the current wpa state for the devices wifi
-  Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   dimoAftermarketWPAState: SignalString @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketWPAState") @isSignal
   
   """
   Indicates if the latitude and longitude signals at the current timestamp have been redacted using a privacy zone.
-  Required Privlieges: [VEHICLE_ALL_TIME_LOCATION]
+  Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
   """
   dimoIsLocationRedacted: SignalFloat @requiresPrivilege(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "DIMOIsLocationRedacted") @isSignal
   
   """
   Air temperature outside the vehicle.
-  Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   exteriorAirTemperature: SignalFloat @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ExteriorAirTemperature") @isSignal
   
   """
   Current Voltage of the low voltage battery.
-  Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   lowVoltageBatteryCurrentVoltage: SignalFloat @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "LowVoltageBatteryCurrentVoltage") @isSignal
   
   """
   PID 33 - Barometric pressure
-  Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   obdBarometricPressure: SignalFloat @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDBarometricPressure") @isSignal
   
   """
   PID 04 - Engine load in percent - 0 = no load, 100 = full load
-  Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   obdEngineLoad: SignalFloat @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDEngineLoad") @isSignal
   
   """
   PID 0F - Intake temperature
-  Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   obdIntakeTemp: SignalFloat @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDIntakeTemp") @isSignal
   
   """
   PID 1F - Engine run time
-  Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   obdRunTime: SignalFloat @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDRunTime") @isSignal
   
   """
   Engine coolant temperature.
-  Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainCombustionEngineECT: SignalFloat @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineECT") @isSignal
   
   """
   Engine oil level.
-  Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainCombustionEngineEngineOilLevel: SignalString @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineEngineOilLevel") @isSignal
   
   """
   Grams of air drawn into engine per second.
-  Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainCombustionEngineMAF: SignalFloat @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineMAF") @isSignal
   
   """
   Engine speed measured as rotations per minute.
-  Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainCombustionEngineSpeed: SignalFloat @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineSpeed") @isSignal
   
   """
   Current throttle position.
-  Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainCombustionEngineTPS: SignalFloat @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineTPS") @isSignal
   
   """
   Current available fuel in the fuel tank expressed in liters.
-  Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainFuelSystemAbsoluteLevel: SignalFloat @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainFuelSystemAbsoluteLevel") @isSignal
   
   """
   High level information of fuel types supported
-  Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainFuelSystemSupportedFuelTypes: SignalString @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainFuelSystemSupportedFuelTypes") @isSignal
   
   """
   Remaining range in meters using all energy sources available in the vehicle.
-  Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainRange: SignalFloat @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainRange") @isSignal
   
   """
   Target charge limit (state of charge) for battery.
-  Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainTractionBatteryChargingChargeLimit: SignalFloat @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryChargingChargeLimit") @isSignal
   
   """
   True if charging is ongoing. Charging is considered to be ongoing if energy is flowing from charger to vehicle.
-  Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainTractionBatteryChargingIsCharging: SignalFloat @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryChargingIsCharging") @isSignal
   
   """
   Current electrical energy flowing in/out of battery. Positive = Energy flowing in to battery, e.g. during charging. Negative = Energy flowing out of battery, e.g. during driving.
-  Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainTractionBatteryCurrentPower: SignalFloat @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryCurrentPower") @isSignal
   
   """
   Gross capacity of the battery.
-  Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainTractionBatteryGrossCapacity: SignalFloat @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryGrossCapacity") @isSignal
   
   """
   Physical state of charge of the high voltage battery, relative to net capacity. This is not necessarily the state of charge being displayed to the customer.
-  Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainTractionBatteryStateOfChargeCurrent: SignalFloat @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryStateOfChargeCurrent") @isSignal
   
   """
   Odometer reading, total distance travelled during the lifetime of the transmission.
-  Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainTransmissionTravelledDistance: SignalFloat @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTransmissionTravelledDistance") @isSignal
   
   """
   Defines the powertrain type of the vehicle.
-  Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainType: SignalString @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainType") @isSignal
   
   """
   Vehicle speed.
-  Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   speed: SignalFloat @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "Speed") @isSignal
   
   """
   Vehicle brand or manufacturer.
-  Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   vehicleIdentificationBrand: SignalString @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "VehicleIdentificationBrand") @isSignal
   
   """
   Vehicle model.
-  Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   vehicleIdentificationModel: SignalString @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "VehicleIdentificationModel") @isSignal
   
   """
   Model year of the vehicle.
-  Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   vehicleIdentificationYear: SignalFloat @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "VehicleIdentificationYear") @isSignal
   

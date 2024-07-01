@@ -48,7 +48,7 @@ func TestGetSignal(t *testing.T) {
 			mockSetup: func(m *Mocks) {
 				m.CHService.EXPECT().
 					GetAggregatedSignals(gomock.Any(), defaultArgs).
-					Return([]*vss.Signal{}, nil)
+					Return([]*model.AggSignal{}, nil)
 			},
 			expectedResult: []*model.SignalAggregations{},
 			expectError:    false,
@@ -57,7 +57,7 @@ func TestGetSignal(t *testing.T) {
 			name:    "Success case - One signal",
 			aggArgs: defaultArgs,
 			mockSetup: func(m *Mocks) {
-				signals := []*vss.Signal{
+				signals := []*model.AggSignal{
 					{Timestamp: time.Date(2024, 6, 11, 0, 0, 0, 0, time.UTC), Name: vss.FieldSpeed, ValueNumber: 1.0},
 				}
 				m.CHService.EXPECT().
@@ -75,7 +75,7 @@ func TestGetSignal(t *testing.T) {
 			name:    "Success case - Combine signals last signal has different timestamp",
 			aggArgs: defaultArgs,
 			mockSetup: func(m *Mocks) {
-				signals := []*vss.Signal{
+				signals := []*model.AggSignal{
 					{Timestamp: time.Date(2024, 6, 11, 0, 0, 0, 0, time.UTC), Name: vss.FieldSpeed, ValueNumber: 1.0},
 					{Timestamp: time.Date(2024, 6, 11, 0, 0, 0, 0, time.UTC), Name: vss.FieldSpeed, ValueNumber: 2.0},
 					{Timestamp: time.Date(2024, 6, 11, 1, 0, 0, 0, time.UTC), Name: vss.FieldSpeed, ValueNumber: 3.0},
@@ -98,7 +98,7 @@ func TestGetSignal(t *testing.T) {
 			name:    "Success case - Combine signals all signal have the same timestamp",
 			aggArgs: defaultArgs,
 			mockSetup: func(m *Mocks) {
-				signals := []*vss.Signal{
+				signals := []*model.AggSignal{
 					{Timestamp: time.Date(2024, 6, 11, 0, 0, 0, 0, time.UTC), Name: vss.FieldSpeed, ValueNumber: 1.0},
 					{Timestamp: time.Date(2024, 6, 11, 0, 0, 0, 0, time.UTC), Name: vss.FieldSpeed, ValueNumber: 2.0},
 					{Timestamp: time.Date(2024, 6, 11, 0, 0, 0, 0, time.UTC), Name: vss.FieldSpeed, ValueNumber: 3.0},
@@ -118,7 +118,7 @@ func TestGetSignal(t *testing.T) {
 			name:    "Success case - Combine signals first signal has different timestamp",
 			aggArgs: defaultArgs,
 			mockSetup: func(m *Mocks) {
-				signals := []*vss.Signal{
+				signals := []*model.AggSignal{
 					{Timestamp: time.Date(2024, 6, 11, 0, 0, 0, 0, time.UTC), Name: vss.FieldSpeed, ValueNumber: 1.0},
 					{Timestamp: time.Date(2024, 6, 11, 1, 0, 0, 0, time.UTC), Name: vss.FieldSpeed, ValueNumber: 2.0},
 					{Timestamp: time.Date(2024, 6, 11, 1, 0, 0, 0, time.UTC), Name: vss.FieldSpeed, ValueNumber: 3.0},
