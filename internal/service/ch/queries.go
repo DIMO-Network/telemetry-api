@@ -257,8 +257,8 @@ SELECT
 FROM
     `signal`
 JOIN
-	VALUES('
-		name String, agg String',
+	VALUES(
+		'name String, agg String',
 		('speed, 'MAX'),
 		('obdRunTime', 'MEDIAN'),
 		('powertrainType', 'UNIQUE'),
