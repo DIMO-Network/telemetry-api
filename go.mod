@@ -3,7 +3,7 @@ module github.com/DIMO-Network/telemetry-api
 go 1.22.0
 
 require (
-	github.com/99designs/gqlgen v0.17.45
+	github.com/99designs/gqlgen v0.17.49
 	github.com/ClickHouse/clickhouse-go/v2 v2.23.2
 	github.com/DIMO-Network/clickhouse-infra v0.0.0-20240625130842-c9eff0c8aabe
 	github.com/DIMO-Network/model-garage v0.2.4
@@ -14,7 +14,7 @@ require (
 	github.com/prometheus/client_golang v1.19.0
 	github.com/rs/zerolog v1.32.0
 	github.com/stretchr/testify v1.9.0
-	github.com/vektah/gqlparser/v2 v2.5.11
+	github.com/vektah/gqlparser/v2 v2.5.16
 	github.com/volatiletech/sqlboiler/v4 v4.16.2
 	go.uber.org/mock v0.4.0
 )
@@ -91,7 +91,7 @@ require (
 	github.com/shoenig/go-m1cpu v0.1.6 // indirect
 	github.com/shopspring/decimal v1.4.0 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
-	github.com/sosodev/duration v1.2.0 // indirect
+	github.com/sosodev/duration v1.3.1 // indirect
 	github.com/spf13/cast v1.5.0 // indirect
 	github.com/testcontainers/testcontainers-go v0.31.0 // indirect
 	github.com/testcontainers/testcontainers-go/modules/clickhouse v0.31.0 // indirect
@@ -122,7 +122,7 @@ require (
 	golang.org/x/xerrors v0.0.0-20231012003039-104605ab7028 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240415180920-8c6c420018be // indirect
 	google.golang.org/grpc v1.63.2 // indirect
-	google.golang.org/protobuf v1.33.0 // indirect
+	google.golang.org/protobuf v1.34.1 // indirect
 	gopkg.in/go-jose/go-jose.v2 v2.6.3 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
