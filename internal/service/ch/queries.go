@@ -245,27 +245,38 @@ SELECT
     `name`,
     toStartOfInterval(timestamp, toIntervalMillisecond(30000)) AS group_timestamp,
     CASE
-        WHEN name = 'speed' THEN max(value_number)
-        WHEN name = 'obdRunTime' THEN median(value_number)
+        WHEN name = 'speed' AND agg = 'MAX' THEN max(value_number)
+        WHEN name = 'obdRunTime' AND agg = 'MEDIAN' THEN median(value_number)
         ELSE NULL
     END AS value_number,
     CASE
-        WHEN name = 'powertrainType' THEN arrayStringConcat(groupUniqArray(value_string),',')
-        WHEN name = 'powertrainFuelSystemSupportedFuelTypes' THEN groupArraySample(1, 1716404995385)(value_string)[1]
+        WHEN name = 'powertrainType' AND agg = 'UNIQUE' THEN arrayStringConcat(groupUniqArray(value_string),',')
+        WHEN name = 'powertrainFuelSystemSupportedFuelTypes' AND agg = 'RAND' THEN groupArraySample(1, 1716404995385)(value_string)[1]
         ELSE NULL
     END AS value_string
 FROM
     `signal`
+JOIN
+	VALUES('
+		name String, agg String',
+		('speed, 'MAX'),
+		('obdRunTime', 'MEDIAN'),
+		('powertrainType', 'UNIQUE'),
+		('powertrainFuelSystemSupportedFuelTypes', 'RAND')
+	) AS agg_table
+ON
+	signal.name = agg_table.name
 WHERE
-    `name` IN ['speed', 'obdRunTime', 'powertrainType', 'powertrainFuelSystemSupportedFuelTypes']
-    AND token_id = 15
+    token_id = 15
     AND timestamp > toDateTime('2024-04-15 09:21:19')
     AND timestamp < toDateTime('2024-04-27 09:21:19')
 GROUP BY
     group_timestamp,
     name
 ORDER BY
-    group_timestamp ASC;
+    group_timestamp ASC,
+	name ASC,
+	agg ASC;
 */
 func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 	if aggArgs == nil {
