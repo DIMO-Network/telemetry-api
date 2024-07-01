@@ -10,7 +10,7 @@ require (
 	github.com/DIMO-Network/shared v0.10.12
 	github.com/auth0/go-jwt-middleware/v2 v2.2.1
 	github.com/ethereum/go-ethereum v1.14.0
-	github.com/gofiber/fiber/v2 v2.52.4
+	github.com/gofiber/fiber/v2 v2.52.5
 	github.com/prometheus/client_golang v1.19.0
 	github.com/rs/zerolog v1.32.0
 	github.com/stretchr/testify v1.9.0
