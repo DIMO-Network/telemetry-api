@@ -71,7 +71,7 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 	testCases := []struct {
 		name     string
 		aggArgs  model.AggregatedSignalArgs
-		expected []vss.Signal
+		expected []model.AggSignal
 	}{
 		{
 			name: "average",
@@ -89,11 +89,12 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 					},
 				},
 			},
-			expected: []vss.Signal{
+			expected: []model.AggSignal{
 				{
 					Name:        vss.FieldSpeed,
 					Timestamp:   c.dataStartTime,
 					ValueNumber: 4.5,
+					Agg:         model.FloatAggregationAvg.String(),
 				},
 			},
 		},
@@ -116,11 +117,12 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 					},
 				},
 			},
-			expected: []vss.Signal{
+			expected: []model.AggSignal{
 				{
 					Name:        vss.FieldSpeed,
 					Timestamp:   c.dataStartTime,
 					ValueNumber: 8.0,
+					Agg:         model.FloatAggregationMax.String(),
 				},
 			},
 		},
@@ -140,11 +142,12 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 					},
 				},
 			},
-			expected: []vss.Signal{
+			expected: []model.AggSignal{
 				{
 					Name:        vss.FieldPowertrainType,
 					Timestamp:   c.dataStartTime,
 					ValueString: "value2,value1,value3",
+					Agg:         model.StringAggregationUnique.String(),
 				},
 			},
 		},
@@ -167,11 +170,12 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 					},
 				},
 			},
-			expected: []vss.Signal{
+			expected: []model.AggSignal{
 				{
 					Name:        vss.FieldPowertrainType,
 					Timestamp:   c.dataStartTime,
 					ValueString: "value2",
+					Agg:         model.StringAggregationTop.String(),
 				},
 			},
 		},
