@@ -9,7 +9,8 @@ import (
 )
 
 {{ range .Signals }}
-{{ if eq .GQLType "Float" }}
+// {{ GQLGenResolverName .JSONName }} is the resolver for the {{ .JSONName }}
+{{- if eq .GQLType "Float" }}
 func (r *signalAggregationsResolver) {{ GQLGenResolverName .JSONName }}(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
     vn, ok := obj.ValueNumbers[model.AliasKey{Name: "{{ .JSONName }}", Agg: agg.String()}]
 	if !ok {

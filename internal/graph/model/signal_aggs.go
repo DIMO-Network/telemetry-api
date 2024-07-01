@@ -10,8 +10,8 @@ type AliasKey struct {
 type SignalAggregations struct {
 	Timestamp time.Time `json:"timestamp"`
 
-	ValueNumbers map[AliasKey]float64
-	ValueStrings map[AliasKey]string
+	ValueNumbers map[AliasKey]float64 `json:"-"`
+	ValueStrings map[AliasKey]string  `json:"-"`
 }
 
 type AggSignal struct {
