@@ -46,6 +46,7 @@ func (r *Repository) GetSignal(ctx context.Context, aggArgs *model.AggregatedSig
 	if err := validateAggSigArgs(aggArgs); err != nil {
 		return nil, fmt.Errorf("invalid arguments: %w", err)
 	}
+
 	signals, err := r.chService.GetAggregatedSignals(ctx, aggArgs)
 	if err != nil {
 		return nil, handleDBError(err, r.log)

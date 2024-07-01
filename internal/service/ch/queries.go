@@ -1,6 +1,7 @@
 package ch
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -16,12 +17,16 @@ const (
 	// IntervalGroup is the column alias for the interval group.
 	IntervalGroup = "group_timestamp"
 	AggCol        = "agg"
+	aggTableName  = "agg_table"
 	tokenIDWhere  = vss.TokenIDCol + " = ?"
 	nameIn        = vss.NameCol + " IN ?"
 	timestampFrom = vss.TimestampCol + " >= ?"
 	timestampTo   = vss.TimestampCol + " < ?"
 	sourceWhere   = vss.SourceCol + " = ?"
 	groupAsc      = IntervalGroup + " ASC"
+	nameAsc       = vss.NameCol + " ASC"
+	aggAsc        = AggCol + " ASC"
+	valueTableDef = "name String, agg String"
 )
 
 // varibles for the last seen signal query.
@@ -262,18 +267,24 @@ GROUP BY
 ORDER BY
     group_timestamp ASC;
 */
-func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any) {
+func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 	if aggArgs == nil {
-		return "", nil
+		return "", nil, nil
 	}
 
-	aggs := make([]string, 0, len(aggArgs.FloatArgs)+len(aggArgs.StringArgs))
+	numAggs := len(aggArgs.FloatArgs) + len(aggArgs.StringArgs)
+	if numAggs == 0 {
+		return "", nil, errors.New("no aggregations requested")
+	}
+
+	valuesArgs := make([]string, 0, numAggs)
 	for _, agg := range aggArgs.FloatArgs {
-		aggs = append(aggs, fmt.Sprintf("('%s', '%s')", agg.Name, agg.Agg))
+		valuesArgs = append(valuesArgs, fmt.Sprintf("('%s', '%s')", agg.Name, agg.Agg))
 	}
 	for _, agg := range aggArgs.StringArgs {
-		aggs = append(aggs, fmt.Sprintf("('%s', '%s')", agg.Name, agg.Agg))
+		valuesArgs = append(valuesArgs, fmt.Sprintf("('%s', '%s')", agg.Name, agg.Agg))
 	}
+	valueTable := fmt.Sprintf("VALUES('%s', %s) as %s ON %s.%s = %s.%s", valueTableDef, strings.Join(valuesArgs, ", "), aggTableName, vss.TableName, vss.NameCol, aggTableName, vss.NameCol)
 
 	mods := []qm.QueryMod{
 		qm.Select(vss.NameCol),
@@ -285,16 +296,17 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any) {
 		qm.Where(timestampFrom, aggArgs.FromTS),
 		qm.Where(timestampTo, aggArgs.ToTS),
 		qm.From(vss.TableName),
-		// TODO(elffjs): Does this have problems if the list is empty?
-		// TODO(elffjs): More constant use.
-		qm.InnerJoin(fmt.Sprintf("VALUES('name String, agg String', %s) AS agg_table ON signal.name = agg_table.name", strings.Join(aggs, ", "))),
+		qm.InnerJoin(valueTable),
 		qm.GroupBy(IntervalGroup),
 		qm.GroupBy(vss.NameCol),
 		qm.GroupBy(AggCol),
 		qm.OrderBy(groupAsc),
+		qm.OrderBy(nameAsc), // These last two order-bys are just to make the order standard for tests.
+		qm.OrderBy(aggAsc),
 	}
 	mods = append(mods, getFilterMods(aggArgs.Filter)...)
-	return newQuery(mods...)
+	stmt, args := newQuery(mods...)
+	return stmt, args, nil
 }
 
 // getFilterMods returns the query mods for the filter.

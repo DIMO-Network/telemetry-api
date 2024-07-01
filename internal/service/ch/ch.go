@@ -91,7 +91,15 @@ func (s *Service) GetLatestSignals(ctx context.Context, latestArgs *model.Latest
 // The signals are sorted by timestamp in ascending order.
 // The timestamp on each signal is for the start of the interval.
 func (s *Service) GetAggregatedSignals(ctx context.Context, aggArgs *model.AggregatedSignalArgs) ([]*model.AggSignal, error) {
-	stmt, args := getAggQuery(aggArgs)
+	if len(aggArgs.FloatArgs) == 0 && len(aggArgs.StringArgs) == 0 {
+		return []*model.AggSignal{}, nil
+	}
+
+	stmt, args, err := getAggQuery(aggArgs)
+	if err != nil {
+		return nil, err
+	}
+
 	signals, err := s.getAggSignals(ctx, stmt, args)
 	if err != nil {
 		return nil, err
