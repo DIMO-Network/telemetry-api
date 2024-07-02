@@ -32,6 +32,10 @@ env:
   TOKEN_EXCHANGE_ISSUER_URL: https://auth-roles-rights.dev.dimo.zone
   VEHICLE_NFT_ADDRESS: '0x45fbCD3ef7361d156e8b16F5538AE36DEdf61Da8'
   MAX_REQUEST_DURATION: 5s
+  S3_AWS_REGION: us-east-2
+  VINVC_BUCKET: dimo-network-vinvc-dev
+  VINVC_DATA_TYPE: 'VINVCv0.0'
+
 service:
   type: ClusterIP
   ports:

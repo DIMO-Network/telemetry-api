@@ -69,11 +69,6 @@ func SetCollectionField(collection *SignalCollection, signal *vss.Signal) {
 			Timestamp: signal.Timestamp,
 			Value:     signal.ValueString,
 		}
-	case "dimoIsLocationRedacted":
-		collection.DIMOIsLocationRedacted = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
-		}
 	case "exteriorAirTemperature":
 		collection.ExteriorAirTemperature = &SignalFloat{
 			Timestamp: signal.Timestamp,
@@ -150,9 +145,9 @@ func SetCollectionField(collection *SignalCollection, signal *vss.Signal) {
 			Value:     signal.ValueNumber,
 		}
 	case "powertrainTractionBatteryChargingIsCharging":
-		collection.PowertrainTractionBatteryChargingIsCharging = &SignalFloat{
+		collection.PowertrainTractionBatteryChargingIsCharging = &SignalString{
 			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Value:     signal.ValueString,
 		}
 	case "powertrainTractionBatteryCurrentPower":
 		collection.PowertrainTractionBatteryCurrentPower = &SignalFloat{
@@ -232,8 +227,6 @@ func SetAggregationField(aggregations *SignalAggregations, signal *vss.Signal) {
 		aggregations.DIMOAftermarketSSID = &signal.ValueString
 	case "dimoAftermarketWPAState":
 		aggregations.DIMOAftermarketWPAState = &signal.ValueString
-	case "dimoIsLocationRedacted":
-		aggregations.DIMOIsLocationRedacted = &signal.ValueNumber
 	case "exteriorAirTemperature":
 		aggregations.ExteriorAirTemperature = &signal.ValueNumber
 	case "lowVoltageBatteryCurrentVoltage":
@@ -265,7 +258,7 @@ func SetAggregationField(aggregations *SignalAggregations, signal *vss.Signal) {
 	case "powertrainTractionBatteryChargingChargeLimit":
 		aggregations.PowertrainTractionBatteryChargingChargeLimit = &signal.ValueNumber
 	case "powertrainTractionBatteryChargingIsCharging":
-		aggregations.PowertrainTractionBatteryChargingIsCharging = &signal.ValueNumber
+		aggregations.PowertrainTractionBatteryChargingIsCharging = &signal.ValueString
 	case "powertrainTractionBatteryCurrentPower":
 		aggregations.PowertrainTractionBatteryCurrentPower = &signal.ValueNumber
 	case "powertrainTractionBatteryGrossCapacity":

@@ -53,6 +53,7 @@ type ComplexityRoot struct {
 	Query struct {
 		Signals       func(childComplexity int, tokenID int, interval string, from time.Time, to time.Time, filter *model.SignalFilter) int
 		SignalsLatest func(childComplexity int, tokenID int, filter *model.SignalFilter) int
+		Vinvc         func(childComplexity int, tokenID int) int
 	}
 
 	SignalAggregations struct {
@@ -68,7 +69,6 @@ type ComplexityRoot struct {
 		DIMOAftermarketNSAT                           func(childComplexity int, agg model.FloatAggregation) int
 		DIMOAftermarketSSID                           func(childComplexity int, agg model.StringAggregation) int
 		DIMOAftermarketWPAState                       func(childComplexity int, agg model.StringAggregation) int
-		DIMOIsLocationRedacted                        func(childComplexity int, agg model.FloatAggregation) int
 		ExteriorAirTemperature                        func(childComplexity int, agg model.FloatAggregation) int
 		LowVoltageBatteryCurrentVoltage               func(childComplexity int, agg model.FloatAggregation) int
 		OBDBarometricPressure                         func(childComplexity int, agg model.FloatAggregation) int
@@ -84,7 +84,7 @@ type ComplexityRoot struct {
 		PowertrainFuelSystemSupportedFuelTypes        func(childComplexity int, agg model.StringAggregation) int
 		PowertrainRange                               func(childComplexity int, agg model.FloatAggregation) int
 		PowertrainTractionBatteryChargingChargeLimit  func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainTractionBatteryChargingIsCharging   func(childComplexity int, agg model.FloatAggregation) int
+		PowertrainTractionBatteryChargingIsCharging   func(childComplexity int, agg model.StringAggregation) int
 		PowertrainTractionBatteryCurrentPower         func(childComplexity int, agg model.FloatAggregation) int
 		PowertrainTractionBatteryGrossCapacity        func(childComplexity int, agg model.FloatAggregation) int
 		PowertrainTractionBatteryStateOfChargeCurrent func(childComplexity int, agg model.FloatAggregation) int
@@ -110,7 +110,6 @@ type ComplexityRoot struct {
 		DIMOAftermarketNSAT                           func(childComplexity int) int
 		DIMOAftermarketSSID                           func(childComplexity int) int
 		DIMOAftermarketWPAState                       func(childComplexity int) int
-		DIMOIsLocationRedacted                        func(childComplexity int) int
 		ExteriorAirTemperature                        func(childComplexity int) int
 		LastSeen                                      func(childComplexity int) int
 		LowVoltageBatteryCurrentVoltage               func(childComplexity int) int
@@ -148,11 +147,18 @@ type ComplexityRoot struct {
 		Timestamp func(childComplexity int) int
 		Value     func(childComplexity int) int
 	}
+
+	VINVC struct {
+		CreatedAt func(childComplexity int) int
+		RawProof  func(childComplexity int) int
+		RawVc     func(childComplexity int) int
+	}
 }
 
 type QueryResolver interface {
 	Signals(ctx context.Context, tokenID int, interval string, from time.Time, to time.Time, filter *model.SignalFilter) ([]*model.SignalAggregations, error)
 	SignalsLatest(ctx context.Context, tokenID int, filter *model.SignalFilter) (*model.SignalCollection, error)
+	Vinvc(ctx context.Context, tokenID int) (*model.Vinvc, error)
 }
 
 type executableSchema struct {
@@ -197,6 +203,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.SignalsLatest(childComplexity, args["tokenId"].(int), args["filter"].(*model.SignalFilter)), true
+
+	case "Query.vinvc":
+		if e.complexity.Query.Vinvc == nil {
+			break
+		}
+
+		args, err := ec.field_Query_vinvc_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Vinvc(childComplexity, args["tokenId"].(int)), true
 
 	case "SignalAggregations.chassisAxleRow1WheelLeftTirePressure":
 		if e.complexity.SignalAggregations.ChassisAxleRow1WheelLeftTirePressure == nil {
@@ -341,18 +359,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.SignalAggregations.DIMOAftermarketWPAState(childComplexity, args["agg"].(model.StringAggregation)), true
-
-	case "SignalAggregations.dimoIsLocationRedacted":
-		if e.complexity.SignalAggregations.DIMOIsLocationRedacted == nil {
-			break
-		}
-
-		args, err := ec.field_SignalAggregations_dimoIsLocationRedacted_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.SignalAggregations.DIMOIsLocationRedacted(childComplexity, args["agg"].(model.FloatAggregation)), true
 
 	case "SignalAggregations.exteriorAirTemperature":
 		if e.complexity.SignalAggregations.ExteriorAirTemperature == nil {
@@ -544,7 +550,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainTractionBatteryChargingIsCharging(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.PowertrainTractionBatteryChargingIsCharging(childComplexity, args["agg"].(model.StringAggregation)), true
 
 	case "SignalAggregations.powertrainTractionBatteryCurrentPower":
 		if e.complexity.SignalAggregations.PowertrainTractionBatteryCurrentPower == nil {
@@ -744,13 +750,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.SignalCollection.DIMOAftermarketWPAState(childComplexity), true
-
-	case "SignalCollection.dimoIsLocationRedacted":
-		if e.complexity.SignalCollection.DIMOIsLocationRedacted == nil {
-			break
-		}
-
-		return e.complexity.SignalCollection.DIMOIsLocationRedacted(childComplexity), true
 
 	case "SignalCollection.exteriorAirTemperature":
 		if e.complexity.SignalCollection.ExteriorAirTemperature == nil {
@@ -961,6 +960,27 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.SignalString.Value(childComplexity), true
+
+	case "VINVC.createdAt":
+		if e.complexity.VINVC.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.VINVC.CreatedAt(childComplexity), true
+
+	case "VINVC.rawProof":
+		if e.complexity.VINVC.RawProof == nil {
+			break
+		}
+
+		return e.complexity.VINVC.RawProof(childComplexity), true
+
+	case "VINVC.rawVC":
+		if e.complexity.VINVC.RawVc == nil {
+			break
+		}
+
+		return e.complexity.VINVC.RawVc(childComplexity), true
 
 	}
 	return 0, false
@@ -1277,14 +1297,6 @@ extend type SignalAggregations {
   ):  String @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketWPAState") @isSignal @hasAggregation
   
   """
-  Indicates if the latitude and longitude signals at the current timestamp have been redacted using a privacy zone.
-  Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
-  """
-  dimoIsLocationRedacted(
-    agg: FloatAggregation!
-  ):  Float @requiresPrivilege(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "DIMOIsLocationRedacted") @isSignal @hasAggregation
-  
-  """
   Air temperature outside the vehicle.
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
@@ -1409,8 +1421,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainTractionBatteryChargingIsCharging(
-    agg: FloatAggregation!
-  ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryChargingIsCharging") @isSignal @hasAggregation
+    agg: StringAggregation!
+  ):  String @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryChargingIsCharging") @isSignal @hasAggregation
   
   """
   Current electrical energy flowing in/out of battery. Positive = Energy flowing in to battery, e.g. during charging. Negative = Energy flowing out of battery, e.g. during driving.
@@ -1560,12 +1572,6 @@ extend type SignalCollection {
   dimoAftermarketWPAState: SignalString @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketWPAState") @isSignal
   
   """
-  Indicates if the latitude and longitude signals at the current timestamp have been redacted using a privacy zone.
-  Required Privlieges: [VEHICLE_ALL_TIME_LOCATION]
-  """
-  dimoIsLocationRedacted: SignalFloat @requiresPrivilege(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "DIMOIsLocationRedacted") @isSignal
-  
-  """
   Air temperature outside the vehicle.
   Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
   """
@@ -1659,7 +1665,7 @@ extend type SignalCollection {
   True if charging is ongoing. Charging is considered to be ongoing if energy is flowing from charger to vehicle.
   Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
   """
-  powertrainTractionBatteryChargingIsCharging: SignalFloat @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryChargingIsCharging") @isSignal
+  powertrainTractionBatteryChargingIsCharging: SignalString @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryChargingIsCharging") @isSignal
   
   """
   Current electrical energy flowing in/out of battery. Positive = Energy flowing in to battery, e.g. during charging. Negative = Energy flowing out of battery, e.g. during driving.
@@ -1717,6 +1723,24 @@ extend type SignalCollection {
   
 }
 
+`, BuiltIn: false},
+	{Name: "../../schema/vinvc.graphqls", Input: `extend type Query {
+  """
+  vinvc returns the latest VINVC data for a given token.
+  """
+  vinvc(
+    """
+    The token ID of the vehicle.
+    """
+    tokenId: Int!
+  ): VINVC @requiresPrivilege(privileges: [VEHICLE_VIN_CREDENTIAL])
+}
+
+type VINVC {
+  createdAt: Time
+  rawVC: String!
+  rawProof: String
+}
 `, BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)
@@ -1827,6 +1851,21 @@ func (ec *executionContext) field_Query_signals_args(ctx context.Context, rawArg
 		}
 	}
 	args["filter"] = arg4
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_vinvc_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 int
+	if tmp, ok := rawArgs["tokenId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tokenId"))
+		arg0, err = ec.unmarshalNInt2int(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["tokenId"] = arg0
 	return args, nil
 }
 
@@ -2002,21 +2041,6 @@ func (ec *executionContext) field_SignalAggregations_dimoAftermarketWPAState_arg
 	if tmp, ok := rawArgs["agg"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
 		arg0, err = ec.unmarshalNStringAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐStringAggregation(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["agg"] = arg0
-	return args, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_dimoIsLocationRedacted_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 model.FloatAggregation
-	if tmp, ok := rawArgs["agg"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-		arg0, err = ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2253,10 +2277,10 @@ func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryCh
 func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryChargingIsCharging_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 model.FloatAggregation
+	var arg0 model.StringAggregation
 	if tmp, ok := rawArgs["agg"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-		arg0, err = ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
+		arg0, err = ec.unmarshalNStringAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐStringAggregation(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2520,8 +2544,6 @@ func (ec *executionContext) fieldContext_Query_signals(ctx context.Context, fiel
 				return ec.fieldContext_SignalAggregations_dimoAftermarketSSID(ctx, field)
 			case "dimoAftermarketWPAState":
 				return ec.fieldContext_SignalAggregations_dimoAftermarketWPAState(ctx, field)
-			case "dimoIsLocationRedacted":
-				return ec.fieldContext_SignalAggregations_dimoIsLocationRedacted(ctx, field)
 			case "exteriorAirTemperature":
 				return ec.fieldContext_SignalAggregations_exteriorAirTemperature(ctx, field)
 			case "lowVoltageBatteryCurrentVoltage":
@@ -2672,8 +2694,6 @@ func (ec *executionContext) fieldContext_Query_signalsLatest(ctx context.Context
 				return ec.fieldContext_SignalCollection_dimoAftermarketSSID(ctx, field)
 			case "dimoAftermarketWPAState":
 				return ec.fieldContext_SignalCollection_dimoAftermarketWPAState(ctx, field)
-			case "dimoIsLocationRedacted":
-				return ec.fieldContext_SignalCollection_dimoIsLocationRedacted(ctx, field)
 			case "exteriorAirTemperature":
 				return ec.fieldContext_SignalCollection_exteriorAirTemperature(ctx, field)
 			case "lowVoltageBatteryCurrentVoltage":
@@ -2736,6 +2756,90 @@ func (ec *executionContext) fieldContext_Query_signalsLatest(ctx context.Context
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Query_signalsLatest_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_vinvc(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_vinvc(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Query().Vinvc(rctx, fc.Args["tokenId"].(int))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_VIN_CREDENTIAL"})
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.RequiresPrivilege == nil {
+				return nil, errors.New("directive requiresPrivilege is not implemented")
+			}
+			return ec.directives.RequiresPrivilege(ctx, nil, directive0, privileges)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*model.Vinvc); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.Vinvc`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.Vinvc)
+	fc.Result = res
+	return ec.marshalOVINVC2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐVinvc(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_vinvc(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "createdAt":
+				return ec.fieldContext_VINVC_createdAt(ctx, field)
+			case "rawVC":
+				return ec.fieldContext_VINVC_rawVC(ctx, field)
+			case "rawProof":
+				return ec.fieldContext_VINVC_rawProof(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type VINVC", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_vinvc_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -2844,7 +2948,7 @@ func (ec *executionContext) _Query___schema(ctx context.Context, field graphql.C
 	return ec.marshalO__Schema2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐSchema(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Query___schema(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Query___schema(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Query",
 		Field:      field,
@@ -2902,7 +3006,7 @@ func (ec *executionContext) _SignalAggregations_timestamp(ctx context.Context, f
 	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SignalAggregations_timestamp(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SignalAggregations_timestamp(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalAggregations",
 		Field:      field,
@@ -3965,94 +4069,6 @@ func (ec *executionContext) fieldContext_SignalAggregations_dimoAftermarketWPASt
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_SignalAggregations_dimoAftermarketWPAState_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return fc, err
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _SignalAggregations_dimoIsLocationRedacted(ctx context.Context, field graphql.CollectedField, obj *model.SignalAggregations) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_SignalAggregations_dimoIsLocationRedacted(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
-			ctx = rctx // use context from middleware stack in children
-			return obj.DIMOIsLocationRedacted, nil
-		}
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_ALL_TIME_LOCATION"})
-			if err != nil {
-				return nil, err
-			}
-			if ec.directives.RequiresPrivilege == nil {
-				return nil, errors.New("directive requiresPrivilege is not implemented")
-			}
-			return ec.directives.RequiresPrivilege(ctx, obj, directive0, privileges)
-		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
-			if ec.directives.IsSignal == nil {
-				return nil, errors.New("directive isSignal is not implemented")
-			}
-			return ec.directives.IsSignal(ctx, obj, directive1)
-		}
-		directive3 := func(ctx context.Context) (interface{}, error) {
-			if ec.directives.HasAggregation == nil {
-				return nil, errors.New("directive hasAggregation is not implemented")
-			}
-			return ec.directives.HasAggregation(ctx, obj, directive2)
-		}
-
-		tmp, err := directive3(rctx)
-		if err != nil {
-			return nil, graphql.ErrorOnPath(ctx, err)
-		}
-		if tmp == nil {
-			return nil, nil
-		}
-		if data, ok := tmp.(*float64); ok {
-			return data, nil
-		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*float64)
-	fc.Result = res
-	return ec.marshalOFloat2ᚖfloat64(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_SignalAggregations_dimoIsLocationRedacted(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "SignalAggregations",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Float does not have child fields")
-		},
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_SignalAggregations_dimoIsLocationRedacted_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -5426,10 +5442,10 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryChargin
 		if tmp == nil {
 			return nil, nil
 		}
-		if data, ok := tmp.(*float64); ok {
+		if data, ok := tmp.(*string); ok {
 			return data, nil
 		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *string`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5438,9 +5454,9 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryChargin
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*float64)
+	res := resTmp.(*string)
 	fc.Result = res
-	return ec.marshalOFloat2ᚖfloat64(ctx, field.Selections, res)
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_SignalAggregations_powertrainTractionBatteryChargingIsCharging(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -5450,7 +5466,7 @@ func (ec *executionContext) fieldContext_SignalAggregations_powertrainTractionBa
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Float does not have child fields")
+			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	defer func() {
@@ -6287,7 +6303,7 @@ func (ec *executionContext) _SignalCollection_lastSeen(ctx context.Context, fiel
 	return ec.marshalOTime2ᚖtimeᚐTime(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SignalCollection_lastSeen(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SignalCollection_lastSeen(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalCollection",
 		Field:      field,
@@ -6358,7 +6374,7 @@ func (ec *executionContext) _SignalCollection_chassisAxleRow1WheelLeftTirePressu
 	return ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SignalCollection_chassisAxleRow1WheelLeftTirePressure(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SignalCollection_chassisAxleRow1WheelLeftTirePressure(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalCollection",
 		Field:      field,
@@ -6435,7 +6451,7 @@ func (ec *executionContext) _SignalCollection_chassisAxleRow1WheelRightTirePress
 	return ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SignalCollection_chassisAxleRow1WheelRightTirePressure(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SignalCollection_chassisAxleRow1WheelRightTirePressure(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalCollection",
 		Field:      field,
@@ -6512,7 +6528,7 @@ func (ec *executionContext) _SignalCollection_chassisAxleRow2WheelLeftTirePressu
 	return ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SignalCollection_chassisAxleRow2WheelLeftTirePressure(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SignalCollection_chassisAxleRow2WheelLeftTirePressure(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalCollection",
 		Field:      field,
@@ -6589,7 +6605,7 @@ func (ec *executionContext) _SignalCollection_chassisAxleRow2WheelRightTirePress
 	return ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SignalCollection_chassisAxleRow2WheelRightTirePressure(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SignalCollection_chassisAxleRow2WheelRightTirePressure(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalCollection",
 		Field:      field,
@@ -6666,7 +6682,7 @@ func (ec *executionContext) _SignalCollection_currentLocationAltitude(ctx contex
 	return ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SignalCollection_currentLocationAltitude(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SignalCollection_currentLocationAltitude(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalCollection",
 		Field:      field,
@@ -6743,7 +6759,7 @@ func (ec *executionContext) _SignalCollection_currentLocationLatitude(ctx contex
 	return ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SignalCollection_currentLocationLatitude(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SignalCollection_currentLocationLatitude(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalCollection",
 		Field:      field,
@@ -6820,7 +6836,7 @@ func (ec *executionContext) _SignalCollection_currentLocationLongitude(ctx conte
 	return ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SignalCollection_currentLocationLongitude(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SignalCollection_currentLocationLongitude(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalCollection",
 		Field:      field,
@@ -6897,7 +6913,7 @@ func (ec *executionContext) _SignalCollection_currentLocationTimestamp(ctx conte
 	return ec.marshalOSignalString2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalString(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SignalCollection_currentLocationTimestamp(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SignalCollection_currentLocationTimestamp(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalCollection",
 		Field:      field,
@@ -6974,7 +6990,7 @@ func (ec *executionContext) _SignalCollection_dimoAftermarketHDOP(ctx context.Co
 	return ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SignalCollection_dimoAftermarketHDOP(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SignalCollection_dimoAftermarketHDOP(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalCollection",
 		Field:      field,
@@ -7051,7 +7067,7 @@ func (ec *executionContext) _SignalCollection_dimoAftermarketNSAT(ctx context.Co
 	return ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SignalCollection_dimoAftermarketNSAT(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SignalCollection_dimoAftermarketNSAT(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalCollection",
 		Field:      field,
@@ -7128,7 +7144,7 @@ func (ec *executionContext) _SignalCollection_dimoAftermarketSSID(ctx context.Co
 	return ec.marshalOSignalString2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalString(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SignalCollection_dimoAftermarketSSID(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SignalCollection_dimoAftermarketSSID(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalCollection",
 		Field:      field,
@@ -7205,7 +7221,7 @@ func (ec *executionContext) _SignalCollection_dimoAftermarketWPAState(ctx contex
 	return ec.marshalOSignalString2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalString(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SignalCollection_dimoAftermarketWPAState(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SignalCollection_dimoAftermarketWPAState(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalCollection",
 		Field:      field,
@@ -7219,83 +7235,6 @@ func (ec *executionContext) fieldContext_SignalCollection_dimoAftermarketWPAStat
 				return ec.fieldContext_SignalString_value(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type SignalString", field.Name)
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _SignalCollection_dimoIsLocationRedacted(ctx context.Context, field graphql.CollectedField, obj *model.SignalCollection) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_SignalCollection_dimoIsLocationRedacted(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
-			ctx = rctx // use context from middleware stack in children
-			return obj.DIMOIsLocationRedacted, nil
-		}
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_ALL_TIME_LOCATION"})
-			if err != nil {
-				return nil, err
-			}
-			if ec.directives.RequiresPrivilege == nil {
-				return nil, errors.New("directive requiresPrivilege is not implemented")
-			}
-			return ec.directives.RequiresPrivilege(ctx, obj, directive0, privileges)
-		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
-			if ec.directives.IsSignal == nil {
-				return nil, errors.New("directive isSignal is not implemented")
-			}
-			return ec.directives.IsSignal(ctx, obj, directive1)
-		}
-
-		tmp, err := directive2(rctx)
-		if err != nil {
-			return nil, graphql.ErrorOnPath(ctx, err)
-		}
-		if tmp == nil {
-			return nil, nil
-		}
-		if data, ok := tmp.(*model.SignalFloat); ok {
-			return data, nil
-		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*model.SignalFloat)
-	fc.Result = res
-	return ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_SignalCollection_dimoIsLocationRedacted(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "SignalCollection",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "timestamp":
-				return ec.fieldContext_SignalFloat_timestamp(ctx, field)
-			case "value":
-				return ec.fieldContext_SignalFloat_value(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type SignalFloat", field.Name)
 		},
 	}
 	return fc, nil
@@ -7359,7 +7298,7 @@ func (ec *executionContext) _SignalCollection_exteriorAirTemperature(ctx context
 	return ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SignalCollection_exteriorAirTemperature(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SignalCollection_exteriorAirTemperature(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalCollection",
 		Field:      field,
@@ -7436,7 +7375,7 @@ func (ec *executionContext) _SignalCollection_lowVoltageBatteryCurrentVoltage(ct
 	return ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SignalCollection_lowVoltageBatteryCurrentVoltage(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SignalCollection_lowVoltageBatteryCurrentVoltage(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalCollection",
 		Field:      field,
@@ -7513,7 +7452,7 @@ func (ec *executionContext) _SignalCollection_obdBarometricPressure(ctx context.
 	return ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SignalCollection_obdBarometricPressure(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SignalCollection_obdBarometricPressure(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalCollection",
 		Field:      field,
@@ -7590,7 +7529,7 @@ func (ec *executionContext) _SignalCollection_obdEngineLoad(ctx context.Context,
 	return ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SignalCollection_obdEngineLoad(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SignalCollection_obdEngineLoad(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalCollection",
 		Field:      field,
@@ -7667,7 +7606,7 @@ func (ec *executionContext) _SignalCollection_obdIntakeTemp(ctx context.Context,
 	return ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SignalCollection_obdIntakeTemp(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SignalCollection_obdIntakeTemp(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalCollection",
 		Field:      field,
@@ -7744,7 +7683,7 @@ func (ec *executionContext) _SignalCollection_obdRunTime(ctx context.Context, fi
 	return ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SignalCollection_obdRunTime(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SignalCollection_obdRunTime(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalCollection",
 		Field:      field,
@@ -7821,7 +7760,7 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineECT(ctx 
 	return ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SignalCollection_powertrainCombustionEngineECT(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SignalCollection_powertrainCombustionEngineECT(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalCollection",
 		Field:      field,
@@ -7898,7 +7837,7 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineEngineOi
 	return ec.marshalOSignalString2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalString(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SignalCollection_powertrainCombustionEngineEngineOilLevel(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SignalCollection_powertrainCombustionEngineEngineOilLevel(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalCollection",
 		Field:      field,
@@ -7975,7 +7914,7 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineMAF(ctx 
 	return ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SignalCollection_powertrainCombustionEngineMAF(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SignalCollection_powertrainCombustionEngineMAF(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalCollection",
 		Field:      field,
@@ -8052,7 +7991,7 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineSpeed(ct
 	return ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SignalCollection_powertrainCombustionEngineSpeed(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SignalCollection_powertrainCombustionEngineSpeed(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalCollection",
 		Field:      field,
@@ -8129,7 +8068,7 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineTPS(ctx 
 	return ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SignalCollection_powertrainCombustionEngineTPS(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SignalCollection_powertrainCombustionEngineTPS(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalCollection",
 		Field:      field,
@@ -8206,7 +8145,7 @@ func (ec *executionContext) _SignalCollection_powertrainFuelSystemAbsoluteLevel(
 	return ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SignalCollection_powertrainFuelSystemAbsoluteLevel(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SignalCollection_powertrainFuelSystemAbsoluteLevel(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalCollection",
 		Field:      field,
@@ -8283,7 +8222,7 @@ func (ec *executionContext) _SignalCollection_powertrainFuelSystemSupportedFuelT
 	return ec.marshalOSignalString2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalString(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SignalCollection_powertrainFuelSystemSupportedFuelTypes(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SignalCollection_powertrainFuelSystemSupportedFuelTypes(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalCollection",
 		Field:      field,
@@ -8360,7 +8299,7 @@ func (ec *executionContext) _SignalCollection_powertrainRange(ctx context.Contex
 	return ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SignalCollection_powertrainRange(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SignalCollection_powertrainRange(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalCollection",
 		Field:      field,
@@ -8437,7 +8376,7 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryChargingC
 	return ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SignalCollection_powertrainTractionBatteryChargingChargeLimit(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SignalCollection_powertrainTractionBatteryChargingChargeLimit(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalCollection",
 		Field:      field,
@@ -8497,10 +8436,10 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryChargingI
 		if tmp == nil {
 			return nil, nil
 		}
-		if data, ok := tmp.(*model.SignalFloat); ok {
+		if data, ok := tmp.(*model.SignalString); ok {
 			return data, nil
 		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalString`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -8509,12 +8448,12 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryChargingI
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*model.SignalFloat)
+	res := resTmp.(*model.SignalString)
 	fc.Result = res
-	return ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat(ctx, field.Selections, res)
+	return ec.marshalOSignalString2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalString(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SignalCollection_powertrainTractionBatteryChargingIsCharging(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SignalCollection_powertrainTractionBatteryChargingIsCharging(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalCollection",
 		Field:      field,
@@ -8523,11 +8462,11 @@ func (ec *executionContext) fieldContext_SignalCollection_powertrainTractionBatt
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "timestamp":
-				return ec.fieldContext_SignalFloat_timestamp(ctx, field)
+				return ec.fieldContext_SignalString_timestamp(ctx, field)
 			case "value":
-				return ec.fieldContext_SignalFloat_value(ctx, field)
+				return ec.fieldContext_SignalString_value(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type SignalFloat", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type SignalString", field.Name)
 		},
 	}
 	return fc, nil
@@ -8591,7 +8530,7 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryCurrentPo
 	return ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SignalCollection_powertrainTractionBatteryCurrentPower(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SignalCollection_powertrainTractionBatteryCurrentPower(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalCollection",
 		Field:      field,
@@ -8668,7 +8607,7 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryGrossCapa
 	return ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SignalCollection_powertrainTractionBatteryGrossCapacity(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SignalCollection_powertrainTractionBatteryGrossCapacity(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalCollection",
 		Field:      field,
@@ -8745,7 +8684,7 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryStateOfCh
 	return ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SignalCollection_powertrainTractionBatteryStateOfChargeCurrent(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SignalCollection_powertrainTractionBatteryStateOfChargeCurrent(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalCollection",
 		Field:      field,
@@ -8822,7 +8761,7 @@ func (ec *executionContext) _SignalCollection_powertrainTransmissionTravelledDis
 	return ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SignalCollection_powertrainTransmissionTravelledDistance(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SignalCollection_powertrainTransmissionTravelledDistance(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalCollection",
 		Field:      field,
@@ -8899,7 +8838,7 @@ func (ec *executionContext) _SignalCollection_powertrainType(ctx context.Context
 	return ec.marshalOSignalString2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalString(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SignalCollection_powertrainType(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SignalCollection_powertrainType(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalCollection",
 		Field:      field,
@@ -8976,7 +8915,7 @@ func (ec *executionContext) _SignalCollection_speed(ctx context.Context, field g
 	return ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SignalCollection_speed(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SignalCollection_speed(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalCollection",
 		Field:      field,
@@ -9053,7 +8992,7 @@ func (ec *executionContext) _SignalCollection_vehicleIdentificationBrand(ctx con
 	return ec.marshalOSignalString2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalString(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SignalCollection_vehicleIdentificationBrand(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SignalCollection_vehicleIdentificationBrand(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalCollection",
 		Field:      field,
@@ -9130,7 +9069,7 @@ func (ec *executionContext) _SignalCollection_vehicleIdentificationModel(ctx con
 	return ec.marshalOSignalString2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalString(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SignalCollection_vehicleIdentificationModel(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SignalCollection_vehicleIdentificationModel(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalCollection",
 		Field:      field,
@@ -9207,7 +9146,7 @@ func (ec *executionContext) _SignalCollection_vehicleIdentificationYear(ctx cont
 	return ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SignalCollection_vehicleIdentificationYear(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SignalCollection_vehicleIdentificationYear(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalCollection",
 		Field:      field,
@@ -9257,7 +9196,7 @@ func (ec *executionContext) _SignalFloat_timestamp(ctx context.Context, field gr
 	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SignalFloat_timestamp(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SignalFloat_timestamp(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalFloat",
 		Field:      field,
@@ -9301,7 +9240,7 @@ func (ec *executionContext) _SignalFloat_value(ctx context.Context, field graphq
 	return ec.marshalNFloat2float64(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SignalFloat_value(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SignalFloat_value(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalFloat",
 		Field:      field,
@@ -9345,7 +9284,7 @@ func (ec *executionContext) _SignalString_timestamp(ctx context.Context, field g
 	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SignalString_timestamp(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SignalString_timestamp(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalString",
 		Field:      field,
@@ -9389,9 +9328,135 @@ func (ec *executionContext) _SignalString_value(ctx context.Context, field graph
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SignalString_value(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SignalString_value(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalString",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _VINVC_createdAt(ctx context.Context, field graphql.CollectedField, obj *model.Vinvc) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_VINVC_createdAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalOTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_VINVC_createdAt(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "VINVC",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _VINVC_rawVC(ctx context.Context, field graphql.CollectedField, obj *model.Vinvc) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_VINVC_rawVC(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.RawVc, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_VINVC_rawVC(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "VINVC",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _VINVC_rawProof(ctx context.Context, field graphql.CollectedField, obj *model.Vinvc) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_VINVC_rawProof(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.RawProof, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_VINVC_rawProof(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "VINVC",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
@@ -9433,7 +9498,7 @@ func (ec *executionContext) ___Directive_name(ctx context.Context, field graphql
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Directive_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Directive_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Directive",
 		Field:      field,
@@ -9474,7 +9539,7 @@ func (ec *executionContext) ___Directive_description(ctx context.Context, field 
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Directive_description(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Directive_description(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Directive",
 		Field:      field,
@@ -9518,7 +9583,7 @@ func (ec *executionContext) ___Directive_locations(ctx context.Context, field gr
 	return ec.marshalN__DirectiveLocation2ᚕstringᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Directive_locations(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Directive_locations(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Directive",
 		Field:      field,
@@ -9562,7 +9627,7 @@ func (ec *executionContext) ___Directive_args(ctx context.Context, field graphql
 	return ec.marshalN__InputValue2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐInputValueᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Directive_args(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Directive_args(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Directive",
 		Field:      field,
@@ -9616,7 +9681,7 @@ func (ec *executionContext) ___Directive_isRepeatable(ctx context.Context, field
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Directive_isRepeatable(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Directive_isRepeatable(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Directive",
 		Field:      field,
@@ -9660,7 +9725,7 @@ func (ec *executionContext) ___EnumValue_name(ctx context.Context, field graphql
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___EnumValue_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___EnumValue_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__EnumValue",
 		Field:      field,
@@ -9701,7 +9766,7 @@ func (ec *executionContext) ___EnumValue_description(ctx context.Context, field 
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___EnumValue_description(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___EnumValue_description(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__EnumValue",
 		Field:      field,
@@ -9745,7 +9810,7 @@ func (ec *executionContext) ___EnumValue_isDeprecated(ctx context.Context, field
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___EnumValue_isDeprecated(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___EnumValue_isDeprecated(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__EnumValue",
 		Field:      field,
@@ -9786,7 +9851,7 @@ func (ec *executionContext) ___EnumValue_deprecationReason(ctx context.Context, 
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___EnumValue_deprecationReason(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___EnumValue_deprecationReason(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__EnumValue",
 		Field:      field,
@@ -9830,7 +9895,7 @@ func (ec *executionContext) ___Field_name(ctx context.Context, field graphql.Col
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Field_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Field_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Field",
 		Field:      field,
@@ -9871,7 +9936,7 @@ func (ec *executionContext) ___Field_description(ctx context.Context, field grap
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Field_description(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Field_description(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Field",
 		Field:      field,
@@ -9915,7 +9980,7 @@ func (ec *executionContext) ___Field_args(ctx context.Context, field graphql.Col
 	return ec.marshalN__InputValue2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐInputValueᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Field_args(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Field_args(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Field",
 		Field:      field,
@@ -9969,7 +10034,7 @@ func (ec *executionContext) ___Field_type(ctx context.Context, field graphql.Col
 	return ec.marshalN__Type2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Field_type(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Field_type(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Field",
 		Field:      field,
@@ -10035,7 +10100,7 @@ func (ec *executionContext) ___Field_isDeprecated(ctx context.Context, field gra
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Field_isDeprecated(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Field_isDeprecated(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Field",
 		Field:      field,
@@ -10076,7 +10141,7 @@ func (ec *executionContext) ___Field_deprecationReason(ctx context.Context, fiel
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Field_deprecationReason(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Field_deprecationReason(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Field",
 		Field:      field,
@@ -10120,7 +10185,7 @@ func (ec *executionContext) ___InputValue_name(ctx context.Context, field graphq
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___InputValue_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___InputValue_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__InputValue",
 		Field:      field,
@@ -10161,7 +10226,7 @@ func (ec *executionContext) ___InputValue_description(ctx context.Context, field
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___InputValue_description(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___InputValue_description(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__InputValue",
 		Field:      field,
@@ -10205,7 +10270,7 @@ func (ec *executionContext) ___InputValue_type(ctx context.Context, field graphq
 	return ec.marshalN__Type2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___InputValue_type(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___InputValue_type(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__InputValue",
 		Field:      field,
@@ -10268,7 +10333,7 @@ func (ec *executionContext) ___InputValue_defaultValue(ctx context.Context, fiel
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___InputValue_defaultValue(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___InputValue_defaultValue(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__InputValue",
 		Field:      field,
@@ -10309,7 +10374,7 @@ func (ec *executionContext) ___Schema_description(ctx context.Context, field gra
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Schema_description(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Schema_description(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Schema",
 		Field:      field,
@@ -10353,7 +10418,7 @@ func (ec *executionContext) ___Schema_types(ctx context.Context, field graphql.C
 	return ec.marshalN__Type2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐTypeᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Schema_types(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Schema_types(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Schema",
 		Field:      field,
@@ -10419,7 +10484,7 @@ func (ec *executionContext) ___Schema_queryType(ctx context.Context, field graph
 	return ec.marshalN__Type2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Schema_queryType(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Schema_queryType(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Schema",
 		Field:      field,
@@ -10482,7 +10547,7 @@ func (ec *executionContext) ___Schema_mutationType(ctx context.Context, field gr
 	return ec.marshalO__Type2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Schema_mutationType(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Schema_mutationType(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Schema",
 		Field:      field,
@@ -10545,7 +10610,7 @@ func (ec *executionContext) ___Schema_subscriptionType(ctx context.Context, fiel
 	return ec.marshalO__Type2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Schema_subscriptionType(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Schema_subscriptionType(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Schema",
 		Field:      field,
@@ -10611,7 +10676,7 @@ func (ec *executionContext) ___Schema_directives(ctx context.Context, field grap
 	return ec.marshalN__Directive2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐDirectiveᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Schema_directives(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Schema_directives(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Schema",
 		Field:      field,
@@ -10667,7 +10732,7 @@ func (ec *executionContext) ___Type_kind(ctx context.Context, field graphql.Coll
 	return ec.marshalN__TypeKind2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Type_kind(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Type_kind(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Type",
 		Field:      field,
@@ -10708,7 +10773,7 @@ func (ec *executionContext) ___Type_name(ctx context.Context, field graphql.Coll
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Type_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Type_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Type",
 		Field:      field,
@@ -10749,7 +10814,7 @@ func (ec *executionContext) ___Type_description(ctx context.Context, field graph
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Type_description(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Type_description(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Type",
 		Field:      field,
@@ -10856,7 +10921,7 @@ func (ec *executionContext) ___Type_interfaces(ctx context.Context, field graphq
 	return ec.marshalO__Type2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐTypeᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Type_interfaces(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Type_interfaces(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Type",
 		Field:      field,
@@ -10919,7 +10984,7 @@ func (ec *executionContext) ___Type_possibleTypes(ctx context.Context, field gra
 	return ec.marshalO__Type2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐTypeᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Type_possibleTypes(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Type_possibleTypes(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Type",
 		Field:      field,
@@ -11044,7 +11109,7 @@ func (ec *executionContext) ___Type_inputFields(ctx context.Context, field graph
 	return ec.marshalO__InputValue2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐInputValueᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Type_inputFields(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Type_inputFields(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Type",
 		Field:      field,
@@ -11095,7 +11160,7 @@ func (ec *executionContext) ___Type_ofType(ctx context.Context, field graphql.Co
 	return ec.marshalO__Type2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Type_ofType(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Type_ofType(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Type",
 		Field:      field,
@@ -11158,7 +11223,7 @@ func (ec *executionContext) ___Type_specifiedByURL(ctx context.Context, field gr
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Type_specifiedByURL(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Type_specifiedByURL(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Type",
 		Field:      field,
@@ -11232,7 +11297,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		case "signals":
 			field := field
 
-			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
 				defer func() {
 					if r := recover(); r != nil {
 						ec.Error(ctx, ec.Recover(ctx, r))
@@ -11251,13 +11316,32 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		case "signalsLatest":
 			field := field
 
-			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
 				defer func() {
 					if r := recover(); r != nil {
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
 				res = ec._Query_signalsLatest(ctx, field)
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "vinvc":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_vinvc(ctx, field)
 				return res
 			}
 
@@ -11338,8 +11422,6 @@ func (ec *executionContext) _SignalAggregations(ctx context.Context, sel ast.Sel
 			out.Values[i] = ec._SignalAggregations_dimoAftermarketSSID(ctx, field, obj)
 		case "dimoAftermarketWPAState":
 			out.Values[i] = ec._SignalAggregations_dimoAftermarketWPAState(ctx, field, obj)
-		case "dimoIsLocationRedacted":
-			out.Values[i] = ec._SignalAggregations_dimoIsLocationRedacted(ctx, field, obj)
 		case "exteriorAirTemperature":
 			out.Values[i] = ec._SignalAggregations_exteriorAirTemperature(ctx, field, obj)
 		case "lowVoltageBatteryCurrentVoltage":
@@ -11450,8 +11532,6 @@ func (ec *executionContext) _SignalCollection(ctx context.Context, sel ast.Selec
 			out.Values[i] = ec._SignalCollection_dimoAftermarketSSID(ctx, field, obj)
 		case "dimoAftermarketWPAState":
 			out.Values[i] = ec._SignalCollection_dimoAftermarketWPAState(ctx, field, obj)
-		case "dimoIsLocationRedacted":
-			out.Values[i] = ec._SignalCollection_dimoIsLocationRedacted(ctx, field, obj)
 		case "exteriorAirTemperature":
 			out.Values[i] = ec._SignalCollection_exteriorAirTemperature(ctx, field, obj)
 		case "lowVoltageBatteryCurrentVoltage":
@@ -11590,6 +11670,49 @@ func (ec *executionContext) _SignalString(ctx context.Context, sel ast.Selection
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var vINVCImplementors = []string{"VINVC"}
+
+func (ec *executionContext) _VINVC(ctx context.Context, sel ast.SelectionSet, obj *model.Vinvc) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, vINVCImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("VINVC")
+		case "createdAt":
+			out.Values[i] = ec._VINVC_createdAt(ctx, field, obj)
+		case "rawVC":
+			out.Values[i] = ec._VINVC_rawVC(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "rawProof":
+			out.Values[i] = ec._VINVC_rawProof(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -12516,6 +12639,13 @@ func (ec *executionContext) marshalOTime2ᚖtimeᚐTime(ctx context.Context, sel
 	}
 	res := graphql.MarshalTime(*v)
 	return res
+}
+
+func (ec *executionContext) marshalOVINVC2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐVinvc(ctx context.Context, sel ast.SelectionSet, v *model.Vinvc) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._VINVC(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalO__EnumValue2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐEnumValueᚄ(ctx context.Context, sel ast.SelectionSet, v []introspection.EnumValue) graphql.Marshaler {

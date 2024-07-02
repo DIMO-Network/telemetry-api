@@ -1,0 +1,19 @@
+extend type Query {
+  """
+  vinvc returns the latest VINVC data for a given token.
+  """
+  vinvc(
+    """
+    The token ID of the vehicle.
+    """
+    tokenId: Int!
+  ): VINVC
+    @requiresToken
+    @requiresPrivilege(privileges: [VEHICLE_VIN_CREDENTIAL])
+}
+
+type VINVC {
+  createdAt: Time
+  rawVC: String!
+  rawProof: String
+}

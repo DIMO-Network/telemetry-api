@@ -52,9 +52,6 @@ type SignalAggregations struct {
 	// Indicate the current wpa state for the devices wifi
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	DIMOAftermarketWPAState *string `json:"dimoAftermarketWPAState,omitempty"`
-	// Indicates if the latitude and longitude signals at the current timestamp have been redacted using a privacy zone.
-	// Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
-	DIMOIsLocationRedacted *float64 `json:"dimoIsLocationRedacted,omitempty"`
 	// Air temperature outside the vehicle.
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	ExteriorAirTemperature *float64 `json:"exteriorAirTemperature,omitempty"`
@@ -102,7 +99,7 @@ type SignalAggregations struct {
 	PowertrainTractionBatteryChargingChargeLimit *float64 `json:"powertrainTractionBatteryChargingChargeLimit,omitempty"`
 	// True if charging is ongoing. Charging is considered to be ongoing if energy is flowing from charger to vehicle.
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-	PowertrainTractionBatteryChargingIsCharging *float64 `json:"powertrainTractionBatteryChargingIsCharging,omitempty"`
+	PowertrainTractionBatteryChargingIsCharging *string `json:"powertrainTractionBatteryChargingIsCharging,omitempty"`
 	// Current electrical energy flowing in/out of battery. Positive = Energy flowing in to battery, e.g. during charging. Negative = Energy flowing out of battery, e.g. during driving.
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainTractionBatteryCurrentPower *float64 `json:"powertrainTractionBatteryCurrentPower,omitempty"`
@@ -171,9 +168,6 @@ type SignalCollection struct {
 	// Indicate the current wpa state for the devices wifi
 	// Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
 	DIMOAftermarketWPAState *SignalString `json:"dimoAftermarketWPAState,omitempty"`
-	// Indicates if the latitude and longitude signals at the current timestamp have been redacted using a privacy zone.
-	// Required Privlieges: [VEHICLE_ALL_TIME_LOCATION]
-	DIMOIsLocationRedacted *SignalFloat `json:"dimoIsLocationRedacted,omitempty"`
 	// Air temperature outside the vehicle.
 	// Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
 	ExteriorAirTemperature *SignalFloat `json:"exteriorAirTemperature,omitempty"`
@@ -221,7 +215,7 @@ type SignalCollection struct {
 	PowertrainTractionBatteryChargingChargeLimit *SignalFloat `json:"powertrainTractionBatteryChargingChargeLimit,omitempty"`
 	// True if charging is ongoing. Charging is considered to be ongoing if energy is flowing from charger to vehicle.
 	// Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
-	PowertrainTractionBatteryChargingIsCharging *SignalFloat `json:"powertrainTractionBatteryChargingIsCharging,omitempty"`
+	PowertrainTractionBatteryChargingIsCharging *SignalString `json:"powertrainTractionBatteryChargingIsCharging,omitempty"`
 	// Current electrical energy flowing in/out of battery. Positive = Energy flowing in to battery, e.g. during charging. Negative = Energy flowing out of battery, e.g. during driving.
 	// Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainTractionBatteryCurrentPower *SignalFloat `json:"powertrainTractionBatteryCurrentPower,omitempty"`
@@ -270,6 +264,12 @@ type SignalString struct {
 	Timestamp time.Time `json:"timestamp"`
 	// value of the signal
 	Value string `json:"value"`
+}
+
+type Vinvc struct {
+	CreatedAt *time.Time `json:"createdAt,omitempty"`
+	RawVc     string     `json:"rawVC"`
+	RawProof  *string    `json:"rawProof,omitempty"`
 }
 
 type FloatAggregation string
