@@ -24,8 +24,6 @@ const (
 	timestampTo   = vss.TimestampCol + " < ?"
 	sourceWhere   = vss.SourceCol + " = ?"
 	groupAsc      = IntervalGroup + " ASC"
-	nameAsc       = vss.NameCol + " ASC"
-	aggAsc        = AggCol + " ASC"
 	valueTableDef = "name String, agg String"
 )
 
@@ -240,6 +238,7 @@ func unionAll(allStatements []string, allArgs [][]any) (string, []any) {
 }
 
 // getAggQuery creates a single query to perform multiple aggregations on the signal data in the same time range and interval.
+// This function returns an error if no aggregations are provided.
 /*
 SELECT
     `name`,
@@ -288,6 +287,9 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 		return "", nil, errors.New("no aggregations requested")
 	}
 
+	// I can't find documentation for this VALUES syntax anywhere besides GitHub
+	// https://github.com/ClickHouse/ClickHouse/issues/5984#issuecomment-513411725
+	// You can see the alternatives in the issue and they are ugly.
 	valuesArgs := make([]string, 0, numAggs)
 	for _, agg := range aggArgs.FloatArgs {
 		valuesArgs = append(valuesArgs, fmt.Sprintf("('%s', '%s')", agg.Name, agg.Agg))
@@ -312,8 +314,6 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 		qm.GroupBy(vss.NameCol),
 		qm.GroupBy(AggCol),
 		qm.OrderBy(groupAsc),
-		qm.OrderBy(nameAsc), // These last two order-bys are just to make the order standard for tests.
-		qm.OrderBy(aggAsc),
 	}
 	mods = append(mods, getFilterMods(aggArgs.Filter)...)
 	stmt, args := newQuery(mods...)

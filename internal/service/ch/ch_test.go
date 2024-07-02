@@ -1,9 +1,11 @@
 package ch
 
 import (
+	"cmp"
 	"context"
 	"errors"
 	"fmt"
+	"slices"
 	"testing"
 	"time"
 
@@ -232,6 +234,16 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 			// Call the GetSignalFloats method
 			result, err := c.chService.GetAggregatedSignals(ctx, &tc.aggArgs)
 			c.Require().NoError(err)
+
+			c.Require().Len(result, len(tc.expected))
+
+			// Standardize slice order so we can compare position by position.
+			slices.SortFunc(result, func(a, b *model.AggSignal) int {
+				if cmpName := cmp.Compare(a.Name, a.Name); cmpName != 0 {
+					return cmpName
+				}
+				return cmp.Compare(a.Agg, b.Agg)
+			})
 
 			for i, sig := range result {
 				c.Require().Equal(tc.expected[i], *sig)
