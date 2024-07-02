@@ -48,14 +48,10 @@ func (c *CHServiceTestSuite) SetupSuite() {
 	c.Require().NoError(err, "Failed to run migrations")
 
 	settings := config.Settings{
-		ClickHouseHost:     cfg.Host,
-		ClickHouseTCPPort:  cfg.Port,
-		ClickHouseUser:     cfg.User,
-		ClickHousePassword: cfg.Password,
-		ClickHouseDatabase: cfg.Database,
+		CLickhouse:         cfg,
 		MaxRequestDuration: "1s",
 	}
-	c.chService, err = NewService(settings, cfg.RootCAs)
+	c.chService, err = NewService(settings)
 	c.Require().NoError(err, "Failed to create repository")
 	c.dataStartTime = time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
 	c.insertTestData()
@@ -267,14 +263,10 @@ func (c *CHServiceTestSuite) TestExecutionTimeout() {
 	cfg := c.container.Config()
 
 	settings := config.Settings{
-		ClickHouseHost:     cfg.Host,
-		ClickHouseTCPPort:  cfg.Port,
-		ClickHouseUser:     cfg.User,
-		ClickHousePassword: cfg.Password,
-		ClickHouseDatabase: cfg.Database,
+		CLickhouse:         cfg,
 		MaxRequestDuration: "1s",
 	}
-	chService, err := NewService(settings, cfg.RootCAs)
+	chService, err := NewService(settings)
 	c.Require().NoError(err, "Failed to create repository")
 
 	var delay bool
