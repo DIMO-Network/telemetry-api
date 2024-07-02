@@ -40,7 +40,7 @@ func main() {
 	_ = ctx
 
 	repoLogger := logger.With().Str("component", "repository").Logger()
-	chService, err := ch.NewService(settings, nil)
+	chService, err := ch.NewService(settings)
 	if err != nil {
 		logger.Fatal().Err(err).Msg("Couldn't create ClickHouse service.")
 	}

@@ -4,7 +4,6 @@ package ch
 import (
 	"context"
 	"crypto/tls"
-	"crypto/x509"
 	"fmt"
 	"time"
 
@@ -27,21 +26,21 @@ type Service struct {
 }
 
 // NewService creates a new ClickHouse service.
-func NewService(settings config.Settings, rootCAs *x509.CertPool) (*Service, error) {
+func NewService(settings config.Settings) (*Service, error) {
 	maxExecutionTime, err := getMaxExecutionTime(settings.MaxRequestDuration)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get max execution time: %w", err)
 	}
-	addr := fmt.Sprintf("%s:%d", settings.ClickHouseHost, settings.ClickHouseTCPPort)
+	addr := fmt.Sprintf("%s:%d", settings.CLickhouse.Host, settings.CLickhouse.Port)
 	conn, err := clickhouse.Open(&clickhouse.Options{
 		Addr: []string{addr},
 		Auth: clickhouse.Auth{
-			Username: settings.ClickHouseUser,
-			Password: settings.ClickHousePassword,
-			Database: settings.ClickHouseDatabase,
+			Username: settings.CLickhouse.User,
+			Password: settings.CLickhouse.Password,
+			Database: settings.CLickhouse.Database,
 		},
 		TLS: &tls.Config{
-			RootCAs: rootCAs,
+			RootCAs: settings.CLickhouse.RootCAs,
 		},
 		Settings: map[string]any{
 			// ClickHouse will interrupt a query if the projected execution time exceeds the specified max_execution_time.
