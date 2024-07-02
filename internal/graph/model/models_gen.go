@@ -153,6 +153,12 @@ type SignalString struct {
 	Value string `json:"value"`
 }
 
+type Vinvc struct {
+	CreatedAt *time.Time `json:"createdAt,omitempty"`
+	RawVc     string     `json:"rawVC"`
+	RawProof  *string    `json:"rawProof,omitempty"`
+}
+
 type FloatAggregation string
 
 const (

@@ -12,13 +12,18 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/DIMO-Network/clickhouse-infra/pkg/connect"
 	"github.com/DIMO-Network/shared"
 	"github.com/DIMO-Network/telemetry-api/internal/auth"
 	"github.com/DIMO-Network/telemetry-api/internal/config"
 	"github.com/DIMO-Network/telemetry-api/internal/graph"
 	"github.com/DIMO-Network/telemetry-api/internal/limits"
 	"github.com/DIMO-Network/telemetry-api/internal/repositories"
+	"github.com/DIMO-Network/telemetry-api/internal/repositories/vinvc"
 	"github.com/DIMO-Network/telemetry-api/internal/service/ch"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/credentials"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/adaptor"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -45,8 +50,15 @@ func main() {
 		logger.Fatal().Err(err).Msg("Couldn't create ClickHouse service.")
 	}
 	baseRepo := repositories.NewRepository(&repoLogger, chService)
-
-	cfg := graph.Config{Resolvers: &graph.Resolver{Repository: baseRepo}}
+	vinvcRepo, err := newVinVCServiceFromSettings(settings, &logger)
+	if err != nil {
+		logger.Fatal().Err(err).Msg("Couldn't create VINVC repository.")
+	}
+	resolver := &graph.Resolver{
+		Repository: baseRepo,
+		VINVCRepo:  vinvcRepo,
+	}
+	cfg := graph.Config{Resolvers: resolver}
 	cfg.Directives.RequiresPrivilege = auth.RequiresPrivilegeCheck
 	cfg.Directives.RequiresToken = auth.RequiresTokenCheck
 	cfg.Directives.IsSignal = noOp
@@ -115,4 +127,33 @@ func errorHandler(log zerolog.Logger) func(ctx context.Context, e error) *gqlerr
 
 func noOp(ctx context.Context, obj interface{}, next graphql.Resolver) (res interface{}, err error) {
 	return next(ctx)
+}
+
+func newVinVCServiceFromSettings(settings config.Settings, parentLogger *zerolog.Logger) (*vinvc.Repository, error) {
+	chConfig := settings.CLickhouse
+	chConfig.Database = settings.ClickhouseFileIndexDatabase
+	chConn, err := connect.GetClickhouseConn(&chConfig)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get clickhouse connection: %w", err)
+	}
+	s3Client, err := s3ClientFromSettings(&settings)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create s3 client: %w", err)
+	}
+	vinvcLogger := parentLogger.With().Str("component", "vinvc").Logger()
+	return vinvc.New(chConn, s3Client, settings.VINVCBucket, settings.VINVCDataType, &vinvcLogger), nil
+}
+
+// s3ClientFromSettings creates an S3 client from the given settings.
+func s3ClientFromSettings(settings *config.Settings) (*s3.Client, error) {
+	// Create an AWS session
+	conf := aws.Config{
+		Region: settings.S3AWSRegion,
+		Credentials: credentials.NewStaticCredentialsProvider(
+			settings.S3AWSAccessKeyID,
+			settings.S3AWSSecretAccessKey,
+			"",
+		),
+	}
+	return s3.NewFromConfig(conf), nil
 }
