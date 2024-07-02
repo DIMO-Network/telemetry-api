@@ -50,7 +50,6 @@ func NewJWTMiddleware(issuer, jwksURI, contractAddress string, logger *zerolog.L
 		jwtValidator.ValidateToken,
 		jwtmiddleware.WithCredentialsOptional(false),
 		jwtmiddleware.WithErrorHandler(ErrorHandler(logger)),
-		jwtmiddleware.WithCredentialsOptional(true),
 	)
 	return middleware, nil
 }
