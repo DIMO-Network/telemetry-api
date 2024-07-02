@@ -3,7 +3,6 @@ package limits
 import (
 	"context"
 	"fmt"
-	"log"
 	"net/http"
 	"time"
 )
@@ -33,7 +32,6 @@ func New(maxRequestDuration string) (*Limiter, error) {
 // request context after the duration specified in the limiter.
 func (l *Limiter) AddRequestTimeout(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Printf("Authorization header: %q", r.Header.Get("Authorization"))
 		ctx, cancel := context.WithTimeout(r.Context(), l.maxRequestDuration)
 		defer cancel()
 		next.ServeHTTP(w, r.Clone(ctx))
