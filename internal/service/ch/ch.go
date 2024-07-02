@@ -89,9 +89,17 @@ func (s *Service) GetLatestSignals(ctx context.Context, latestArgs *model.Latest
 // GetAggregatedSignals returns a slice of aggregated signals based on the provided arguments from the ClickHouse database.
 // The signals are sorted by timestamp in ascending order.
 // The timestamp on each signal is for the start of the interval.
-func (s *Service) GetAggregatedSignals(ctx context.Context, aggArgs *model.AggregatedSignalArgs) ([]*vss.Signal, error) {
-	stmt, args := getAggQuery(aggArgs)
-	signals, err := s.getSignals(ctx, stmt, args)
+func (s *Service) GetAggregatedSignals(ctx context.Context, aggArgs *model.AggregatedSignalArgs) ([]*model.AggSignal, error) {
+	if len(aggArgs.FloatArgs) == 0 && len(aggArgs.StringArgs) == 0 {
+		return []*model.AggSignal{}, nil
+	}
+
+	stmt, args, err := getAggQuery(aggArgs)
+	if err != nil {
+		return nil, err
+	}
+
+	signals, err := s.getAggSignals(ctx, stmt, args)
 	if err != nil {
 		return nil, err
 	}
@@ -109,6 +117,28 @@ func (s *Service) getSignals(ctx context.Context, stmt string, args []any) ([]*v
 	for rows.Next() {
 		var signal vss.Signal
 		err := rows.Scan(&signal.Name, &signal.Timestamp, &signal.ValueNumber, &signal.ValueString)
+		if err != nil {
+			return nil, fmt.Errorf("failed scanning clickhouse row: %w", err)
+		}
+		signals = append(signals, &signal)
+	}
+	if rows.Err() != nil {
+		return nil, fmt.Errorf("clickhouse row error: %w", rows.Err())
+	}
+	return signals, nil
+}
+
+// TODO(elffjs): Ugly duplication.
+func (s *Service) getAggSignals(ctx context.Context, stmt string, args []any) ([]*model.AggSignal, error) {
+	rows, err := s.conn.Query(ctx, stmt, args...)
+	if err != nil {
+		return nil, fmt.Errorf("failed querying clickhouse: %w", err)
+	}
+	defer rows.Close() //nolint:errcheck // we don't care about the error here
+	signals := []*model.AggSignal{}
+	for rows.Next() {
+		var signal model.AggSignal
+		err := rows.Scan(&signal.Name, &signal.Agg, &signal.Timestamp, &signal.ValueNumber, &signal.ValueString)
 		if err != nil {
 			return nil, fmt.Errorf("failed scanning clickhouse row: %w", err)
 		}

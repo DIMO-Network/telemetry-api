@@ -1,6 +1,7 @@
 package ch
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -15,12 +16,15 @@ import (
 const (
 	// IntervalGroup is the column alias for the interval group.
 	IntervalGroup = "group_timestamp"
+	AggCol        = "agg"
+	aggTableName  = "agg_table"
 	tokenIDWhere  = vss.TokenIDCol + " = ?"
 	nameIn        = vss.NameCol + " IN ?"
 	timestampFrom = vss.TimestampCol + " >= ?"
 	timestampTo   = vss.TimestampCol + " < ?"
 	sourceWhere   = vss.SourceCol + " = ?"
 	groupAsc      = IntervalGroup + " ASC"
+	valueTableDef = "name String, agg String"
 )
 
 // varibles for the last seen signal query.
@@ -107,7 +111,7 @@ func selectNumberAggs(numberAggs []model.FloatSignalArgs) qm.QueryMod {
 	// Add a CASE statement for each name and its corresponding aggregation function
 	caseStmts := make([]string, len(numberAggs))
 	for i := range numberAggs {
-		caseStmts[i] = fmt.Sprintf("WHEN %s = '%s' THEN %s", vss.NameCol, numberAggs[i].Name, getFloatAggFunc(numberAggs[i].Agg))
+		caseStmts[i] = fmt.Sprintf("WHEN %s = '%s' AND %s = '%s' THEN %s", vss.NameCol, numberAggs[i].Name, AggCol, numberAggs[i].Agg, getFloatAggFunc(numberAggs[i].Agg))
 	}
 	caseStmt := fmt.Sprintf("CASE %s ELSE NULL END AS %s", strings.Join(caseStmts, " "), vss.ValueNumberCol)
 	return qm.Select(caseStmt)
@@ -120,7 +124,7 @@ func selectStringAggs(stringAggs []model.StringSignalArgs) qm.QueryMod {
 	// Add a CASE statement for each name and its corresponding aggregation function
 	caseStmts := make([]string, len(stringAggs))
 	for i := range stringAggs {
-		caseStmts[i] = fmt.Sprintf("WHEN %s = '%s' THEN %s", vss.NameCol, stringAggs[i].Name, getStringAgg(stringAggs[i].Agg))
+		caseStmts[i] = fmt.Sprintf("WHEN %s = '%s' AND %s = '%s' THEN %s", vss.NameCol, stringAggs[i].Name, AggCol, stringAggs[i].Agg, getStringAgg(stringAggs[i].Agg))
 	}
 	caseStmt := fmt.Sprintf("CASE %s ELSE NULL END AS %s", strings.Join(caseStmts, " "), vss.ValueStringCol)
 	return qm.Select(caseStmt)
@@ -234,62 +238,86 @@ func unionAll(allStatements []string, allArgs [][]any) (string, []any) {
 }
 
 // getAggQuery creates a single query to perform multiple aggregations on the signal data in the same time range and interval.
+// This function returns an error if no aggregations are provided.
 /*
 SELECT
     `name`,
     toStartOfInterval(timestamp, toIntervalMillisecond(30000)) AS group_timestamp,
     CASE
-        WHEN name = 'speed' THEN max(value_number)
-        WHEN name = 'obdRunTime' THEN median(value_number)
+        WHEN name = 'speed' AND agg = 'MAX' THEN max(value_number)
+        WHEN name = 'obdRunTime' AND agg = 'MEDIAN' THEN median(value_number)
         ELSE NULL
     END AS value_number,
     CASE
-        WHEN name = 'powertrainType' THEN arrayStringConcat(groupUniqArray(value_string),',')
-        WHEN name = 'powertrainFuelSystemSupportedFuelTypes' THEN groupArraySample(1, 1716404995385)(value_string)[1]
+        WHEN name = 'powertrainType' AND agg = 'UNIQUE' THEN arrayStringConcat(groupUniqArray(value_string),',')
+        WHEN name = 'powertrainFuelSystemSupportedFuelTypes' AND agg = 'RAND' THEN groupArraySample(1, 1716404995385)(value_string)[1]
         ELSE NULL
     END AS value_string
 FROM
     `signal`
+JOIN
+	VALUES(
+		'name String, agg String',
+		('speed, 'MAX'),
+		('obdRunTime', 'MEDIAN'),
+		('powertrainType', 'UNIQUE'),
+		('powertrainFuelSystemSupportedFuelTypes', 'RAND')
+	) AS agg_table
+ON
+	signal.name = agg_table.name
 WHERE
-    `name` IN ['speed', 'obdRunTime', 'powertrainType', 'powertrainFuelSystemSupportedFuelTypes']
-    AND token_id = 15
+    token_id = 15
     AND timestamp > toDateTime('2024-04-15 09:21:19')
     AND timestamp < toDateTime('2024-04-27 09:21:19')
 GROUP BY
     group_timestamp,
     name
 ORDER BY
-    group_timestamp ASC;
+    group_timestamp ASC,
+	name ASC,
+	agg ASC;
 */
-func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any) {
+func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 	if aggArgs == nil {
-		return "", nil
+		return "", nil, nil
 	}
 
-	names := make([]string, 0, len(aggArgs.FloatArgs)+len(aggArgs.StringArgs))
+	numAggs := len(aggArgs.FloatArgs) + len(aggArgs.StringArgs)
+	if numAggs == 0 {
+		return "", nil, errors.New("no aggregations requested")
+	}
+
+	// I can't find documentation for this VALUES syntax anywhere besides GitHub
+	// https://github.com/ClickHouse/ClickHouse/issues/5984#issuecomment-513411725
+	// You can see the alternatives in the issue and they are ugly.
+	valuesArgs := make([]string, 0, numAggs)
 	for _, agg := range aggArgs.FloatArgs {
-		names = append(names, agg.Name)
+		valuesArgs = append(valuesArgs, fmt.Sprintf("('%s', '%s')", agg.Name, agg.Agg))
 	}
 	for _, agg := range aggArgs.StringArgs {
-		names = append(names, agg.Name)
+		valuesArgs = append(valuesArgs, fmt.Sprintf("('%s', '%s')", agg.Name, agg.Agg))
 	}
+	valueTable := fmt.Sprintf("VALUES('%s', %s) as %s ON %s.%s = %s.%s", valueTableDef, strings.Join(valuesArgs, ", "), aggTableName, vss.TableName, vss.NameCol, aggTableName, vss.NameCol)
 
 	mods := []qm.QueryMod{
 		qm.Select(vss.NameCol),
+		qm.Select(AggCol),
 		selectInterval(aggArgs.Interval),
 		selectNumberAggs(aggArgs.FloatArgs),
 		selectStringAggs(aggArgs.StringArgs),
-		qm.WhereIn(nameIn, names),
 		qm.Where(tokenIDWhere, aggArgs.TokenID),
 		qm.Where(timestampFrom, aggArgs.FromTS),
 		qm.Where(timestampTo, aggArgs.ToTS),
 		qm.From(vss.TableName),
+		qm.InnerJoin(valueTable),
 		qm.GroupBy(IntervalGroup),
 		qm.GroupBy(vss.NameCol),
+		qm.GroupBy(AggCol),
 		qm.OrderBy(groupAsc),
 	}
 	mods = append(mods, getFilterMods(aggArgs.Filter)...)
-	return newQuery(mods...)
+	stmt, args := newQuery(mods...)
+	return stmt, args, nil
 }
 
 // getFilterMods returns the query mods for the filter.
