@@ -54,7 +54,7 @@ type ComplexityRoot struct {
 	Query struct {
 		Signals       func(childComplexity int, tokenID int, interval string, from time.Time, to time.Time, filter *model.SignalFilter) int
 		SignalsLatest func(childComplexity int, tokenID int, filter *model.SignalFilter) int
-		VinVc         func(childComplexity int, tokenID int) int
+		VinVCLatest   func(childComplexity int, tokenID int) int
 	}
 
 	SignalAggregations struct {
@@ -162,7 +162,7 @@ type ComplexityRoot struct {
 type QueryResolver interface {
 	Signals(ctx context.Context, tokenID int, interval string, from time.Time, to time.Time, filter *model.SignalFilter) ([]*model.SignalAggregations, error)
 	SignalsLatest(ctx context.Context, tokenID int, filter *model.SignalFilter) (*model.SignalCollection, error)
-	VinVc(ctx context.Context, tokenID int) (*model.Vinvc, error)
+	VinVCLatest(ctx context.Context, tokenID int) (*model.Vinvc, error)
 }
 type SignalAggregationsResolver interface {
 	ChassisAxleRow1WheelLeftTirePressure(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
@@ -248,17 +248,17 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.SignalsLatest(childComplexity, args["tokenId"].(int), args["filter"].(*model.SignalFilter)), true
 
-	case "Query.vinVC":
-		if e.complexity.Query.VinVc == nil {
+	case "Query.vinVCLatest":
+		if e.complexity.Query.VinVCLatest == nil {
 			break
 		}
 
-		args, err := ec.field_Query_vinVC_args(context.TODO(), rawArgs)
+		args, err := ec.field_Query_vinVCLatest_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Query.VinVc(childComplexity, args["tokenId"].(int)), true
+		return e.complexity.Query.VinVCLatest(childComplexity, args["tokenId"].(int)), true
 
 	case "SignalAggregations.chassisAxleRow1WheelLeftTirePressure":
 		if e.complexity.SignalAggregations.ChassisAxleRow1WheelLeftTirePressure == nil {
@@ -1814,7 +1814,7 @@ extend type SignalCollection {
 
   Required Privileges: [VEHICLE_VIN_CREDENTIAL]
   """
-  vinVC(
+  vinVCLatest(
     """
     The token ID of the vehicle.
     """
@@ -1943,7 +1943,7 @@ func (ec *executionContext) field_Query_signals_args(ctx context.Context, rawArg
 	return args, nil
 }
 
-func (ec *executionContext) field_Query_vinVC_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Query_vinVCLatest_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 int
@@ -2870,8 +2870,8 @@ func (ec *executionContext) fieldContext_Query_signalsLatest(ctx context.Context
 	return fc, nil
 }
 
-func (ec *executionContext) _Query_vinVC(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Query_vinVC(ctx, field)
+func (ec *executionContext) _Query_vinVCLatest(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_vinVCLatest(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -2885,7 +2885,7 @@ func (ec *executionContext) _Query_vinVC(ctx context.Context, field graphql.Coll
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Query().VinVc(rctx, fc.Args["tokenId"].(int))
+			return ec.resolvers.Query().VinVCLatest(rctx, fc.Args["tokenId"].(int))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.RequiresToken == nil {
@@ -2928,7 +2928,7 @@ func (ec *executionContext) _Query_vinVC(ctx context.Context, field graphql.Coll
 	return ec.marshalOVINVC2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐVinvc(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Query_vinVC(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Query_vinVCLatest(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Query",
 		Field:      field,
@@ -2955,7 +2955,7 @@ func (ec *executionContext) fieldContext_Query_vinVC(ctx context.Context, field 
 		}
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Query_vinVC_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+	if fc.Args, err = ec.field_Query_vinVCLatest_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -11654,7 +11654,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
-		case "vinVC":
+		case "vinVCLatest":
 			field := field
 
 			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
@@ -11663,7 +11663,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_vinVC(ctx, field)
+				res = ec._Query_vinVCLatest(ctx, field)
 				return res
 			}
 

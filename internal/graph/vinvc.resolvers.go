@@ -10,7 +10,7 @@ import (
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 )
 
-// VinVc is the resolver for the vinVC field.
-func (r *queryResolver) VinVc(ctx context.Context, tokenID int) (*model.Vinvc, error) {
+// VinVCLatest is the resolver for the vinVCLatest field.
+func (r *queryResolver) VinVCLatest(ctx context.Context, tokenID int) (*model.Vinvc, error) {
 	return r.VINVCRepo.GetLatestVC(ctx, uint32(tokenID))
 }

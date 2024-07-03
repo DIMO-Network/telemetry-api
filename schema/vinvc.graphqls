@@ -4,7 +4,7 @@ extend type Query {
 
   Required Privileges: [VEHICLE_VIN_CREDENTIAL]
   """
-  vinVC(
+  vinVCLatest(
     """
     The token ID of the vehicle.
     """
