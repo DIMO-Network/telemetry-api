@@ -48,8 +48,8 @@ func NewJWTMiddleware(issuer, jwksURI, contractAddress string, logger *zerolog.L
 
 	middleware := jwtmiddleware.New(
 		jwtValidator.ValidateToken,
-		jwtmiddleware.WithCredentialsOptional(true),
 		jwtmiddleware.WithErrorHandler(ErrorHandler(logger)),
+		jwtmiddleware.WithCredentialsOptional(true),
 	)
 	return middleware, nil
 }
