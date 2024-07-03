@@ -1811,6 +1811,8 @@ extend type SignalCollection {
 	{Name: "../../schema/vinvc.graphqls", Input: `extend type Query {
   """
   vinvc returns the latest VINVC data for a given token.
+
+  Required Privileges: [VEHICLE_VIN_CREDENTIAL]
   """
   vinvc(
     """
