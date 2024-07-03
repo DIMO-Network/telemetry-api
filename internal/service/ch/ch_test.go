@@ -177,6 +177,54 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 				},
 			},
 		},
+		{
+			name: "first",
+			aggArgs: model.AggregatedSignalArgs{
+				SignalArgs: model.SignalArgs{
+					TokenID: 1,
+				},
+				FromTS:   c.dataStartTime,
+				ToTS:     endTs,
+				Interval: day.Milliseconds(),
+				FloatArgs: []model.FloatSignalArgs{
+					{
+						Name: vss.FieldSpeed,
+						Agg:  model.FloatAggregationFirst,
+					},
+				},
+			},
+			expected: []vss.Signal{
+				{
+					Name:        vss.FieldSpeed,
+					Timestamp:   c.dataStartTime,
+					ValueNumber: 0,
+				},
+			},
+		},
+		{
+			name: "last",
+			aggArgs: model.AggregatedSignalArgs{
+				SignalArgs: model.SignalArgs{
+					TokenID: 1,
+				},
+				FromTS:   c.dataStartTime,
+				ToTS:     endTs,
+				Interval: day.Milliseconds(),
+				FloatArgs: []model.FloatSignalArgs{
+					{
+						Name: vss.FieldSpeed,
+						Agg:  model.FloatAggregationLast,
+					},
+				},
+			},
+			expected: []vss.Signal{
+				{
+					Name:        vss.FieldSpeed,
+					Timestamp:   c.dataStartTime,
+					ValueNumber: 9,
+				},
+			},
+		},
 	}
 	for _, tc := range testCases {
 		c.Run(tc.name, func() {
@@ -325,7 +373,6 @@ func (c *CHServiceTestSuite) insertTestData() {
 			TokenID:     1,
 			ValueString: fmt.Sprintf("value%d", i%3+1),
 		}
-
 		testSignal = append(testSignal, numSig, strSig)
 	}
 

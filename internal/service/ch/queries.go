@@ -45,6 +45,8 @@ const (
 	minGroup       = "min(" + vss.ValueNumberCol + ")"
 	maxGroup       = "max(" + vss.ValueNumberCol + ")"
 	medGroup       = "median(" + vss.ValueNumberCol + ")"
+	firstGroup     = "first_value(" + vss.ValueNumberCol + ")"
+	lastGroup      = "last_value(" + vss.ValueNumberCol + ")"
 )
 
 // Aggregation functions for string signals.
@@ -141,6 +143,10 @@ func getFloatAggFunc(aggType model.FloatAggregation) string {
 		aggStr = maxGroup
 	case model.FloatAggregationMed:
 		aggStr = medGroup
+	case model.FloatAggregationFirst:
+		aggStr = firstGroup
+	case model.FloatAggregationLast:
+		aggStr = lastGroup
 	}
 	return aggStr
 }

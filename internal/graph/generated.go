@@ -1104,8 +1104,7 @@ type Query {
   """
   SignalsLatest returns the latest signals for a given token.
   """
-  signalsLatest(tokenId: Int!, filter: SignalFilter): SignalCollection
-    @requiresToken
+  signalsLatest(tokenId: Int!, filter: SignalFilter): SignalCollection @requiresToken
 }
 type SignalAggregations {
   """
@@ -1127,6 +1126,8 @@ enum FloatAggregation {
   MAX
   MIN
   RAND
+  FIRST
+  LAST
 }
 
 enum StringAggregation {

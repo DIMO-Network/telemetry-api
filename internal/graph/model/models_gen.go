@@ -275,11 +275,13 @@ type SignalString struct {
 type FloatAggregation string
 
 const (
-	FloatAggregationAvg  FloatAggregation = "AVG"
-	FloatAggregationMed  FloatAggregation = "MED"
-	FloatAggregationMax  FloatAggregation = "MAX"
-	FloatAggregationMin  FloatAggregation = "MIN"
-	FloatAggregationRand FloatAggregation = "RAND"
+	FloatAggregationAvg   FloatAggregation = "AVG"
+	FloatAggregationMed   FloatAggregation = "MED"
+	FloatAggregationMax   FloatAggregation = "MAX"
+	FloatAggregationMin   FloatAggregation = "MIN"
+	FloatAggregationRand  FloatAggregation = "RAND"
+	FloatAggregationFirst FloatAggregation = "FIRST"
+	FloatAggregationLast  FloatAggregation = "LAST"
 )
 
 var AllFloatAggregation = []FloatAggregation{
@@ -288,11 +290,13 @@ var AllFloatAggregation = []FloatAggregation{
 	FloatAggregationMax,
 	FloatAggregationMin,
 	FloatAggregationRand,
+	FloatAggregationFirst,
+	FloatAggregationLast,
 }
 
 func (e FloatAggregation) IsValid() bool {
 	switch e {
-	case FloatAggregationAvg, FloatAggregationMed, FloatAggregationMax, FloatAggregationMin, FloatAggregationRand:
+	case FloatAggregationAvg, FloatAggregationMed, FloatAggregationMax, FloatAggregationMin, FloatAggregationRand, FloatAggregationFirst, FloatAggregationLast:
 		return true
 	}
 	return false
