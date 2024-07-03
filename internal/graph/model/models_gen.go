@@ -154,9 +154,10 @@ type SignalString struct {
 }
 
 type Vinvc struct {
-	CreatedAt *time.Time `json:"createdAt,omitempty"`
-	RawVc     string     `json:"rawVC"`
-	RawProof  *string    `json:"rawProof,omitempty"`
+	IssuanceDate   *time.Time `json:"issuanceDate,omitempty"`
+	ExpirationDate *time.Time `json:"expirationDate,omitempty"`
+	Vin            *string    `json:"vin,omitempty"`
+	RawVc          string     `json:"rawVC"`
 }
 
 type FloatAggregation string

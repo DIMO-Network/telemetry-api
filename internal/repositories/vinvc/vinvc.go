@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/ClickHouse/clickhouse-go/v2"
+	"github.com/DIMO-Network/attestation-api/pkg/verifiable"
 	"github.com/DIMO-Network/nameindexer"
 	"github.com/DIMO-Network/nameindexer/pkg/clickhouse/service"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
@@ -39,26 +40,30 @@ func (s *Repository) GetLatestVC(ctx context.Context, vehicleTokenID uint32) (*m
 		s.logger.Error().Err(err).Msg("failed to get latest data")
 		return nil, errors.New("internal error")
 	}
-	msg := map[string]json.RawMessage{}
+	msg := verifiable.Credential{}
 	if err := json.Unmarshal(data, &msg); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal fingerprint message: %w", err)
 	}
 
-	var proof *string
-	if proofVal, ok := msg["proof"]; ok {
-		proof = new(string)
-		*proof = string(proofVal)
+	var expiresAt *time.Time
+	if expirationDate, err := time.Parse(time.RFC3339, msg.ExpirationDate); err == nil {
+		expiresAt = &expirationDate
 	}
-
 	var createdAt *time.Time
-	if err := json.Unmarshal(msg["issuanceDate"], &createdAt); err != nil {
-		createdAt = nil
+	if issuanceDate, err := time.Parse(time.RFC3339, msg.IssuanceDate); err == nil {
+		createdAt = &issuanceDate
+	}
+	credSubject := verifiable.VINSubject{}
+	var vin *string
+	if err := json.Unmarshal(msg.CredentialSubject, &credSubject); err == nil {
+		vin = &credSubject.VehicleIdentificationNumber
 	}
 
 	vc := model.Vinvc{
-		CreatedAt: createdAt,
-		RawVc:     string(data),
-		RawProof:  proof,
+		IssuanceDate:   createdAt,
+		ExpirationDate: expiresAt,
+		RawVc:          string(data),
+		Vin:            vin,
 	}
 	return &vc, nil
 }

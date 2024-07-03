@@ -152,9 +152,10 @@ type ComplexityRoot struct {
 	}
 
 	VINVC struct {
-		CreatedAt func(childComplexity int) int
-		RawProof  func(childComplexity int) int
-		RawVc     func(childComplexity int) int
+		ExpirationDate func(childComplexity int) int
+		IssuanceDate   func(childComplexity int) int
+		RawVc          func(childComplexity int) int
+		Vin            func(childComplexity int) int
 	}
 }
 
@@ -1023,19 +1024,19 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.SignalString.Value(childComplexity), true
 
-	case "VINVC.createdAt":
-		if e.complexity.VINVC.CreatedAt == nil {
+	case "VINVC.expirationDate":
+		if e.complexity.VINVC.ExpirationDate == nil {
 			break
 		}
 
-		return e.complexity.VINVC.CreatedAt(childComplexity), true
+		return e.complexity.VINVC.ExpirationDate(childComplexity), true
 
-	case "VINVC.rawProof":
-		if e.complexity.VINVC.RawProof == nil {
+	case "VINVC.issuanceDate":
+		if e.complexity.VINVC.IssuanceDate == nil {
 			break
 		}
 
-		return e.complexity.VINVC.RawProof(childComplexity), true
+		return e.complexity.VINVC.IssuanceDate(childComplexity), true
 
 	case "VINVC.rawVC":
 		if e.complexity.VINVC.RawVc == nil {
@@ -1043,6 +1044,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.VINVC.RawVc(childComplexity), true
+
+	case "VINVC.vin":
+		if e.complexity.VINVC.Vin == nil {
+			break
+		}
+
+		return e.complexity.VINVC.Vin(childComplexity), true
 
 	}
 	return 0, false
@@ -1815,9 +1823,10 @@ extend type SignalCollection {
 }
 
 type VINVC {
-  createdAt: Time
+  issuanceDate: Time
+  expirationDate: Time
+  vin: String
   rawVC: String!
-  rawProof: String
 }
 `, BuiltIn: false},
 }
@@ -2925,12 +2934,14 @@ func (ec *executionContext) fieldContext_Query_vinvc(ctx context.Context, field 
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "createdAt":
-				return ec.fieldContext_VINVC_createdAt(ctx, field)
+			case "issuanceDate":
+				return ec.fieldContext_VINVC_issuanceDate(ctx, field)
+			case "expirationDate":
+				return ec.fieldContext_VINVC_expirationDate(ctx, field)
+			case "vin":
+				return ec.fieldContext_VINVC_vin(ctx, field)
 			case "rawVC":
 				return ec.fieldContext_VINVC_rawVC(ctx, field)
-			case "rawProof":
-				return ec.fieldContext_VINVC_rawProof(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type VINVC", field.Name)
 		},
@@ -9609,8 +9620,8 @@ func (ec *executionContext) fieldContext_SignalString_value(_ context.Context, f
 	return fc, nil
 }
 
-func (ec *executionContext) _VINVC_createdAt(ctx context.Context, field graphql.CollectedField, obj *model.Vinvc) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_VINVC_createdAt(ctx, field)
+func (ec *executionContext) _VINVC_issuanceDate(ctx context.Context, field graphql.CollectedField, obj *model.Vinvc) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_VINVC_issuanceDate(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -9623,7 +9634,7 @@ func (ec *executionContext) _VINVC_createdAt(ctx context.Context, field graphql.
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.CreatedAt, nil
+		return obj.IssuanceDate, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -9637,7 +9648,7 @@ func (ec *executionContext) _VINVC_createdAt(ctx context.Context, field graphql.
 	return ec.marshalOTime2ᚖtimeᚐTime(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_VINVC_createdAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_VINVC_issuanceDate(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "VINVC",
 		Field:      field,
@@ -9645,6 +9656,88 @@ func (ec *executionContext) fieldContext_VINVC_createdAt(_ context.Context, fiel
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _VINVC_expirationDate(ctx context.Context, field graphql.CollectedField, obj *model.Vinvc) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_VINVC_expirationDate(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ExpirationDate, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalOTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_VINVC_expirationDate(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "VINVC",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _VINVC_vin(ctx context.Context, field graphql.CollectedField, obj *model.Vinvc) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_VINVC_vin(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Vin, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_VINVC_vin(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "VINVC",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	return fc, nil
@@ -9682,47 +9775,6 @@ func (ec *executionContext) _VINVC_rawVC(ctx context.Context, field graphql.Coll
 }
 
 func (ec *executionContext) fieldContext_VINVC_rawVC(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "VINVC",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _VINVC_rawProof(ctx context.Context, field graphql.CollectedField, obj *model.Vinvc) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_VINVC_rawProof(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.RawProof, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*string)
-	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_VINVC_rawProof(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "VINVC",
 		Field:      field,
@@ -13154,15 +13206,17 @@ func (ec *executionContext) _VINVC(ctx context.Context, sel ast.SelectionSet, ob
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("VINVC")
-		case "createdAt":
-			out.Values[i] = ec._VINVC_createdAt(ctx, field, obj)
+		case "issuanceDate":
+			out.Values[i] = ec._VINVC_issuanceDate(ctx, field, obj)
+		case "expirationDate":
+			out.Values[i] = ec._VINVC_expirationDate(ctx, field, obj)
+		case "vin":
+			out.Values[i] = ec._VINVC_vin(ctx, field, obj)
 		case "rawVC":
 			out.Values[i] = ec._VINVC_rawVC(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
-		case "rawProof":
-			out.Values[i] = ec._VINVC_rawProof(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
