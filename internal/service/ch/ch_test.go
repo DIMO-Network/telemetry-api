@@ -191,7 +191,7 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 				{
 					Name:        vss.FieldPowertrainType,
 					Timestamp:   c.dataStartTime,
-					ValueString: "value2,value1,value3",
+					ValueString: "value10,value3,value2,value9,value7,value5,value4,value8,value1,value6",
 					Agg:         model.StringAggregationUnique.String(),
 				},
 			},
@@ -225,7 +225,7 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 			},
 		},
 		{
-			name: "first",
+			name: "first float",
 			aggArgs: model.AggregatedSignalArgs{
 				SignalArgs: model.SignalArgs{
 					TokenID: 1,
@@ -250,7 +250,7 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 			},
 		},
 		{
-			name: "last",
+			name: "last float",
 			aggArgs: model.AggregatedSignalArgs{
 				SignalArgs: model.SignalArgs{
 					TokenID: 1,
@@ -269,8 +269,58 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 				{
 					Name:        vss.FieldSpeed,
 					Timestamp:   c.dataStartTime,
-					ValueNumber: 9,
+					ValueNumber: dataPoints - 1,
 					Agg:         model.FloatAggregationLast.String(),
+				},
+			},
+		},
+		{
+			name: "first string",
+			aggArgs: model.AggregatedSignalArgs{
+				SignalArgs: model.SignalArgs{
+					TokenID: 1,
+				},
+				FromTS:   c.dataStartTime,
+				ToTS:     endTs,
+				Interval: day.Milliseconds(),
+				StringArgs: []model.StringSignalArgs{
+					{
+						Name: vss.FieldPowertrainType,
+						Agg:  model.StringAggregationFirst,
+					},
+				},
+			},
+			expected: []model.AggSignal{
+				{
+					Name:        vss.FieldPowertrainType,
+					Timestamp:   c.dataStartTime,
+					ValueString: "value1",
+					Agg:         model.StringAggregationFirst.String(),
+				},
+			},
+		},
+		{
+			name: "last string",
+			aggArgs: model.AggregatedSignalArgs{
+				SignalArgs: model.SignalArgs{
+					TokenID: 1,
+				},
+				FromTS:   c.dataStartTime,
+				ToTS:     endTs,
+				Interval: day.Milliseconds(),
+				StringArgs: []model.StringSignalArgs{
+					{
+						Name: vss.FieldPowertrainType,
+						Agg:  model.StringAggregationLast,
+					},
+				},
+			},
+			expected: []model.AggSignal{
+				{
+					Name:        vss.FieldPowertrainType,
+					Timestamp:   c.dataStartTime,
+					ValueString: fmt.Sprintf("value%d", dataPoints),
+					Agg:         model.StringAggregationLast.String(),
 				},
 			},
 		},
@@ -423,7 +473,7 @@ func (c *CHServiceTestSuite) insertTestData() {
 			Timestamp:   c.dataStartTime.Add(time.Second * time.Duration(30*i)),
 			Source:      sources[i%3],
 			TokenID:     1,
-			ValueString: fmt.Sprintf("value%d", i%3+1),
+			ValueString: fmt.Sprintf("value%d", i+1),
 		}
 		testSignal = append(testSignal, numSig, strSig)
 	}

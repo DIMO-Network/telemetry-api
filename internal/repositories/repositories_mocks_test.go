@@ -51,7 +51,7 @@ func (m *MockCHService) GetAggregatedSignals(ctx context.Context, aggArgs *model
 }
 
 // GetAggregatedSignals indicates an expected call of GetAggregatedSignals.
-func (mr *MockCHServiceMockRecorder) GetAggregatedSignals(ctx, aggArgs any) *gomock.Call {
+func (mr *MockCHServiceMockRecorder) GetAggregatedSignals(ctx, aggArgs interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAggregatedSignals", reflect.TypeOf((*MockCHService)(nil).GetAggregatedSignals), ctx, aggArgs)
 }
@@ -66,7 +66,7 @@ func (m *MockCHService) GetLatestSignals(ctx context.Context, latestArgs *model.
 }
 
 // GetLatestSignals indicates an expected call of GetLatestSignals.
-func (mr *MockCHServiceMockRecorder) GetLatestSignals(ctx, latestArgs any) *gomock.Call {
+func (mr *MockCHServiceMockRecorder) GetLatestSignals(ctx, latestArgs interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetLatestSignals", reflect.TypeOf((*MockCHService)(nil).GetLatestSignals), ctx, latestArgs)
 }

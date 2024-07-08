@@ -260,12 +260,18 @@ const (
 	StringAggregationTop StringAggregation = "TOP"
 	// Return a list of unique values in the group.
 	StringAggregationUnique StringAggregation = "UNIQUE"
+	// Return value in group associated with the minimum time value.
+	StringAggregationFirst StringAggregation = "FIRST"
+	// Return value in group associated with the maximum time value.
+	StringAggregationLast StringAggregation = "LAST"
 )
 
 var AllStringAggregation = []StringAggregation{
 	StringAggregationRand,
 	StringAggregationTop,
 	StringAggregationUnique,
+	StringAggregationFirst,
+	StringAggregationLast,
 }
 
 func (e StringAggregation) IsValid() bool {
