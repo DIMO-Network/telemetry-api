@@ -49,8 +49,8 @@ const (
 	minGroup       = "min(" + vss.ValueNumberCol + ")"
 	maxGroup       = "max(" + vss.ValueNumberCol + ")"
 	medGroup       = "median(" + vss.ValueNumberCol + ")"
-	firstGroup     = "first_value(" + vss.ValueNumberCol + ")"
-	lastGroup      = "last_value(" + vss.ValueNumberCol + ")"
+	firstGroup     = "argMin(" + vss.ValueNumberCol + ", " + vss.TimestampCol + ")"
+	lastGroup      = "argMax(" + vss.ValueNumberCol + ", " + vss.TimestampCol + ")"
 )
 
 // Aggregation functions for string signals.

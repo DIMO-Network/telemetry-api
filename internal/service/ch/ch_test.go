@@ -240,11 +240,12 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 					},
 				},
 			},
-			expected: []vss.Signal{
+			expected: []model.AggSignal{
 				{
 					Name:        vss.FieldSpeed,
 					Timestamp:   c.dataStartTime,
 					ValueNumber: 0,
+					Agg:         model.FloatAggregationFirst.String(),
 				},
 			},
 		},
@@ -264,11 +265,12 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 					},
 				},
 			},
-			expected: []vss.Signal{
+			expected: []model.AggSignal{
 				{
 					Name:        vss.FieldSpeed,
 					Timestamp:   c.dataStartTime,
 					ValueNumber: 9,
+					Agg:         model.FloatAggregationLast.String(),
 				},
 			},
 		},
