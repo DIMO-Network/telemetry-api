@@ -276,7 +276,7 @@ var AllStringAggregation = []StringAggregation{
 
 func (e StringAggregation) IsValid() bool {
 	switch e {
-	case StringAggregationRand, StringAggregationTop, StringAggregationUnique:
+	case StringAggregationRand, StringAggregationTop, StringAggregationUnique, StringAggregationFirst, StringAggregationLast:
 		return true
 	}
 	return false

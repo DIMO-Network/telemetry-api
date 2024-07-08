@@ -1184,6 +1184,14 @@ enum StringAggregation {
   Return a list of unique values in the group.
   """
   UNIQUE
+  """
+  Return value in group associated with the minimum time value.
+  """
+  FIRST
+  """
+  Return value in group associated with the maximum time value.
+  """
+  LAST
 }
 type SignalFloat {
   """
