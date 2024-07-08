@@ -54,6 +54,7 @@ type ComplexityRoot struct {
 	Query struct {
 		Signals       func(childComplexity int, tokenID int, interval string, from time.Time, to time.Time, filter *model.SignalFilter) int
 		SignalsLatest func(childComplexity int, tokenID int, filter *model.SignalFilter) int
+		VinVCLatest   func(childComplexity int, tokenID int) int
 	}
 
 	SignalAggregations struct {
@@ -149,11 +150,19 @@ type ComplexityRoot struct {
 		Timestamp func(childComplexity int) int
 		Value     func(childComplexity int) int
 	}
+
+	VINVC struct {
+		ExpirationDate func(childComplexity int) int
+		IssuanceDate   func(childComplexity int) int
+		RawVc          func(childComplexity int) int
+		Vin            func(childComplexity int) int
+	}
 }
 
 type QueryResolver interface {
 	Signals(ctx context.Context, tokenID int, interval string, from time.Time, to time.Time, filter *model.SignalFilter) ([]*model.SignalAggregations, error)
 	SignalsLatest(ctx context.Context, tokenID int, filter *model.SignalFilter) (*model.SignalCollection, error)
+	VinVCLatest(ctx context.Context, tokenID int) (*model.Vinvc, error)
 }
 type SignalAggregationsResolver interface {
 	ChassisAxleRow1WheelLeftTirePressure(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
@@ -238,6 +247,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.SignalsLatest(childComplexity, args["tokenId"].(int), args["filter"].(*model.SignalFilter)), true
+
+	case "Query.vinVCLatest":
+		if e.complexity.Query.VinVCLatest == nil {
+			break
+		}
+
+		args, err := ec.field_Query_vinVCLatest_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.VinVCLatest(childComplexity, args["tokenId"].(int)), true
 
 	case "SignalAggregations.chassisAxleRow1WheelLeftTirePressure":
 		if e.complexity.SignalAggregations.ChassisAxleRow1WheelLeftTirePressure == nil {
@@ -1003,6 +1024,34 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.SignalString.Value(childComplexity), true
 
+	case "VINVC.expirationDate":
+		if e.complexity.VINVC.ExpirationDate == nil {
+			break
+		}
+
+		return e.complexity.VINVC.ExpirationDate(childComplexity), true
+
+	case "VINVC.issuanceDate":
+		if e.complexity.VINVC.IssuanceDate == nil {
+			break
+		}
+
+		return e.complexity.VINVC.IssuanceDate(childComplexity), true
+
+	case "VINVC.rawVC":
+		if e.complexity.VINVC.RawVc == nil {
+			break
+		}
+
+		return e.complexity.VINVC.RawVc(childComplexity), true
+
+	case "VINVC.vin":
+		if e.complexity.VINVC.Vin == nil {
+			break
+		}
+
+		return e.complexity.VINVC.Vin(childComplexity), true
+
 	}
 	return 0, false
 }
@@ -1759,6 +1808,29 @@ extend type SignalCollection {
 }
 
 `, BuiltIn: false},
+	{Name: "../../schema/vinvc.graphqls", Input: `extend type Query {
+  """
+  vinVC returns the latest VINVC data for a given token.
+
+  Required Privileges: [VEHICLE_VIN_CREDENTIAL]
+  """
+  vinVCLatest(
+    """
+    The token ID of the vehicle.
+    """
+    tokenId: Int!
+  ): VINVC
+    @requiresToken
+    @requiresPrivilege(privileges: [VEHICLE_VIN_CREDENTIAL])
+}
+
+type VINVC {
+  issuanceDate: Time
+  expirationDate: Time
+  vin: String
+  rawVC: String!
+}
+`, BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)
 
@@ -1868,6 +1940,21 @@ func (ec *executionContext) field_Query_signals_args(ctx context.Context, rawArg
 		}
 	}
 	args["filter"] = arg4
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_vinVCLatest_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 int
+	if tmp, ok := rawArgs["tokenId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tokenId"))
+		arg0, err = ec.unmarshalNInt2int(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["tokenId"] = arg0
 	return args, nil
 }
 
@@ -2777,6 +2864,98 @@ func (ec *executionContext) fieldContext_Query_signalsLatest(ctx context.Context
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Query_signalsLatest_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_vinVCLatest(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_vinVCLatest(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Query().VinVCLatest(rctx, fc.Args["tokenId"].(int))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.RequiresToken == nil {
+				return nil, errors.New("directive requiresToken is not implemented")
+			}
+			return ec.directives.RequiresToken(ctx, nil, directive0)
+		}
+		directive2 := func(ctx context.Context) (interface{}, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_VIN_CREDENTIAL"})
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.RequiresPrivilege == nil {
+				return nil, errors.New("directive requiresPrivilege is not implemented")
+			}
+			return ec.directives.RequiresPrivilege(ctx, nil, directive1, privileges)
+		}
+
+		tmp, err := directive2(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*model.Vinvc); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.Vinvc`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.Vinvc)
+	fc.Result = res
+	return ec.marshalOVINVC2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐVinvc(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_vinVCLatest(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "issuanceDate":
+				return ec.fieldContext_VINVC_issuanceDate(ctx, field)
+			case "expirationDate":
+				return ec.fieldContext_VINVC_expirationDate(ctx, field)
+			case "vin":
+				return ec.fieldContext_VINVC_vin(ctx, field)
+			case "rawVC":
+				return ec.fieldContext_VINVC_rawVC(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type VINVC", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_vinVCLatest_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -9443,6 +9622,173 @@ func (ec *executionContext) fieldContext_SignalString_value(_ context.Context, f
 	return fc, nil
 }
 
+func (ec *executionContext) _VINVC_issuanceDate(ctx context.Context, field graphql.CollectedField, obj *model.Vinvc) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_VINVC_issuanceDate(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.IssuanceDate, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalOTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_VINVC_issuanceDate(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "VINVC",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _VINVC_expirationDate(ctx context.Context, field graphql.CollectedField, obj *model.Vinvc) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_VINVC_expirationDate(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ExpirationDate, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalOTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_VINVC_expirationDate(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "VINVC",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _VINVC_vin(ctx context.Context, field graphql.CollectedField, obj *model.Vinvc) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_VINVC_vin(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Vin, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_VINVC_vin(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "VINVC",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _VINVC_rawVC(ctx context.Context, field graphql.CollectedField, obj *model.Vinvc) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_VINVC_rawVC(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.RawVc, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_VINVC_rawVC(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "VINVC",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) ___Directive_name(ctx context.Context, field graphql.CollectedField, obj *introspection.Directive) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext___Directive_name(ctx, field)
 	if err != nil {
@@ -11308,6 +11654,25 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "vinVCLatest":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_vinVCLatest(ctx, field)
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
 		case "__type":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Query___type(ctx, field)
@@ -12832,6 +13197,51 @@ func (ec *executionContext) _SignalString(ctx context.Context, sel ast.Selection
 	return out
 }
 
+var vINVCImplementors = []string{"VINVC"}
+
+func (ec *executionContext) _VINVC(ctx context.Context, sel ast.SelectionSet, obj *model.Vinvc) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, vINVCImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("VINVC")
+		case "issuanceDate":
+			out.Values[i] = ec._VINVC_issuanceDate(ctx, field, obj)
+		case "expirationDate":
+			out.Values[i] = ec._VINVC_expirationDate(ctx, field, obj)
+		case "vin":
+			out.Values[i] = ec._VINVC_vin(ctx, field, obj)
+		case "rawVC":
+			out.Values[i] = ec._VINVC_rawVC(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var __DirectiveImplementors = []string{"__Directive"}
 
 func (ec *executionContext) ___Directive(ctx context.Context, sel ast.SelectionSet, obj *introspection.Directive) graphql.Marshaler {
@@ -13735,6 +14145,13 @@ func (ec *executionContext) marshalOTime2ᚖtimeᚐTime(ctx context.Context, sel
 	}
 	res := graphql.MarshalTime(*v)
 	return res
+}
+
+func (ec *executionContext) marshalOVINVC2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐVinvc(ctx context.Context, sel ast.SelectionSet, v *model.Vinvc) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._VINVC(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalO__EnumValue2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐEnumValueᚄ(ctx context.Context, sel ast.SelectionSet, v []introspection.EnumValue) graphql.Marshaler {
