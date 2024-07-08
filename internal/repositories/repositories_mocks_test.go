@@ -42,10 +42,10 @@ func (m *MockCHService) EXPECT() *MockCHServiceMockRecorder {
 }
 
 // GetAggregatedSignals mocks base method.
-func (m *MockCHService) GetAggregatedSignals(ctx context.Context, aggArgs *model.AggregatedSignalArgs) ([]*vss.Signal, error) {
+func (m *MockCHService) GetAggregatedSignals(ctx context.Context, aggArgs *model.AggregatedSignalArgs) ([]*model.AggSignal, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetAggregatedSignals", ctx, aggArgs)
-	ret0, _ := ret[0].([]*vss.Signal)
+	ret0, _ := ret[0].([]*model.AggSignal)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

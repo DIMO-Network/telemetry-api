@@ -13,241 +13,122 @@ import (
 type Query struct {
 }
 
-type SignalAggregations struct {
-	// Timestamp of the aggregated data.
-	Timestamp time.Time `json:"timestamp"`
-	// Tire pressure in kilo-Pascal.
-	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-	ChassisAxleRow1WheelLeftTirePressure *float64 `json:"chassisAxleRow1WheelLeftTirePressure,omitempty"`
-	// Tire pressure in kilo-Pascal.
-	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-	ChassisAxleRow1WheelRightTirePressure *float64 `json:"chassisAxleRow1WheelRightTirePressure,omitempty"`
-	// Tire pressure in kilo-Pascal.
-	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-	ChassisAxleRow2WheelLeftTirePressure *float64 `json:"chassisAxleRow2WheelLeftTirePressure,omitempty"`
-	// Tire pressure in kilo-Pascal.
-	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-	ChassisAxleRow2WheelRightTirePressure *float64 `json:"chassisAxleRow2WheelRightTirePressure,omitempty"`
-	// Current altitude relative to WGS 84 reference ellipsoid, as measured at the position of GNSS receiver antenna.
-	// Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
-	CurrentLocationAltitude *float64 `json:"currentLocationAltitude,omitempty"`
-	// Current latitude of vehicle in WGS 84 geodetic coordinates, as measured at the position of GNSS receiver antenna.
-	// Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
-	CurrentLocationLatitude *float64 `json:"currentLocationLatitude,omitempty"`
-	// Current longitude of vehicle in WGS 84 geodetic coordinates, as measured at the position of GNSS receiver antenna.
-	// Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
-	CurrentLocationLongitude *float64 `json:"currentLocationLongitude,omitempty"`
-	// Timestamp from GNSS system for current location, formatted according to ISO 8601 with UTC time zone.
-	// Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
-	CurrentLocationTimestamp *string `json:"currentLocationTimestamp,omitempty"`
-	// Horizontal dilution of precision of GPS
-	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-	DIMOAftermarketHDOP *float64 `json:"dimoAftermarketHDOP,omitempty"`
-	// Number of sync satellites for GPS
-	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-	DIMOAftermarketNSAT *float64 `json:"dimoAftermarketNSAT,omitempty"`
-	// Service Set Ientifier for the wifi.
-	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-	DIMOAftermarketSSID *string `json:"dimoAftermarketSSID,omitempty"`
-	// Indicate the current wpa state for the devices wifi
-	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-	DIMOAftermarketWPAState *string `json:"dimoAftermarketWPAState,omitempty"`
-	// Indicates if the latitude and longitude signals at the current timestamp have been redacted using a privacy zone.
-	// Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
-	DIMOIsLocationRedacted *float64 `json:"dimoIsLocationRedacted,omitempty"`
-	// Air temperature outside the vehicle.
-	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-	ExteriorAirTemperature *float64 `json:"exteriorAirTemperature,omitempty"`
-	// Current Voltage of the low voltage battery.
-	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-	LowVoltageBatteryCurrentVoltage *float64 `json:"lowVoltageBatteryCurrentVoltage,omitempty"`
-	// PID 33 - Barometric pressure
-	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-	OBDBarometricPressure *float64 `json:"obdBarometricPressure,omitempty"`
-	// PID 04 - Engine load in percent - 0 = no load, 100 = full load
-	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-	OBDEngineLoad *float64 `json:"obdEngineLoad,omitempty"`
-	// PID 0F - Intake temperature
-	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-	OBDIntakeTemp *float64 `json:"obdIntakeTemp,omitempty"`
-	// PID 1F - Engine run time
-	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-	OBDRunTime *float64 `json:"obdRunTime,omitempty"`
-	// Engine coolant temperature.
-	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-	PowertrainCombustionEngineECT *float64 `json:"powertrainCombustionEngineECT,omitempty"`
-	// Engine oil level.
-	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-	PowertrainCombustionEngineEngineOilLevel *string `json:"powertrainCombustionEngineEngineOilLevel,omitempty"`
-	// Grams of air drawn into engine per second.
-	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-	PowertrainCombustionEngineMAF *float64 `json:"powertrainCombustionEngineMAF,omitempty"`
-	// Engine speed measured as rotations per minute.
-	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-	PowertrainCombustionEngineSpeed *float64 `json:"powertrainCombustionEngineSpeed,omitempty"`
-	// Current throttle position.
-	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-	PowertrainCombustionEngineTPS *float64 `json:"powertrainCombustionEngineTPS,omitempty"`
-	// Current available fuel in the fuel tank expressed in liters.
-	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-	PowertrainFuelSystemAbsoluteLevel *float64 `json:"powertrainFuelSystemAbsoluteLevel,omitempty"`
-	// High level information of fuel types supported
-	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-	PowertrainFuelSystemSupportedFuelTypes *string `json:"powertrainFuelSystemSupportedFuelTypes,omitempty"`
-	// Remaining range in meters using all energy sources available in the vehicle.
-	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-	PowertrainRange *float64 `json:"powertrainRange,omitempty"`
-	// Target charge limit (state of charge) for battery.
-	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-	PowertrainTractionBatteryChargingChargeLimit *float64 `json:"powertrainTractionBatteryChargingChargeLimit,omitempty"`
-	// True if charging is ongoing. Charging is considered to be ongoing if energy is flowing from charger to vehicle.
-	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-	PowertrainTractionBatteryChargingIsCharging *float64 `json:"powertrainTractionBatteryChargingIsCharging,omitempty"`
-	// Current electrical energy flowing in/out of battery. Positive = Energy flowing in to battery, e.g. during charging. Negative = Energy flowing out of battery, e.g. during driving.
-	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-	PowertrainTractionBatteryCurrentPower *float64 `json:"powertrainTractionBatteryCurrentPower,omitempty"`
-	// Gross capacity of the battery.
-	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-	PowertrainTractionBatteryGrossCapacity *float64 `json:"powertrainTractionBatteryGrossCapacity,omitempty"`
-	// Physical state of charge of the high voltage battery, relative to net capacity. This is not necessarily the state of charge being displayed to the customer.
-	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-	PowertrainTractionBatteryStateOfChargeCurrent *float64 `json:"powertrainTractionBatteryStateOfChargeCurrent,omitempty"`
-	// Odometer reading, total distance travelled during the lifetime of the transmission.
-	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-	PowertrainTransmissionTravelledDistance *float64 `json:"powertrainTransmissionTravelledDistance,omitempty"`
-	// Defines the powertrain type of the vehicle.
-	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-	PowertrainType *string `json:"powertrainType,omitempty"`
-	// Vehicle speed.
-	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-	Speed *float64 `json:"speed,omitempty"`
-	// Vehicle brand or manufacturer.
-	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-	VehicleIdentificationBrand *string `json:"vehicleIdentificationBrand,omitempty"`
-	// Vehicle model.
-	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-	VehicleIdentificationModel *string `json:"vehicleIdentificationModel,omitempty"`
-	// Model year of the vehicle.
-	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-	VehicleIdentificationYear *float64 `json:"vehicleIdentificationYear,omitempty"`
-}
-
 type SignalCollection struct {
 	// The last time any signal was seen matching the filter.
 	LastSeen *time.Time `json:"lastSeen,omitempty"`
 	// Tire pressure in kilo-Pascal.
-	// Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	ChassisAxleRow1WheelLeftTirePressure *SignalFloat `json:"chassisAxleRow1WheelLeftTirePressure,omitempty"`
 	// Tire pressure in kilo-Pascal.
-	// Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	ChassisAxleRow1WheelRightTirePressure *SignalFloat `json:"chassisAxleRow1WheelRightTirePressure,omitempty"`
 	// Tire pressure in kilo-Pascal.
-	// Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	ChassisAxleRow2WheelLeftTirePressure *SignalFloat `json:"chassisAxleRow2WheelLeftTirePressure,omitempty"`
 	// Tire pressure in kilo-Pascal.
-	// Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	ChassisAxleRow2WheelRightTirePressure *SignalFloat `json:"chassisAxleRow2WheelRightTirePressure,omitempty"`
 	// Current altitude relative to WGS 84 reference ellipsoid, as measured at the position of GNSS receiver antenna.
-	// Required Privlieges: [VEHICLE_ALL_TIME_LOCATION]
+	// Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
 	CurrentLocationAltitude *SignalFloat `json:"currentLocationAltitude,omitempty"`
 	// Current latitude of vehicle in WGS 84 geodetic coordinates, as measured at the position of GNSS receiver antenna.
-	// Required Privlieges: [VEHICLE_ALL_TIME_LOCATION]
+	// Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
 	CurrentLocationLatitude *SignalFloat `json:"currentLocationLatitude,omitempty"`
 	// Current longitude of vehicle in WGS 84 geodetic coordinates, as measured at the position of GNSS receiver antenna.
-	// Required Privlieges: [VEHICLE_ALL_TIME_LOCATION]
+	// Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
 	CurrentLocationLongitude *SignalFloat `json:"currentLocationLongitude,omitempty"`
 	// Timestamp from GNSS system for current location, formatted according to ISO 8601 with UTC time zone.
-	// Required Privlieges: [VEHICLE_ALL_TIME_LOCATION]
+	// Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
 	CurrentLocationTimestamp *SignalString `json:"currentLocationTimestamp,omitempty"`
 	// Horizontal dilution of precision of GPS
-	// Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	DIMOAftermarketHDOP *SignalFloat `json:"dimoAftermarketHDOP,omitempty"`
 	// Number of sync satellites for GPS
-	// Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	DIMOAftermarketNSAT *SignalFloat `json:"dimoAftermarketNSAT,omitempty"`
 	// Service Set Ientifier for the wifi.
-	// Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	DIMOAftermarketSSID *SignalString `json:"dimoAftermarketSSID,omitempty"`
 	// Indicate the current wpa state for the devices wifi
-	// Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	DIMOAftermarketWPAState *SignalString `json:"dimoAftermarketWPAState,omitempty"`
 	// Indicates if the latitude and longitude signals at the current timestamp have been redacted using a privacy zone.
-	// Required Privlieges: [VEHICLE_ALL_TIME_LOCATION]
+	// Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
 	DIMOIsLocationRedacted *SignalFloat `json:"dimoIsLocationRedacted,omitempty"`
 	// Air temperature outside the vehicle.
-	// Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	ExteriorAirTemperature *SignalFloat `json:"exteriorAirTemperature,omitempty"`
 	// Current Voltage of the low voltage battery.
-	// Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	LowVoltageBatteryCurrentVoltage *SignalFloat `json:"lowVoltageBatteryCurrentVoltage,omitempty"`
 	// PID 33 - Barometric pressure
-	// Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	OBDBarometricPressure *SignalFloat `json:"obdBarometricPressure,omitempty"`
 	// PID 04 - Engine load in percent - 0 = no load, 100 = full load
-	// Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	OBDEngineLoad *SignalFloat `json:"obdEngineLoad,omitempty"`
 	// PID 0F - Intake temperature
-	// Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	OBDIntakeTemp *SignalFloat `json:"obdIntakeTemp,omitempty"`
 	// PID 1F - Engine run time
-	// Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	OBDRunTime *SignalFloat `json:"obdRunTime,omitempty"`
 	// Engine coolant temperature.
-	// Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainCombustionEngineECT *SignalFloat `json:"powertrainCombustionEngineECT,omitempty"`
 	// Engine oil level.
-	// Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainCombustionEngineEngineOilLevel *SignalString `json:"powertrainCombustionEngineEngineOilLevel,omitempty"`
 	// Grams of air drawn into engine per second.
-	// Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainCombustionEngineMAF *SignalFloat `json:"powertrainCombustionEngineMAF,omitempty"`
 	// Engine speed measured as rotations per minute.
-	// Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainCombustionEngineSpeed *SignalFloat `json:"powertrainCombustionEngineSpeed,omitempty"`
 	// Current throttle position.
-	// Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainCombustionEngineTPS *SignalFloat `json:"powertrainCombustionEngineTPS,omitempty"`
 	// Current available fuel in the fuel tank expressed in liters.
-	// Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainFuelSystemAbsoluteLevel *SignalFloat `json:"powertrainFuelSystemAbsoluteLevel,omitempty"`
 	// High level information of fuel types supported
-	// Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainFuelSystemSupportedFuelTypes *SignalString `json:"powertrainFuelSystemSupportedFuelTypes,omitempty"`
 	// Remaining range in meters using all energy sources available in the vehicle.
-	// Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainRange *SignalFloat `json:"powertrainRange,omitempty"`
 	// Target charge limit (state of charge) for battery.
-	// Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainTractionBatteryChargingChargeLimit *SignalFloat `json:"powertrainTractionBatteryChargingChargeLimit,omitempty"`
 	// True if charging is ongoing. Charging is considered to be ongoing if energy is flowing from charger to vehicle.
-	// Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainTractionBatteryChargingIsCharging *SignalFloat `json:"powertrainTractionBatteryChargingIsCharging,omitempty"`
 	// Current electrical energy flowing in/out of battery. Positive = Energy flowing in to battery, e.g. during charging. Negative = Energy flowing out of battery, e.g. during driving.
-	// Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainTractionBatteryCurrentPower *SignalFloat `json:"powertrainTractionBatteryCurrentPower,omitempty"`
 	// Gross capacity of the battery.
-	// Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainTractionBatteryGrossCapacity *SignalFloat `json:"powertrainTractionBatteryGrossCapacity,omitempty"`
 	// Physical state of charge of the high voltage battery, relative to net capacity. This is not necessarily the state of charge being displayed to the customer.
-	// Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainTractionBatteryStateOfChargeCurrent *SignalFloat `json:"powertrainTractionBatteryStateOfChargeCurrent,omitempty"`
 	// Odometer reading, total distance travelled during the lifetime of the transmission.
-	// Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainTransmissionTravelledDistance *SignalFloat `json:"powertrainTransmissionTravelledDistance,omitempty"`
 	// Defines the powertrain type of the vehicle.
-	// Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainType *SignalString `json:"powertrainType,omitempty"`
 	// Vehicle speed.
-	// Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	Speed *SignalFloat `json:"speed,omitempty"`
 	// Vehicle brand or manufacturer.
-	// Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	VehicleIdentificationBrand *SignalString `json:"vehicleIdentificationBrand,omitempty"`
 	// Vehicle model.
-	// Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	VehicleIdentificationModel *SignalString `json:"vehicleIdentificationModel,omitempty"`
 	// Model year of the vehicle.
-	// Required Privlieges: [VEHICLE_NON_LOCATION_DATA]
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	VehicleIdentificationYear *SignalFloat `json:"vehicleIdentificationYear,omitempty"`
 }
 
