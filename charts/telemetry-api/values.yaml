@@ -2,7 +2,7 @@ replicaCount: 1
 image:
   repository: dimozone/telemetry-api
   pullPolicy: IfNotPresent
-  tag: b625753
+  tag: 0550f27
 imagePullSecrets: []
 nameOverride: ''
 fullnameOverride: ''
@@ -34,8 +34,7 @@ env:
   MAX_REQUEST_DURATION: 5s
   S3_AWS_REGION: us-east-2
   VINVC_BUCKET: dimo-network-vinvc-dev
-  VINVC_DATA_TYPE: 'VINVCv0.0'
-
+  VINVC_DATA_TYPE: VINVCv0.0
 service:
   type: ClusterIP
   ports:
