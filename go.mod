@@ -12,8 +12,8 @@ require (
 	github.com/DIMO-Network/shared v0.10.19
 	github.com/auth0/go-jwt-middleware/v2 v2.2.1
 	github.com/aws/aws-sdk-go-v2 v1.30.1
-	github.com/aws/aws-sdk-go-v2/credentials v1.17.23
-	github.com/aws/aws-sdk-go-v2/service/s3 v1.57.1
+	github.com/aws/aws-sdk-go-v2/credentials v1.17.24
+	github.com/aws/aws-sdk-go-v2/service/s3 v1.58.0
 	github.com/ethereum/go-ethereum v1.14.6
 	github.com/gofiber/fiber/v2 v2.52.5
 	github.com/prometheus/client_golang v1.19.1
