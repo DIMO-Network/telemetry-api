@@ -44,18 +44,22 @@ const (
 
 // Aggregation functions for float signals.
 const (
-	avgGroup       = "avg(" + vss.ValueNumberCol + ")"
-	randFloatGroup = "groupArraySample(1, %d)(" + vss.ValueNumberCol + ")[1]"
-	minGroup       = "min(" + vss.ValueNumberCol + ")"
-	maxGroup       = "max(" + vss.ValueNumberCol + ")"
-	medGroup       = "median(" + vss.ValueNumberCol + ")"
+	avgGroup        = "avg(" + vss.ValueNumberCol + ")"
+	randFloatGroup  = "groupArraySample(1, %d)(" + vss.ValueNumberCol + ")[1]"
+	minGroup        = "min(" + vss.ValueNumberCol + ")"
+	maxGroup        = "max(" + vss.ValueNumberCol + ")"
+	medGroup        = "median(" + vss.ValueNumberCol + ")"
+	firstFloatGroup = "argMin(" + vss.ValueNumberCol + ", " + vss.TimestampCol + ")"
+	lastFloatGroup  = "argMax(" + vss.ValueNumberCol + ", " + vss.TimestampCol + ")"
 )
 
 // Aggregation functions for string signals.
 const (
-	randStringGroup = "groupArraySample(1, %d)(" + vss.ValueStringCol + ")[1]"
-	uniqueGroup     = "arrayStringConcat(groupUniqArray(" + vss.ValueStringCol + "),',')"
-	topGroup        = "arrayStringConcat(topK(1, 10)(" + vss.ValueStringCol + "))"
+	randStringGroup  = "groupArraySample(1, %d)(" + vss.ValueStringCol + ")[1]"
+	uniqueGroup      = "arrayStringConcat(groupUniqArray(" + vss.ValueStringCol + "),',')"
+	topGroup         = "arrayStringConcat(topK(1, 10)(" + vss.ValueStringCol + "))"
+	firstStringGroup = "argMin(" + vss.ValueStringCol + ", " + vss.TimestampCol + ")"
+	lastStringGroup  = "argMax(" + vss.ValueStringCol + ", " + vss.TimestampCol + ")"
 )
 
 // TODO: remove this map when we move to storing the device address
@@ -145,6 +149,10 @@ func getFloatAggFunc(aggType model.FloatAggregation) string {
 		aggStr = maxGroup
 	case model.FloatAggregationMed:
 		aggStr = medGroup
+	case model.FloatAggregationFirst:
+		aggStr = firstFloatGroup
+	case model.FloatAggregationLast:
+		aggStr = lastFloatGroup
 	}
 	return aggStr
 }
@@ -160,6 +168,10 @@ func getStringAgg(aggType model.StringAggregation) string {
 		aggStr = uniqueGroup
 	case model.StringAggregationTop:
 		aggStr = topGroup
+	case model.StringAggregationFirst:
+		aggStr = firstStringGroup
+	case model.StringAggregationLast:
+		aggStr = lastStringGroup
 	}
 	return aggStr
 }

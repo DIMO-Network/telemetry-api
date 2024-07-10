@@ -163,11 +163,13 @@ type Vinvc struct {
 type FloatAggregation string
 
 const (
-	FloatAggregationAvg  FloatAggregation = "AVG"
-	FloatAggregationMed  FloatAggregation = "MED"
-	FloatAggregationMax  FloatAggregation = "MAX"
-	FloatAggregationMin  FloatAggregation = "MIN"
-	FloatAggregationRand FloatAggregation = "RAND"
+	FloatAggregationAvg   FloatAggregation = "AVG"
+	FloatAggregationMed   FloatAggregation = "MED"
+	FloatAggregationMax   FloatAggregation = "MAX"
+	FloatAggregationMin   FloatAggregation = "MIN"
+	FloatAggregationRand  FloatAggregation = "RAND"
+	FloatAggregationFirst FloatAggregation = "FIRST"
+	FloatAggregationLast  FloatAggregation = "LAST"
 )
 
 var AllFloatAggregation = []FloatAggregation{
@@ -176,11 +178,13 @@ var AllFloatAggregation = []FloatAggregation{
 	FloatAggregationMax,
 	FloatAggregationMin,
 	FloatAggregationRand,
+	FloatAggregationFirst,
+	FloatAggregationLast,
 }
 
 func (e FloatAggregation) IsValid() bool {
 	switch e {
-	case FloatAggregationAvg, FloatAggregationMed, FloatAggregationMax, FloatAggregationMin, FloatAggregationRand:
+	case FloatAggregationAvg, FloatAggregationMed, FloatAggregationMax, FloatAggregationMin, FloatAggregationRand, FloatAggregationFirst, FloatAggregationLast:
 		return true
 	}
 	return false
@@ -263,17 +267,23 @@ const (
 	StringAggregationTop StringAggregation = "TOP"
 	// Return a list of unique values in the group.
 	StringAggregationUnique StringAggregation = "UNIQUE"
+	// Return value in group associated with the minimum time value.
+	StringAggregationFirst StringAggregation = "FIRST"
+	// Return value in group associated with the maximum time value.
+	StringAggregationLast StringAggregation = "LAST"
 )
 
 var AllStringAggregation = []StringAggregation{
 	StringAggregationRand,
 	StringAggregationTop,
 	StringAggregationUnique,
+	StringAggregationFirst,
+	StringAggregationLast,
 }
 
 func (e StringAggregation) IsValid() bool {
 	switch e {
-	case StringAggregationRand, StringAggregationTop, StringAggregationUnique:
+	case StringAggregationRand, StringAggregationTop, StringAggregationUnique, StringAggregationFirst, StringAggregationLast:
 		return true
 	}
 	return false
