@@ -55,6 +55,15 @@ func (r *signalAggregationsResolver) CurrentLocationAltitude(ctx context.Context
 	return &vn, nil
 }
 
+// CurrentLocationIsRedacted is the resolver for the currentLocationIsRedacted
+func (r *signalAggregationsResolver) CurrentLocationIsRedacted(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
+	vn, ok := obj.ValueNumbers[model.AliasKey{Name: "currentLocationIsRedacted", Agg: agg.String()}]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
 // CurrentLocationLatitude is the resolver for the currentLocationLatitude
 func (r *signalAggregationsResolver) CurrentLocationLatitude(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
 	vn, ok := obj.ValueNumbers[model.AliasKey{Name: "currentLocationLatitude", Agg: agg.String()}]
@@ -71,15 +80,6 @@ func (r *signalAggregationsResolver) CurrentLocationLongitude(ctx context.Contex
 		return nil, nil
 	}
 	return &vn, nil
-}
-
-// CurrentLocationTimestamp is the resolver for the currentLocationTimestamp
-func (r *signalAggregationsResolver) CurrentLocationTimestamp(ctx context.Context, obj *model.SignalAggregations, agg model.StringAggregation) (*string, error) {
-	vs, ok := obj.ValueStrings[model.AliasKey{Name: "currentLocationTimestamp", Agg: agg.String()}]
-	if !ok {
-		return nil, nil
-	}
-	return &vs, nil
 }
 
 // DimoAftermarketHdop is the resolver for the dimoAftermarketHDOP
@@ -116,15 +116,6 @@ func (r *signalAggregationsResolver) DimoAftermarketWPAState(ctx context.Context
 		return nil, nil
 	}
 	return &vs, nil
-}
-
-// DimoIsLocationRedacted is the resolver for the dimoIsLocationRedacted
-func (r *signalAggregationsResolver) DimoIsLocationRedacted(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
-	vn, ok := obj.ValueNumbers[model.AliasKey{Name: "dimoIsLocationRedacted", Agg: agg.String()}]
-	if !ok {
-		return nil, nil
-	}
-	return &vn, nil
 }
 
 // ExteriorAirTemperature is the resolver for the exteriorAirTemperature
@@ -199,6 +190,15 @@ func (r *signalAggregationsResolver) PowertrainCombustionEngineEngineOilLevel(ct
 	return &vs, nil
 }
 
+// PowertrainCombustionEngineEngineOilRelativeLevel is the resolver for the powertrainCombustionEngineEngineOilRelativeLevel
+func (r *signalAggregationsResolver) PowertrainCombustionEngineEngineOilRelativeLevel(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
+	vn, ok := obj.ValueNumbers[model.AliasKey{Name: "powertrainCombustionEngineEngineOilRelativeLevel", Agg: agg.String()}]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
 // PowertrainCombustionEngineMaf is the resolver for the powertrainCombustionEngineMAF
 func (r *signalAggregationsResolver) PowertrainCombustionEngineMaf(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
 	vn, ok := obj.ValueNumbers[model.AliasKey{Name: "powertrainCombustionEngineMAF", Agg: agg.String()}]
@@ -226,9 +226,9 @@ func (r *signalAggregationsResolver) PowertrainCombustionEngineTps(ctx context.C
 	return &vn, nil
 }
 
-// PowertrainFuelSystemAbsoluteLevel is the resolver for the powertrainFuelSystemAbsoluteLevel
-func (r *signalAggregationsResolver) PowertrainFuelSystemAbsoluteLevel(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
-	vn, ok := obj.ValueNumbers[model.AliasKey{Name: "powertrainFuelSystemAbsoluteLevel", Agg: agg.String()}]
+// PowertrainFuelSystemRelativeLevel is the resolver for the powertrainFuelSystemRelativeLevel
+func (r *signalAggregationsResolver) PowertrainFuelSystemRelativeLevel(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
+	vn, ok := obj.ValueNumbers[model.AliasKey{Name: "powertrainFuelSystemRelativeLevel", Agg: agg.String()}]
 	if !ok {
 		return nil, nil
 	}
@@ -319,33 +319,6 @@ func (r *signalAggregationsResolver) PowertrainType(ctx context.Context, obj *mo
 // Speed is the resolver for the speed
 func (r *signalAggregationsResolver) Speed(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
 	vn, ok := obj.ValueNumbers[model.AliasKey{Name: "speed", Agg: agg.String()}]
-	if !ok {
-		return nil, nil
-	}
-	return &vn, nil
-}
-
-// VehicleIdentificationBrand is the resolver for the vehicleIdentificationBrand
-func (r *signalAggregationsResolver) VehicleIdentificationBrand(ctx context.Context, obj *model.SignalAggregations, agg model.StringAggregation) (*string, error) {
-	vs, ok := obj.ValueStrings[model.AliasKey{Name: "vehicleIdentificationBrand", Agg: agg.String()}]
-	if !ok {
-		return nil, nil
-	}
-	return &vs, nil
-}
-
-// VehicleIdentificationModel is the resolver for the vehicleIdentificationModel
-func (r *signalAggregationsResolver) VehicleIdentificationModel(ctx context.Context, obj *model.SignalAggregations, agg model.StringAggregation) (*string, error) {
-	vs, ok := obj.ValueStrings[model.AliasKey{Name: "vehicleIdentificationModel", Agg: agg.String()}]
-	if !ok {
-		return nil, nil
-	}
-	return &vs, nil
-}
-
-// VehicleIdentificationYear is the resolver for the vehicleIdentificationYear
-func (r *signalAggregationsResolver) VehicleIdentificationYear(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
-	vn, ok := obj.ValueNumbers[model.AliasKey{Name: "vehicleIdentificationYear", Agg: agg.String()}]
 	if !ok {
 		return nil, nil
 	}
