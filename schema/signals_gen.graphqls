@@ -41,6 +41,14 @@ extend type SignalAggregations {
   ):  Float @requiresPrivilege(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationAltitude", forceResolver: true) @isSignal @hasAggregation
   
   """
+  Indicates if the latitude and longitude signals at the current timestamp have been redacted using a privacy zone.
+  Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
+  """
+  currentLocationIsRedacted(
+    agg: FloatAggregation!
+  ):  Float @requiresPrivilege(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationIsRedacted", forceResolver: true) @isSignal @hasAggregation
+  
+  """
   Current latitude of vehicle in WGS 84 geodetic coordinates, as measured at the position of GNSS receiver antenna.
   Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
   """
@@ -55,14 +63,6 @@ extend type SignalAggregations {
   currentLocationLongitude(
     agg: FloatAggregation!
   ):  Float @requiresPrivilege(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationLongitude", forceResolver: true) @isSignal @hasAggregation
-  
-  """
-  Timestamp from GNSS system for current location, formatted according to ISO 8601 with UTC time zone.
-  Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
-  """
-  currentLocationTimestamp(
-    agg: StringAggregation!
-  ):  String @requiresPrivilege(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationTimestamp", forceResolver: true) @isSignal @hasAggregation
   
   """
   Horizontal dilution of precision of GPS
@@ -81,7 +81,7 @@ extend type SignalAggregations {
   ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketNSAT", forceResolver: true) @isSignal @hasAggregation
   
   """
-  Service Set Ientifier for the wifi.
+  Service Set Identifier for the wifi.
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   dimoAftermarketSSID(
@@ -89,20 +89,12 @@ extend type SignalAggregations {
   ):  String @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketSSID", forceResolver: true) @isSignal @hasAggregation
   
   """
-  Indicate the current wpa state for the devices wifi
+  Indicate the current WPA state for the device's wifi
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   dimoAftermarketWPAState(
     agg: StringAggregation!
   ):  String @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketWPAState", forceResolver: true) @isSignal @hasAggregation
-  
-  """
-  Indicates if the latitude and longitude signals at the current timestamp have been redacted using a privacy zone.
-  Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
-  """
-  dimoIsLocationRedacted(
-    agg: FloatAggregation!
-  ):  Float @requiresPrivilege(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "DIMOIsLocationRedacted", forceResolver: true) @isSignal @hasAggregation
   
   """
   Air temperature outside the vehicle.
@@ -169,6 +161,14 @@ extend type SignalAggregations {
   ):  String @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineEngineOilLevel", forceResolver: true) @isSignal @hasAggregation
   
   """
+  Engine oil level as a percentage.
+  Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
+  """
+  powertrainCombustionEngineEngineOilRelativeLevel(
+    agg: FloatAggregation!
+  ):  Float @requiresPrivilege(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "PowertrainCombustionEngineEngineOilRelativeLevel", forceResolver: true) @isSignal @hasAggregation
+  
+  """
   Grams of air drawn into engine per second.
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
@@ -193,12 +193,12 @@ extend type SignalAggregations {
   ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineTPS", forceResolver: true) @isSignal @hasAggregation
   
   """
-  Current available fuel in the fuel tank expressed in liters.
+  Level in fuel tank as percent of capacity. 0 = empty. 100 = full.
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
-  powertrainFuelSystemAbsoluteLevel(
+  powertrainFuelSystemRelativeLevel(
     agg: FloatAggregation!
-  ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainFuelSystemAbsoluteLevel", forceResolver: true) @isSignal @hasAggregation
+  ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainFuelSystemRelativeLevel", forceResolver: true) @isSignal @hasAggregation
   
   """
   High level information of fuel types supported
@@ -280,30 +280,6 @@ extend type SignalAggregations {
     agg: FloatAggregation!
   ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "Speed", forceResolver: true) @isSignal @hasAggregation
   
-  """
-  Vehicle brand or manufacturer.
-  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-  """
-  vehicleIdentificationBrand(
-    agg: StringAggregation!
-  ):  String @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "VehicleIdentificationBrand", forceResolver: true) @isSignal @hasAggregation
-  
-  """
-  Vehicle model.
-  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-  """
-  vehicleIdentificationModel(
-    agg: StringAggregation!
-  ):  String @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "VehicleIdentificationModel", forceResolver: true) @isSignal @hasAggregation
-  
-  """
-  Model year of the vehicle.
-  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-  """
-  vehicleIdentificationYear(
-    agg: FloatAggregation!
-  ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "VehicleIdentificationYear", forceResolver: true) @isSignal @hasAggregation
-  
 }
 
 extend type SignalCollection {
@@ -338,6 +314,12 @@ extend type SignalCollection {
   currentLocationAltitude: SignalFloat @requiresPrivilege(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationAltitude") @isSignal
   
   """
+  Indicates if the latitude and longitude signals at the current timestamp have been redacted using a privacy zone.
+  Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
+  """
+  currentLocationIsRedacted: SignalFloat @requiresPrivilege(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationIsRedacted") @isSignal
+  
+  """
   Current latitude of vehicle in WGS 84 geodetic coordinates, as measured at the position of GNSS receiver antenna.
   Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
   """
@@ -348,12 +330,6 @@ extend type SignalCollection {
   Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
   """
   currentLocationLongitude: SignalFloat @requiresPrivilege(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationLongitude") @isSignal
-  
-  """
-  Timestamp from GNSS system for current location, formatted according to ISO 8601 with UTC time zone.
-  Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
-  """
-  currentLocationTimestamp: SignalString @requiresPrivilege(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationTimestamp") @isSignal
   
   """
   Horizontal dilution of precision of GPS
@@ -368,22 +344,16 @@ extend type SignalCollection {
   dimoAftermarketNSAT: SignalFloat @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketNSAT") @isSignal
   
   """
-  Service Set Ientifier for the wifi.
+  Service Set Identifier for the wifi.
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   dimoAftermarketSSID: SignalString @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketSSID") @isSignal
   
   """
-  Indicate the current wpa state for the devices wifi
+  Indicate the current WPA state for the device's wifi
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   dimoAftermarketWPAState: SignalString @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketWPAState") @isSignal
-  
-  """
-  Indicates if the latitude and longitude signals at the current timestamp have been redacted using a privacy zone.
-  Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
-  """
-  dimoIsLocationRedacted: SignalFloat @requiresPrivilege(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "DIMOIsLocationRedacted") @isSignal
   
   """
   Air temperature outside the vehicle.
@@ -434,6 +404,12 @@ extend type SignalCollection {
   powertrainCombustionEngineEngineOilLevel: SignalString @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineEngineOilLevel") @isSignal
   
   """
+  Engine oil level as a percentage.
+  Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
+  """
+  powertrainCombustionEngineEngineOilRelativeLevel: SignalFloat @requiresPrivilege(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "PowertrainCombustionEngineEngineOilRelativeLevel") @isSignal
+  
+  """
   Grams of air drawn into engine per second.
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
@@ -452,10 +428,10 @@ extend type SignalCollection {
   powertrainCombustionEngineTPS: SignalFloat @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineTPS") @isSignal
   
   """
-  Current available fuel in the fuel tank expressed in liters.
+  Level in fuel tank as percent of capacity. 0 = empty. 100 = full.
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
-  powertrainFuelSystemAbsoluteLevel: SignalFloat @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainFuelSystemAbsoluteLevel") @isSignal
+  powertrainFuelSystemRelativeLevel: SignalFloat @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainFuelSystemRelativeLevel") @isSignal
   
   """
   High level information of fuel types supported
@@ -516,24 +492,6 @@ extend type SignalCollection {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   speed: SignalFloat @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "Speed") @isSignal
-  
-  """
-  Vehicle brand or manufacturer.
-  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-  """
-  vehicleIdentificationBrand: SignalString @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "VehicleIdentificationBrand") @isSignal
-  
-  """
-  Vehicle model.
-  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-  """
-  vehicleIdentificationModel: SignalString @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "VehicleIdentificationModel") @isSignal
-  
-  """
-  Model year of the vehicle.
-  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-  """
-  vehicleIdentificationYear: SignalFloat @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "VehicleIdentificationYear") @isSignal
   
 }
 
