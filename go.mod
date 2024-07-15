@@ -5,16 +5,16 @@ go 1.22.0
 require (
 	github.com/99designs/gqlgen v0.17.49
 	github.com/ClickHouse/clickhouse-go/v2 v2.26.0
-	github.com/DIMO-Network/attestation-api v0.0.2
+	github.com/DIMO-Network/attestation-api v0.0.3
 	github.com/DIMO-Network/clickhouse-infra v0.0.1
-	github.com/DIMO-Network/model-garage v0.2.8
+	github.com/DIMO-Network/model-garage v0.2.9
 	github.com/DIMO-Network/nameindexer v0.0.1
 	github.com/DIMO-Network/shared v0.10.19
 	github.com/auth0/go-jwt-middleware/v2 v2.2.1
-	github.com/aws/aws-sdk-go-v2 v1.30.1
-	github.com/aws/aws-sdk-go-v2/credentials v1.17.23
-	github.com/aws/aws-sdk-go-v2/service/s3 v1.57.1
-	github.com/ethereum/go-ethereum v1.14.6
+	github.com/aws/aws-sdk-go-v2 v1.30.3
+	github.com/aws/aws-sdk-go-v2/credentials v1.17.26
+	github.com/aws/aws-sdk-go-v2/service/s3 v1.58.2
+	github.com/ethereum/go-ethereum v1.14.7
 	github.com/gofiber/fiber/v2 v2.52.5
 	github.com/prometheus/client_golang v1.19.1
 	github.com/rs/zerolog v1.33.0
@@ -34,13 +34,13 @@ require (
 	github.com/andybalholm/brotli v1.1.0 // indirect
 	github.com/avast/retry-go/v4 v4.6.0 // indirect
 	github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.6.3 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/configsources v1.3.13 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.6.13 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/v4a v1.3.13 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/configsources v1.3.15 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.6.15 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/v4a v1.3.15 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.11.3 // indirect
-	github.com/aws/aws-sdk-go-v2/service/internal/checksum v1.3.15 // indirect
-	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.11.15 // indirect
-	github.com/aws/aws-sdk-go-v2/service/internal/s3shared v1.17.13 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/checksum v1.3.17 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.11.17 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/s3shared v1.17.15 // indirect
 	github.com/aws/aws-sdk-go-v2/service/kms v1.35.1 // indirect
 	github.com/aws/smithy-go v1.20.3 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
@@ -70,7 +70,7 @@ require (
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/gorilla/websocket v1.5.1 // indirect
 	github.com/hashicorp/golang-lru/v2 v2.0.7 // indirect
-	github.com/holiman/uint256 v1.2.4 // indirect
+	github.com/holiman/uint256 v1.3.0 // indirect
 	github.com/jarcoal/httpmock v1.3.1 // indirect
 	github.com/klauspost/compress v1.17.9 // indirect
 	github.com/lufia/plan9stats v0.0.0-20231016141302-07b5767bb0ed // indirect
