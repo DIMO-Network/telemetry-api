@@ -7,7 +7,7 @@ require (
 	github.com/ClickHouse/clickhouse-go/v2 v2.26.0
 	github.com/DIMO-Network/attestation-api v0.0.2
 	github.com/DIMO-Network/clickhouse-infra v0.0.1
-	github.com/DIMO-Network/model-garage v0.2.8
+	github.com/DIMO-Network/model-garage v0.2.11
 	github.com/DIMO-Network/nameindexer v0.0.1
 	github.com/DIMO-Network/shared v0.10.19
 	github.com/auth0/go-jwt-middleware/v2 v2.2.1
