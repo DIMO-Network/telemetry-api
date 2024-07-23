@@ -1,8 +1,6 @@
 scalar Map
 
-directive @requiresPrivilege(
-  privileges: [Privilege!]!
-) on FIELD_DEFINITION | OBJECT | INTERFACE | SCALAR | ENUM
+directive @requiresPrivilege(privileges: [Privilege!]!) on FIELD_DEFINITION | OBJECT | INTERFACE | SCALAR | ENUM
 
 enum Privilege {
   VEHICLE_NON_LOCATION_DATA
