@@ -43,10 +43,10 @@ func NewJWTMiddleware(issuer, jwksURI, vNFTAddr, manufNFTAddr string, logger *ze
 	vehicleNFTAddr := common.HexToAddress(vNFTAddr)
 	// manufacturerAddr := common.HexToAddress(manufNFTAddr)
 
-	contractToPrivs := map[common.Address][]model.Privilege{}
-	contractToPrivs[vehicleNFTAddr] = []model.Privilege{}
+	contractToPrivs := map[common.Address]map[model.Privilege]struct{}{}
+	contractToPrivs[vehicleNFTAddr] = map[model.Privilege]struct{}{}
 	for _, privName := range vehiclePrivileges {
-		contractToPrivs[vehicleNFTAddr] = append(contractToPrivs[vehicleNFTAddr], privName)
+		contractToPrivs[vehicleNFTAddr][privName] = struct{}{}
 	}
 
 	// contractToPrivs[manufacturerAddr] = []model.Privilege{}

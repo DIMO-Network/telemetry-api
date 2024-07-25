@@ -15,11 +15,11 @@ type TelemetryClaimContextKey struct{}
 
 // TelemetryClaim is a custom claim for the telemetry API.
 type TelemetryClaim struct {
-	privileges []model.Privilege
+	privileges map[model.Privilege]struct{}
 	privilegetoken.CustomClaims
+	contractToPrivs  map[common.Address]map[model.Privilege]struct{}
 	vehicleNFTAddr   common.Address
 	manufacturerAddr common.Address
-	contractToPrivs  map[common.Address][]model.Privilege
 }
 
 // SetPrivileges sets the privileges from the embedded CustomClaims.
@@ -27,11 +27,11 @@ func (t *TelemetryClaim) SetPrivileges() {
 	for _, priv := range t.CustomClaims.PrivilegeIDs {
 		privName, okV := vehiclePrivileges[priv]
 		if okV {
-			t.privileges = append(t.privileges, privName)
+			t.privileges[privName] = struct{}{}
 		}
 		// privName, okM := manufacturerPrivileges[priv]
 		// if okM {
-		// 	t.privileges = append(t.privileges, privName)
+		// 	t.privileges[privName] = struct{}{}
 		// }
 	}
 }
