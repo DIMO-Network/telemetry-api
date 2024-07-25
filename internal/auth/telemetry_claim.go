@@ -15,23 +15,31 @@ type TelemetryClaimContextKey struct{}
 
 // TelemetryClaim is a custom claim for the telemetry API.
 type TelemetryClaim struct {
-	privileges map[model.Privilege]struct{}
+	privileges []model.Privilege
 	privilegetoken.CustomClaims
-	expectedContractAddress common.Address
+	vehicleNFTAddr   common.Address
+	manufacturerAddr common.Address
+	contractToPrivs  map[common.Address][]model.Privilege
 }
 
 // SetPrivileges sets the privileges from the embedded CustomClaims.
 func (t *TelemetryClaim) SetPrivileges() {
-	t.privileges = make(map[model.Privilege]struct{}, len(t.CustomClaims.PrivilegeIDs))
 	for _, priv := range t.CustomClaims.PrivilegeIDs {
-		t.privileges[privToAPI[priv]] = struct{}{}
+		privName, okV := vehiclePrivileges[priv]
+		if okV {
+			t.privileges = append(t.privileges, privName)
+		}
+		// privName, okM := manufacturerPrivileges[priv]
+		// if okM {
+		// 	t.privileges = append(t.privileges, privName)
+		// }
 	}
 }
 
 // Validate function is required to implement the validator.CustomClaims interface.
 func (t *TelemetryClaim) Validate(context.Context) error {
-	if t.expectedContractAddress != t.CustomClaims.ContractAddress {
-		return fmt.Errorf("%w: incorrect contract address expected %v got %v", errUnauthorized, t.expectedContractAddress, t.CustomClaims.ContractAddress)
+	if t.CustomClaims.ContractAddress != t.vehicleNFTAddr && t.CustomClaims.ContractAddress != t.manufacturerAddr {
+		return fmt.Errorf("%w: unexpected contract address passed", errUnauthorized)
 	}
 	return nil
 }

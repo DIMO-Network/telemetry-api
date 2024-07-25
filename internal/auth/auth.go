@@ -4,22 +4,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"slices"
 	"strconv"
 
 	"github.com/99designs/gqlgen/graphql"
-	"github.com/DIMO-Network/shared/privileges"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 )
 
 var errUnauthorized = errors.New("unauthorized")
-
-var privToAPI = map[privileges.Privilege]model.Privilege{
-	privileges.VehicleNonLocationData: model.PrivilegeVehicleNonLocationData,
-	privileges.VehicleCommands:        model.PrivilegeVehicleCommands,
-	privileges.VehicleCurrentLocation: model.PrivilegeVehicleCurrentLocation,
-	privileges.VehicleAllTimeLocation: model.PrivilegeVehicleAllTimeLocation,
-	privileges.VehicleVinCredential:   model.PrivilegeVehicleVinCredential,
-}
 
 // RequiresPrivilegeCheck checks if the claim set in the context has the required privileges.
 func RequiresPrivilegeCheck(ctx context.Context, _ any, next graphql.Resolver, privs []model.Privilege) (any, error) {
@@ -28,10 +20,20 @@ func RequiresPrivilegeCheck(ctx context.Context, _ any, next graphql.Resolver, p
 		return nil, fmt.Errorf("%s: %w", errUnauthorized.Error(), err)
 	}
 	for _, priv := range privs {
-		if _, ok := claim.privileges[priv]; !ok {
+		if !slices.Contains(claim.privileges, priv) {
 			return nil, fmt.Errorf("%w: missing required privilege %s", errUnauthorized, priv)
 		}
+
+		allowedPrivs, ok := claim.contractToPrivs[claim.ContractAddress]
+		if !ok {
+			return nil, fmt.Errorf("%w: missing required contract address for privilege %s", errUnauthorized, priv)
+		}
+
+		if !slices.Contains(allowedPrivs, priv) {
+			return nil, fmt.Errorf("%w: contract address mismatch for privilege %s", errUnauthorized, priv)
+		}
 	}
+
 	return next(ctx)
 }
 
