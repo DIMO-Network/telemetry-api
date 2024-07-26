@@ -146,10 +146,15 @@ type ComplexityRoot struct {
 	}
 
 	VINVC struct {
-		ExpirationDate func(childComplexity int) int
-		IssuanceDate   func(childComplexity int) int
-		RawVc          func(childComplexity int) int
-		Vin            func(childComplexity int) int
+		CountryCode            func(childComplexity int) int
+		RawVc                  func(childComplexity int) int
+		RecordedAt             func(childComplexity int) int
+		RecordedBy             func(childComplexity int) int
+		ValidFrom              func(childComplexity int) int
+		ValidTo                func(childComplexity int) int
+		VehicleContractAddress func(childComplexity int) int
+		VehicleTokenID         func(childComplexity int) int
+		Vin                    func(childComplexity int) int
 	}
 }
 
@@ -958,19 +963,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.SignalString.Value(childComplexity), true
 
-	case "VINVC.expirationDate":
-		if e.complexity.VINVC.ExpirationDate == nil {
+	case "VINVC.countryCode":
+		if e.complexity.VINVC.CountryCode == nil {
 			break
 		}
 
-		return e.complexity.VINVC.ExpirationDate(childComplexity), true
-
-	case "VINVC.issuanceDate":
-		if e.complexity.VINVC.IssuanceDate == nil {
-			break
-		}
-
-		return e.complexity.VINVC.IssuanceDate(childComplexity), true
+		return e.complexity.VINVC.CountryCode(childComplexity), true
 
 	case "VINVC.rawVC":
 		if e.complexity.VINVC.RawVc == nil {
@@ -978,6 +976,48 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.VINVC.RawVc(childComplexity), true
+
+	case "VINVC.recordedAt":
+		if e.complexity.VINVC.RecordedAt == nil {
+			break
+		}
+
+		return e.complexity.VINVC.RecordedAt(childComplexity), true
+
+	case "VINVC.recordedBy":
+		if e.complexity.VINVC.RecordedBy == nil {
+			break
+		}
+
+		return e.complexity.VINVC.RecordedBy(childComplexity), true
+
+	case "VINVC.validFrom":
+		if e.complexity.VINVC.ValidFrom == nil {
+			break
+		}
+
+		return e.complexity.VINVC.ValidFrom(childComplexity), true
+
+	case "VINVC.validTo":
+		if e.complexity.VINVC.ValidTo == nil {
+			break
+		}
+
+		return e.complexity.VINVC.ValidTo(childComplexity), true
+
+	case "VINVC.vehicleContractAddress":
+		if e.complexity.VINVC.VehicleContractAddress == nil {
+			break
+		}
+
+		return e.complexity.VINVC.VehicleContractAddress(childComplexity), true
+
+	case "VINVC.vehicleTokenId":
+		if e.complexity.VINVC.VehicleTokenID == nil {
+			break
+		}
+
+		return e.complexity.VINVC.VehicleTokenID(childComplexity), true
 
 	case "VINVC.vin":
 		if e.complexity.VINVC.Vin == nil {
@@ -1375,11 +1415,11 @@ extend type SignalAggregations {
   
   """
   Engine oil level as a percentage.
-  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
   """
   powertrainCombustionEngineEngineOilRelativeLevel(
     agg: FloatAggregation!
-  ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineEngineOilRelativeLevel", forceResolver: true) @isSignal @hasAggregation
+  ):  Float @requiresPrivilege(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "PowertrainCombustionEngineEngineOilRelativeLevel", forceResolver: true) @isSignal @hasAggregation
   
   """
   Grams of air drawn into engine per second.
@@ -1618,9 +1658,9 @@ extend type SignalCollection {
   
   """
   Engine oil level as a percentage.
-  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
   """
-  powertrainCombustionEngineEngineOilRelativeLevel: SignalFloat @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineEngineOilRelativeLevel") @isSignal
+  powertrainCombustionEngineEngineOilRelativeLevel: SignalFloat @requiresPrivilege(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "PowertrainCombustionEngineEngineOilRelativeLevel") @isSignal
   
   """
   Grams of air drawn into engine per second.
@@ -1726,9 +1766,49 @@ extend type SignalCollection {
 }
 
 type VINVC {
-  issuanceDate: Time
-  expirationDate: Time
+  """
+  vehicleTokenId is the token ID of the vehicle.
+  """
+  vehicleTokenId: Int
+
+  """
+  vin is the vehicle identification number.
+  """
   vin: String
+
+  """
+  recordedBy is the entity that recorded the VIN.
+  """
+  recordedBy: String
+
+  """
+  The time the VIN was recorded.
+  """
+  recordedAt: Time
+
+  """
+  countryCode is the country code that the VIN belongs to.
+  """
+  countryCode: String
+
+  """
+  vehicleContractAddress is the address of the vehicle contract.
+  """
+  vehicleContractAddress: String
+
+  """
+  validFrom is the time the VC is valid from.
+  """
+  validFrom: Time
+
+  """
+  validTo is the time the VC is valid to.
+  """
+  validTo: Time
+
+  """
+  rawVC is the raw VC JSON.
+  """
   rawVC: String!
 }
 `, BuiltIn: false},
@@ -2780,12 +2860,22 @@ func (ec *executionContext) fieldContext_Query_vinVCLatest(ctx context.Context, 
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "issuanceDate":
-				return ec.fieldContext_VINVC_issuanceDate(ctx, field)
-			case "expirationDate":
-				return ec.fieldContext_VINVC_expirationDate(ctx, field)
+			case "vehicleTokenId":
+				return ec.fieldContext_VINVC_vehicleTokenId(ctx, field)
 			case "vin":
 				return ec.fieldContext_VINVC_vin(ctx, field)
+			case "recordedBy":
+				return ec.fieldContext_VINVC_recordedBy(ctx, field)
+			case "recordedAt":
+				return ec.fieldContext_VINVC_recordedAt(ctx, field)
+			case "countryCode":
+				return ec.fieldContext_VINVC_countryCode(ctx, field)
+			case "vehicleContractAddress":
+				return ec.fieldContext_VINVC_vehicleContractAddress(ctx, field)
+			case "validFrom":
+				return ec.fieldContext_VINVC_validFrom(ctx, field)
+			case "validTo":
+				return ec.fieldContext_VINVC_validTo(ctx, field)
 			case "rawVC":
 				return ec.fieldContext_VINVC_rawVC(ctx, field)
 			}
@@ -4757,7 +4847,7 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineEngine
 			return ec.resolvers.SignalAggregations().PowertrainCombustionEngineEngineOilRelativeLevel(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_ALL_TIME_LOCATION"})
 			if err != nil {
 				return nil, err
 			}
@@ -7658,7 +7748,7 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineEngineOi
 			return obj.PowertrainCombustionEngineEngineOilRelativeLevel, nil
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_ALL_TIME_LOCATION"})
 			if err != nil {
 				return nil, err
 			}
@@ -8971,8 +9061,8 @@ func (ec *executionContext) fieldContext_SignalString_value(_ context.Context, f
 	return fc, nil
 }
 
-func (ec *executionContext) _VINVC_issuanceDate(ctx context.Context, field graphql.CollectedField, obj *model.Vinvc) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_VINVC_issuanceDate(ctx, field)
+func (ec *executionContext) _VINVC_vehicleTokenId(ctx context.Context, field graphql.CollectedField, obj *model.Vinvc) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_VINVC_vehicleTokenId(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -8985,7 +9075,7 @@ func (ec *executionContext) _VINVC_issuanceDate(ctx context.Context, field graph
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.IssuanceDate, nil
+		return obj.VehicleTokenID, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -8994,60 +9084,19 @@ func (ec *executionContext) _VINVC_issuanceDate(ctx context.Context, field graph
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*time.Time)
+	res := resTmp.(*int)
 	fc.Result = res
-	return ec.marshalOTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+	return ec.marshalOInt2ᚖint(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_VINVC_issuanceDate(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_VINVC_vehicleTokenId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "VINVC",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Time does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _VINVC_expirationDate(ctx context.Context, field graphql.CollectedField, obj *model.Vinvc) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_VINVC_expirationDate(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.ExpirationDate, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*time.Time)
-	fc.Result = res
-	return ec.marshalOTime2ᚖtimeᚐTime(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_VINVC_expirationDate(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "VINVC",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Time does not have child fields")
+			return nil, errors.New("field of type Int does not have child fields")
 		},
 	}
 	return fc, nil
@@ -9089,6 +9138,252 @@ func (ec *executionContext) fieldContext_VINVC_vin(_ context.Context, field grap
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _VINVC_recordedBy(ctx context.Context, field graphql.CollectedField, obj *model.Vinvc) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_VINVC_recordedBy(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.RecordedBy, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_VINVC_recordedBy(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "VINVC",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _VINVC_recordedAt(ctx context.Context, field graphql.CollectedField, obj *model.Vinvc) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_VINVC_recordedAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.RecordedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalOTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_VINVC_recordedAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "VINVC",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _VINVC_countryCode(ctx context.Context, field graphql.CollectedField, obj *model.Vinvc) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_VINVC_countryCode(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CountryCode, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_VINVC_countryCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "VINVC",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _VINVC_vehicleContractAddress(ctx context.Context, field graphql.CollectedField, obj *model.Vinvc) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_VINVC_vehicleContractAddress(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.VehicleContractAddress, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_VINVC_vehicleContractAddress(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "VINVC",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _VINVC_validFrom(ctx context.Context, field graphql.CollectedField, obj *model.Vinvc) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_VINVC_validFrom(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ValidFrom, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalOTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_VINVC_validFrom(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "VINVC",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _VINVC_validTo(ctx context.Context, field graphql.CollectedField, obj *model.Vinvc) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_VINVC_validTo(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ValidTo, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalOTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_VINVC_validTo(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "VINVC",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
 		},
 	}
 	return fc, nil
@@ -12452,12 +12747,22 @@ func (ec *executionContext) _VINVC(ctx context.Context, sel ast.SelectionSet, ob
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("VINVC")
-		case "issuanceDate":
-			out.Values[i] = ec._VINVC_issuanceDate(ctx, field, obj)
-		case "expirationDate":
-			out.Values[i] = ec._VINVC_expirationDate(ctx, field, obj)
+		case "vehicleTokenId":
+			out.Values[i] = ec._VINVC_vehicleTokenId(ctx, field, obj)
 		case "vin":
 			out.Values[i] = ec._VINVC_vin(ctx, field, obj)
+		case "recordedBy":
+			out.Values[i] = ec._VINVC_recordedBy(ctx, field, obj)
+		case "recordedAt":
+			out.Values[i] = ec._VINVC_recordedAt(ctx, field, obj)
+		case "countryCode":
+			out.Values[i] = ec._VINVC_countryCode(ctx, field, obj)
+		case "vehicleContractAddress":
+			out.Values[i] = ec._VINVC_vehicleContractAddress(ctx, field, obj)
+		case "validFrom":
+			out.Values[i] = ec._VINVC_validFrom(ctx, field, obj)
+		case "validTo":
+			out.Values[i] = ec._VINVC_validTo(ctx, field, obj)
 		case "rawVC":
 			out.Values[i] = ec._VINVC_rawVC(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -13281,6 +13586,22 @@ func (ec *executionContext) marshalOFloat2ᚖfloat64(ctx context.Context, sel as
 	}
 	res := graphql.MarshalFloatContext(*v)
 	return graphql.WrapContextMarshaler(ctx, res)
+}
+
+func (ec *executionContext) unmarshalOInt2ᚖint(ctx context.Context, v interface{}) (*int, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := graphql.UnmarshalInt(v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOInt2ᚖint(ctx context.Context, sel ast.SelectionSet, v *int) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	res := graphql.MarshalInt(*v)
+	return res
 }
 
 func (ec *executionContext) marshalOSignalAggregations2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalAggregationsᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.SignalAggregations) graphql.Marshaler {
