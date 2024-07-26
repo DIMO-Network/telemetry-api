@@ -9,6 +9,11 @@ import (
 	"time"
 )
 
+type DeviceActivity struct {
+	// lastActiveRange indicates a block of time during which activity from the advice was last recorded.
+	LastActiveRange *time.Time `json:"lastActiveRange,omitempty"`
+}
+
 // The root query type for the GraphQL schema.
 type Query struct {
 }
@@ -228,11 +233,12 @@ func (e FloatAggregation) MarshalGQL(w io.Writer) {
 type Privilege string
 
 const (
-	PrivilegeVehicleNonLocationData Privilege = "VEHICLE_NON_LOCATION_DATA"
-	PrivilegeVehicleCommands        Privilege = "VEHICLE_COMMANDS"
-	PrivilegeVehicleCurrentLocation Privilege = "VEHICLE_CURRENT_LOCATION"
-	PrivilegeVehicleAllTimeLocation Privilege = "VEHICLE_ALL_TIME_LOCATION"
-	PrivilegeVehicleVinCredential   Privilege = "VEHICLE_VIN_CREDENTIAL"
+	PrivilegeVehicleNonLocationData         Privilege = "VEHICLE_NON_LOCATION_DATA"
+	PrivilegeVehicleCommands                Privilege = "VEHICLE_COMMANDS"
+	PrivilegeVehicleCurrentLocation         Privilege = "VEHICLE_CURRENT_LOCATION"
+	PrivilegeVehicleAllTimeLocation         Privilege = "VEHICLE_ALL_TIME_LOCATION"
+	PrivilegeVehicleVinCredential           Privilege = "VEHICLE_VIN_CREDENTIAL"
+	PrivilegeManufacturerLastSeenCredential Privilege = "MANUFACTURER_LAST_SEEN_CREDENTIAL"
 )
 
 var AllPrivilege = []Privilege{
@@ -241,11 +247,12 @@ var AllPrivilege = []Privilege{
 	PrivilegeVehicleCurrentLocation,
 	PrivilegeVehicleAllTimeLocation,
 	PrivilegeVehicleVinCredential,
+	PrivilegeManufacturerLastSeenCredential,
 }
 
 func (e Privilege) IsValid() bool {
 	switch e {
-	case PrivilegeVehicleNonLocationData, PrivilegeVehicleCommands, PrivilegeVehicleCurrentLocation, PrivilegeVehicleAllTimeLocation, PrivilegeVehicleVinCredential:
+	case PrivilegeVehicleNonLocationData, PrivilegeVehicleCommands, PrivilegeVehicleCurrentLocation, PrivilegeVehicleAllTimeLocation, PrivilegeVehicleVinCredential, PrivilegeManufacturerLastSeenCredential:
 		return true
 	}
 	return false
