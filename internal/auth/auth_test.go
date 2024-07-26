@@ -9,6 +9,7 @@ import (
 	"github.com/DIMO-Network/shared/middleware/privilegetoken"
 	"github.com/DIMO-Network/shared/privileges"
 	"github.com/DIMO-Network/telemetry-api/internal/auth"
+	"github.com/DIMO-Network/telemetry-api/internal/config"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/require"
@@ -71,6 +72,7 @@ func TestRequiresTokenCheck(t *testing.T) {
 		},
 	}
 
+	authValidator := auth.NewPrivilegeContractValidator(config.Settings{})
 	for _, tc := range testCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
@@ -79,7 +81,7 @@ func TestRequiresTokenCheck(t *testing.T) {
 				Args: tc.args,
 			})
 			testCtx = context.WithValue(testCtx, auth.TelemetryClaimContextKey{}, tc.telmetryClaim)
-			result, err := auth.RequiresTokenCheck(testCtx, nil, graphql.Resolver(emptyResolver))
+			result, err := authValidator.VehicleTokenCheck(testCtx, nil, graphql.Resolver(emptyResolver))
 			if tc.expectedError {
 				require.Error(t, err)
 				return
@@ -169,10 +171,10 @@ func TestRequiresPrivilegeCheck(t *testing.T) {
 		},
 	}
 
-	authValidator := auth.PrivilegeContractValidator{
-		VehicleNFTAddress: vehicleNFTAddr,
-		// ManufAddr:         manufNFTAddr.Hex(),
-	}
+	authValidator := auth.NewPrivilegeContractValidator(config.Settings{
+		VehicleNFTAddress:      vehicleNFTAddr.Hex(),
+		ManufacturerNFTAddress: manufNFTAddr.Hex(),
+	})
 
 	for _, tc := range testCases {
 		tc := tc

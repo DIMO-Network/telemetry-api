@@ -18,4 +18,6 @@ type Settings struct {
 	VINVCBucket                 string          `yaml:"VINVC_BUCKET"`
 	VINVCDataType               string          `yaml:"VINVC_DATA_TYPE"`
 	ManufacturerNFTAddress      string          `yaml:"MANUFACTURER_NFT_ADDRESS"`
+	IdentityAPIURL              string          `yaml:"IDENTITY_API_URL"`
+	IdentityAPIRequestTimeout   int             `yaml:"IDENTITY_API_REQUEST_TIMEOUT"`
 }

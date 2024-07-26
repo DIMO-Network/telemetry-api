@@ -24,7 +24,6 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/adaptor"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -60,13 +59,13 @@ func main() {
 		VINVCRepo:  vinvcRepo,
 	}
 
-	privValidator := auth.PrivilegeContractValidator{
-		VehicleNFTAddress: common.HexToAddress(settings.VehicleNFTAddress),
-	}
+	privilegeValidator := auth.NewPrivilegeContractValidator(settings)
 
 	cfg := graph.Config{Resolvers: resolver}
-	cfg.Directives.RequiresVehiclePrivilege = privValidator.VehicleNFTPrivCheck
-	cfg.Directives.RequiresToken = auth.RequiresTokenCheck
+	cfg.Directives.RequiresVehiclePrivilege = privilegeValidator.VehicleNFTPrivCheck
+	cfg.Directives.RequiresManufacturerPrivilege = privilegeValidator.ManufacturerNFTPrivCheck
+	cfg.Directives.RequiresVehicleToken = privilegeValidator.VehicleTokenCheck
+	cfg.Directives.RequiresManufacturerToken = privilegeValidator.ManufacturerTokenCheck
 	cfg.Directives.IsSignal = noOp
 	cfg.Directives.HasAggregation = noOp
 
