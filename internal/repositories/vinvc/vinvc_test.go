@@ -48,9 +48,6 @@ func (m *MockRow) ScanStruct(any) error {
 	return nil
 }
 
-//go:generate mockgen -destination=mock_service_test.go -package=vinvc_test github.com/DIMO-Network/nameindexer/pkg/clickhouse/service ObjectGetter
-//go:generate mockgen -destination=mock_clickhouse_test.go -package=vinvc_test github.com/ClickHouse/clickhouse-go/v2 Conn
-
 func TestGetLatestVC(t *testing.T) {
 
 	// Initialize variables
