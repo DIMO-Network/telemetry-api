@@ -77,7 +77,7 @@ type SignalCollection struct {
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainCombustionEngineEngineOilLevel *SignalString `json:"powertrainCombustionEngineEngineOilLevel,omitempty"`
 	// Engine oil level as a percentage.
-	// Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainCombustionEngineEngineOilRelativeLevel *SignalFloat `json:"powertrainCombustionEngineEngineOilRelativeLevel,omitempty"`
 	// Grams of air drawn into engine per second.
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]

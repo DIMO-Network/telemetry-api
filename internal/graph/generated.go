@@ -1415,11 +1415,11 @@ extend type SignalAggregations {
   
   """
   Engine oil level as a percentage.
-  Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainCombustionEngineEngineOilRelativeLevel(
     agg: FloatAggregation!
-  ):  Float @requiresPrivilege(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "PowertrainCombustionEngineEngineOilRelativeLevel", forceResolver: true) @isSignal @hasAggregation
+  ):  Float @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineEngineOilRelativeLevel", forceResolver: true) @isSignal @hasAggregation
   
   """
   Grams of air drawn into engine per second.
@@ -1658,9 +1658,9 @@ extend type SignalCollection {
   
   """
   Engine oil level as a percentage.
-  Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
-  powertrainCombustionEngineEngineOilRelativeLevel: SignalFloat @requiresPrivilege(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "PowertrainCombustionEngineEngineOilRelativeLevel") @isSignal
+  powertrainCombustionEngineEngineOilRelativeLevel: SignalFloat @requiresPrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineEngineOilRelativeLevel") @isSignal
   
   """
   Grams of air drawn into engine per second.
@@ -4847,7 +4847,7 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineEngine
 			return ec.resolvers.SignalAggregations().PowertrainCombustionEngineEngineOilRelativeLevel(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_ALL_TIME_LOCATION"})
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				return nil, err
 			}
@@ -7748,7 +7748,7 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineEngineOi
 			return obj.PowertrainCombustionEngineEngineOilRelativeLevel, nil
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_ALL_TIME_LOCATION"})
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				return nil, err
 			}
