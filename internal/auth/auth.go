@@ -47,6 +47,7 @@ type PrivilegeContractValidator struct {
 	// ManufAddr         string
 }
 
+// VehicleNFTPrivCheck checks if the claim set in the context includes the correct address the required privileges for the VehicleNFT contract.
 func (pcv *PrivilegeContractValidator) VehicleNFTPrivCheck(ctx context.Context, _ any, next graphql.Resolver, privs []model.Privilege) (any, error) {
 	claim, err := getTelemetryClaim(ctx)
 	if err != nil {
