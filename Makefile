@@ -2,6 +2,7 @@
 
 PATHINSTBIN = $(abspath ./bin)
 export PATH := $(PATHINSTBIN):$(PATH)
+SHELL := env PATH=$(PATH) /bin/sh
 
 BIN_NAME					?= telemetry-api
 DEFAULT_INSTALL_DIR			:= $(go env GOPATH)/bin
