@@ -15,8 +15,48 @@ extend type Query {
 }
 
 type VINVC {
-  issuanceDate: Time
-  expirationDate: Time
+  """
+  vehicleTokenId is the token ID of the vehicle.
+  """
+  vehicleTokenId: Int
+
+  """
+  vin is the vehicle identification number.
+  """
   vin: String
+
+  """
+  recordedBy is the entity that recorded the VIN.
+  """
+  recordedBy: String
+
+  """
+  The time the VIN was recorded.
+  """
+  recordedAt: Time
+
+  """
+  countryCode is the country code that the VIN belongs to.
+  """
+  countryCode: String
+
+  """
+  vehicleContractAddress is the address of the vehicle contract.
+  """
+  vehicleContractAddress: String
+
+  """
+  validFrom is the time the VC is valid from.
+  """
+  validFrom: Time
+
+  """
+  validTo is the time the VC is valid to.
+  """
+  validTo: Time
+
+  """
+  rawVC is the raw VC JSON.
+  """
   rawVC: String!
 }

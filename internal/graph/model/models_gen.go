@@ -145,10 +145,24 @@ type SignalString struct {
 }
 
 type Vinvc struct {
-	IssuanceDate   *time.Time `json:"issuanceDate,omitempty"`
-	ExpirationDate *time.Time `json:"expirationDate,omitempty"`
-	Vin            *string    `json:"vin,omitempty"`
-	RawVc          string     `json:"rawVC"`
+	// vehicleTokenId is the token ID of the vehicle.
+	VehicleTokenID *int `json:"vehicleTokenId,omitempty"`
+	// vin is the vehicle identification number.
+	Vin *string `json:"vin,omitempty"`
+	// recordedBy is the entity that recorded the VIN.
+	RecordedBy *string `json:"recordedBy,omitempty"`
+	// The time the VIN was recorded.
+	RecordedAt *time.Time `json:"recordedAt,omitempty"`
+	// countryCode is the country code that the VIN belongs to.
+	CountryCode *string `json:"countryCode,omitempty"`
+	// vehicleContractAddress is the address of the vehicle contract.
+	VehicleContractAddress *string `json:"vehicleContractAddress,omitempty"`
+	// validFrom is the time the VC is valid from.
+	ValidFrom *time.Time `json:"validFrom,omitempty"`
+	// validTo is the time the VC is valid to.
+	ValidTo *time.Time `json:"validTo,omitempty"`
+	// rawVC is the raw VC JSON.
+	RawVc string `json:"rawVC"`
 }
 
 type FloatAggregation string

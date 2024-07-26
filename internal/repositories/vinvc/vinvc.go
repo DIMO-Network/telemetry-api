@@ -2,6 +2,7 @@ package vinvc
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -37,6 +38,9 @@ func (s *Repository) GetLatestVC(ctx context.Context, vehicleTokenID uint32) (*m
 	}
 	data, err := s.indexService.GetLatestData(ctx, s.dataType, subject)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, nil
+		}
 		s.logger.Error().Err(err).Msg("failed to get latest data")
 		return nil, errors.New("internal error")
 	}
@@ -46,24 +50,48 @@ func (s *Repository) GetLatestVC(ctx context.Context, vehicleTokenID uint32) (*m
 	}
 
 	var expiresAt *time.Time
-	if expirationDate, err := time.Parse(time.RFC3339, msg.ExpirationDate); err == nil {
+	if expirationDate, err := time.Parse(time.RFC3339, msg.ValidTo); err == nil {
 		expiresAt = &expirationDate
 	}
 	var createdAt *time.Time
-	if issuanceDate, err := time.Parse(time.RFC3339, msg.IssuanceDate); err == nil {
+	if issuanceDate, err := time.Parse(time.RFC3339, msg.ValidFrom); err == nil {
 		createdAt = &issuanceDate
 	}
 	credSubject := verifiable.VINSubject{}
+	if err := json.Unmarshal(msg.CredentialSubject, &credSubject); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal credential subject: %w", err)
+	}
 	var vin *string
-	if err := json.Unmarshal(msg.CredentialSubject, &credSubject); err == nil {
+	if credSubject.VehicleIdentificationNumber != "" {
 		vin = &credSubject.VehicleIdentificationNumber
 	}
-
-	vc := model.Vinvc{
-		IssuanceDate:   createdAt,
-		ExpirationDate: expiresAt,
-		RawVc:          string(data),
-		Vin:            vin,
+	var recordedBy *string
+	if credSubject.RecordedBy != "" {
+		recordedBy = &credSubject.RecordedBy
 	}
-	return &vc, nil
+	var recordedAt *time.Time
+	if !credSubject.RecordedAt.IsZero() {
+		recordedAt = &credSubject.RecordedAt
+	}
+	var countryCode *string
+	if credSubject.CountryCode != "" {
+		countryCode = &credSubject.CountryCode
+	}
+	var vehicleContractAddress *string
+	if credSubject.VehicleContractAddress != "" {
+		vehicleContractAddress = &credSubject.VehicleContractAddress
+	}
+	tokenIDInt := int(credSubject.VehicleTokenID)
+
+	return &model.Vinvc{
+		ValidFrom:              createdAt,
+		ValidTo:                expiresAt,
+		RawVc:                  string(data),
+		Vin:                    vin,
+		RecordedBy:             recordedBy,
+		RecordedAt:             recordedAt,
+		CountryCode:            countryCode,
+		VehicleContractAddress: vehicleContractAddress,
+		VehicleTokenID:         &tokenIDInt,
+	}, nil
 }
