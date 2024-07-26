@@ -7,26 +7,15 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/DIMO-Network/shared/privileges"
-	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	jwtmiddleware "github.com/auth0/go-jwt-middleware/v2"
 	"github.com/auth0/go-jwt-middleware/v2/jwks"
 	"github.com/auth0/go-jwt-middleware/v2/validator"
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/rs/zerolog"
 )
 
-var vehiclePrivileges = map[privileges.Privilege]model.Privilege{
-	privileges.VehicleNonLocationData: model.PrivilegeVehicleNonLocationData,
-	privileges.VehicleCommands:        model.PrivilegeVehicleCommands,
-	privileges.VehicleCurrentLocation: model.PrivilegeVehicleCurrentLocation,
-	privileges.VehicleAllTimeLocation: model.PrivilegeVehicleAllTimeLocation,
-	privileges.VehicleVinCredential:   model.PrivilegeVehicleVinCredential,
-}
-
 // NewJWTMiddleware creates a new JWT middleware with the given issuer and contract address.
 // This middleware will validate the token and add the claim to the context.
-func NewJWTMiddleware(issuer, jwksURI, vNFTAddr, manufNFTAddr string, logger *zerolog.Logger) (*jwtmiddleware.JWTMiddleware, error) {
+func NewJWTMiddleware(issuer, jwksURI string, logger *zerolog.Logger) (*jwtmiddleware.JWTMiddleware, error) {
 	issuerURL, err := url.Parse(issuer)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse issuer URL: %w", err)
@@ -40,26 +29,8 @@ func NewJWTMiddleware(issuer, jwksURI, vNFTAddr, manufNFTAddr string, logger *ze
 		opts = append(opts, jwks.WithCustomJWKSURI(keysURI))
 	}
 	provider := jwks.NewCachingProvider(issuerURL, 1*time.Minute, opts...)
-	vehicleNFTAddr := common.HexToAddress(vNFTAddr)
-	// manufacturerAddr := common.HexToAddress(manufNFTAddr)
-
-	contractToPrivs := map[common.Address]map[model.Privilege]struct{}{}
-	contractToPrivs[vehicleNFTAddr] = map[model.Privilege]struct{}{}
-	for _, privName := range vehiclePrivileges {
-		contractToPrivs[vehicleNFTAddr][privName] = struct{}{}
-	}
-
-	// contractToPrivs[manufacturerAddr] = []model.Privilege{}
-	// for _, privName := range manufacturerPrivileges {
-	// 	contractToPrivs[manufacturerAddr] = append(contractToPrivs[manufacturerAddr], privName)
-	// }
-
 	newCustomClaims := func() validator.CustomClaims {
-		return &TelemetryClaim{
-			vehicleNFTAddr: vehicleNFTAddr,
-			// manufacturerAddr: manufacturerAddr,
-			contractToPrivs: contractToPrivs,
-		}
+		return &TelemetryClaim{}
 	}
 	// Set up the validator.
 	jwtValidator, err := validator.New(

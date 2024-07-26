@@ -24,6 +24,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/adaptor"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -58,8 +59,13 @@ func main() {
 		Repository: baseRepo,
 		VINVCRepo:  vinvcRepo,
 	}
+
+	privValidator := auth.PrivilegeContractValidator{
+		VehicleNFTAddress: common.HexToAddress(settings.VehicleNFTAddress),
+	}
+
 	cfg := graph.Config{Resolvers: resolver}
-	cfg.Directives.RequiresPrivilege = auth.RequiresPrivilegeCheck
+	cfg.Directives.RequiresVehiclePrivilege = privValidator.VehicleNFTPrivCheck
 	cfg.Directives.RequiresToken = auth.RequiresTokenCheck
 	cfg.Directives.IsSignal = noOp
 	cfg.Directives.HasAggregation = noOp
@@ -72,7 +78,7 @@ func main() {
 
 	logger.Info().Str("jwksUrl", settings.TokenExchangeJWTKeySetURL).Str("issuerURL", settings.TokenExchangeIssuer).Str("vehicleAddr", settings.VehicleNFTAddress).Msg("Privileges enabled.")
 
-	authMiddleware, err := auth.NewJWTMiddleware(settings.TokenExchangeIssuer, settings.TokenExchangeJWTKeySetURL, settings.VehicleNFTAddress, settings.ManufacturerNFTAddress, &logger)
+	authMiddleware, err := auth.NewJWTMiddleware(settings.TokenExchangeIssuer, settings.TokenExchangeJWTKeySetURL, &logger)
 	if err != nil {
 		logger.Fatal().Err(err).Msg("Couldn't create JWT middleware.")
 	}
