@@ -74,8 +74,8 @@ github.com/ClickHouse/clickhouse-go/v2 v2.26.0 h1:j4/y6NYaCcFkJwN/TU700ebW+nmsIy
 github.com/ClickHouse/clickhouse-go/v2 v2.26.0/go.mod h1:iDTViXk2Fgvf1jn2dbJd1ys+fBkdD1UMRnXlwmhijhQ=
 github.com/DATA-DOG/go-sqlmock v1.4.1 h1:ThlnYciV1iM/V0OSF/dtkqWb6xo5qITT1TJBG1MRDJM=
 github.com/DATA-DOG/go-sqlmock v1.4.1/go.mod h1:f/Ixk793poVmq4qj/V1dPUg2JEAKC73Q5eFN3EC/SaM=
-github.com/DIMO-Network/attestation-api v0.0.2 h1:rHxy0VdCaaXLg5RBg5/bjBhMvzLcTej2sTosI4Khwek=
-github.com/DIMO-Network/attestation-api v0.0.2/go.mod h1:xqLVVCSCo/zVbujSCmNwDQq1DPto+8nFI05wDeugz10=
+github.com/DIMO-Network/attestation-api v0.0.4-0.20240725185510-66575e8ba086 h1:z1pBfMpJkmfc60K96SgZUN6q6E22x4mBUvISwaRhUu8=
+github.com/DIMO-Network/attestation-api v0.0.4-0.20240725185510-66575e8ba086/go.mod h1:PXaKJ19K07siEkisPRrgNL3wL27RElEBKQszlqdwOZ8=
 github.com/DIMO-Network/clickhouse-infra v0.0.1 h1:4Mp9ayfOQyPWquXYBc2ElOtDxWjms0+VUals2XW43Lc=
 github.com/DIMO-Network/clickhouse-infra v0.0.1/go.mod h1:SNz+mqccq4AYWFpJ65v3NRXDBY9/f7PKJSHCPtbk9+E=
 github.com/DIMO-Network/model-garage v0.2.11 h1:3ofR3McKnngQb6ehApA9u80MfCyhugMiM7zBs+svlVM=
