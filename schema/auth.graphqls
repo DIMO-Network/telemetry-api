@@ -1,6 +1,7 @@
 scalar Map
 
 directive @requiresVehiclePrivilege(privileges: [Privilege!]!) on FIELD_DEFINITION | OBJECT | INTERFACE | SCALAR | ENUM
+directive @requiresManufacturerPrivilege(privilege: Privilege!) on FIELD_DEFINITION | OBJECT | INTERFACE | SCALAR | ENUM
 
 enum Privilege {
   VEHICLE_NON_LOCATION_DATA
@@ -8,6 +9,8 @@ enum Privilege {
   VEHICLE_CURRENT_LOCATION
   VEHICLE_ALL_TIME_LOCATION
   VEHICLE_VIN_CREDENTIAL
+  MANUFACTURER_LAST_SEEN_CREDENTIAL
 }
 
-directive @requiresToken on FIELD_DEFINITION
+directive @requiresVehicleToken on FIELD_DEFINITION
+directive @requiresManufacturerToken on FIELD_DEFINITION
