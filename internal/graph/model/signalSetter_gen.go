@@ -34,6 +34,11 @@ func SetCollectionField(collection *SignalCollection, signal *vss.Signal) {
 			Timestamp: signal.Timestamp,
 			Value:     signal.ValueNumber,
 		}
+	case "currentLocationIsRedacted":
+		collection.CurrentLocationIsRedacted = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
 	case "currentLocationLatitude":
 		collection.CurrentLocationLatitude = &SignalFloat{
 			Timestamp: signal.Timestamp,
@@ -43,11 +48,6 @@ func SetCollectionField(collection *SignalCollection, signal *vss.Signal) {
 		collection.CurrentLocationLongitude = &SignalFloat{
 			Timestamp: signal.Timestamp,
 			Value:     signal.ValueNumber,
-		}
-	case "currentLocationTimestamp":
-		collection.CurrentLocationTimestamp = &SignalString{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueString,
 		}
 	case "dimoAftermarketHDOP":
 		collection.DIMOAftermarketHDOP = &SignalFloat{
@@ -68,11 +68,6 @@ func SetCollectionField(collection *SignalCollection, signal *vss.Signal) {
 		collection.DIMOAftermarketWPAState = &SignalString{
 			Timestamp: signal.Timestamp,
 			Value:     signal.ValueString,
-		}
-	case "dimoIsLocationRedacted":
-		collection.DIMOIsLocationRedacted = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
 		}
 	case "exteriorAirTemperature":
 		collection.ExteriorAirTemperature = &SignalFloat{
@@ -114,6 +109,11 @@ func SetCollectionField(collection *SignalCollection, signal *vss.Signal) {
 			Timestamp: signal.Timestamp,
 			Value:     signal.ValueString,
 		}
+	case "powertrainCombustionEngineEngineOilRelativeLevel":
+		collection.PowertrainCombustionEngineEngineOilRelativeLevel = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
 	case "powertrainCombustionEngineMAF":
 		collection.PowertrainCombustionEngineMAF = &SignalFloat{
 			Timestamp: signal.Timestamp,
@@ -129,8 +129,8 @@ func SetCollectionField(collection *SignalCollection, signal *vss.Signal) {
 			Timestamp: signal.Timestamp,
 			Value:     signal.ValueNumber,
 		}
-	case "powertrainFuelSystemAbsoluteLevel":
-		collection.PowertrainFuelSystemAbsoluteLevel = &SignalFloat{
+	case "powertrainFuelSystemRelativeLevel":
+		collection.PowertrainFuelSystemRelativeLevel = &SignalFloat{
 			Timestamp: signal.Timestamp,
 			Value:     signal.ValueNumber,
 		}
@@ -184,21 +184,6 @@ func SetCollectionField(collection *SignalCollection, signal *vss.Signal) {
 			Timestamp: signal.Timestamp,
 			Value:     signal.ValueNumber,
 		}
-	case "vehicleIdentificationBrand":
-		collection.VehicleIdentificationBrand = &SignalString{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueString,
-		}
-	case "vehicleIdentificationModel":
-		collection.VehicleIdentificationModel = &SignalString{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueString,
-		}
-	case "vehicleIdentificationYear":
-		collection.VehicleIdentificationYear = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
-		}
 	}
 }
 
@@ -218,12 +203,12 @@ func SetAggregationField(aggregations *SignalAggregations, signal *AggSignal) {
 		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
 	case "currentLocationAltitude":
 		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
+	case "currentLocationIsRedacted":
+		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
 	case "currentLocationLatitude":
 		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
 	case "currentLocationLongitude":
 		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
-	case "currentLocationTimestamp":
-		aggregations.ValueStrings[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueString
 	case "dimoAftermarketHDOP":
 		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
 	case "dimoAftermarketNSAT":
@@ -232,8 +217,6 @@ func SetAggregationField(aggregations *SignalAggregations, signal *AggSignal) {
 		aggregations.ValueStrings[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueString
 	case "dimoAftermarketWPAState":
 		aggregations.ValueStrings[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueString
-	case "dimoIsLocationRedacted":
-		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
 	case "exteriorAirTemperature":
 		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
 	case "lowVoltageBatteryCurrentVoltage":
@@ -250,13 +233,15 @@ func SetAggregationField(aggregations *SignalAggregations, signal *AggSignal) {
 		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
 	case "powertrainCombustionEngineEngineOilLevel":
 		aggregations.ValueStrings[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueString
+	case "powertrainCombustionEngineEngineOilRelativeLevel":
+		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
 	case "powertrainCombustionEngineMAF":
 		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
 	case "powertrainCombustionEngineSpeed":
 		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
 	case "powertrainCombustionEngineTPS":
 		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
-	case "powertrainFuelSystemAbsoluteLevel":
+	case "powertrainFuelSystemRelativeLevel":
 		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
 	case "powertrainFuelSystemSupportedFuelTypes":
 		aggregations.ValueStrings[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueString
@@ -277,12 +262,6 @@ func SetAggregationField(aggregations *SignalAggregations, signal *AggSignal) {
 	case "powertrainType":
 		aggregations.ValueStrings[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueString
 	case "speed":
-		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
-	case "vehicleIdentificationBrand":
-		aggregations.ValueStrings[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueString
-	case "vehicleIdentificationModel":
-		aggregations.ValueStrings[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueString
-	case "vehicleIdentificationYear":
 		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
 	}
 }
