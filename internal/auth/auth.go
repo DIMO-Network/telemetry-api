@@ -127,9 +127,9 @@ func getRequestValues[T any](ctx context.Context, key string) (T, error) {
 		return resp, fmt.Errorf("no field context found")
 	}
 
-	resp, okAddr := fCtx.Args[key].(T)
-	if !okAddr {
-		return resp, fmt.Errorf("failed to get address from args")
+	resp, ok := fCtx.Args[key].(T)
+	if !ok {
+		return resp, fmt.Errorf("failed to get %s from args", key)
 	}
 
 	return resp, nil
