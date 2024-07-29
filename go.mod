@@ -10,6 +10,7 @@ require (
 	github.com/DIMO-Network/model-garage v0.2.11
 	github.com/DIMO-Network/nameindexer v0.0.1
 	github.com/DIMO-Network/shared v0.10.19
+	github.com/Khan/genqlient v0.7.0
 	github.com/auth0/go-jwt-middleware/v2 v2.2.1
 	github.com/aws/aws-sdk-go-v2 v1.30.1
 	github.com/aws/aws-sdk-go-v2/credentials v1.17.23

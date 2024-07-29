@@ -149,3 +149,28 @@ func (s *Service) getAggSignals(ctx context.Context, stmt string, args []any) ([
 	}
 	return signals, nil
 }
+
+// GetDeviceActivity returns the last 3 hour bucket during which device activity was recorded.
+func (s *Service) GetDeviceActivity(ctx context.Context, vehicleTokenId int, adManuf string) ([]*model.DeviceActivity, error) {
+	stmt, args := getDeviceActivityQuery(vehicleTokenId, adManuf)
+	rows, err := s.conn.Query(ctx, stmt, args...)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close() //nolint:errcheck // we don't care about the error here
+	activityHistorical := []*model.DeviceActivity{}
+	for rows.Next() {
+		var activity model.DeviceActivity
+		err := rows.Scan(&activity.LastActive)
+		if err != nil {
+			return nil, fmt.Errorf("failed scanning clickhouse row: %w", err)
+		}
+		activityHistorical = append(activityHistorical, &activity)
+	}
+	if rows.Err() != nil {
+		return nil, fmt.Errorf("clickhouse row error: %w", rows.Err())
+	}
+
+	return activityHistorical, nil
+}

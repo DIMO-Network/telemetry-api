@@ -490,6 +490,35 @@ func (c *CHServiceTestSuite) insertTestData() {
 	c.Require().NoError(err, "Failed to send batch")
 }
 
+func (c *CHServiceTestSuite) TestGetDeviceActivity() {
+	ctx := context.Background()
+	lastActive := c.dataStartTime
+	testCases := []struct {
+		name           string
+		vehicleTokenID int
+		adManuf        string
+		expected       model.DeviceActivity
+	}{
+		{
+			name:           "get-bucket-for-last-device-activity",
+			vehicleTokenID: 1,
+			adManuf:        "AutoPi",
+			expected: model.DeviceActivity{
+				LastActive: &lastActive,
+			},
+		},
+	}
+	for _, tc := range testCases {
+		c.Run(tc.name, func() {
+			result, err := c.chService.GetDeviceActivity(ctx, tc.vehicleTokenID, tc.adManuf)
+			c.Require().NoError(err)
+			for _, sig := range result {
+				c.Require().Equal(tc.expected, *sig)
+			}
+		})
+	}
+}
+
 func ref[T any](t T) *T {
 	return &t
 }

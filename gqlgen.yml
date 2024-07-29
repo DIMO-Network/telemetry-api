@@ -22,7 +22,7 @@ resolver:
   layout: follow-schema
   dir: internal/graph
   package: graph
-  filename_template: "{name}.resolvers.go"
+  filename_template: '{name}.resolvers.go'
   # Optional: turn on to not generate template comments above resolvers
   # omit_template_comment: false
 
@@ -80,3 +80,6 @@ models:
   SignalAggregations:
     model:
       - github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalAggregations
+  Address:
+    model:
+      - github.com/DIMO-Network/telemetry-api/internal/graph/model.Address

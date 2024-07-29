@@ -85,6 +85,8 @@ github.com/DIMO-Network/nameindexer v0.0.1/go.mod h1:M+KvLHakKW8ce4/tZlOsii++9zk
 github.com/DIMO-Network/shared v0.10.19 h1:f3WFBXr2pZ8Se2rzw1IdKrmjlG+Q5c3ATiOyfFOXkuA=
 github.com/DIMO-Network/shared v0.10.19/go.mod h1:LDNCMzOGA+MqXtHbvRDFS/1kl8sHMQgxAS8fFh4GKJA=
 github.com/DataDog/datadog-go v3.2.0+incompatible/go.mod h1:LButxg5PwREeZtORoXG3tL4fMGNddJ+vMq1mwgfaqoQ=
+github.com/Khan/genqlient v0.7.0 h1:GZ1meyRnzcDTK48EjqB8t3bcfYvHArCUUvgOwpz1D4w=
+github.com/Khan/genqlient v0.7.0/go.mod h1:HNyy3wZvuYwmW3Y7mkoQLZsa/R5n5yIRajS1kPBvSFM=
 github.com/Masterminds/goutils v1.1.1/go.mod h1:8cTjp+g8YejhMuvIA5y2vz3BpJxksy863GQaJW2MFNU=
 github.com/Masterminds/semver/v3 v3.1.1/go.mod h1:VPu/7SZ7ePZ3QOrcuXROw5FAcLl4a0cBrbBpGY/8hQs=
 github.com/Masterminds/sprig/v3 v3.2.2/go.mod h1:UoaO7Yp8KlPnJIYWTFkMaqPUYKTfGFPhxNuwnnxkKlk=

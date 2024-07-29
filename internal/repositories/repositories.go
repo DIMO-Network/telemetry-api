@@ -24,6 +24,7 @@ var (
 type CHService interface {
 	GetAggregatedSignals(ctx context.Context, aggArgs *model.AggregatedSignalArgs) ([]*model.AggSignal, error)
 	GetLatestSignals(ctx context.Context, latestArgs *model.LatestSignalsArgs) ([]*vss.Signal, error)
+	GetDeviceActivity(ctx context.Context, vehicleTokenID int, adManuf string) ([]*model.DeviceActivity, error)
 }
 
 // Repository is the base repository for all repositories.
@@ -94,6 +95,20 @@ func (r *Repository) GetSignalLatest(ctx context.Context, latestArgs *model.Late
 	}
 
 	return coll, nil
+}
+
+// GetDeviceActivity returns device status activity level.
+func (r *Repository) GetDeviceActivity(ctx context.Context, vehicleTokenID int, adManuf string) (*model.DeviceActivity, error) {
+	resp, err := r.chService.GetDeviceActivity(ctx, vehicleTokenID, adManuf)
+	if err != nil {
+		return nil, handleDBError(err, r.log)
+	}
+
+	if len(resp) == 0 {
+		return nil, handleDBError(errors.New("no device activity found"), r.log)
+	}
+
+	return resp[len(resp)-1], nil
 }
 
 // handleDBError logs the error and returns a generic error message.

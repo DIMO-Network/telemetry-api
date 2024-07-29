@@ -8,7 +8,7 @@ extend type Query {
     """
     The token ID of the aftermarket device.
     """
-    tokenId: Int!
+    by: AftermarketDeviceBy!
   ): DeviceActivity
     @requiresManufacturerToken
     @requiresManufacturerPrivilege(privilege: MANUFACTURER_LAST_SEEN_CREDENTIAL)
@@ -16,7 +16,16 @@ extend type Query {
 
 type DeviceActivity {
   """
-  lastActiveRange indicates a block of time during which activity from the advice was last recorded.
+  lastActive indicates the start of a 3 hour block during which the device was last active.
   """
-  lastActiveRange: Time
+  lastActive: Time
+}
+
+"""
+The AftermarketDeviceBy input is used to specify a unique aftermarket device to query for last active status.
+"""
+input AftermarketDeviceBy @oneOf {
+  tokenId: Int
+  address: Address
+  serial: String
 }

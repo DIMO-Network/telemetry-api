@@ -343,3 +343,15 @@ func getFilterMods(filter *model.SignalFilter) []qm.QueryMod {
 	}
 	return mods
 }
+
+// getDeviceActivityQuery returns the most recent 3 hour bucket during which device activity was recorded.
+func getDeviceActivityQuery(vehicleTokenID int, adManuf string) (string, []any) {
+	mods := []qm.QueryMod{
+		selectInterval(3 * time.Hour.Milliseconds()),
+		qm.From(vss.TableName),
+		qm.Where(tokenIDWhere, vehicleTokenID),
+		qm.Where(sourceWhere, SourceTranslations[strings.ToLower(adManuf)]),
+	}
+
+	return newQuery(mods...)
+}

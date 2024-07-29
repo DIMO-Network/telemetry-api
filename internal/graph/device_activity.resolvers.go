@@ -6,12 +6,21 @@ package graph
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
+	"github.com/DIMO-Network/telemetry-api/internal/service/identity_api"
 )
 
 // DeviceActivity is the resolver for the deviceActivity field.
-func (r *queryResolver) DeviceActivity(ctx context.Context, tokenID int) (*model.DeviceActivity, error) {
-	panic(fmt.Errorf("not implemented: DeviceActivity - deviceActivity"))
+func (r *queryResolver) DeviceActivity(ctx context.Context, by model.AftermarketDeviceBy) (*model.DeviceActivity, error) {
+	adInfo, err := r.IdentityService.AftermarketDevice(ctx, identity_api.AftermarketDeviceBy{
+		Address: by.Address,
+		TokenId: by.TokenID,
+		Serial:  by.Serial,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return r.Repository.GetDeviceActivity(ctx, adInfo.AftermarketDevice.Vehicle.TokenId, adInfo.AftermarketDevice.Manufacturer.Name)
 }
