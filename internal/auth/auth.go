@@ -81,35 +81,31 @@ func (pcv *PrivilegeContractValidator) checkPrivWithAddress(ctx context.Context,
 func (pcv *PrivilegeContractValidator) VehicleTokenCheck(ctx context.Context, _ any, next graphql.Resolver) (any, error) {
 	claim, err := getTelemetryClaim(ctx)
 	if err != nil {
+		return nil, err
+	}
+
+	vehicleTokenID, err := getRequestValues[int](ctx, "tokenId")
+	if err != nil {
 		return nil, fmt.Errorf("%s: %w", errUnauthorized.Error(), err)
 	}
-	fCtx := graphql.GetFieldContext(ctx)
-	if fCtx == nil {
-		return nil, fmt.Errorf("%w: no field context found", errUnauthorized)
-	}
-	tokenID, ok := fCtx.Args["tokenId"].(int)
-	if !ok {
-		return nil, fmt.Errorf("%w: failed to get tokenID from args", errUnauthorized)
-	}
-	if strconv.Itoa(tokenID) != claim.TokenID {
+
+	if strconv.Itoa(vehicleTokenID) != claim.TokenID {
 		return nil, fmt.Errorf("%w: tokenID mismatch", errUnauthorized)
 	}
+
 	return next(ctx)
 }
 
 func (pcv *PrivilegeContractValidator) ManufacturerTokenCheck(ctx context.Context, obj interface{}, next graphql.Resolver) (res interface{}, err error) {
 	claim, err := getTelemetryClaim(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("%s: %w", errUnauthorized.Error(), err)
-	}
-	fCtx := graphql.GetFieldContext(ctx)
-	if fCtx == nil {
-		return nil, fmt.Errorf("%w: no field context found", errUnauthorized)
+		return nil, err
 	}
 
-	aftermarketDeviceAddr, okAddr := fCtx.Args["address"].(common.Address)
-	if !okAddr {
-		return nil, fmt.Errorf("%w: failed to get address from args", errUnauthorized)
+	// TODO allow user to search by addr, tokenID, or serial
+	aftermarketDeviceAddr, err := getRequestValues[common.Address](ctx, "address")
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", errUnauthorized.Error(), err)
 	}
 
 	resp, err := pcv.identityService.AftermarketDevice(ctx, services.AftermarketDeviceBy{Address: &aftermarketDeviceAddr})
@@ -122,4 +118,19 @@ func (pcv *PrivilegeContractValidator) ManufacturerTokenCheck(ctx context.Contex
 	}
 
 	return next(ctx)
+}
+
+func getRequestValues[T any](ctx context.Context, key string) (T, error) {
+	var resp T
+	fCtx := graphql.GetFieldContext(ctx)
+	if fCtx == nil {
+		return resp, fmt.Errorf("no field context found")
+	}
+
+	resp, okAddr := fCtx.Args[key].(T)
+	if !okAddr {
+		return resp, fmt.Errorf("failed to get address from args")
+	}
+
+	return resp, nil
 }
