@@ -17,4 +17,5 @@ type Settings struct {
 	S3AWSSecretAccessKey        string          `yaml:"S3_AWS_SECRET_ACCESS_KEY"`
 	VINVCBucket                 string          `yaml:"VINVC_BUCKET"`
 	VINVCDataType               string          `yaml:"VINVC_DATA_TYPE"`
+	ManufacturerNFTAddress      string          `yaml:"MANUFACTURER_NFT_ADDRESS"`
 }

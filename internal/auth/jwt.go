@@ -10,13 +10,12 @@ import (
 	jwtmiddleware "github.com/auth0/go-jwt-middleware/v2"
 	"github.com/auth0/go-jwt-middleware/v2/jwks"
 	"github.com/auth0/go-jwt-middleware/v2/validator"
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/rs/zerolog"
 )
 
 // NewJWTMiddleware creates a new JWT middleware with the given issuer and contract address.
 // This middleware will validate the token and add the claim to the context.
-func NewJWTMiddleware(issuer, jwksURI, contractAddress string, logger *zerolog.Logger) (*jwtmiddleware.JWTMiddleware, error) {
+func NewJWTMiddleware(issuer, jwksURI string, logger *zerolog.Logger) (*jwtmiddleware.JWTMiddleware, error) {
 	issuerURL, err := url.Parse(issuer)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse issuer URL: %w", err)
@@ -30,9 +29,8 @@ func NewJWTMiddleware(issuer, jwksURI, contractAddress string, logger *zerolog.L
 		opts = append(opts, jwks.WithCustomJWKSURI(keysURI))
 	}
 	provider := jwks.NewCachingProvider(issuerURL, 1*time.Minute, opts...)
-	expectedAddr := common.HexToAddress(contractAddress)
 	newCustomClaims := func() validator.CustomClaims {
-		return &TelemetryClaim{expectedContractAddress: expectedAddr}
+		return &TelemetryClaim{}
 	}
 	// Set up the validator.
 	jwtValidator, err := validator.New(

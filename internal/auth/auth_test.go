@@ -2,6 +2,7 @@ package auth_test
 
 import (
 	"context"
+	"math/big"
 	"testing"
 
 	"github.com/99designs/gqlgen/graphql"
@@ -9,6 +10,7 @@ import (
 	"github.com/DIMO-Network/shared/privileges"
 	"github.com/DIMO-Network/telemetry-api/internal/auth"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/require"
 )
 
@@ -89,6 +91,8 @@ func TestRequiresTokenCheck(t *testing.T) {
 }
 func TestRequiresPrivilegeCheck(t *testing.T) {
 	t.Parallel()
+	vehicleNFTAddr := common.BigToAddress(big.NewInt(10))
+	manufNFTAddr := common.BigToAddress(big.NewInt(11))
 	testCases := []struct {
 		name           string
 		privs          []model.Privilege
@@ -107,6 +111,7 @@ func TestRequiresPrivilegeCheck(t *testing.T) {
 						privileges.VehicleAllTimeLocation,
 						privileges.VehicleNonLocationData,
 					},
+					ContractAddress: vehicleNFTAddr,
 				},
 			},
 		},
@@ -118,7 +123,8 @@ func TestRequiresPrivilegeCheck(t *testing.T) {
 			},
 			telemetryClaim: &auth.TelemetryClaim{
 				CustomClaims: privilegetoken.CustomClaims{
-					PrivilegeIDs: nil,
+					PrivilegeIDs:    nil,
+					ContractAddress: vehicleNFTAddr,
 				},
 			},
 			expectedError: true,
@@ -134,6 +140,7 @@ func TestRequiresPrivilegeCheck(t *testing.T) {
 					PrivilegeIDs: []privileges.Privilege{
 						privileges.VehicleAllTimeLocation,
 					},
+					ContractAddress: vehicleNFTAddr,
 				},
 			},
 			expectedError: true,
@@ -144,6 +151,27 @@ func TestRequiresPrivilegeCheck(t *testing.T) {
 			telemetryClaim: nil,
 			expectedError:  true,
 		},
+		{
+			name: "wrongAddr",
+			privs: []model.Privilege{
+				model.PrivilegeVehicleAllTimeLocation,
+				model.PrivilegeVehicleNonLocationData,
+			},
+			telemetryClaim: &auth.TelemetryClaim{
+				CustomClaims: privilegetoken.CustomClaims{
+					PrivilegeIDs: []privileges.Privilege{
+						privileges.VehicleAllTimeLocation,
+					},
+					ContractAddress: manufNFTAddr,
+				},
+			},
+			expectedError: true,
+		},
+	}
+
+	authValidator := auth.PrivilegeContractValidator{
+		VehicleNFTAddress: vehicleNFTAddr,
+		// ManufAddr:         manufNFTAddr.Hex(),
 	}
 
 	for _, tc := range testCases {
@@ -154,7 +182,7 @@ func TestRequiresPrivilegeCheck(t *testing.T) {
 				tc.telemetryClaim.SetPrivileges()
 			}
 			testCtx := context.WithValue(context.Background(), auth.TelemetryClaimContextKey{}, tc.telemetryClaim)
-			next, err := auth.RequiresPrivilegeCheck(testCtx, nil, emptyResolver, tc.privs)
+			next, err := authValidator.VehicleNFTPrivCheck(testCtx, nil, emptyResolver, tc.privs)
 			if tc.expectedError {
 				require.Error(t, err)
 				return
