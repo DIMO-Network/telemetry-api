@@ -36,30 +36,27 @@ type SignalCollection struct {
 	// Current altitude relative to WGS 84 reference ellipsoid, as measured at the position of GNSS receiver antenna.
 	// Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
 	CurrentLocationAltitude *SignalFloat `json:"currentLocationAltitude,omitempty"`
+	// Indicates if the latitude and longitude signals at the current timestamp have been redacted using a privacy zone.
+	// Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
+	CurrentLocationIsRedacted *SignalFloat `json:"currentLocationIsRedacted,omitempty"`
 	// Current latitude of vehicle in WGS 84 geodetic coordinates, as measured at the position of GNSS receiver antenna.
 	// Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
 	CurrentLocationLatitude *SignalFloat `json:"currentLocationLatitude,omitempty"`
 	// Current longitude of vehicle in WGS 84 geodetic coordinates, as measured at the position of GNSS receiver antenna.
 	// Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
 	CurrentLocationLongitude *SignalFloat `json:"currentLocationLongitude,omitempty"`
-	// Timestamp from GNSS system for current location, formatted according to ISO 8601 with UTC time zone.
-	// Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
-	CurrentLocationTimestamp *SignalString `json:"currentLocationTimestamp,omitempty"`
 	// Horizontal dilution of precision of GPS
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	DIMOAftermarketHDOP *SignalFloat `json:"dimoAftermarketHDOP,omitempty"`
 	// Number of sync satellites for GPS
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	DIMOAftermarketNSAT *SignalFloat `json:"dimoAftermarketNSAT,omitempty"`
-	// Service Set Ientifier for the wifi.
+	// Service Set Identifier for the wifi.
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	DIMOAftermarketSSID *SignalString `json:"dimoAftermarketSSID,omitempty"`
-	// Indicate the current wpa state for the devices wifi
+	// Indicate the current WPA state for the device's wifi
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	DIMOAftermarketWPAState *SignalString `json:"dimoAftermarketWPAState,omitempty"`
-	// Indicates if the latitude and longitude signals at the current timestamp have been redacted using a privacy zone.
-	// Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
-	DIMOIsLocationRedacted *SignalFloat `json:"dimoIsLocationRedacted,omitempty"`
 	// Air temperature outside the vehicle.
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	ExteriorAirTemperature *SignalFloat `json:"exteriorAirTemperature,omitempty"`
@@ -84,6 +81,9 @@ type SignalCollection struct {
 	// Engine oil level.
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainCombustionEngineEngineOilLevel *SignalString `json:"powertrainCombustionEngineEngineOilLevel,omitempty"`
+	// Engine oil level as a percentage.
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	PowertrainCombustionEngineEngineOilRelativeLevel *SignalFloat `json:"powertrainCombustionEngineEngineOilRelativeLevel,omitempty"`
 	// Grams of air drawn into engine per second.
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainCombustionEngineMAF *SignalFloat `json:"powertrainCombustionEngineMAF,omitempty"`
@@ -93,9 +93,9 @@ type SignalCollection struct {
 	// Current throttle position.
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainCombustionEngineTPS *SignalFloat `json:"powertrainCombustionEngineTPS,omitempty"`
-	// Current available fuel in the fuel tank expressed in liters.
+	// Level in fuel tank as percent of capacity. 0 = empty. 100 = full.
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-	PowertrainFuelSystemAbsoluteLevel *SignalFloat `json:"powertrainFuelSystemAbsoluteLevel,omitempty"`
+	PowertrainFuelSystemRelativeLevel *SignalFloat `json:"powertrainFuelSystemRelativeLevel,omitempty"`
 	// High level information of fuel types supported
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainFuelSystemSupportedFuelTypes *SignalString `json:"powertrainFuelSystemSupportedFuelTypes,omitempty"`
@@ -126,15 +126,6 @@ type SignalCollection struct {
 	// Vehicle speed.
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	Speed *SignalFloat `json:"speed,omitempty"`
-	// Vehicle brand or manufacturer.
-	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-	VehicleIdentificationBrand *SignalString `json:"vehicleIdentificationBrand,omitempty"`
-	// Vehicle model.
-	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-	VehicleIdentificationModel *SignalString `json:"vehicleIdentificationModel,omitempty"`
-	// Model year of the vehicle.
-	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-	VehicleIdentificationYear *SignalFloat `json:"vehicleIdentificationYear,omitempty"`
 }
 
 // SignalFilter holds the filter parameters for the signal querys.
