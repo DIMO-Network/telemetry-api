@@ -17,14 +17,6 @@ type TelemetryClaim struct {
 	privilegetoken.CustomClaims
 }
 
-// SetPrivileges sets the privileges from the embedded CustomClaims.
-func (t *TelemetryClaim) SetPrivileges() {
-	t.privileges = make(map[model.Privilege]struct{}, len(t.CustomClaims.PrivilegeIDs))
-	for _, priv := range t.CustomClaims.PrivilegeIDs {
-		t.privileges[privToAPI[priv]] = struct{}{}
-	}
-}
-
 // Validate function is required to implement the validator.CustomClaims interface.
 func (t *TelemetryClaim) Validate(context.Context) error {
 	return nil

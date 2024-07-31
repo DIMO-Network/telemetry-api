@@ -60,13 +60,13 @@ func main() {
 		VINVCRepo:  vinvcRepo,
 	}
 
-	privValidator := auth.PrivilegeContractValidator{
-		VehicleNFTAddress: common.HexToAddress(settings.VehicleNFTAddress),
+	vehCheck := auth.VehicleTokenChecker{
+		ContractAddr: common.HexToAddress(settings.VehicleNFTAddress),
 	}
 
 	cfg := graph.Config{Resolvers: resolver}
-	cfg.Directives.RequiresVehiclePrivilege = privValidator.VehicleNFTPrivCheck
-	cfg.Directives.RequiresToken = auth.RequiresTokenCheck
+	cfg.Directives.RequiresVehicleToken = vehCheck.Check
+	cfg.Directives.RequiresVehiclePrivilege = auth.PrivilegeCheck
 	cfg.Directives.IsSignal = noOp
 	cfg.Directives.HasAggregation = noOp
 
@@ -92,7 +92,7 @@ func main() {
 
 	authedHandler := limiter.AddRequestTimeout(
 		authMiddleware.CheckJWT(
-			auth.AddClaimHandler(server, &logger),
+			auth.AddClaimHandler(server, &logger, settings.VehicleNFTAddress, settings.ManufacturerNFTAddress),
 		),
 	)
 	http.Handle("/query", authedHandler)

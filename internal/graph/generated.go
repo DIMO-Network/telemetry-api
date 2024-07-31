@@ -46,8 +46,8 @@ type ResolverRoot interface {
 type DirectiveRoot struct {
 	HasAggregation           func(ctx context.Context, obj interface{}, next graphql.Resolver) (res interface{}, err error)
 	IsSignal                 func(ctx context.Context, obj interface{}, next graphql.Resolver) (res interface{}, err error)
-	RequiresToken            func(ctx context.Context, obj interface{}, next graphql.Resolver) (res interface{}, err error)
 	RequiresVehiclePrivilege func(ctx context.Context, obj interface{}, next graphql.Resolver, privileges []model.Privilege) (res interface{}, err error)
+	RequiresVehicleToken     func(ctx context.Context, obj interface{}, next graphql.Resolver) (res interface{}, err error)
 }
 
 type ComplexityRoot struct {
@@ -1129,7 +1129,7 @@ enum Privilege {
   VEHICLE_VIN_CREDENTIAL
 }
 
-directive @requiresToken on FIELD_DEFINITION
+directive @requiresVehicleToken on FIELD_DEFINITION
 `, BuiltIn: false},
 	{Name: "../../schema/base.graphqls", Input: `"""
 A point in time, encoded per RFC-3999. Typically these will be in second precision,
@@ -1162,11 +1162,11 @@ type Query {
     from: Time!
     to: Time!
     filter: SignalFilter
-  ): [SignalAggregations!] @requiresToken
+  ): [SignalAggregations!] @requiresVehicleToken
   """
   SignalsLatest returns the latest signals for a given token.
   """
-  signalsLatest(tokenId: Int!, filter: SignalFilter): SignalCollection @requiresToken
+  signalsLatest(tokenId: Int!, filter: SignalFilter): SignalCollection @requiresVehicleToken
 }
 type SignalAggregations {
   """
@@ -1758,7 +1758,7 @@ extend type SignalCollection {
     The token ID of the vehicle.
     """
     tokenId: Int!
-  ): VINVC @requiresToken @requiresVehiclePrivilege(privileges: [VEHICLE_VIN_CREDENTIAL])
+  ): VINVC @requiresVehicleToken @requiresVehiclePrivilege(privileges: [VEHICLE_VIN_CREDENTIAL])
 }
 
 type VINVC {
@@ -2516,10 +2516,10 @@ func (ec *executionContext) _Query_signals(ctx context.Context, field graphql.Co
 			return ec.resolvers.Query().Signals(rctx, fc.Args["tokenId"].(int), fc.Args["interval"].(string), fc.Args["from"].(time.Time), fc.Args["to"].(time.Time), fc.Args["filter"].(*model.SignalFilter))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
-			if ec.directives.RequiresToken == nil {
-				return nil, errors.New("directive requiresToken is not implemented")
+			if ec.directives.RequiresVehicleToken == nil {
+				return nil, errors.New("directive requiresVehicleToken is not implemented")
 			}
-			return ec.directives.RequiresToken(ctx, nil, directive0)
+			return ec.directives.RequiresVehicleToken(ctx, nil, directive0)
 		}
 
 		tmp, err := directive1(rctx)
@@ -2662,10 +2662,10 @@ func (ec *executionContext) _Query_signalsLatest(ctx context.Context, field grap
 			return ec.resolvers.Query().SignalsLatest(rctx, fc.Args["tokenId"].(int), fc.Args["filter"].(*model.SignalFilter))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
-			if ec.directives.RequiresToken == nil {
-				return nil, errors.New("directive requiresToken is not implemented")
+			if ec.directives.RequiresVehicleToken == nil {
+				return nil, errors.New("directive requiresVehicleToken is not implemented")
 			}
-			return ec.directives.RequiresToken(ctx, nil, directive0)
+			return ec.directives.RequiresVehicleToken(ctx, nil, directive0)
 		}
 
 		tmp, err := directive1(rctx)
@@ -2808,10 +2808,10 @@ func (ec *executionContext) _Query_vinVCLatest(ctx context.Context, field graphq
 			return ec.resolvers.Query().VinVCLatest(rctx, fc.Args["tokenId"].(int))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
-			if ec.directives.RequiresToken == nil {
-				return nil, errors.New("directive requiresToken is not implemented")
+			if ec.directives.RequiresVehicleToken == nil {
+				return nil, errors.New("directive requiresVehicleToken is not implemented")
 			}
-			return ec.directives.RequiresToken(ctx, nil, directive0)
+			return ec.directives.RequiresVehicleToken(ctx, nil, directive0)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_VIN_CREDENTIAL"})

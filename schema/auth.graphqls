@@ -10,4 +10,4 @@ enum Privilege {
   VEHICLE_VIN_CREDENTIAL
 }
 
-directive @requiresToken on FIELD_DEFINITION
+directive @requiresVehicleToken on FIELD_DEFINITION

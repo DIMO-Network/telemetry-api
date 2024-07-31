@@ -79,7 +79,7 @@ func TestRequiresTokenCheck(t *testing.T) {
 				Args: tc.args,
 			})
 			testCtx = context.WithValue(testCtx, auth.TelemetryClaimContextKey{}, tc.telmetryClaim)
-			result, err := auth.RequiresTokenCheck(testCtx, nil, graphql.Resolver(emptyResolver))
+			result, err := auth.RequiresVehicleTokenCheck(testCtx, nil, graphql.Resolver(emptyResolver))
 			if tc.expectedError {
 				require.Error(t, err)
 				return
