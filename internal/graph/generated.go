@@ -44,10 +44,10 @@ type ResolverRoot interface {
 }
 
 type DirectiveRoot struct {
-	HasAggregation           func(ctx context.Context, obj interface{}, next graphql.Resolver) (res interface{}, err error)
-	IsSignal                 func(ctx context.Context, obj interface{}, next graphql.Resolver) (res interface{}, err error)
-	RequiresVehiclePrivilege func(ctx context.Context, obj interface{}, next graphql.Resolver, privileges []model.Privilege) (res interface{}, err error)
-	RequiresVehicleToken     func(ctx context.Context, obj interface{}, next graphql.Resolver) (res interface{}, err error)
+	HasAggregation       func(ctx context.Context, obj interface{}, next graphql.Resolver) (res interface{}, err error)
+	IsSignal             func(ctx context.Context, obj interface{}, next graphql.Resolver) (res interface{}, err error)
+	RequiresPrivileges   func(ctx context.Context, obj interface{}, next graphql.Resolver, privileges []model.Privilege) (res interface{}, err error)
+	RequiresVehicleToken func(ctx context.Context, obj interface{}, next graphql.Resolver) (res interface{}, err error)
 }
 
 type ComplexityRoot struct {
@@ -1119,7 +1119,7 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 var sources = []*ast.Source{
 	{Name: "../../schema/auth.graphqls", Input: `scalar Map
 
-directive @requiresVehiclePrivilege(privileges: [Privilege!]!) on FIELD_DEFINITION | OBJECT | INTERFACE | SCALAR | ENUM
+directive @requiresPrivileges(privileges: [Privilege!]!) on FIELD_DEFINITION | OBJECT | INTERFACE | SCALAR | ENUM
 
 enum Privilege {
   VEHICLE_NON_LOCATION_DATA
@@ -1257,7 +1257,7 @@ extend type SignalAggregations {
   """
   chassisAxleRow1WheelLeftTirePressure(
     agg: FloatAggregation!
-  ):  Float @requiresVehiclePrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisAxleRow1WheelLeftTirePressure", forceResolver: true) @isSignal @hasAggregation
+  ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisAxleRow1WheelLeftTirePressure", forceResolver: true) @isSignal @hasAggregation
   
   """
   Tire pressure in kilo-Pascal.
@@ -1265,7 +1265,7 @@ extend type SignalAggregations {
   """
   chassisAxleRow1WheelRightTirePressure(
     agg: FloatAggregation!
-  ):  Float @requiresVehiclePrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisAxleRow1WheelRightTirePressure", forceResolver: true) @isSignal @hasAggregation
+  ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisAxleRow1WheelRightTirePressure", forceResolver: true) @isSignal @hasAggregation
   
   """
   Tire pressure in kilo-Pascal.
@@ -1273,7 +1273,7 @@ extend type SignalAggregations {
   """
   chassisAxleRow2WheelLeftTirePressure(
     agg: FloatAggregation!
-  ):  Float @requiresVehiclePrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisAxleRow2WheelLeftTirePressure", forceResolver: true) @isSignal @hasAggregation
+  ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisAxleRow2WheelLeftTirePressure", forceResolver: true) @isSignal @hasAggregation
   
   """
   Tire pressure in kilo-Pascal.
@@ -1281,7 +1281,7 @@ extend type SignalAggregations {
   """
   chassisAxleRow2WheelRightTirePressure(
     agg: FloatAggregation!
-  ):  Float @requiresVehiclePrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisAxleRow2WheelRightTirePressure", forceResolver: true) @isSignal @hasAggregation
+  ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisAxleRow2WheelRightTirePressure", forceResolver: true) @isSignal @hasAggregation
   
   """
   Current altitude relative to WGS 84 reference ellipsoid, as measured at the position of GNSS receiver antenna.
@@ -1289,7 +1289,7 @@ extend type SignalAggregations {
   """
   currentLocationAltitude(
     agg: FloatAggregation!
-  ):  Float @requiresVehiclePrivilege(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationAltitude", forceResolver: true) @isSignal @hasAggregation
+  ):  Float @requiresPrivileges(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationAltitude", forceResolver: true) @isSignal @hasAggregation
   
   """
   Indicates if the latitude and longitude signals at the current timestamp have been redacted using a privacy zone.
@@ -1297,7 +1297,7 @@ extend type SignalAggregations {
   """
   currentLocationIsRedacted(
     agg: FloatAggregation!
-  ):  Float @requiresVehiclePrivilege(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationIsRedacted", forceResolver: true) @isSignal @hasAggregation
+  ):  Float @requiresPrivileges(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationIsRedacted", forceResolver: true) @isSignal @hasAggregation
   
   """
   Current latitude of vehicle in WGS 84 geodetic coordinates, as measured at the position of GNSS receiver antenna.
@@ -1305,7 +1305,7 @@ extend type SignalAggregations {
   """
   currentLocationLatitude(
     agg: FloatAggregation!
-  ):  Float @requiresVehiclePrivilege(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationLatitude", forceResolver: true) @isSignal @hasAggregation
+  ):  Float @requiresPrivileges(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationLatitude", forceResolver: true) @isSignal @hasAggregation
   
   """
   Current longitude of vehicle in WGS 84 geodetic coordinates, as measured at the position of GNSS receiver antenna.
@@ -1313,7 +1313,7 @@ extend type SignalAggregations {
   """
   currentLocationLongitude(
     agg: FloatAggregation!
-  ):  Float @requiresVehiclePrivilege(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationLongitude", forceResolver: true) @isSignal @hasAggregation
+  ):  Float @requiresPrivileges(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationLongitude", forceResolver: true) @isSignal @hasAggregation
   
   """
   Horizontal dilution of precision of GPS
@@ -1321,7 +1321,7 @@ extend type SignalAggregations {
   """
   dimoAftermarketHDOP(
     agg: FloatAggregation!
-  ):  Float @requiresVehiclePrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketHDOP", forceResolver: true) @isSignal @hasAggregation
+  ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketHDOP", forceResolver: true) @isSignal @hasAggregation
   
   """
   Number of sync satellites for GPS
@@ -1329,7 +1329,7 @@ extend type SignalAggregations {
   """
   dimoAftermarketNSAT(
     agg: FloatAggregation!
-  ):  Float @requiresVehiclePrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketNSAT", forceResolver: true) @isSignal @hasAggregation
+  ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketNSAT", forceResolver: true) @isSignal @hasAggregation
   
   """
   Service Set Identifier for the wifi.
@@ -1337,7 +1337,7 @@ extend type SignalAggregations {
   """
   dimoAftermarketSSID(
     agg: StringAggregation!
-  ):  String @requiresVehiclePrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketSSID", forceResolver: true) @isSignal @hasAggregation
+  ):  String @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketSSID", forceResolver: true) @isSignal @hasAggregation
   
   """
   Indicate the current WPA state for the device's wifi
@@ -1345,7 +1345,7 @@ extend type SignalAggregations {
   """
   dimoAftermarketWPAState(
     agg: StringAggregation!
-  ):  String @requiresVehiclePrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketWPAState", forceResolver: true) @isSignal @hasAggregation
+  ):  String @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketWPAState", forceResolver: true) @isSignal @hasAggregation
   
   """
   Air temperature outside the vehicle.
@@ -1353,7 +1353,7 @@ extend type SignalAggregations {
   """
   exteriorAirTemperature(
     agg: FloatAggregation!
-  ):  Float @requiresVehiclePrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ExteriorAirTemperature", forceResolver: true) @isSignal @hasAggregation
+  ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ExteriorAirTemperature", forceResolver: true) @isSignal @hasAggregation
   
   """
   Current Voltage of the low voltage battery.
@@ -1361,7 +1361,7 @@ extend type SignalAggregations {
   """
   lowVoltageBatteryCurrentVoltage(
     agg: FloatAggregation!
-  ):  Float @requiresVehiclePrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "LowVoltageBatteryCurrentVoltage", forceResolver: true) @isSignal @hasAggregation
+  ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "LowVoltageBatteryCurrentVoltage", forceResolver: true) @isSignal @hasAggregation
   
   """
   PID 33 - Barometric pressure
@@ -1369,7 +1369,7 @@ extend type SignalAggregations {
   """
   obdBarometricPressure(
     agg: FloatAggregation!
-  ):  Float @requiresVehiclePrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDBarometricPressure", forceResolver: true) @isSignal @hasAggregation
+  ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDBarometricPressure", forceResolver: true) @isSignal @hasAggregation
   
   """
   PID 04 - Engine load in percent - 0 = no load, 100 = full load
@@ -1377,7 +1377,7 @@ extend type SignalAggregations {
   """
   obdEngineLoad(
     agg: FloatAggregation!
-  ):  Float @requiresVehiclePrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDEngineLoad", forceResolver: true) @isSignal @hasAggregation
+  ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDEngineLoad", forceResolver: true) @isSignal @hasAggregation
   
   """
   PID 0F - Intake temperature
@@ -1385,7 +1385,7 @@ extend type SignalAggregations {
   """
   obdIntakeTemp(
     agg: FloatAggregation!
-  ):  Float @requiresVehiclePrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDIntakeTemp", forceResolver: true) @isSignal @hasAggregation
+  ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDIntakeTemp", forceResolver: true) @isSignal @hasAggregation
   
   """
   PID 1F - Engine run time
@@ -1393,7 +1393,7 @@ extend type SignalAggregations {
   """
   obdRunTime(
     agg: FloatAggregation!
-  ):  Float @requiresVehiclePrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDRunTime", forceResolver: true) @isSignal @hasAggregation
+  ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDRunTime", forceResolver: true) @isSignal @hasAggregation
   
   """
   Engine coolant temperature.
@@ -1401,7 +1401,7 @@ extend type SignalAggregations {
   """
   powertrainCombustionEngineECT(
     agg: FloatAggregation!
-  ):  Float @requiresVehiclePrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineECT", forceResolver: true) @isSignal @hasAggregation
+  ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineECT", forceResolver: true) @isSignal @hasAggregation
   
   """
   Engine oil level.
@@ -1409,7 +1409,7 @@ extend type SignalAggregations {
   """
   powertrainCombustionEngineEngineOilLevel(
     agg: StringAggregation!
-  ):  String @requiresVehiclePrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineEngineOilLevel", forceResolver: true) @isSignal @hasAggregation
+  ):  String @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineEngineOilLevel", forceResolver: true) @isSignal @hasAggregation
   
   """
   Engine oil level as a percentage.
@@ -1417,7 +1417,7 @@ extend type SignalAggregations {
   """
   powertrainCombustionEngineEngineOilRelativeLevel(
     agg: FloatAggregation!
-  ):  Float @requiresVehiclePrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineEngineOilRelativeLevel", forceResolver: true) @isSignal @hasAggregation
+  ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineEngineOilRelativeLevel", forceResolver: true) @isSignal @hasAggregation
   
   """
   Grams of air drawn into engine per second.
@@ -1425,7 +1425,7 @@ extend type SignalAggregations {
   """
   powertrainCombustionEngineMAF(
     agg: FloatAggregation!
-  ):  Float @requiresVehiclePrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineMAF", forceResolver: true) @isSignal @hasAggregation
+  ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineMAF", forceResolver: true) @isSignal @hasAggregation
   
   """
   Engine speed measured as rotations per minute.
@@ -1433,7 +1433,7 @@ extend type SignalAggregations {
   """
   powertrainCombustionEngineSpeed(
     agg: FloatAggregation!
-  ):  Float @requiresVehiclePrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineSpeed", forceResolver: true) @isSignal @hasAggregation
+  ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineSpeed", forceResolver: true) @isSignal @hasAggregation
   
   """
   Current throttle position.
@@ -1441,7 +1441,7 @@ extend type SignalAggregations {
   """
   powertrainCombustionEngineTPS(
     agg: FloatAggregation!
-  ):  Float @requiresVehiclePrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineTPS", forceResolver: true) @isSignal @hasAggregation
+  ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineTPS", forceResolver: true) @isSignal @hasAggregation
   
   """
   Level in fuel tank as percent of capacity. 0 = empty. 100 = full.
@@ -1449,7 +1449,7 @@ extend type SignalAggregations {
   """
   powertrainFuelSystemRelativeLevel(
     agg: FloatAggregation!
-  ):  Float @requiresVehiclePrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainFuelSystemRelativeLevel", forceResolver: true) @isSignal @hasAggregation
+  ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainFuelSystemRelativeLevel", forceResolver: true) @isSignal @hasAggregation
   
   """
   High level information of fuel types supported
@@ -1457,7 +1457,7 @@ extend type SignalAggregations {
   """
   powertrainFuelSystemSupportedFuelTypes(
     agg: StringAggregation!
-  ):  String @requiresVehiclePrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainFuelSystemSupportedFuelTypes", forceResolver: true) @isSignal @hasAggregation
+  ):  String @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainFuelSystemSupportedFuelTypes", forceResolver: true) @isSignal @hasAggregation
   
   """
   Remaining range in meters using all energy sources available in the vehicle.
@@ -1465,7 +1465,7 @@ extend type SignalAggregations {
   """
   powertrainRange(
     agg: FloatAggregation!
-  ):  Float @requiresVehiclePrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainRange", forceResolver: true) @isSignal @hasAggregation
+  ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainRange", forceResolver: true) @isSignal @hasAggregation
   
   """
   Target charge limit (state of charge) for battery.
@@ -1473,7 +1473,7 @@ extend type SignalAggregations {
   """
   powertrainTractionBatteryChargingChargeLimit(
     agg: FloatAggregation!
-  ):  Float @requiresVehiclePrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryChargingChargeLimit", forceResolver: true) @isSignal @hasAggregation
+  ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryChargingChargeLimit", forceResolver: true) @isSignal @hasAggregation
   
   """
   True if charging is ongoing. Charging is considered to be ongoing if energy is flowing from charger to vehicle.
@@ -1481,7 +1481,7 @@ extend type SignalAggregations {
   """
   powertrainTractionBatteryChargingIsCharging(
     agg: FloatAggregation!
-  ):  Float @requiresVehiclePrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryChargingIsCharging", forceResolver: true) @isSignal @hasAggregation
+  ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryChargingIsCharging", forceResolver: true) @isSignal @hasAggregation
   
   """
   Current electrical energy flowing in/out of battery. Positive = Energy flowing in to battery, e.g. during charging. Negative = Energy flowing out of battery, e.g. during driving.
@@ -1489,7 +1489,7 @@ extend type SignalAggregations {
   """
   powertrainTractionBatteryCurrentPower(
     agg: FloatAggregation!
-  ):  Float @requiresVehiclePrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryCurrentPower", forceResolver: true) @isSignal @hasAggregation
+  ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryCurrentPower", forceResolver: true) @isSignal @hasAggregation
   
   """
   Gross capacity of the battery.
@@ -1497,7 +1497,7 @@ extend type SignalAggregations {
   """
   powertrainTractionBatteryGrossCapacity(
     agg: FloatAggregation!
-  ):  Float @requiresVehiclePrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryGrossCapacity", forceResolver: true) @isSignal @hasAggregation
+  ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryGrossCapacity", forceResolver: true) @isSignal @hasAggregation
   
   """
   Physical state of charge of the high voltage battery, relative to net capacity. This is not necessarily the state of charge being displayed to the customer.
@@ -1505,7 +1505,7 @@ extend type SignalAggregations {
   """
   powertrainTractionBatteryStateOfChargeCurrent(
     agg: FloatAggregation!
-  ):  Float @requiresVehiclePrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryStateOfChargeCurrent", forceResolver: true) @isSignal @hasAggregation
+  ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryStateOfChargeCurrent", forceResolver: true) @isSignal @hasAggregation
   
   """
   Odometer reading, total distance travelled during the lifetime of the transmission.
@@ -1513,7 +1513,7 @@ extend type SignalAggregations {
   """
   powertrainTransmissionTravelledDistance(
     agg: FloatAggregation!
-  ):  Float @requiresVehiclePrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTransmissionTravelledDistance", forceResolver: true) @isSignal @hasAggregation
+  ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTransmissionTravelledDistance", forceResolver: true) @isSignal @hasAggregation
   
   """
   Defines the powertrain type of the vehicle.
@@ -1521,7 +1521,7 @@ extend type SignalAggregations {
   """
   powertrainType(
     agg: StringAggregation!
-  ):  String @requiresVehiclePrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainType", forceResolver: true) @isSignal @hasAggregation
+  ):  String @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainType", forceResolver: true) @isSignal @hasAggregation
   
   """
   Vehicle speed.
@@ -1529,7 +1529,7 @@ extend type SignalAggregations {
   """
   speed(
     agg: FloatAggregation!
-  ):  Float @requiresVehiclePrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "Speed", forceResolver: true) @isSignal @hasAggregation
+  ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "Speed", forceResolver: true) @isSignal @hasAggregation
   
 }
 
@@ -1538,211 +1538,211 @@ extend type SignalCollection {
   Tire pressure in kilo-Pascal.
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
-  chassisAxleRow1WheelLeftTirePressure: SignalFloat @requiresVehiclePrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisAxleRow1WheelLeftTirePressure") @isSignal
+  chassisAxleRow1WheelLeftTirePressure: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisAxleRow1WheelLeftTirePressure") @isSignal
   
   """
   Tire pressure in kilo-Pascal.
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
-  chassisAxleRow1WheelRightTirePressure: SignalFloat @requiresVehiclePrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisAxleRow1WheelRightTirePressure") @isSignal
+  chassisAxleRow1WheelRightTirePressure: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisAxleRow1WheelRightTirePressure") @isSignal
   
   """
   Tire pressure in kilo-Pascal.
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
-  chassisAxleRow2WheelLeftTirePressure: SignalFloat @requiresVehiclePrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisAxleRow2WheelLeftTirePressure") @isSignal
+  chassisAxleRow2WheelLeftTirePressure: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisAxleRow2WheelLeftTirePressure") @isSignal
   
   """
   Tire pressure in kilo-Pascal.
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
-  chassisAxleRow2WheelRightTirePressure: SignalFloat @requiresVehiclePrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisAxleRow2WheelRightTirePressure") @isSignal
+  chassisAxleRow2WheelRightTirePressure: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisAxleRow2WheelRightTirePressure") @isSignal
   
   """
   Current altitude relative to WGS 84 reference ellipsoid, as measured at the position of GNSS receiver antenna.
   Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
   """
-  currentLocationAltitude: SignalFloat @requiresVehiclePrivilege(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationAltitude") @isSignal
+  currentLocationAltitude: SignalFloat @requiresPrivileges(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationAltitude") @isSignal
   
   """
   Indicates if the latitude and longitude signals at the current timestamp have been redacted using a privacy zone.
   Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
   """
-  currentLocationIsRedacted: SignalFloat @requiresVehiclePrivilege(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationIsRedacted") @isSignal
+  currentLocationIsRedacted: SignalFloat @requiresPrivileges(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationIsRedacted") @isSignal
   
   """
   Current latitude of vehicle in WGS 84 geodetic coordinates, as measured at the position of GNSS receiver antenna.
   Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
   """
-  currentLocationLatitude: SignalFloat @requiresVehiclePrivilege(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationLatitude") @isSignal
+  currentLocationLatitude: SignalFloat @requiresPrivileges(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationLatitude") @isSignal
   
   """
   Current longitude of vehicle in WGS 84 geodetic coordinates, as measured at the position of GNSS receiver antenna.
   Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
   """
-  currentLocationLongitude: SignalFloat @requiresVehiclePrivilege(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationLongitude") @isSignal
+  currentLocationLongitude: SignalFloat @requiresPrivileges(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationLongitude") @isSignal
   
   """
   Horizontal dilution of precision of GPS
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
-  dimoAftermarketHDOP: SignalFloat @requiresVehiclePrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketHDOP") @isSignal
+  dimoAftermarketHDOP: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketHDOP") @isSignal
   
   """
   Number of sync satellites for GPS
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
-  dimoAftermarketNSAT: SignalFloat @requiresVehiclePrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketNSAT") @isSignal
+  dimoAftermarketNSAT: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketNSAT") @isSignal
   
   """
   Service Set Identifier for the wifi.
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
-  dimoAftermarketSSID: SignalString @requiresVehiclePrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketSSID") @isSignal
+  dimoAftermarketSSID: SignalString @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketSSID") @isSignal
   
   """
   Indicate the current WPA state for the device's wifi
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
-  dimoAftermarketWPAState: SignalString @requiresVehiclePrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketWPAState") @isSignal
+  dimoAftermarketWPAState: SignalString @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketWPAState") @isSignal
   
   """
   Air temperature outside the vehicle.
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
-  exteriorAirTemperature: SignalFloat @requiresVehiclePrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ExteriorAirTemperature") @isSignal
+  exteriorAirTemperature: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ExteriorAirTemperature") @isSignal
   
   """
   Current Voltage of the low voltage battery.
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
-  lowVoltageBatteryCurrentVoltage: SignalFloat @requiresVehiclePrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "LowVoltageBatteryCurrentVoltage") @isSignal
+  lowVoltageBatteryCurrentVoltage: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "LowVoltageBatteryCurrentVoltage") @isSignal
   
   """
   PID 33 - Barometric pressure
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
-  obdBarometricPressure: SignalFloat @requiresVehiclePrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDBarometricPressure") @isSignal
+  obdBarometricPressure: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDBarometricPressure") @isSignal
   
   """
   PID 04 - Engine load in percent - 0 = no load, 100 = full load
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
-  obdEngineLoad: SignalFloat @requiresVehiclePrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDEngineLoad") @isSignal
+  obdEngineLoad: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDEngineLoad") @isSignal
   
   """
   PID 0F - Intake temperature
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
-  obdIntakeTemp: SignalFloat @requiresVehiclePrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDIntakeTemp") @isSignal
+  obdIntakeTemp: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDIntakeTemp") @isSignal
   
   """
   PID 1F - Engine run time
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
-  obdRunTime: SignalFloat @requiresVehiclePrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDRunTime") @isSignal
+  obdRunTime: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDRunTime") @isSignal
   
   """
   Engine coolant temperature.
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
-  powertrainCombustionEngineECT: SignalFloat @requiresVehiclePrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineECT") @isSignal
+  powertrainCombustionEngineECT: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineECT") @isSignal
   
   """
   Engine oil level.
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
-  powertrainCombustionEngineEngineOilLevel: SignalString @requiresVehiclePrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineEngineOilLevel") @isSignal
+  powertrainCombustionEngineEngineOilLevel: SignalString @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineEngineOilLevel") @isSignal
   
   """
   Engine oil level as a percentage.
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
-  powertrainCombustionEngineEngineOilRelativeLevel: SignalFloat @requiresVehiclePrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineEngineOilRelativeLevel") @isSignal
+  powertrainCombustionEngineEngineOilRelativeLevel: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineEngineOilRelativeLevel") @isSignal
   
   """
   Grams of air drawn into engine per second.
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
-  powertrainCombustionEngineMAF: SignalFloat @requiresVehiclePrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineMAF") @isSignal
+  powertrainCombustionEngineMAF: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineMAF") @isSignal
   
   """
   Engine speed measured as rotations per minute.
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
-  powertrainCombustionEngineSpeed: SignalFloat @requiresVehiclePrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineSpeed") @isSignal
+  powertrainCombustionEngineSpeed: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineSpeed") @isSignal
   
   """
   Current throttle position.
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
-  powertrainCombustionEngineTPS: SignalFloat @requiresVehiclePrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineTPS") @isSignal
+  powertrainCombustionEngineTPS: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineTPS") @isSignal
   
   """
   Level in fuel tank as percent of capacity. 0 = empty. 100 = full.
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
-  powertrainFuelSystemRelativeLevel: SignalFloat @requiresVehiclePrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainFuelSystemRelativeLevel") @isSignal
+  powertrainFuelSystemRelativeLevel: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainFuelSystemRelativeLevel") @isSignal
   
   """
   High level information of fuel types supported
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
-  powertrainFuelSystemSupportedFuelTypes: SignalString @requiresVehiclePrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainFuelSystemSupportedFuelTypes") @isSignal
+  powertrainFuelSystemSupportedFuelTypes: SignalString @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainFuelSystemSupportedFuelTypes") @isSignal
   
   """
   Remaining range in meters using all energy sources available in the vehicle.
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
-  powertrainRange: SignalFloat @requiresVehiclePrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainRange") @isSignal
+  powertrainRange: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainRange") @isSignal
   
   """
   Target charge limit (state of charge) for battery.
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
-  powertrainTractionBatteryChargingChargeLimit: SignalFloat @requiresVehiclePrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryChargingChargeLimit") @isSignal
+  powertrainTractionBatteryChargingChargeLimit: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryChargingChargeLimit") @isSignal
   
   """
   True if charging is ongoing. Charging is considered to be ongoing if energy is flowing from charger to vehicle.
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
-  powertrainTractionBatteryChargingIsCharging: SignalFloat @requiresVehiclePrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryChargingIsCharging") @isSignal
+  powertrainTractionBatteryChargingIsCharging: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryChargingIsCharging") @isSignal
   
   """
   Current electrical energy flowing in/out of battery. Positive = Energy flowing in to battery, e.g. during charging. Negative = Energy flowing out of battery, e.g. during driving.
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
-  powertrainTractionBatteryCurrentPower: SignalFloat @requiresVehiclePrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryCurrentPower") @isSignal
+  powertrainTractionBatteryCurrentPower: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryCurrentPower") @isSignal
   
   """
   Gross capacity of the battery.
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
-  powertrainTractionBatteryGrossCapacity: SignalFloat @requiresVehiclePrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryGrossCapacity") @isSignal
+  powertrainTractionBatteryGrossCapacity: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryGrossCapacity") @isSignal
   
   """
   Physical state of charge of the high voltage battery, relative to net capacity. This is not necessarily the state of charge being displayed to the customer.
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
-  powertrainTractionBatteryStateOfChargeCurrent: SignalFloat @requiresVehiclePrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryStateOfChargeCurrent") @isSignal
+  powertrainTractionBatteryStateOfChargeCurrent: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryStateOfChargeCurrent") @isSignal
   
   """
   Odometer reading, total distance travelled during the lifetime of the transmission.
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
-  powertrainTransmissionTravelledDistance: SignalFloat @requiresVehiclePrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTransmissionTravelledDistance") @isSignal
+  powertrainTransmissionTravelledDistance: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTransmissionTravelledDistance") @isSignal
   
   """
   Defines the powertrain type of the vehicle.
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
-  powertrainType: SignalString @requiresVehiclePrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainType") @isSignal
+  powertrainType: SignalString @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainType") @isSignal
   
   """
   Vehicle speed.
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
-  speed: SignalFloat @requiresVehiclePrivilege(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "Speed") @isSignal
+  speed: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "Speed") @isSignal
   
 }
 
@@ -1758,7 +1758,7 @@ extend type SignalCollection {
     The token ID of the vehicle.
     """
     tokenId: Int!
-  ): VINVC @requiresVehicleToken @requiresVehiclePrivilege(privileges: [VEHICLE_VIN_CREDENTIAL])
+  ): VINVC @requiresVehicleToken @requiresPrivileges(privileges: [VEHICLE_VIN_CREDENTIAL])
 }
 
 type VINVC {
@@ -1815,7 +1815,7 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 
 // region    ***************************** args.gotpl *****************************
 
-func (ec *executionContext) dir_requiresVehiclePrivilege_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) dir_requiresPrivileges_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 []model.Privilege
@@ -2818,10 +2818,10 @@ func (ec *executionContext) _Query_vinVCLatest(ctx context.Context, field graphq
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, nil, directive1, privileges)
+			return ec.directives.RequiresPrivileges(ctx, nil, directive1, privileges)
 		}
 
 		tmp, err := directive2(rctx)
@@ -3087,10 +3087,10 @@ func (ec *executionContext) _SignalAggregations_chassisAxleRow1WheelLeftTirePres
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -3175,10 +3175,10 @@ func (ec *executionContext) _SignalAggregations_chassisAxleRow1WheelRightTirePre
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -3263,10 +3263,10 @@ func (ec *executionContext) _SignalAggregations_chassisAxleRow2WheelLeftTirePres
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -3351,10 +3351,10 @@ func (ec *executionContext) _SignalAggregations_chassisAxleRow2WheelRightTirePre
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -3439,10 +3439,10 @@ func (ec *executionContext) _SignalAggregations_currentLocationAltitude(ctx cont
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -3527,10 +3527,10 @@ func (ec *executionContext) _SignalAggregations_currentLocationIsRedacted(ctx co
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -3615,10 +3615,10 @@ func (ec *executionContext) _SignalAggregations_currentLocationLatitude(ctx cont
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -3703,10 +3703,10 @@ func (ec *executionContext) _SignalAggregations_currentLocationLongitude(ctx con
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -3791,10 +3791,10 @@ func (ec *executionContext) _SignalAggregations_dimoAftermarketHDOP(ctx context.
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -3879,10 +3879,10 @@ func (ec *executionContext) _SignalAggregations_dimoAftermarketNSAT(ctx context.
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -3967,10 +3967,10 @@ func (ec *executionContext) _SignalAggregations_dimoAftermarketSSID(ctx context.
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -4055,10 +4055,10 @@ func (ec *executionContext) _SignalAggregations_dimoAftermarketWPAState(ctx cont
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -4143,10 +4143,10 @@ func (ec *executionContext) _SignalAggregations_exteriorAirTemperature(ctx conte
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -4231,10 +4231,10 @@ func (ec *executionContext) _SignalAggregations_lowVoltageBatteryCurrentVoltage(
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -4319,10 +4319,10 @@ func (ec *executionContext) _SignalAggregations_obdBarometricPressure(ctx contex
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -4407,10 +4407,10 @@ func (ec *executionContext) _SignalAggregations_obdEngineLoad(ctx context.Contex
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -4495,10 +4495,10 @@ func (ec *executionContext) _SignalAggregations_obdIntakeTemp(ctx context.Contex
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -4583,10 +4583,10 @@ func (ec *executionContext) _SignalAggregations_obdRunTime(ctx context.Context, 
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -4671,10 +4671,10 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineECT(ct
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -4759,10 +4759,10 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineEngine
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -4847,10 +4847,10 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineEngine
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -4935,10 +4935,10 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineMAF(ct
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -5023,10 +5023,10 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineSpeed(
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -5111,10 +5111,10 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineTPS(ct
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -5199,10 +5199,10 @@ func (ec *executionContext) _SignalAggregations_powertrainFuelSystemRelativeLeve
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -5287,10 +5287,10 @@ func (ec *executionContext) _SignalAggregations_powertrainFuelSystemSupportedFue
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -5375,10 +5375,10 @@ func (ec *executionContext) _SignalAggregations_powertrainRange(ctx context.Cont
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -5463,10 +5463,10 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryChargin
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -5551,10 +5551,10 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryChargin
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -5639,10 +5639,10 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryCurrent
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -5727,10 +5727,10 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryGrossCa
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -5815,10 +5815,10 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryStateOf
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -5903,10 +5903,10 @@ func (ec *executionContext) _SignalAggregations_powertrainTransmissionTravelledD
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -5991,10 +5991,10 @@ func (ec *executionContext) _SignalAggregations_powertrainType(ctx context.Conte
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -6079,10 +6079,10 @@ func (ec *executionContext) _SignalAggregations_speed(ctx context.Context, field
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -6208,10 +6208,10 @@ func (ec *executionContext) _SignalCollection_chassisAxleRow1WheelLeftTirePressu
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -6285,10 +6285,10 @@ func (ec *executionContext) _SignalCollection_chassisAxleRow1WheelRightTirePress
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -6362,10 +6362,10 @@ func (ec *executionContext) _SignalCollection_chassisAxleRow2WheelLeftTirePressu
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -6439,10 +6439,10 @@ func (ec *executionContext) _SignalCollection_chassisAxleRow2WheelRightTirePress
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -6516,10 +6516,10 @@ func (ec *executionContext) _SignalCollection_currentLocationAltitude(ctx contex
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -6593,10 +6593,10 @@ func (ec *executionContext) _SignalCollection_currentLocationIsRedacted(ctx cont
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -6670,10 +6670,10 @@ func (ec *executionContext) _SignalCollection_currentLocationLatitude(ctx contex
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -6747,10 +6747,10 @@ func (ec *executionContext) _SignalCollection_currentLocationLongitude(ctx conte
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -6824,10 +6824,10 @@ func (ec *executionContext) _SignalCollection_dimoAftermarketHDOP(ctx context.Co
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -6901,10 +6901,10 @@ func (ec *executionContext) _SignalCollection_dimoAftermarketNSAT(ctx context.Co
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -6978,10 +6978,10 @@ func (ec *executionContext) _SignalCollection_dimoAftermarketSSID(ctx context.Co
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -7055,10 +7055,10 @@ func (ec *executionContext) _SignalCollection_dimoAftermarketWPAState(ctx contex
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -7132,10 +7132,10 @@ func (ec *executionContext) _SignalCollection_exteriorAirTemperature(ctx context
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -7209,10 +7209,10 @@ func (ec *executionContext) _SignalCollection_lowVoltageBatteryCurrentVoltage(ct
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -7286,10 +7286,10 @@ func (ec *executionContext) _SignalCollection_obdBarometricPressure(ctx context.
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -7363,10 +7363,10 @@ func (ec *executionContext) _SignalCollection_obdEngineLoad(ctx context.Context,
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -7440,10 +7440,10 @@ func (ec *executionContext) _SignalCollection_obdIntakeTemp(ctx context.Context,
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -7517,10 +7517,10 @@ func (ec *executionContext) _SignalCollection_obdRunTime(ctx context.Context, fi
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -7594,10 +7594,10 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineECT(ctx 
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -7671,10 +7671,10 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineEngineOi
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -7748,10 +7748,10 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineEngineOi
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -7825,10 +7825,10 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineMAF(ctx 
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -7902,10 +7902,10 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineSpeed(ct
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -7979,10 +7979,10 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineTPS(ctx 
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -8056,10 +8056,10 @@ func (ec *executionContext) _SignalCollection_powertrainFuelSystemRelativeLevel(
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -8133,10 +8133,10 @@ func (ec *executionContext) _SignalCollection_powertrainFuelSystemSupportedFuelT
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -8210,10 +8210,10 @@ func (ec *executionContext) _SignalCollection_powertrainRange(ctx context.Contex
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -8287,10 +8287,10 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryChargingC
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -8364,10 +8364,10 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryChargingI
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -8441,10 +8441,10 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryCurrentPo
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -8518,10 +8518,10 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryGrossCapa
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -8595,10 +8595,10 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryStateOfCh
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -8672,10 +8672,10 @@ func (ec *executionContext) _SignalCollection_powertrainTransmissionTravelledDis
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -8749,10 +8749,10 @@ func (ec *executionContext) _SignalCollection_powertrainType(ctx context.Context
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -8826,10 +8826,10 @@ func (ec *executionContext) _SignalCollection_speed(ctx context.Context, field g
 			if err != nil {
 				return nil, err
 			}
-			if ec.directives.RequiresVehiclePrivilege == nil {
-				return nil, errors.New("directive requiresVehiclePrivilege is not implemented")
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
 			}
-			return ec.directives.RequiresVehiclePrivilege(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {

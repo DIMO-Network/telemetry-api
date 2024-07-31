@@ -66,7 +66,7 @@ func main() {
 
 	cfg := graph.Config{Resolvers: resolver}
 	cfg.Directives.RequiresVehicleToken = vehCheck.Check
-	cfg.Directives.RequiresVehiclePrivilege = auth.PrivilegeCheck
+	cfg.Directives.RequiresPrivileges = auth.PrivilegeCheck
 	cfg.Directives.IsSignal = noOp
 	cfg.Directives.HasAggregation = noOp
 
