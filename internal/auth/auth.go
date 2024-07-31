@@ -26,34 +26,33 @@ var manufacturerPrivToAPI = map[privileges.Privilege]model.Privilege{}
 
 const tokenIdArgName = "tokenId"
 
-type VehicleTokenChecker struct {
-	ContractAddr common.Address
-}
+func CreateVehicleTokenCheck(contractAddr string) func(context.Context, any, graphql.Resolver) (any, error) {
+	requiredAddr := common.HexToAddress(contractAddr)
 
-// Check checks if the claim in the context is for a vehicle NFT with the right token id.
-func (c *VehicleTokenChecker) Check(ctx context.Context, _ any, next graphql.Resolver) (any, error) {
-	claim, err := getTelemetryClaim(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("%s: %w", errUnauthorized.Error(), err)
-	}
+	return func(ctx context.Context, _ any, next graphql.Resolver) (any, error) {
+		claim, err := getTelemetryClaim(ctx)
+		if err != nil {
+			return nil, fmt.Errorf("%s: %w", errUnauthorized.Error(), err)
+		}
 
-	if claim.ContractAddress != c.ContractAddr {
-		return nil, fmt.Errorf("%w: contract did not match", errUnauthorized)
-	}
+		if claim.ContractAddress != requiredAddr {
+			return nil, fmt.Errorf("%w: contract did not match", errUnauthorized)
+		}
 
-	fCtx := graphql.GetFieldContext(ctx)
-	if fCtx == nil {
-		return nil, fmt.Errorf("%w: no field context found", errUnauthorized)
-	}
-	tokenID, ok := fCtx.Args[tokenIdArgName].(int)
-	if !ok {
-		return nil, fmt.Errorf("%w: failed to get %s from args", errUnauthorized, tokenIdArgName)
-	}
-	if strconv.Itoa(tokenID) != claim.TokenID {
-		return nil, fmt.Errorf("%w: %s mismatch", errUnauthorized, tokenIdArgName)
-	}
+		fCtx := graphql.GetFieldContext(ctx)
+		if fCtx == nil {
+			return nil, fmt.Errorf("%w: no field context found", errUnauthorized)
+		}
+		tokenID, ok := fCtx.Args[tokenIdArgName].(int)
+		if !ok {
+			return nil, fmt.Errorf("%w: failed to get %s from args", errUnauthorized, tokenIdArgName)
+		}
+		if strconv.Itoa(tokenID) != claim.TokenID {
+			return nil, fmt.Errorf("%w: %s mismatch", errUnauthorized, tokenIdArgName)
+		}
 
-	return next(ctx)
+		return next(ctx)
+	}
 }
 
 // PrivilegeCheck checks if the claim set in the context includes the required privileges.
