@@ -1,16 +1,17 @@
-package auth_test
+package auth
 
 import (
 	"context"
+	"fmt"
 	"math/big"
 	"testing"
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/DIMO-Network/shared/middleware/privilegetoken"
 	"github.com/DIMO-Network/shared/privileges"
-	"github.com/DIMO-Network/telemetry-api/internal/auth"
-	"github.com/DIMO-Network/telemetry-api/internal/config"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
+	"github.com/DIMO-Network/telemetry-api/internal/services/identity"
+	jwtmiddleware "github.com/auth0/go-jwt-middleware/v2"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/require"
 )
@@ -21,12 +22,12 @@ func emptyResolver(_ context.Context) (any, error) {
 	return expectedReturn, nil
 }
 
-func TestRequiresTokenCheck(t *testing.T) {
+func TestRequiresVehicleTokenCheck(t *testing.T) {
 	t.Parallel()
 	testCases := []struct {
 		name          string
 		args          map[string]any
-		telmetryClaim *auth.TelemetryClaim
+		telmetryClaim *TelemetryClaim
 		expectedError bool
 	}{
 		{
@@ -34,7 +35,7 @@ func TestRequiresTokenCheck(t *testing.T) {
 			args: map[string]any{
 				"tokenId": 123,
 			},
-			telmetryClaim: &auth.TelemetryClaim{
+			telmetryClaim: &TelemetryClaim{
 				CustomClaims: privilegetoken.CustomClaims{
 					TokenID: "123",
 				},
@@ -45,7 +46,7 @@ func TestRequiresTokenCheck(t *testing.T) {
 			args: map[string]any{
 				"tokenId": 456,
 			},
-			telmetryClaim: &auth.TelemetryClaim{
+			telmetryClaim: &TelemetryClaim{
 				CustomClaims: privilegetoken.CustomClaims{
 					TokenID: "123",
 				},
@@ -56,7 +57,7 @@ func TestRequiresTokenCheck(t *testing.T) {
 			name:          "missing_tokenId",
 			args:          map[string]any{},
 			expectedError: true,
-			telmetryClaim: &auth.TelemetryClaim{
+			telmetryClaim: &TelemetryClaim{
 				CustomClaims: privilegetoken.CustomClaims{
 					TokenID: "123",
 				},
@@ -72,7 +73,10 @@ func TestRequiresTokenCheck(t *testing.T) {
 		},
 	}
 
-	authValidator := auth.NewPrivilegeContractValidator(config.Settings{})
+	tknValidator := &TokenValidator{
+		IdentitySvc: &identity.MockIdentityService{},
+	}
+
 	for _, tc := range testCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
@@ -80,8 +84,8 @@ func TestRequiresTokenCheck(t *testing.T) {
 			testCtx := graphql.WithFieldContext(context.Background(), &graphql.FieldContext{
 				Args: tc.args,
 			})
-			testCtx = context.WithValue(testCtx, auth.TelemetryClaimContextKey{}, tc.telmetryClaim)
-			result, err := authValidator.VehicleTokenCheck(testCtx, nil, graphql.Resolver(emptyResolver))
+			testCtx = context.WithValue(testCtx, TelemetryClaimContextKey{}, tc.telmetryClaim)
+			result, err := tknValidator.VehicleTokenCheck(testCtx, nil, graphql.Resolver(emptyResolver))
 			if tc.expectedError {
 				require.Error(t, err)
 				return
@@ -91,15 +95,15 @@ func TestRequiresTokenCheck(t *testing.T) {
 		})
 	}
 }
-func TestRequiresPrivilegeCheck(t *testing.T) {
+func TestRequiresVehiclePrivilegeCheck(t *testing.T) {
 	t.Parallel()
 	vehicleNFTAddr := common.BigToAddress(big.NewInt(10))
-	manufNFTAddr := common.BigToAddress(big.NewInt(11))
+
 	testCases := []struct {
 		name           string
 		privs          []model.Privilege
-		telemetryClaim *auth.TelemetryClaim
-		expectedError  bool
+		telemetryClaim *TelemetryClaim
+		expectedError  error
 	}{
 		{
 			name: "valid_privileges",
@@ -107,7 +111,10 @@ func TestRequiresPrivilegeCheck(t *testing.T) {
 				model.PrivilegeVehicleAllTimeLocation,
 				model.PrivilegeVehicleNonLocationData,
 			},
-			telemetryClaim: &auth.TelemetryClaim{
+			telemetryClaim: &TelemetryClaim{
+				contractPrivMap: map[common.Address]map[privileges.Privilege]model.Privilege{
+					vehicleNFTAddr: vehilcePrivMap,
+				},
 				CustomClaims: privilegetoken.CustomClaims{
 					PrivilegeIDs: []privileges.Privilege{
 						privileges.VehicleAllTimeLocation,
@@ -123,13 +130,13 @@ func TestRequiresPrivilegeCheck(t *testing.T) {
 				model.PrivilegeVehicleAllTimeLocation,
 				model.PrivilegeVehicleNonLocationData,
 			},
-			telemetryClaim: &auth.TelemetryClaim{
+			telemetryClaim: &TelemetryClaim{
 				CustomClaims: privilegetoken.CustomClaims{
 					PrivilegeIDs:    nil,
 					ContractAddress: vehicleNFTAddr,
 				},
 			},
-			expectedError: true,
+			expectedError: fmt.Errorf("unauthorized: missing required privilege: %s", model.PrivilegeVehicleAllTimeLocation),
 		},
 		{
 			name: "missing_one_privilege",
@@ -137,7 +144,7 @@ func TestRequiresPrivilegeCheck(t *testing.T) {
 				model.PrivilegeVehicleAllTimeLocation,
 				model.PrivilegeVehicleNonLocationData,
 			},
-			telemetryClaim: &auth.TelemetryClaim{
+			telemetryClaim: &TelemetryClaim{
 				CustomClaims: privilegetoken.CustomClaims{
 					PrivilegeIDs: []privileges.Privilege{
 						privileges.VehicleAllTimeLocation,
@@ -145,13 +152,13 @@ func TestRequiresPrivilegeCheck(t *testing.T) {
 					ContractAddress: vehicleNFTAddr,
 				},
 			},
-			expectedError: true,
+			expectedError: fmt.Errorf("unauthorized: missing required privilege: %s", model.PrivilegeVehicleAllTimeLocation),
 		},
 		{
 			name:           "missing_claim",
 			privs:          []model.Privilege{},
 			telemetryClaim: nil,
-			expectedError:  true,
+			expectedError:  fmt.Errorf("unauthorized: %w", jwtmiddleware.ErrJWTMissing),
 		},
 		{
 			name: "wrongAddr",
@@ -159,22 +166,21 @@ func TestRequiresPrivilegeCheck(t *testing.T) {
 				model.PrivilegeVehicleAllTimeLocation,
 				model.PrivilegeVehicleNonLocationData,
 			},
-			telemetryClaim: &auth.TelemetryClaim{
+			telemetryClaim: &TelemetryClaim{
 				CustomClaims: privilegetoken.CustomClaims{
 					PrivilegeIDs: []privileges.Privilege{
 						privileges.VehicleAllTimeLocation,
 					},
-					ContractAddress: manufNFTAddr,
+					ContractAddress: common.BigToAddress(big.NewInt(20)),
 				},
 			},
-			expectedError: true,
+			expectedError: fmt.Errorf("unauthorized: expected contract %s but recieved: %s", vehicleNFTAddr, common.BigToAddress(big.NewInt(20)).Hex()),
 		},
 	}
 
-	authValidator := auth.NewPrivilegeContractValidator(config.Settings{
-		VehicleNFTAddress:      vehicleNFTAddr.Hex(),
-		ManufacturerNFTAddress: manufNFTAddr.Hex(),
-	})
+	privValidator := &PrivilegeValidator{
+		VehicleNFTAddress: vehicleNFTAddr,
+	}
 
 	for _, tc := range testCases {
 		tc := tc
@@ -183,14 +189,15 @@ func TestRequiresPrivilegeCheck(t *testing.T) {
 			if tc.telemetryClaim != nil {
 				tc.telemetryClaim.SetPrivileges()
 			}
-			testCtx := context.WithValue(context.Background(), auth.TelemetryClaimContextKey{}, tc.telemetryClaim)
-			next, err := authValidator.VehicleNFTPrivCheck(testCtx, nil, emptyResolver, tc.privs)
-			if tc.expectedError {
-				require.Error(t, err)
+			testCtx := context.WithValue(context.Background(), TelemetryClaimContextKey{}, tc.telemetryClaim)
+			next, err := privValidator.VehicleNFTPrivCheck(testCtx, nil, emptyResolver, tc.privs)
+			if tc.expectedError != nil {
+				require.Equal(t, tc.expectedError.Error(), err.Error())
 				return
 			}
 			require.NoError(t, err)
 			require.Equal(t, expectedReturn, next)
+
 		})
 	}
 }
