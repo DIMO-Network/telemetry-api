@@ -59,6 +59,7 @@ func NewJWTMiddleware(issuer, jwksURI string, logger *zerolog.Logger) (*jwtmiddl
 func AddClaimHandler(next http.Handler, logger *zerolog.Logger, vehicleAddr, mfrAddr string) http.Handler {
 	contractPrivMaps := map[common.Address]map[privileges.Privilege]model.Privilege{
 		common.HexToAddress(vehicleAddr): vehiclePrivToAPI,
+		common.HexToAddress(mfrAddr):     manufacturerPrivToAPI,
 	}
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

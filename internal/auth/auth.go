@@ -30,7 +30,7 @@ type VehicleTokenChecker struct {
 	ContractAddr common.Address
 }
 
-// RequiresVehicleTokenCheck checks if the tokenID in the context matches the tokenID in the claim.
+// Check checks if the claim in the context is for a vehicle NFT with the right token id.
 func (c *VehicleTokenChecker) Check(ctx context.Context, _ any, next graphql.Resolver) (any, error) {
 	claim, err := getTelemetryClaim(ctx)
 	if err != nil {
@@ -56,7 +56,7 @@ func (c *VehicleTokenChecker) Check(ctx context.Context, _ any, next graphql.Res
 	return next(ctx)
 }
 
-// PrivilegeCheck checks if the claim set in the context includes the correct address the required privileges for the VehicleNFT contract.
+// PrivilegeCheck checks if the claim set in the context includes the required privileges.
 func PrivilegeCheck(ctx context.Context, _ any, next graphql.Resolver, privs []model.Privilege) (any, error) {
 	claim, err := getTelemetryClaim(ctx)
 	if err != nil {
