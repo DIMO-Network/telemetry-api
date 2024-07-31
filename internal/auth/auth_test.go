@@ -198,7 +198,7 @@ func TestRequiresVehiclePrivilegeCheck(t *testing.T) {
 			},
 			telemetryClaim: &TelemetryClaim{
 				contractPrivMap: map[common.Address]map[privileges.Privilege]model.Privilege{
-					vehicleNFTAddr: vehilcePrivMap,
+					vehicleNFTAddr: vehiclePrivMap,
 				},
 				CustomClaims: privilegetoken.CustomClaims{
 					PrivilegeIDs: []privileges.Privilege{

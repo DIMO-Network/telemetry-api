@@ -13,7 +13,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 )
 
-var vehilcePrivMap = map[privileges.Privilege]model.Privilege{
+var vehiclePrivMap = map[privileges.Privilege]model.Privilege{
 	privileges.VehicleNonLocationData: model.PrivilegeVehicleNonLocationData,
 	privileges.VehicleCommands:        model.PrivilegeVehicleCommands,
 	privileges.VehicleCurrentLocation: model.PrivilegeVehicleCurrentLocation,
@@ -22,7 +22,7 @@ var vehilcePrivMap = map[privileges.Privilege]model.Privilege{
 }
 
 var manufacturerPrivMap = map[privileges.Privilege]model.Privilege{
-	// privileges.ManufacturerDeviceLastSeen: model.PrivilegeManufacturerDeviceLastSeen,
+	privileges.ManufacturerDeviceLastSeen: model.PrivilegeManufacturerDeviceLastSeen,
 }
 
 type PrivilegeValidator struct {

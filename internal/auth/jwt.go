@@ -18,7 +18,7 @@ import (
 
 // NewJWTMiddleware creates a new JWT middleware with the given issuer and contract address.
 // This middleware will validate the token and add the claim to the context.
-func NewJWTMiddleware(issuer, jwksURI, vNFTAddr, mNFTAddr string, logger *zerolog.Logger) (*jwtmiddleware.JWTMiddleware, error) {
+func NewJWTMiddleware(issuer, jwksURI, vehAddr, mfrAddr string, logger *zerolog.Logger) (*jwtmiddleware.JWTMiddleware, error) {
 	issuerURL, err := url.Parse(issuer)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse issuer URL: %w", err)
@@ -35,8 +35,8 @@ func NewJWTMiddleware(issuer, jwksURI, vNFTAddr, mNFTAddr string, logger *zerolo
 	newCustomClaims := func() validator.CustomClaims {
 		return &TelemetryClaim{
 			contractPrivMap: map[common.Address]map[privileges.Privilege]model.Privilege{
-				common.HexToAddress(vNFTAddr): vehilcePrivMap,
-				common.HexToAddress(mNFTAddr): manufacturerPrivMap,
+				common.HexToAddress(vehAddr): vehiclePrivMap,
+				common.HexToAddress(mfrAddr): manufacturerPrivMap,
 			},
 		}
 	}
