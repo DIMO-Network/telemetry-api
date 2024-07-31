@@ -17,5 +17,5 @@ func (r *queryResolver) DeviceActivity(ctx context.Context, by model.Aftermarket
 		return nil, err
 	}
 
-	return r.Repository.GetDeviceActivity(ctx, adInfo.AftermarketDevice.Vehicle.TokenId, adInfo.AftermarketDevice.Manufacturer.Name)
+	return r.Repository.GetDeviceActivity(ctx, adInfo.VehicleTokenID, adInfo.ManufacturerName)
 }

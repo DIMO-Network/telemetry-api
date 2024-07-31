@@ -78,9 +78,9 @@ func (tv *TokenValidator) ManufacturerTokenCheck(ctx context.Context, obj interf
 	if err := headerTokenMatchesQuery(ctx, func() (string, error) {
 		resp, err := tv.IdentitySvc.AftermarketDevice(ctx, &aftermarketDeviceAddr, nil, nil)
 		if err != nil {
-			return "", fmt.Errorf("failed to get aftermarket device by address")
+			return "", err
 		}
-		return strconv.Itoa(resp.AftermarketDevice.Manufacturer.TokenId), nil
+		return strconv.Itoa(resp.ManufacturerTokenID), nil
 	}); err != nil {
 		return nil, fmt.Errorf("unauthorized: %w", err)
 	}

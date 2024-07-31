@@ -50,8 +50,9 @@ func (c *CHServiceTestSuite) SetupSuite() {
 	c.Require().NoError(err, "Failed to run migrations")
 
 	settings := config.Settings{
-		CLickhouse:         cfg,
-		MaxRequestDuration: "1s",
+		CLickhouse:                            cfg,
+		MaxRequestDuration:                    "1s",
+		ManufacturerDeviceLastSeenBucketHours: 3,
 	}
 	c.chService, err = NewService(settings)
 	c.Require().NoError(err, "Failed to create repository")
@@ -498,7 +499,7 @@ func (c *CHServiceTestSuite) TestGetDeviceActivity() {
 		vehicleTokenID int
 		adManuf        string
 		expected       model.DeviceActivity
-		err            bool
+		expectedError  error
 	}{
 		{
 			name:           "get-bucket-for-last-device-activity",
@@ -509,28 +510,22 @@ func (c *CHServiceTestSuite) TestGetDeviceActivity() {
 			},
 		},
 		{
-			name:           "what if I cant find that address",
-			vehicleTokenID: 1,
-			adManuf:        "AutoPi",
-			expected: model.DeviceActivity{
-				LastActive: &lastActive,
-			},
-			err: true,
-		},
-		{
 			name:           "what if that device didnt transmit any data",
-			vehicleTokenID: 1,
+			vehicleTokenID: 2,
 			adManuf:        "AutoPi",
 			expected: model.DeviceActivity{
 				LastActive: &lastActive,
 			},
-			err: true,
+			expectedError: fmt.Errorf("no activity recorded for vehicle token ID %d", 2),
 		},
 	}
 	for _, tc := range testCases {
 		c.Run(tc.name, func() {
 			result, err := c.chService.GetDeviceActivity(ctx, tc.vehicleTokenID, tc.adManuf)
-			c.Require().NoError(err)
+			if tc.expectedError != nil {
+				c.Require().Equal(tc.expectedError.Error(), err.Error())
+				return
+			}
 			c.Require().Equal(tc.expected, *result)
 		})
 	}

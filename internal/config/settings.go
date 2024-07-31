@@ -20,5 +20,5 @@ type Settings struct {
 	ManufacturerNFTAddress                string          `yaml:"MANUFACTURER_NFT_ADDRESS"`
 	IdentityAPIURL                        string          `yaml:"IDENTITY_API_URL"`
 	IdentityAPIReqTimeoutSeconds          int             `yaml:"IDENTITY_API_REQUEST_TIMEOUT_SECONDS"`
-	ManufacturerDeviceLastSeenBucketHours int             `yaml:"MANUFACTURER_DEVICE_LAST_SEEN_BUCKET_HOURS"`
+	ManufacturerDeviceLastSeenBucketHours int64           `yaml:"MANUFACTURER_DEVICE_LAST_SEEN_BUCKET_HOURS"`
 }
