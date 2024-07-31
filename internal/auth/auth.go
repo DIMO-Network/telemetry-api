@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strconv"
 
@@ -125,16 +126,21 @@ func headerTokenMatchesQuery(ctx context.Context, getTokenStrFromArgs func() (st
 	return nil
 }
 
-func getArg[T any](ctx context.Context, key string) (T, error) {
+func getArg[T any](ctx context.Context, name string) (T, error) {
 	var resp T
 	fCtx := graphql.GetFieldContext(ctx)
 	if fCtx == nil {
-		return resp, fmt.Errorf("no field context found")
+		return resp, errors.New("no field context found")
 	}
 
-	resp, ok := fCtx.Args[key].(T)
+	val, ok := fCtx.Args[name]
 	if !ok {
-		return resp, fmt.Errorf("failed to get %s of type %T from args", key, resp)
+		return resp, fmt.Errorf("no argument named %s", name)
+	}
+
+	resp, ok = val.(T)
+	if !ok {
+		return resp, fmt.Errorf("argument %s had type %T instead of the expected %T", name, val, resp)
 	}
 
 	return resp, nil
