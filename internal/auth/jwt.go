@@ -7,15 +7,18 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/DIMO-Network/shared/privileges"
+	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	jwtmiddleware "github.com/auth0/go-jwt-middleware/v2"
 	"github.com/auth0/go-jwt-middleware/v2/jwks"
 	"github.com/auth0/go-jwt-middleware/v2/validator"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/rs/zerolog"
 )
 
 // NewJWTMiddleware creates a new JWT middleware with the given issuer and contract address.
 // This middleware will validate the token and add the claim to the context.
-func NewJWTMiddleware(issuer, jwksURI string, logger *zerolog.Logger) (*jwtmiddleware.JWTMiddleware, error) {
+func NewJWTMiddleware(issuer, jwksURI, vNFTAddr, mNFTAddr string, logger *zerolog.Logger) (*jwtmiddleware.JWTMiddleware, error) {
 	issuerURL, err := url.Parse(issuer)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse issuer URL: %w", err)
@@ -30,7 +33,12 @@ func NewJWTMiddleware(issuer, jwksURI string, logger *zerolog.Logger) (*jwtmiddl
 	}
 	provider := jwks.NewCachingProvider(issuerURL, 1*time.Minute, opts...)
 	newCustomClaims := func() validator.CustomClaims {
-		return &TelemetryClaim{}
+		return &TelemetryClaim{
+			contractPrivMap: map[common.Address]map[privileges.Privilege]model.Privilege{
+				common.HexToAddress(vNFTAddr): vehilcePrivMap,
+				common.HexToAddress(mNFTAddr): manufacturerPrivMap,
+			},
+		}
 	}
 	// Set up the validator.
 	jwtValidator, err := validator.New(

@@ -52,10 +52,10 @@ func (mr *MockCHServiceMockRecorder) GetAggregatedSignals(ctx, aggArgs interface
 }
 
 // GetDeviceActivity mocks base method.
-func (m *MockCHService) GetDeviceActivity(ctx context.Context, vehicleTokenID int, adManuf string) ([]*model.DeviceActivity, error) {
+func (m *MockCHService) GetDeviceActivity(ctx context.Context, vehicleTokenID int, adManuf string) (*model.DeviceActivity, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetDeviceActivity", ctx, vehicleTokenID, adManuf)
-	ret0, _ := ret[0].([]*model.DeviceActivity)
+	ret0, _ := ret[0].(*model.DeviceActivity)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

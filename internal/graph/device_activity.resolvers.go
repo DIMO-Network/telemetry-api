@@ -8,16 +8,11 @@ import (
 	"context"
 
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
-	"github.com/DIMO-Network/telemetry-api/internal/service/identity_api"
 )
 
 // DeviceActivity is the resolver for the deviceActivity field.
 func (r *queryResolver) DeviceActivity(ctx context.Context, by model.AftermarketDeviceBy) (*model.DeviceActivity, error) {
-	adInfo, err := r.IdentityService.AftermarketDevice(ctx, identity_api.AftermarketDeviceBy{
-		Address: by.Address,
-		TokenId: by.TokenID,
-		Serial:  by.Serial,
-	})
+	adInfo, err := r.IdentityService.AftermarketDevice(ctx, by.Address, by.TokenID, by.Serial)
 	if err != nil {
 		return nil, err
 	}

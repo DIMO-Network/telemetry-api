@@ -9,6 +9,7 @@ import (
 	"github.com/DIMO-Network/model-garage/pkg/vss"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	"github.com/DIMO-Network/telemetry-api/internal/repositories"
+	"github.com/DIMO-Network/telemetry-api/internal/services/identity"
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
 	gomock "go.uber.org/mock/gomock"
@@ -35,6 +36,7 @@ func TestGetSignal(t *testing.T) {
 		ToTS:     time.Now().Add(time.Hour),
 		Interval: 1,
 	}
+	idSvc := identity.NewMockIdentityService(gomock.NewController(t))
 	tests := []struct {
 		name           string
 		aggArgs        *model.AggregatedSignalArgs
@@ -167,7 +169,7 @@ func TestGetSignal(t *testing.T) {
 				tt.mockSetup(mocks)
 			}
 
-			repo := repositories.NewRepository(&logger, mocks.CHService)
+			repo := repositories.NewRepository(&logger, mocks.CHService, idSvc)
 			result, err := repo.GetSignal(context.Background(), tt.aggArgs)
 			if tt.expectError {
 				require.Error(t, err)
@@ -276,6 +278,7 @@ func TestGetSignalLatest(t *testing.T) {
 		},
 	}
 
+	idSvc := identity.NewMockIdentityService(gomock.NewController(t))
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			mocks := setupMocks(t)
@@ -284,7 +287,7 @@ func TestGetSignalLatest(t *testing.T) {
 				tt.mockSetup(mocks)
 			}
 
-			repo := repositories.NewRepository(&logger, mocks.CHService)
+			repo := repositories.NewRepository(&logger, mocks.CHService, idSvc)
 			result, err := repo.GetSignalLatest(context.Background(), tt.latestArgs)
 			if tt.expectError {
 				require.Error(t, err)

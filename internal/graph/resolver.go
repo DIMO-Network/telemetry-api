@@ -3,7 +3,7 @@ package graph
 import (
 	"github.com/DIMO-Network/telemetry-api/internal/repositories"
 	"github.com/DIMO-Network/telemetry-api/internal/repositories/vinvc"
-	"github.com/DIMO-Network/telemetry-api/internal/service/identity_api"
+	"github.com/DIMO-Network/telemetry-api/internal/services/identity"
 )
 
 // This file will not be regenerated automatically.
@@ -13,5 +13,5 @@ import (
 type Resolver struct {
 	*repositories.Repository
 	VINVCRepo       *vinvc.Repository
-	IdentityService identity_api.IdentityService
+	IdentityService identity.IdentityService
 }

@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
-	"github.com/DIMO-Network/telemetry-api/internal/service/ch"
+	"github.com/DIMO-Network/telemetry-api/internal/services/ch"
 )
 
 // ValidationError is an error type for validation errors.

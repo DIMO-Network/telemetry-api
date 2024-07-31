@@ -233,12 +233,12 @@ func (e FloatAggregation) MarshalGQL(w io.Writer) {
 type Privilege string
 
 const (
-	PrivilegeVehicleNonLocationData         Privilege = "VEHICLE_NON_LOCATION_DATA"
-	PrivilegeVehicleCommands                Privilege = "VEHICLE_COMMANDS"
-	PrivilegeVehicleCurrentLocation         Privilege = "VEHICLE_CURRENT_LOCATION"
-	PrivilegeVehicleAllTimeLocation         Privilege = "VEHICLE_ALL_TIME_LOCATION"
-	PrivilegeVehicleVinCredential           Privilege = "VEHICLE_VIN_CREDENTIAL"
-	PrivilegeManufacturerLastSeenCredential Privilege = "MANUFACTURER_LAST_SEEN_CREDENTIAL"
+	PrivilegeVehicleNonLocationData     Privilege = "VEHICLE_NON_LOCATION_DATA"
+	PrivilegeVehicleCommands            Privilege = "VEHICLE_COMMANDS"
+	PrivilegeVehicleCurrentLocation     Privilege = "VEHICLE_CURRENT_LOCATION"
+	PrivilegeVehicleAllTimeLocation     Privilege = "VEHICLE_ALL_TIME_LOCATION"
+	PrivilegeVehicleVinCredential       Privilege = "VEHICLE_VIN_CREDENTIAL"
+	PrivilegeManufacturerDeviceLastSeen Privilege = "MANUFACTURER_DEVICE_LAST_SEEN"
 )
 
 var AllPrivilege = []Privilege{
@@ -247,12 +247,12 @@ var AllPrivilege = []Privilege{
 	PrivilegeVehicleCurrentLocation,
 	PrivilegeVehicleAllTimeLocation,
 	PrivilegeVehicleVinCredential,
-	PrivilegeManufacturerLastSeenCredential,
+	PrivilegeManufacturerDeviceLastSeen,
 }
 
 func (e Privilege) IsValid() bool {
 	switch e {
-	case PrivilegeVehicleNonLocationData, PrivilegeVehicleCommands, PrivilegeVehicleCurrentLocation, PrivilegeVehicleAllTimeLocation, PrivilegeVehicleVinCredential, PrivilegeManufacturerLastSeenCredential:
+	case PrivilegeVehicleNonLocationData, PrivilegeVehicleCommands, PrivilegeVehicleCurrentLocation, PrivilegeVehicleAllTimeLocation, PrivilegeVehicleVinCredential, PrivilegeManufacturerDeviceLastSeen:
 		return true
 	}
 	return false

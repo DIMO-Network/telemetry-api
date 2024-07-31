@@ -9,7 +9,8 @@ import (
 	"github.com/ClickHouse/clickhouse-go/v2/lib/proto"
 	"github.com/DIMO-Network/model-garage/pkg/vss"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
-	"github.com/DIMO-Network/telemetry-api/internal/service/ch"
+	"github.com/DIMO-Network/telemetry-api/internal/services/ch"
+	"github.com/DIMO-Network/telemetry-api/internal/services/identity"
 	"github.com/rs/zerolog"
 )
 
@@ -24,19 +25,21 @@ var (
 type CHService interface {
 	GetAggregatedSignals(ctx context.Context, aggArgs *model.AggregatedSignalArgs) ([]*model.AggSignal, error)
 	GetLatestSignals(ctx context.Context, latestArgs *model.LatestSignalsArgs) ([]*vss.Signal, error)
-	GetDeviceActivity(ctx context.Context, vehicleTokenID int, adManuf string) ([]*model.DeviceActivity, error)
+	GetDeviceActivity(ctx context.Context, vehicleTokenID int, adManuf string) (*model.DeviceActivity, error)
 }
 
 // Repository is the base repository for all repositories.
 type Repository struct {
 	chService CHService
+	idService identity.IdentityService
 	log       *zerolog.Logger
 }
 
 // NewRepository creates a new base repository.
 // clientCAs is optional and can be nil.
-func NewRepository(logger *zerolog.Logger, chService CHService) *Repository {
+func NewRepository(logger *zerolog.Logger, chService CHService, id identity.IdentityService) *Repository {
 	return &Repository{
+		idService: id,
 		chService: chService,
 		log:       logger,
 	}
@@ -99,16 +102,7 @@ func (r *Repository) GetSignalLatest(ctx context.Context, latestArgs *model.Late
 
 // GetDeviceActivity returns device status activity level.
 func (r *Repository) GetDeviceActivity(ctx context.Context, vehicleTokenID int, adManuf string) (*model.DeviceActivity, error) {
-	resp, err := r.chService.GetDeviceActivity(ctx, vehicleTokenID, adManuf)
-	if err != nil {
-		return nil, handleDBError(err, r.log)
-	}
-
-	if len(resp) == 0 {
-		return nil, handleDBError(errors.New("no device activity found"), r.log)
-	}
-
-	return resp[len(resp)-1], nil
+	return r.chService.GetDeviceActivity(ctx, vehicleTokenID, adManuf)
 }
 
 // handleDBError logs the error and returns a generic error message.

@@ -20,10 +20,12 @@ import (
 	"github.com/DIMO-Network/telemetry-api/internal/limits"
 	"github.com/DIMO-Network/telemetry-api/internal/repositories"
 	"github.com/DIMO-Network/telemetry-api/internal/repositories/vinvc"
-	"github.com/DIMO-Network/telemetry-api/internal/service/ch"
+	"github.com/DIMO-Network/telemetry-api/internal/services/ch"
+	"github.com/DIMO-Network/telemetry-api/internal/services/identity"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/adaptor"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -44,28 +46,37 @@ func main() {
 	// create clickhouse connection
 	_ = ctx
 
+	idService := identity.NewService(settings.IdentityAPIURL, settings.IdentityAPIReqTimeoutSeconds)
 	repoLogger := logger.With().Str("component", "repository").Logger()
 	chService, err := ch.NewService(settings)
 	if err != nil {
 		logger.Fatal().Err(err).Msg("Couldn't create ClickHouse service.")
 	}
-	baseRepo := repositories.NewRepository(&repoLogger, chService)
+	baseRepo := repositories.NewRepository(&repoLogger, chService, idService)
 	vinvcRepo, err := newVinVCServiceFromSettings(settings, &logger)
 	if err != nil {
 		logger.Fatal().Err(err).Msg("Couldn't create VINVC repository.")
 	}
 	resolver := &graph.Resolver{
-		Repository: baseRepo,
-		VINVCRepo:  vinvcRepo,
+		Repository:      baseRepo,
+		VINVCRepo:       vinvcRepo,
+		IdentityService: idService,
 	}
 
-	privilegeValidator := auth.NewPrivilegeContractValidator(settings)
+	privValidator := &auth.PrivilegeValidator{
+		VehicleNFTAddress:      common.HexToAddress(settings.VehicleNFTAddress),
+		ManufacturerNFTAddress: common.HexToAddress(settings.ManufacturerNFTAddress),
+	}
+
+	tknValidator := &auth.TokenValidator{
+		IdentitySvc: idService,
+	}
 
 	cfg := graph.Config{Resolvers: resolver}
-	cfg.Directives.RequiresVehiclePrivilege = privilegeValidator.VehicleNFTPrivCheck
-	cfg.Directives.RequiresManufacturerPrivilege = privilegeValidator.ManufacturerNFTPrivCheck
-	cfg.Directives.RequiresVehicleToken = privilegeValidator.VehicleTokenCheck
-	cfg.Directives.RequiresManufacturerToken = privilegeValidator.ManufacturerTokenCheck
+	cfg.Directives.RequiresVehiclePrivilege = privValidator.VehicleNFTPrivCheck
+	cfg.Directives.RequiresManufacturerPrivilege = privValidator.ManufacturerNFTPrivCheck
+	cfg.Directives.RequiresVehicleToken = tknValidator.VehicleTokenCheck
+	cfg.Directives.RequiresManufacturerToken = tknValidator.ManufacturerTokenCheck
 	cfg.Directives.IsSignal = noOp
 	cfg.Directives.HasAggregation = noOp
 
@@ -77,7 +88,7 @@ func main() {
 
 	logger.Info().Str("jwksUrl", settings.TokenExchangeJWTKeySetURL).Str("issuerURL", settings.TokenExchangeIssuer).Str("vehicleAddr", settings.VehicleNFTAddress).Msg("Privileges enabled.")
 
-	authMiddleware, err := auth.NewJWTMiddleware(settings.TokenExchangeIssuer, settings.TokenExchangeJWTKeySetURL, &logger)
+	authMiddleware, err := auth.NewJWTMiddleware(settings.TokenExchangeIssuer, settings.TokenExchangeJWTKeySetURL, settings.VehicleNFTAddress, settings.ManufacturerNFTAddress, &logger)
 	if err != nil {
 		logger.Fatal().Err(err).Msg("Couldn't create JWT middleware.")
 	}

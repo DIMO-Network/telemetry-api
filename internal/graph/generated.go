@@ -48,7 +48,7 @@ type DirectiveRoot struct {
 	HasAggregation                func(ctx context.Context, obj interface{}, next graphql.Resolver) (res interface{}, err error)
 	IsSignal                      func(ctx context.Context, obj interface{}, next graphql.Resolver) (res interface{}, err error)
 	OneOf                         func(ctx context.Context, obj interface{}, next graphql.Resolver) (res interface{}, err error)
-	RequiresManufacturerPrivilege func(ctx context.Context, obj interface{}, next graphql.Resolver, privilege model.Privilege) (res interface{}, err error)
+	RequiresManufacturerPrivilege func(ctx context.Context, obj interface{}, next graphql.Resolver, privilege []model.Privilege) (res interface{}, err error)
 	RequiresManufacturerToken     func(ctx context.Context, obj interface{}, next graphql.Resolver) (res interface{}, err error)
 	RequiresVehiclePrivilege      func(ctx context.Context, obj interface{}, next graphql.Resolver, privileges []model.Privilege) (res interface{}, err error)
 	RequiresVehicleToken          func(ctx context.Context, obj interface{}, next graphql.Resolver) (res interface{}, err error)
@@ -1150,7 +1150,9 @@ var sources = []*ast.Source{
 	{Name: "../../schema/auth.graphqls", Input: `scalar Map
 
 directive @requiresVehiclePrivilege(privileges: [Privilege!]!) on FIELD_DEFINITION | OBJECT | INTERFACE | SCALAR | ENUM
-directive @requiresManufacturerPrivilege(privilege: Privilege!) on FIELD_DEFINITION | OBJECT | INTERFACE | SCALAR | ENUM
+directive @requiresManufacturerPrivilege(
+  privilege: [Privilege!]!
+) on FIELD_DEFINITION | OBJECT | INTERFACE | SCALAR | ENUM
 
 enum Privilege {
   VEHICLE_NON_LOCATION_DATA
@@ -1158,7 +1160,7 @@ enum Privilege {
   VEHICLE_CURRENT_LOCATION
   VEHICLE_ALL_TIME_LOCATION
   VEHICLE_VIN_CREDENTIAL
-  MANUFACTURER_LAST_SEEN_CREDENTIAL
+  MANUFACTURER_DEVICE_LAST_SEEN
 }
 
 directive @requiresVehicleToken on FIELD_DEFINITION
@@ -1286,16 +1288,14 @@ input SignalFilter {
   """
   DeviceActivity indicates when a given device last transmitted data. For privacy, ranges are used rather than exact timestamps.
 
-  Required Privileges: MANUFACTURER_LAST_SEEN_CREDENTIAL
+  Required Privileges: MANUFACTURER_DEVICE_LAST_SEEN
   """
   deviceActivity(
     """
     The token ID of the aftermarket device.
     """
     by: AftermarketDeviceBy!
-  ): DeviceActivity
-    @requiresManufacturerToken
-    @requiresManufacturerPrivilege(privilege: MANUFACTURER_LAST_SEEN_CREDENTIAL)
+  ): DeviceActivity @requiresManufacturerToken @requiresManufacturerPrivilege(privilege: MANUFACTURER_DEVICE_LAST_SEEN)
 }
 
 type DeviceActivity {
@@ -1894,10 +1894,10 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 func (ec *executionContext) dir_requiresManufacturerPrivilege_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 model.Privilege
+	var arg0 []model.Privilege
 	if tmp, ok := rawArgs["privilege"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("privilege"))
-		arg0, err = ec.unmarshalNPrivilege2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilege(ctx, tmp)
+		arg0, err = ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2961,7 +2961,7 @@ func (ec *executionContext) _Query_deviceActivity(ctx context.Context, field gra
 			return ec.directives.RequiresManufacturerToken(ctx, nil, directive0)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
-			privilege, err := ec.unmarshalNPrivilege2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilege(ctx, "MANUFACTURER_LAST_SEEN_CREDENTIAL")
+			privilege, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, "MANUFACTURER_DEVICE_LAST_SEEN")
 			if err != nil {
 				return nil, err
 			}

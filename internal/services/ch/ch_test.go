@@ -498,6 +498,7 @@ func (c *CHServiceTestSuite) TestGetDeviceActivity() {
 		vehicleTokenID int
 		adManuf        string
 		expected       model.DeviceActivity
+		err            bool
 	}{
 		{
 			name:           "get-bucket-for-last-device-activity",
@@ -507,14 +508,30 @@ func (c *CHServiceTestSuite) TestGetDeviceActivity() {
 				LastActive: &lastActive,
 			},
 		},
+		{
+			name:           "what if I cant find that address",
+			vehicleTokenID: 1,
+			adManuf:        "AutoPi",
+			expected: model.DeviceActivity{
+				LastActive: &lastActive,
+			},
+			err: true,
+		},
+		{
+			name:           "what if that device didnt transmit any data",
+			vehicleTokenID: 1,
+			adManuf:        "AutoPi",
+			expected: model.DeviceActivity{
+				LastActive: &lastActive,
+			},
+			err: true,
+		},
 	}
 	for _, tc := range testCases {
 		c.Run(tc.name, func() {
 			result, err := c.chService.GetDeviceActivity(ctx, tc.vehicleTokenID, tc.adManuf)
 			c.Require().NoError(err)
-			for _, sig := range result {
-				c.Require().Equal(tc.expected, *sig)
-			}
+			c.Require().Equal(tc.expected, *result)
 		})
 	}
 }

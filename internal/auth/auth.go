@@ -8,15 +8,15 @@ import (
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/DIMO-Network/shared/privileges"
-	"github.com/DIMO-Network/telemetry-api/internal/config"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
-	services "github.com/DIMO-Network/telemetry-api/internal/service/identity_api"
+	"github.com/DIMO-Network/telemetry-api/internal/services/identity"
+
 	"github.com/ethereum/go-ethereum/common"
 )
 
 var errUnauthorized = errors.New("unauthorized")
 
-var privToAPI = map[privileges.Privilege]model.Privilege{
+var vehilcePrivMap = map[privileges.Privilege]model.Privilege{
 	privileges.VehicleNonLocationData: model.PrivilegeVehicleNonLocationData,
 	privileges.VehicleCommands:        model.PrivilegeVehicleCommands,
 	privileges.VehicleCurrentLocation: model.PrivilegeVehicleCurrentLocation,
@@ -24,25 +24,22 @@ var privToAPI = map[privileges.Privilege]model.Privilege{
 	privileges.VehicleVinCredential:   model.PrivilegeVehicleVinCredential,
 }
 
-type PrivilegeContractValidator struct {
-	vehicleNFTAddress      common.Address
-	manufacturerNFTAddress common.Address
-	identityService        services.IdentityService
+var manufacturerPrivMap = map[privileges.Privilege]model.Privilege{
+	privileges.ManufacturerDeviceLastSeen: model.PrivilegeManufacturerDeviceLastSeen,
 }
 
-func NewPrivilegeContractValidator(settings config.Settings) *PrivilegeContractValidator {
-	vNFTAddr := common.HexToAddress(settings.VehicleNFTAddress)
-	mNFTAddr := common.HexToAddress(settings.ManufacturerNFTAddress)
-	return &PrivilegeContractValidator{
-		vehicleNFTAddress:      vNFTAddr,
-		manufacturerNFTAddress: mNFTAddr,
-		identityService:        services.NewIdentityService(&settings),
-	}
+type PrivilegeValidator struct {
+	VehicleNFTAddress      common.Address
+	ManufacturerNFTAddress common.Address
+}
+
+type TokenValidator struct {
+	IdentitySvc identity.IdentityService
 }
 
 // VehicleNFTPrivCheck checks if the claim set in the context includes the correct address the required privileges for the VehicleNFT contract.
-func (pcv *PrivilegeContractValidator) VehicleNFTPrivCheck(ctx context.Context, _ any, next graphql.Resolver, privs []model.Privilege) (any, error) {
-	if err := pcv.checkPrivWithAddress(ctx, privs, pcv.vehicleNFTAddress); err != nil {
+func (pcv *PrivilegeValidator) VehicleNFTPrivCheck(ctx context.Context, _ any, next graphql.Resolver, privs []model.Privilege) (any, error) {
+	if err := pcv.checkPrivWithAddress(ctx, privs, pcv.VehicleNFTAddress); err != nil {
 		return nil, fmt.Errorf("%s: %w", errUnauthorized.Error(), err)
 	}
 
@@ -50,20 +47,20 @@ func (pcv *PrivilegeContractValidator) VehicleNFTPrivCheck(ctx context.Context, 
 }
 
 // ManufacturerNFTPrivCheck checks if the claim set in the context includes the correct address the required privileges for the ManufacturerNFT contract.
-func (pcv *PrivilegeContractValidator) ManufacturerNFTPrivCheck(ctx context.Context, obj interface{}, next graphql.Resolver, priv model.Privilege) (res interface{}, err error) {
-	if err := pcv.checkPrivWithAddress(ctx, []model.Privilege{priv}, pcv.manufacturerNFTAddress); err != nil {
+func (pcv *PrivilegeValidator) ManufacturerNFTPrivCheck(ctx context.Context, obj interface{}, next graphql.Resolver, privs []model.Privilege) (res interface{}, err error) {
+	if err := pcv.checkPrivWithAddress(ctx, privs, pcv.ManufacturerNFTAddress); err != nil {
 		return nil, fmt.Errorf("%s: %w", errUnauthorized.Error(), err)
 	}
 
 	return next(ctx)
 }
 
-func (pcv *PrivilegeContractValidator) checkPrivWithAddress(ctx context.Context, privs []model.Privilege, contractAddr common.Address) error {
+func (pcv *PrivilegeValidator) checkPrivWithAddress(ctx context.Context, privs []model.Privilege, contractAddr common.Address) error {
 	claim, err := getTelemetryClaim(ctx)
 	if err != nil {
 		return err
 	}
-
+	fmt.Println(claim.ContractAddress, contractAddr, privs, claim.privileges)
 	if claim.ContractAddress != contractAddr {
 		return fmt.Errorf("contract address mismatch")
 	}
@@ -78,13 +75,13 @@ func (pcv *PrivilegeContractValidator) checkPrivWithAddress(ctx context.Context,
 }
 
 // VehicleTokenCheck checks if the vehicle tokenID in the context matches the tokenID in the claim.
-func (pcv *PrivilegeContractValidator) VehicleTokenCheck(ctx context.Context, _ any, next graphql.Resolver) (any, error) {
+func (tv *TokenValidator) VehicleTokenCheck(ctx context.Context, _ any, next graphql.Resolver) (any, error) {
 	claim, err := getTelemetryClaim(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	vehicleTokenID, err := getRequestValues[int](ctx, "tokenId")
+	vehicleTokenID, err := getArg[int](ctx, "tokenId")
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", errUnauthorized.Error(), err)
 	}
@@ -96,19 +93,19 @@ func (pcv *PrivilegeContractValidator) VehicleTokenCheck(ctx context.Context, _ 
 	return next(ctx)
 }
 
-func (pcv *PrivilegeContractValidator) ManufacturerTokenCheck(ctx context.Context, obj interface{}, next graphql.Resolver) (res interface{}, err error) {
+func (tv *TokenValidator) ManufacturerTokenCheck(ctx context.Context, obj interface{}, next graphql.Resolver) (res interface{}, err error) {
 	claim, err := getTelemetryClaim(ctx)
 	if err != nil {
 		return nil, err
 	}
 
 	// TODO allow user to search by addr, tokenID, or serial
-	aftermarketDeviceAddr, err := getRequestValues[common.Address](ctx, "address")
+	aftermarketDeviceAddr, err := getArg[common.Address](ctx, "address")
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", errUnauthorized.Error(), err)
 	}
 
-	resp, err := pcv.identityService.AftermarketDevice(ctx, services.AftermarketDeviceBy{Address: &aftermarketDeviceAddr})
+	resp, err := tv.IdentitySvc.AftermarketDevice(ctx, &aftermarketDeviceAddr, nil, nil)
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to get aftermarket device", errUnauthorized)
 	}
@@ -120,7 +117,7 @@ func (pcv *PrivilegeContractValidator) ManufacturerTokenCheck(ctx context.Contex
 	return next(ctx)
 }
 
-func getRequestValues[T any](ctx context.Context, key string) (T, error) {
+func getArg[T any](ctx context.Context, key string) (T, error) {
 	var resp T
 	fCtx := graphql.GetFieldContext(ctx)
 	if fCtx == nil {
@@ -129,7 +126,7 @@ func getRequestValues[T any](ctx context.Context, key string) (T, error) {
 
 	resp, ok := fCtx.Args[key].(T)
 	if !ok {
-		return resp, fmt.Errorf("failed to get %s from args", key)
+		return resp, fmt.Errorf("failed to get %s of type %T from args", key, resp)
 	}
 
 	return resp, nil

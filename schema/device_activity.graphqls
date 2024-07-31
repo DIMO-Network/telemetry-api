@@ -2,16 +2,14 @@ extend type Query {
   """
   DeviceActivity indicates when a given device last transmitted data. For privacy, ranges are used rather than exact timestamps.
 
-  Required Privileges: MANUFACTURER_LAST_SEEN_CREDENTIAL
+  Required Privileges: MANUFACTURER_DEVICE_LAST_SEEN
   """
   deviceActivity(
     """
     The token ID of the aftermarket device.
     """
     by: AftermarketDeviceBy!
-  ): DeviceActivity
-    @requiresManufacturerToken
-    @requiresManufacturerPrivilege(privilege: MANUFACTURER_LAST_SEEN_CREDENTIAL)
+  ): DeviceActivity @requiresManufacturerToken @requiresManufacturerPrivilege(privilege: MANUFACTURER_DEVICE_LAST_SEEN)
 }
 
 type DeviceActivity {
