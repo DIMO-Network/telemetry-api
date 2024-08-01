@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/ClickHouse/clickhouse-go/v2/lib/proto"
@@ -17,6 +18,8 @@ import (
 var (
 	errInternal = errors.New("internal error")
 	errTimeout  = errors.New("request exceeded or is estimated to exceed the maximum execution time")
+	hashDogMtr  = "hashdog"
+	macaronMtr  = "macaron"
 )
 
 // CHService is the interface for the ClickHouse service.
@@ -25,7 +28,6 @@ var (
 type CHService interface {
 	GetAggregatedSignals(ctx context.Context, aggArgs *model.AggregatedSignalArgs) ([]*model.AggSignal, error)
 	GetLatestSignals(ctx context.Context, latestArgs *model.LatestSignalsArgs) ([]*vss.Signal, error)
-	GetDeviceActivity(ctx context.Context, vehicleTokenID int, adManuf string) (*model.DeviceActivity, error)
 }
 
 // Repository is the base repository for all repositories.
@@ -102,7 +104,34 @@ func (r *Repository) GetSignalLatest(ctx context.Context, latestArgs *model.Late
 
 // GetDeviceActivity returns device status activity level.
 func (r *Repository) GetDeviceActivity(ctx context.Context, vehicleTokenID int, adManuf string) (*model.DeviceActivity, error) {
-	return r.chService.GetDeviceActivity(ctx, vehicleTokenID, adManuf)
+	mtrLower := strings.ToLower(adManuf)
+	if mtrLower == hashDogMtr {
+		mtrLower = macaronMtr
+	}
+
+	args := &model.LatestSignalsArgs{
+		IncludeLastSeen: true,
+		SignalArgs: model.SignalArgs{
+			TokenID: uint32(vehicleTokenID),
+			Filter: &model.SignalFilter{
+				Source: &mtrLower,
+			},
+		},
+	}
+
+	latest, err := r.GetSignalLatest(ctx, args)
+	if err != nil {
+		return nil, err
+	}
+
+	if latest.LastSeen.IsZero() || *latest.LastSeen == time.Unix(0, 0).UTC() {
+		return nil, fmt.Errorf("no activity recorded for vehicle")
+	}
+
+	bin := bin(*latest.LastSeen, 3*time.Hour)
+	return &model.DeviceActivity{
+		LastActive: &bin,
+	}, nil
 }
 
 // handleDBError logs the error and returns a generic error message.
@@ -114,4 +143,12 @@ func handleDBError(err error, log *zerolog.Logger) error {
 	}
 	log.Error().Err(err).Msg("failed to query db")
 	return errInternal
+}
+
+func bin(t time.Time, d time.Duration) time.Time {
+	r := t.Sub(time.Unix(0, 0).UTC()) % d
+	if r < 0 {
+		r += d
+	}
+	return t.Add(-r)
 }

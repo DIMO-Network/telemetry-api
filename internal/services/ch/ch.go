@@ -150,25 +150,3 @@ func (s *Service) getAggSignals(ctx context.Context, stmt string, args []any) ([
 	}
 	return signals, nil
 }
-
-// GetDeviceActivity returns the start of the latest time block device activity was recorded.
-func (s *Service) GetDeviceActivity(ctx context.Context, vehicleTokenID int, adManuf string) (*model.DeviceActivity, error) {
-	stmt, args := getDeviceActivityQuery(s.lastSeenBucketHrs, vehicleTokenID, adManuf)
-	rows := s.conn.QueryRow(ctx, stmt, args...)
-	if rows.Err() != nil {
-		return nil, fmt.Errorf("query failed: %w", rows.Err())
-	}
-
-	var activity model.DeviceActivity
-	err := rows.Scan(&activity.LastActive)
-	if err != nil {
-		return nil, fmt.Errorf("failed scanning row: %w", err)
-	}
-
-	// should there be an 'ever active' that we can set to false instead of erroring here?
-	if activity.LastActive.IsZero() || *activity.LastActive == time.Date(1970, time.January, 1, 0, 0, 0, 0, time.UTC) {
-		return nil, fmt.Errorf("no activity recorded for vehicle")
-	}
-
-	return &activity, nil
-}

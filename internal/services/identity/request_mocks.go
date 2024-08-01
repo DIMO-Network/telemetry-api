@@ -36,10 +36,10 @@ func (m *MockIdentityService) EXPECT() *MockIdentityServiceMockRecorder {
 }
 
 // AftermarketDevice mocks base method.
-func (m *MockIdentityService) AftermarketDevice(ctx context.Context, address *common.Address, tokenID *int, serial *string) (*ManufacturerTokenID, error) {
+func (m *MockIdentityService) AftermarketDevice(ctx context.Context, address *common.Address, tokenID *int, serial *string) (*DeviceInfos, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "AftermarketDevice", ctx, address, tokenID, serial)
-	ret0, _ := ret[0].(*ManufacturerTokenID)
+	ret0, _ := ret[0].(*DeviceInfos)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

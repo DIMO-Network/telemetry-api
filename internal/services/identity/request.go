@@ -2,6 +2,7 @@ package identity
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -11,7 +12,7 @@ import (
 
 //go:generate mockgen -source=./request.go -destination=request_mocks.go -package=identity
 type IdentityService interface {
-	AftermarketDevice(ctx context.Context, address *common.Address, tokenID *int, serial *string) (*ManufacturerTokenID, error)
+	AftermarketDevice(ctx context.Context, address *common.Address, tokenID *int, serial *string) (*DeviceInfos, error)
 }
 
 type identityAPI struct {
@@ -27,7 +28,7 @@ func NewService(url string, timeout int) IdentityService {
 	}
 }
 
-func (i *identityAPI) AftermarketDevice(ctx context.Context, address *common.Address, tokenID *int, serial *string) (*ManufacturerTokenID, error) {
+func (i *identityAPI) AftermarketDevice(ctx context.Context, address *common.Address, tokenID *int, serial *string) (*DeviceInfos, error) {
 	resp, err := aftermarketDevice(ctx, i.client, AftermarketDeviceBy{
 		TokenId: tokenID,
 		Address: address,
@@ -37,7 +38,11 @@ func (i *identityAPI) AftermarketDevice(ctx context.Context, address *common.Add
 		return nil, err
 	}
 
-	return &ManufacturerTokenID{
+	if resp.AftermarketDevice.Vehicle == nil {
+		return nil, fmt.Errorf("no vehicle attached to device")
+	}
+
+	return &DeviceInfos{
 		ManufacturerTokenID:      resp.AftermarketDevice.Manufacturer.TokenId,
 		VehicleTokenID:           resp.AftermarketDevice.Vehicle.TokenId,
 		AftermarketDeviceTokenID: resp.AftermarketDevice.TokenId,
@@ -45,7 +50,7 @@ func (i *identityAPI) AftermarketDevice(ctx context.Context, address *common.Add
 	}, nil
 }
 
-type ManufacturerTokenID struct {
+type DeviceInfos struct {
 	ManufacturerTokenID      int    `json:"manufacturerTokenId"`
 	VehicleTokenID           int    `json:"vehicleTokenId"`
 	AftermarketDeviceTokenID int    `json:"aftermarketDeviceTokenId"`
