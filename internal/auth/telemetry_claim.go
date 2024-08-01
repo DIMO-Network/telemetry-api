@@ -25,6 +25,8 @@ func (t *TelemetryClaim) Validate(context.Context) error {
 	return nil
 }
 
+// SetPrivileges populates the set of GraphQL privileges on the claim object. To do this,
+// it combines the address and privilege ids on the token together with the given map.
 func (t *TelemetryClaim) SetPrivileges(contractPrivMaps map[common.Address]map[privileges.Privilege]model.Privilege) {
 	t.privileges = set.New[model.Privilege]()
 

@@ -55,7 +55,8 @@ func NewJWTMiddleware(issuer, jwksURI string, logger *zerolog.Logger) (*jwtmiddl
 	return middleware, nil
 }
 
-// AddClaimHandler is a middleware that adds the telemetry claim to the context.
+// AddClaimHandler is a middleware that fills in GraphQL-friendly privilege information on
+// the *TelemetryClaim object in the context.
 func AddClaimHandler(next http.Handler, logger *zerolog.Logger, vehicleAddr, mfrAddr string) http.Handler {
 	contractPrivMaps := map[common.Address]map[privileges.Privilege]model.Privilege{
 		common.HexToAddress(vehicleAddr): vehiclePrivToAPI,
@@ -72,7 +73,7 @@ func AddClaimHandler(next http.Handler, logger *zerolog.Logger, vehicleAddr, mfr
 
 		telClaim, ok := claims.CustomClaims.(*TelemetryClaim)
 		if !ok {
-			logger.Error().Msg("could not cast claims to telemetyClaim")
+			logger.Error().Msg("Could not cast claims to TelemetryClaim")
 			jwtmiddleware.DefaultErrorHandler(w, r, jwtmiddleware.ErrJWTMissing)
 			return
 		}
