@@ -21,7 +21,6 @@ require (
 	github.com/stretchr/testify v1.9.0
 	github.com/vektah/gqlparser/v2 v2.5.16
 	github.com/volatiletech/sqlboiler/v4 v4.16.2
-	github.com/zclconf/go-cty v1.15.0
 	go.uber.org/mock v0.4.0
 )
 
