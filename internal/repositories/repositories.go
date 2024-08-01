@@ -33,7 +33,6 @@ type CHService interface {
 // Repository is the base repository for all repositories.
 type Repository struct {
 	chService CHService
-	idService identity.IdentityService
 	log       *zerolog.Logger
 }
 
@@ -41,7 +40,6 @@ type Repository struct {
 // clientCAs is optional and can be nil.
 func NewRepository(logger *zerolog.Logger, chService CHService, id identity.IdentityService) *Repository {
 	return &Repository{
-		idService: id,
 		chService: chService,
 		log:       logger,
 	}
