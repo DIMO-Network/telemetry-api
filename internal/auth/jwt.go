@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/DIMO-Network/shared/privileges"
-	"github.com/DIMO-Network/shared/set"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	jwtmiddleware "github.com/auth0/go-jwt-middleware/v2"
 	"github.com/auth0/go-jwt-middleware/v2/jwks"
@@ -78,17 +77,7 @@ func AddClaimHandler(next http.Handler, logger *zerolog.Logger, vehicleAddr, mfr
 			return
 		}
 
-		telClaim.privileges = set.New[model.Privilege]()
-
-		if contractClaims, ok := contractPrivMaps[telClaim.ContractAddress]; ok {
-			for _, priv := range telClaim.PrivilegeIDs {
-				modelPriv, ok := contractClaims[priv]
-				if !ok {
-					continue
-				}
-				telClaim.privileges.Add(modelPriv)
-			}
-		}
+		telClaim.SetPrivileges(contractPrivMaps)
 
 		// add the custom claims to the context under a new custom key
 		r = r.Clone(context.WithValue(r.Context(), TelemetryClaimContextKey{}, telClaim))

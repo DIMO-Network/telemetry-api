@@ -1,4 +1,4 @@
-package auth_test
+package auth
 
 import (
 	"context"
@@ -8,7 +8,6 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/DIMO-Network/shared/middleware/privilegetoken"
 	"github.com/DIMO-Network/shared/privileges"
-	"github.com/DIMO-Network/telemetry-api/internal/auth"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/require"
@@ -22,20 +21,25 @@ func emptyResolver(_ context.Context) (any, error) {
 
 func TestRequiresTokenCheck(t *testing.T) {
 	t.Parallel()
+
+	vehicleNFTAddrRaw := "0x1"
+	vehicleNFTAddr := common.HexToAddress(vehicleNFTAddrRaw)
+
 	testCases := []struct {
-		name          string
-		args          map[string]any
-		telmetryClaim *auth.TelemetryClaim
-		expectedError bool
+		name           string
+		args           map[string]any
+		telemetryClaim *TelemetryClaim
+		expectedError  bool
 	}{
 		{
 			name: "valid_token",
 			args: map[string]any{
 				"tokenId": 123,
 			},
-			telmetryClaim: &auth.TelemetryClaim{
+			telemetryClaim: &TelemetryClaim{
 				CustomClaims: privilegetoken.CustomClaims{
-					TokenID: "123",
+					ContractAddress: vehicleNFTAddr,
+					TokenID:         "123",
 				},
 			},
 		},
@@ -44,9 +48,10 @@ func TestRequiresTokenCheck(t *testing.T) {
 			args: map[string]any{
 				"tokenId": 456,
 			},
-			telmetryClaim: &auth.TelemetryClaim{
+			telemetryClaim: &TelemetryClaim{
 				CustomClaims: privilegetoken.CustomClaims{
-					TokenID: "123",
+					ContractAddress: vehicleNFTAddr,
+					TokenID:         "123",
 				},
 			},
 			expectedError: true,
@@ -55,9 +60,21 @@ func TestRequiresTokenCheck(t *testing.T) {
 			name:          "missing_tokenId",
 			args:          map[string]any{},
 			expectedError: true,
-			telmetryClaim: &auth.TelemetryClaim{
+			telemetryClaim: &TelemetryClaim{
 				CustomClaims: privilegetoken.CustomClaims{
-					TokenID: "123",
+					ContractAddress: vehicleNFTAddr,
+					TokenID:         "123",
+				},
+			},
+		},
+		{
+			name:          "wrong_contract",
+			args:          map[string]any{},
+			expectedError: true,
+			telemetryClaim: &TelemetryClaim{
+				CustomClaims: privilegetoken.CustomClaims{
+					ContractAddress: common.HexToAddress("0x4"),
+					TokenID:         "123",
 				},
 			},
 		},
@@ -66,10 +83,12 @@ func TestRequiresTokenCheck(t *testing.T) {
 			args: map[string]any{
 				"tokenId": 123,
 			},
-			expectedError: true,
-			telmetryClaim: nil,
+			expectedError:  true,
+			telemetryClaim: nil,
 		},
 	}
+
+	vehicleCheck := CreateVehicleTokenCheck(vehicleNFTAddrRaw)
 
 	for _, tc := range testCases {
 		tc := tc
@@ -78,8 +97,8 @@ func TestRequiresTokenCheck(t *testing.T) {
 			testCtx := graphql.WithFieldContext(context.Background(), &graphql.FieldContext{
 				Args: tc.args,
 			})
-			testCtx = context.WithValue(testCtx, auth.TelemetryClaimContextKey{}, tc.telmetryClaim)
-			result, err := auth.RequiresVehicleTokenCheck(testCtx, nil, graphql.Resolver(emptyResolver))
+			testCtx = context.WithValue(testCtx, TelemetryClaimContextKey{}, tc.telemetryClaim)
+			result, err := vehicleCheck(testCtx, nil, graphql.Resolver(emptyResolver))
 			if tc.expectedError {
 				require.Error(t, err)
 				return
@@ -93,10 +112,16 @@ func TestRequiresPrivilegeCheck(t *testing.T) {
 	t.Parallel()
 	vehicleNFTAddr := common.BigToAddress(big.NewInt(10))
 	manufNFTAddr := common.BigToAddress(big.NewInt(11))
+
+	privMaps := map[common.Address]map[privileges.Privilege]model.Privilege{
+		vehicleNFTAddr: vehiclePrivToAPI,
+		manufNFTAddr:   manufacturerPrivToAPI,
+	}
+
 	testCases := []struct {
 		name           string
 		privs          []model.Privilege
-		telemetryClaim *auth.TelemetryClaim
+		telemetryClaim *TelemetryClaim
 		expectedError  bool
 	}{
 		{
@@ -105,7 +130,7 @@ func TestRequiresPrivilegeCheck(t *testing.T) {
 				model.PrivilegeVehicleAllTimeLocation,
 				model.PrivilegeVehicleNonLocationData,
 			},
-			telemetryClaim: &auth.TelemetryClaim{
+			telemetryClaim: &TelemetryClaim{
 				CustomClaims: privilegetoken.CustomClaims{
 					PrivilegeIDs: []privileges.Privilege{
 						privileges.VehicleAllTimeLocation,
@@ -121,7 +146,7 @@ func TestRequiresPrivilegeCheck(t *testing.T) {
 				model.PrivilegeVehicleAllTimeLocation,
 				model.PrivilegeVehicleNonLocationData,
 			},
-			telemetryClaim: &auth.TelemetryClaim{
+			telemetryClaim: &TelemetryClaim{
 				CustomClaims: privilegetoken.CustomClaims{
 					PrivilegeIDs:    nil,
 					ContractAddress: vehicleNFTAddr,
@@ -135,7 +160,7 @@ func TestRequiresPrivilegeCheck(t *testing.T) {
 				model.PrivilegeVehicleAllTimeLocation,
 				model.PrivilegeVehicleNonLocationData,
 			},
-			telemetryClaim: &auth.TelemetryClaim{
+			telemetryClaim: &TelemetryClaim{
 				CustomClaims: privilegetoken.CustomClaims{
 					PrivilegeIDs: []privileges.Privilege{
 						privileges.VehicleAllTimeLocation,
@@ -157,7 +182,7 @@ func TestRequiresPrivilegeCheck(t *testing.T) {
 				model.PrivilegeVehicleAllTimeLocation,
 				model.PrivilegeVehicleNonLocationData,
 			},
-			telemetryClaim: &auth.TelemetryClaim{
+			telemetryClaim: &TelemetryClaim{
 				CustomClaims: privilegetoken.CustomClaims{
 					PrivilegeIDs: []privileges.Privilege{
 						privileges.VehicleAllTimeLocation,
@@ -169,20 +194,15 @@ func TestRequiresPrivilegeCheck(t *testing.T) {
 		},
 	}
 
-	authValidator := auth.PrivilegeContractValidator{
-		VehicleNFTAddress: vehicleNFTAddr,
-		// ManufAddr:         manufNFTAddr.Hex(),
-	}
-
 	for _, tc := range testCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 			if tc.telemetryClaim != nil {
-				tc.telemetryClaim.SetPrivileges()
+				tc.telemetryClaim.SetPrivileges(privMaps)
 			}
-			testCtx := context.WithValue(context.Background(), auth.TelemetryClaimContextKey{}, tc.telemetryClaim)
-			next, err := authValidator.VehicleNFTPrivCheck(testCtx, nil, emptyResolver, tc.privs)
+			testCtx := context.WithValue(context.Background(), TelemetryClaimContextKey{}, tc.telemetryClaim)
+			next, err := PrivilegeCheck(testCtx, nil, emptyResolver, tc.privs)
 			if tc.expectedError {
 				require.Error(t, err)
 				return
