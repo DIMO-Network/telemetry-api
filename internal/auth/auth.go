@@ -70,14 +70,13 @@ func (tv *TokenValidator) VehicleTokenCheck(ctx context.Context, _ any, next gra
 }
 
 func (tv *TokenValidator) ManufacturerTokenCheck(ctx context.Context, obj interface{}, next graphql.Resolver) (res interface{}, err error) {
-	// TODO(ae) allow user to search by addr, tokenID, or serial
-	aftermarketDeviceAddr, err := getArg[common.Address](ctx, "address")
+	adFilter, err := getArg[model.AftermarketDeviceBy](ctx, "by")
 	if err != nil {
 		return nil, fmt.Errorf("unauthorized: %w", err)
 	}
 
 	if err := headerTokenMatchesQuery(ctx, func() (string, error) {
-		resp, err := tv.IdentitySvc.AftermarketDevice(ctx, &aftermarketDeviceAddr, nil, nil)
+		resp, err := tv.IdentitySvc.AftermarketDevice(ctx, adFilter.Address, adFilter.TokenID, adFilter.Serial)
 		if err != nil {
 			return "", err
 		}

@@ -167,7 +167,7 @@ func (s *Service) GetDeviceActivity(ctx context.Context, vehicleTokenID int, adM
 
 	// should there be an 'ever active' that we can set to false instead of erroring here?
 	if activity.LastActive.IsZero() || *activity.LastActive == time.Date(1970, time.January, 1, 0, 0, 0, 0, time.UTC) {
-		return nil, fmt.Errorf("no activity recorded for vehicle token ID %d", vehicleTokenID)
+		return nil, fmt.Errorf("no activity recorded for vehicle")
 	}
 
 	return &activity, nil

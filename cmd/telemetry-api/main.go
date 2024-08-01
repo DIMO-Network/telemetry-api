@@ -79,6 +79,7 @@ func main() {
 	cfg.Directives.RequiresManufacturerToken = tknValidator.ManufacturerTokenCheck
 	cfg.Directives.IsSignal = noOp
 	cfg.Directives.HasAggregation = noOp
+	cfg.Directives.OneOf = noOp
 
 	serveMonitoring(strconv.Itoa(settings.MonPort), &logger)
 
