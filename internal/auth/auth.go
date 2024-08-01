@@ -63,7 +63,7 @@ func PrivilegeCheck(ctx context.Context, _ any, next graphql.Resolver, privs []m
 	}
 
 	for _, priv := range privs {
-		if _, ok := claim.privileges[priv]; !ok {
+		if !claim.privileges.Contains(priv) {
 			return nil, fmt.Errorf("%w: missing required privilege %s", errUnauthorized, priv)
 		}
 	}

@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/DIMO-Network/shared/middleware/privilegetoken"
+	"github.com/DIMO-Network/shared/set"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	jwtmiddleware "github.com/auth0/go-jwt-middleware/v2"
 )
@@ -13,7 +14,7 @@ type TelemetryClaimContextKey struct{}
 
 // TelemetryClaim is a custom claim for the telemetry API.
 type TelemetryClaim struct {
-	privileges map[model.Privilege]struct{}
+	privileges set.Set[model.Privilege]
 	privilegetoken.CustomClaims
 }
 

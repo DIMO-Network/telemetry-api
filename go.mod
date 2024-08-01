@@ -9,7 +9,7 @@ require (
 	github.com/DIMO-Network/clickhouse-infra v0.0.1
 	github.com/DIMO-Network/model-garage v0.2.11
 	github.com/DIMO-Network/nameindexer v0.0.1
-	github.com/DIMO-Network/shared v0.10.23
+	github.com/DIMO-Network/shared v0.11.0
 	github.com/auth0/go-jwt-middleware/v2 v2.2.1
 	github.com/aws/aws-sdk-go-v2 v1.30.1
 	github.com/aws/aws-sdk-go-v2/credentials v1.17.23
@@ -21,6 +21,7 @@ require (
 	github.com/stretchr/testify v1.9.0
 	github.com/vektah/gqlparser/v2 v2.5.16
 	github.com/volatiletech/sqlboiler/v4 v4.16.2
+	github.com/zclconf/go-cty v1.15.0
 	go.uber.org/mock v0.4.0
 )
 

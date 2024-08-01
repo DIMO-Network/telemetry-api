@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/DIMO-Network/shared/privileges"
+	"github.com/DIMO-Network/shared/set"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	jwtmiddleware "github.com/auth0/go-jwt-middleware/v2"
 	"github.com/auth0/go-jwt-middleware/v2/jwks"
@@ -77,7 +78,7 @@ func AddClaimHandler(next http.Handler, logger *zerolog.Logger, vehicleAddr, mfr
 			return
 		}
 
-		telClaim.privileges = make(map[model.Privilege]struct{})
+		telClaim.privileges = set.New[model.Privilege]()
 
 		if contractClaims, ok := contractPrivMaps[telClaim.ContractAddress]; ok {
 			for _, priv := range telClaim.PrivilegeIDs {
@@ -85,7 +86,7 @@ func AddClaimHandler(next http.Handler, logger *zerolog.Logger, vehicleAddr, mfr
 				if !ok {
 					continue
 				}
-				telClaim.privileges[modelPriv] = struct{}{}
+				telClaim.privileges.Add(modelPriv)
 			}
 		}
 
