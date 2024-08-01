@@ -11,6 +11,20 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 )
 
+const tokenIdArg = "tokenId"
+
+var (
+	vehiclePrivToAPI = map[privileges.Privilege]model.Privilege{
+		privileges.VehicleNonLocationData: model.PrivilegeVehicleNonLocationData,
+		privileges.VehicleCommands:        model.PrivilegeVehicleCommands,
+		privileges.VehicleCurrentLocation: model.PrivilegeVehicleCurrentLocation,
+		privileges.VehicleAllTimeLocation: model.PrivilegeVehicleAllTimeLocation,
+		privileges.VehicleVinCredential:   model.PrivilegeVehicleVinCredential,
+	}
+
+	manufacturerPrivToAPI = map[privileges.Privilege]model.Privilege{}
+)
+
 type UnauthorizedError struct {
 	message string
 	err     error
@@ -37,18 +51,6 @@ func newError(msg string, args ...any) error {
 	return UnauthorizedError{message: fmt.Sprintf(msg, args...)}
 }
 
-var vehiclePrivToAPI = map[privileges.Privilege]model.Privilege{
-	privileges.VehicleNonLocationData: model.PrivilegeVehicleNonLocationData,
-	privileges.VehicleCommands:        model.PrivilegeVehicleCommands,
-	privileges.VehicleCurrentLocation: model.PrivilegeVehicleCurrentLocation,
-	privileges.VehicleAllTimeLocation: model.PrivilegeVehicleAllTimeLocation,
-	privileges.VehicleVinCredential:   model.PrivilegeVehicleVinCredential,
-}
-
-var manufacturerPrivToAPI = map[privileges.Privilege]model.Privilege{}
-
-const tokenIdArgName = "tokenId"
-
 func CreateVehicleTokenCheck(contractAddr string) func(context.Context, any, graphql.Resolver) (any, error) {
 	requiredAddr := common.HexToAddress(contractAddr)
 
@@ -66,13 +68,13 @@ func CreateVehicleTokenCheck(contractAddr string) func(context.Context, any, gra
 		if fCtx == nil {
 			return nil, newError("no field context")
 		}
-		tokenIDAny, ok := fCtx.Args[tokenIdArgName]
+		tokenIDAny, ok := fCtx.Args[tokenIdArg]
 		if !ok {
-			return nil, newError("no argument named %s", tokenIdArgName)
+			return nil, newError("no argument named %s", tokenIdArg)
 		}
 		tokenID, ok := tokenIDAny.(int)
 		if !ok {
-			return nil, newError("argument %s has type %T instead of the expected %T", tokenIdArgName, tokenIDAny, tokenID)
+			return nil, newError("argument %s has type %T instead of the expected %T", tokenIdArg, tokenIDAny, tokenID)
 
 		}
 		if strconv.Itoa(tokenID) != claim.TokenID {
