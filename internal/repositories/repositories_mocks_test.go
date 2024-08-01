@@ -51,21 +51,6 @@ func (mr *MockCHServiceMockRecorder) GetAggregatedSignals(ctx, aggArgs interface
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAggregatedSignals", reflect.TypeOf((*MockCHService)(nil).GetAggregatedSignals), ctx, aggArgs)
 }
 
-// GetDeviceActivity mocks base method.
-func (m *MockCHService) GetDeviceActivity(ctx context.Context, vehicleTokenID int, adManuf string) (*model.DeviceActivity, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetDeviceActivity", ctx, vehicleTokenID, adManuf)
-	ret0, _ := ret[0].(*model.DeviceActivity)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetDeviceActivity indicates an expected call of GetDeviceActivity.
-func (mr *MockCHServiceMockRecorder) GetDeviceActivity(ctx, vehicleTokenID, adManuf interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDeviceActivity", reflect.TypeOf((*MockCHService)(nil).GetDeviceActivity), ctx, vehicleTokenID, adManuf)
-}
-
 // GetLatestSignals mocks base method.
 func (m *MockCHService) GetLatestSignals(ctx context.Context, latestArgs *model.LatestSignalsArgs) ([]*vss.Signal, error) {
 	m.ctrl.T.Helper()

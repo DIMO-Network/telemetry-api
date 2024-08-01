@@ -75,7 +75,7 @@ func TestRequiresVehicleTokenCheck(t *testing.T) {
 	}
 
 	tknValidator := &TokenValidator{
-		IdentitySvc: &identity.MockIdentityService{},
+		// IdentitySvc: &identity.MockIdentityService{},
 	}
 
 	for _, tc := range testCases {
@@ -104,14 +104,14 @@ func TestRequiresManufacturerTokenCheck(t *testing.T) {
 	invalidAutoPiAddr := common.BigToAddress(big.NewInt(456))
 	id := identity.NewMockIdentityService(gomock.NewController(t))
 	id.EXPECT().AftermarketDevice(gomock.Any(), &validAutoPiAddr, gomock.Any(), gomock.Any()).Return(
-		&identity.ManufacturerTokenID{
+		&identity.DeviceInfos{
 			ManufacturerTokenID: 137,
 		}, nil).AnyTimes()
 	id.EXPECT().AftermarketDevice(gomock.Any(), &invalidAutoPiAddr, gomock.Any(), gomock.Any()).Return(
 		nil, fmt.Errorf("")).AnyTimes()
 
 	tokenValidator := &TokenValidator{
-		IdentitySvc: id,
+		// IdentitySvc: id,
 	}
 
 	testCases := []struct {

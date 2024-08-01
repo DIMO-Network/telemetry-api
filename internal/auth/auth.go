@@ -31,8 +31,13 @@ type PrivilegeValidator struct {
 	ManufacturerNFTAddress common.Address
 }
 
+//go:generate mockgen -source=./auth.go -destination=auth_mocks.go -package=auth
+type IdentityService interface {
+	GetAftermarketDevice(ctx context.Context, address *common.Address, tokenID *int, serial *string) (*identity.DeviceInfos, error)
+}
+
 type TokenValidator struct {
-	IdentitySvc identity.IdentityService
+	IdentitySvc *identity.APIClient
 }
 
 // VehicleNFTPrivCheck checks if the claim set in the context includes the correct address the required privileges for the VehicleNFT contract.
@@ -76,7 +81,7 @@ func (tv *TokenValidator) ManufacturerTokenCheck(ctx context.Context, obj interf
 	}
 
 	if err := headerTokenMatchesQuery(ctx, func() (string, error) {
-		resp, err := tv.IdentitySvc.AftermarketDevice(ctx, adFilter.Address, adFilter.TokenID, adFilter.Serial)
+		resp, err := tv.IdentitySvc.GetAftermarketDevice(ctx, adFilter.Address, adFilter.TokenID, adFilter.Serial)
 		if err != nil {
 			return "", err
 		}

@@ -58,7 +58,7 @@ func NewService(settings config.Settings) (*Service, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to ping clickhouse: %w", err)
 	}
-	return &Service{conn: conn, lastSeenBucketHrs: settings.ManufacturerDeviceLastSeenBucketHours}, nil
+	return &Service{conn: conn, lastSeenBucketHrs: settings.DeviceLastSeenBinHrs}, nil
 }
 
 func getMaxExecutionTime(maxRequestDuration string) (int, error) {

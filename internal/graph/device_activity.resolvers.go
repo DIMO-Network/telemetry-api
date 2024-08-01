@@ -12,7 +12,7 @@ import (
 
 // DeviceActivity is the resolver for the deviceActivity field.
 func (r *queryResolver) DeviceActivity(ctx context.Context, by model.AftermarketDeviceBy) (*model.DeviceActivity, error) {
-	adInfo, err := r.IdentityService.AftermarketDevice(ctx, by.Address, by.TokenID, by.Serial)
+	adInfo, err := r.IdentityService.GetAftermarketDevice(ctx, by.Address, by.TokenID, by.Serial)
 	if err != nil {
 		return nil, err
 	}

@@ -11,7 +11,6 @@ import (
 	"github.com/DIMO-Network/model-garage/pkg/vss"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	"github.com/DIMO-Network/telemetry-api/internal/services/ch"
-	"github.com/DIMO-Network/telemetry-api/internal/services/identity"
 	"github.com/rs/zerolog"
 )
 
@@ -32,16 +31,18 @@ type CHService interface {
 
 // Repository is the base repository for all repositories.
 type Repository struct {
-	chService CHService
-	log       *zerolog.Logger
+	chService   CHService
+	log         *zerolog.Logger
+	lastSeenBin time.Duration
 }
 
 // NewRepository creates a new base repository.
 // clientCAs is optional and can be nil.
-func NewRepository(logger *zerolog.Logger, chService CHService, id identity.IdentityService) *Repository {
+func NewRepository(logger *zerolog.Logger, chService CHService, lastSeenBin int64) *Repository {
 	return &Repository{
-		chService: chService,
-		log:       logger,
+		chService:   chService,
+		log:         logger,
+		lastSeenBin: time.Duration(lastSeenBin) * time.Hour,
 	}
 }
 
@@ -122,13 +123,13 @@ func (r *Repository) GetDeviceActivity(ctx context.Context, vehicleTokenID int, 
 		return nil, err
 	}
 
-	if latest.LastSeen.IsZero() || *latest.LastSeen == time.Unix(0, 0).UTC() {
-		return nil, fmt.Errorf("no activity recorded for vehicle")
+	if *latest.LastSeen == time.Unix(0, 0).UTC() {
+		return &model.DeviceActivity{}, nil
 	}
 
-	bin := bin(*latest.LastSeen, 3*time.Hour)
+	activeBin := bin(*latest.LastSeen, r.lastSeenBin) // make this a setting
 	return &model.DeviceActivity{
-		LastActive: &bin,
+		LastActive: &activeBin,
 	}, nil
 }
 

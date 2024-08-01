@@ -7,21 +7,7 @@ import (
 	"io"
 	"strconv"
 	"time"
-
-	"github.com/ethereum/go-ethereum/common"
 )
-
-// The AftermarketDeviceBy input is used to specify a unique aftermarket device to query for last active status.
-type AftermarketDeviceBy struct {
-	TokenID *int            `json:"tokenId,omitempty"`
-	Address *common.Address `json:"address,omitempty"`
-	Serial  *string         `json:"serial,omitempty"`
-}
-
-type DeviceActivity struct {
-	// lastActive indicates the start of a 3 hour block during which the device was last active.
-	LastActive *time.Time `json:"lastActive,omitempty"`
-}
 
 // The root query type for the GraphQL schema.
 type Query struct {

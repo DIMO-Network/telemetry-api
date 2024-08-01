@@ -13,5 +13,5 @@ import (
 type Resolver struct {
 	*repositories.Repository
 	VINVCRepo       *vinvc.Repository
-	IdentityService identity.IdentityService
+	IdentityService *identity.APIClient
 }
