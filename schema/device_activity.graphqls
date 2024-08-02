@@ -9,7 +9,7 @@ extend type Query {
     The token ID of the aftermarket device.
     """
     by: AftermarketDeviceBy!
-  ): DeviceActivity @requiresManufacturerToken @requiresManufacturerPrivilege(privilege: MANUFACTURER_DEVICE_LAST_SEEN)
+  ): DeviceActivity @requiresManufacturerToken @requiresPrivileges(privileges: [MANUFACTURER_DEVICE_LAST_SEEN])
 }
 
 type DeviceActivity {

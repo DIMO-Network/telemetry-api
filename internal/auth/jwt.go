@@ -35,8 +35,8 @@ func NewJWTMiddleware(issuer, jwksURI, vehAddr, mfrAddr string, logger *zerolog.
 	newCustomClaims := func() validator.CustomClaims {
 		return &TelemetryClaim{
 			contractPrivMap: map[common.Address]map[privileges.Privilege]model.Privilege{
-				common.HexToAddress(vehAddr): vehiclePrivMap,
-				common.HexToAddress(mfrAddr): manufacturerPrivMap,
+				common.HexToAddress(vehAddr): vehiclePrivToAPI,
+				common.HexToAddress(mfrAddr): manufacturerPrivToAPI,
 			},
 		}
 	}
@@ -60,8 +60,14 @@ func NewJWTMiddleware(issuer, jwksURI, vehAddr, mfrAddr string, logger *zerolog.
 	return middleware, nil
 }
 
-// AddClaimHandler is a middleware that adds the telemetry claim to the context.
-func AddClaimHandler(next http.Handler, logger *zerolog.Logger) http.Handler {
+// AddClaimHandler is a middleware that fills in GraphQL-friendly privilege information on
+// the *TelemetryClaim object in the context.
+func AddClaimHandler(next http.Handler, logger *zerolog.Logger, vehicleAddr, mfrAddr string) http.Handler {
+	contractPrivMaps := map[common.Address]map[privileges.Privilege]model.Privilege{
+		common.HexToAddress(vehicleAddr): vehiclePrivToAPI,
+		common.HexToAddress(mfrAddr):     manufacturerPrivToAPI,
+	}
+
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		claims, ok := r.Context().Value(jwtmiddleware.ContextKey{}).(*validator.ValidatedClaims)
 		if !ok || claims == nil || claims.CustomClaims == nil {
@@ -72,10 +78,12 @@ func AddClaimHandler(next http.Handler, logger *zerolog.Logger) http.Handler {
 
 		telClaim, ok := claims.CustomClaims.(*TelemetryClaim)
 		if !ok {
-			logger.Error().Msg("could not cast claims to telemetyClaim")
+			logger.Error().Msg("Could not cast claims to TelemetryClaim")
 			jwtmiddleware.DefaultErrorHandler(w, r, jwtmiddleware.ErrJWTMissing)
+			return
 		}
-		telClaim.SetPrivileges()
+
+		telClaim.SetPrivileges(contractPrivMaps)
 
 		// add the custom claims to the context under a new custom key
 		r = r.Clone(context.WithValue(r.Context(), TelemetryClaimContextKey{}, telClaim))

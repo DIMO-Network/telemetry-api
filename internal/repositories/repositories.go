@@ -92,7 +92,8 @@ func (r *Repository) GetSignalLatest(ctx context.Context, latestArgs *model.Late
 	}
 	coll := &model.SignalCollection{}
 	for _, signal := range signals {
-		if signal.Name == model.LastSeenField {
+		// ClickHouse returns the Unix epoch for max(timestamp) if there are no rows.
+		if signal.Name == model.LastSeenField && !signal.Timestamp.Equal(unixEpoch) {
 			coll.LastSeen = &signal.Timestamp
 			continue
 		}

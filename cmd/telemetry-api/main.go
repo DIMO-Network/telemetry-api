@@ -25,7 +25,6 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/adaptor"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -63,20 +62,15 @@ func main() {
 		IdentityService: idService,
 	}
 
-	privValidator := &auth.PrivilegeValidator{
-		VehicleNFTAddress:      common.HexToAddress(settings.VehicleNFTAddress),
-		ManufacturerNFTAddress: common.HexToAddress(settings.ManufacturerNFTAddress),
-	}
-
-	tknValidator := &auth.TokenValidator{
-		IdentitySvc: idService,
-	}
+	tknValidator :=
+		auth.TokenValidator{
+			IdentitySvc: idService,
+		}
 
 	cfg := graph.Config{Resolvers: resolver}
-	cfg.Directives.RequiresVehiclePrivilege = privValidator.VehicleNFTPrivCheck
-	cfg.Directives.RequiresManufacturerPrivilege = privValidator.ManufacturerNFTPrivCheck
-	cfg.Directives.RequiresVehicleToken = tknValidator.VehicleTokenCheck
-	cfg.Directives.RequiresManufacturerToken = tknValidator.ManufacturerTokenCheck
+	cfg.Directives.RequiresVehicleToken = tknValidator.VehicleTokenCheck(settings.VehicleNFTAddress)
+	cfg.Directives.RequiresManufacturerToken = tknValidator.ManufacturerTokenCheck(settings.VehicleNFTAddress)
+	cfg.Directives.RequiresPrivileges = auth.PrivilegeCheck
 	cfg.Directives.IsSignal = noOp
 	cfg.Directives.HasAggregation = noOp
 	cfg.Directives.OneOf = noOp
@@ -103,7 +97,7 @@ func main() {
 
 	authedHandler := limiter.AddRequestTimeout(
 		authMiddleware.CheckJWT(
-			auth.AddClaimHandler(server, &logger),
+			auth.AddClaimHandler(server, &logger, settings.VehicleNFTAddress, settings.ManufacturerNFTAddress),
 		),
 	)
 	http.Handle("/query", authedHandler)
