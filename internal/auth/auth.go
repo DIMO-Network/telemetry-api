@@ -120,7 +120,7 @@ func PrivilegeCheck(ctx context.Context, _ any, next graphql.Resolver, privs []m
 		}
 	}
 
-	return nil, nil
+	return next(ctx)
 }
 
 func headerTokenMatchesQuery(ctx context.Context, requiredAddr common.Address, getTokenStrFromArgs func() (string, error)) error {
