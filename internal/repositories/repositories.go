@@ -125,11 +125,11 @@ func (r *Repository) GetDeviceActivity(ctx context.Context, vehicleTokenID int, 
 		return nil, err
 	}
 
-	if *latest.LastSeen == unixEpoch {
+	if latest.LastSeen == nil {
 		return &model.DeviceActivity{}, nil
 	}
 
-	activeBin := bin(*latest.LastSeen, r.lastSeenBin) // make this a setting
+	activeBin := bin(*latest.LastSeen, r.lastSeenBin)
 	return &model.DeviceActivity{
 		LastActive: &activeBin,
 	}, nil
