@@ -203,12 +203,17 @@ func TestGetSignalLatest(t *testing.T) {
 			name:       "Success case - No signals",
 			latestArgs: defaultArgs,
 			mockSetup: func(m *Mocks) {
+				signals := []*vss.Signal{
+					{Timestamp: time.Date(1970, 1, 1, 0, 0, 0, 0, time.UTC), Name: model.LastSeenField},
+				}
 				m.CHService.EXPECT().
 					GetLatestSignals(gomock.Any(), defaultArgs).
-					Return([]*vss.Signal{}, nil)
+					Return(signals, nil)
 			},
-			expectedResult: &model.SignalCollection{},
-			expectError:    false,
+			expectedResult: &model.SignalCollection{
+				LastSeen: nil,
+			},
+			expectError: false,
 		},
 		{
 			name:       "Success case - One signal",
