@@ -18,6 +18,8 @@ var (
 	errTimeout  = errors.New("request exceeded or is estimated to exceed the maximum execution time")
 )
 
+var unixEpoch = time.Unix(0, 0).UTC()
+
 // CHService is the interface for the ClickHouse service.
 //
 //go:generate mockgen -source=./repositories.go -destination=repositories_mocks_test.go -package=repositories_test
@@ -86,7 +88,8 @@ func (r *Repository) GetSignalLatest(ctx context.Context, latestArgs *model.Late
 	}
 	coll := &model.SignalCollection{}
 	for _, signal := range signals {
-		if signal.Name == model.LastSeenField {
+		// ClickHouse returns unixEpoch for max(timestamp) if there are no rows.
+		if signal.Name == model.LastSeenField && !signal.Timestamp.Equal(unixEpoch) {
 			coll.LastSeen = &signal.Timestamp
 			continue
 		}
