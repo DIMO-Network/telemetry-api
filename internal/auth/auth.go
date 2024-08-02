@@ -2,7 +2,6 @@ package auth
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"strconv"
 
@@ -14,134 +13,143 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 )
 
-var vehiclePrivMap = map[privileges.Privilege]model.Privilege{
-	privileges.VehicleNonLocationData: model.PrivilegeVehicleNonLocationData,
-	privileges.VehicleCommands:        model.PrivilegeVehicleCommands,
-	privileges.VehicleCurrentLocation: model.PrivilegeVehicleCurrentLocation,
-	privileges.VehicleAllTimeLocation: model.PrivilegeVehicleAllTimeLocation,
-	privileges.VehicleVinCredential:   model.PrivilegeVehicleVinCredential,
+const tokenIdArg = "tokenId"
+
+var (
+	vehiclePrivToAPI = map[privileges.Privilege]model.Privilege{
+		privileges.VehicleNonLocationData: model.PrivilegeVehicleNonLocationData,
+		privileges.VehicleCommands:        model.PrivilegeVehicleCommands,
+		privileges.VehicleCurrentLocation: model.PrivilegeVehicleCurrentLocation,
+		privileges.VehicleAllTimeLocation: model.PrivilegeVehicleAllTimeLocation,
+		privileges.VehicleVinCredential:   model.PrivilegeVehicleVinCredential,
+	}
+
+	manufacturerPrivToAPI = map[privileges.Privilege]model.Privilege{
+		privileges.ManufacturerDeviceLastSeen: model.PrivilegeManufacturerDeviceLastSeen,
+	}
+)
+
+type UnauthorizedError struct {
+	message string
+	err     error
 }
 
-var manufacturerPrivMap = map[privileges.Privilege]model.Privilege{
-	privileges.ManufacturerDeviceLastSeen: model.PrivilegeManufacturerDeviceLastSeen,
+func (e UnauthorizedError) Error() string {
+	if e.message != "" {
+		if e.err != nil {
+			return fmt.Sprintf("unauthorized: %s: %s", e.message, e.err)
+		}
+		return fmt.Sprintf("unauthorized: %s", e.message)
+	}
+	if e.err != nil {
+		return fmt.Sprintf("unauthorized: %s", e.err)
+	}
+	return "unauthorized"
 }
 
-type PrivilegeValidator struct {
-	VehicleNFTAddress      common.Address
-	ManufacturerNFTAddress common.Address
+func (e UnauthorizedError) Unwrap() error {
+	return e.err
+}
+
+func newError(msg string, args ...any) error {
+	return UnauthorizedError{message: fmt.Sprintf(msg, args...)}
+}
+
+func CreateVehicleTokenCheck(contractAddr string) func(context.Context, any, graphql.Resolver) (any, error) {
+	requiredAddr := common.HexToAddress(contractAddr)
+
+	return func(ctx context.Context, _ any, next graphql.Resolver) (any, error) {
+		claim, err := getTelemetryClaim(ctx)
+		if err != nil {
+			return nil, UnauthorizedError{err: err}
+		}
+
+		if claim.ContractAddress != requiredAddr {
+			return nil, newError("contract in claim is %s instead of the required %s", claim.ContractAddress, requiredAddr)
+		}
+
+		fCtx := graphql.GetFieldContext(ctx)
+		if fCtx == nil {
+			return nil, newError("no field context")
+		}
+		tokenIDAny, ok := fCtx.Args[tokenIdArg]
+		if !ok {
+			return nil, newError("no argument named %s", tokenIdArg)
+		}
+		tokenID, ok := tokenIDAny.(int)
+		if !ok {
+			return nil, newError("argument %s has type %T instead of the expected %T", tokenIdArg, tokenIDAny, tokenID)
+
+		}
+		if strconv.Itoa(tokenID) != claim.TokenID {
+			return nil, newError("token id %s in the claim does not match token id %d in the query", claim.TokenID, tokenID)
+		}
+
+		return next(ctx)
+	}
+}
+
+type IdentityService interface {
+	AftermarketDevice(ctx context.Context, address *common.Address, tokenID *int, serial *string) (*identity.ManufacturerTokenID, error)
 }
 
 type TokenValidator struct {
-	IdentitySvc identity.IdentityService
+	IdentitySvc IdentityService
 }
 
-// VehicleNFTPrivCheck checks if the claim set in the context includes the correct address the required privileges for the VehicleNFT contract.
-func (pcv *PrivilegeValidator) VehicleNFTPrivCheck(ctx context.Context, _ any, next graphql.Resolver, privs []model.Privilege) (any, error) {
-	if err := pcv.checkPrivWithAddress(ctx, privs, pcv.VehicleNFTAddress); err != nil {
-		return nil, fmt.Errorf("unauthorized: %w", err)
-	}
+const byArg = "by"
 
-	return next(ctx)
-}
+func CreateManufacturerTokenCheck(contractAddr string, idSvc IdentityService) func(context.Context, any, graphql.Resolver) (any, error) {
+	requiredAddr := common.HexToAddress(contractAddr)
 
-// ManufacturerNFTPrivCheck checks if the claim set in the context includes the correct address the required privileges for the ManufacturerNFT contract.
-func (pcv *PrivilegeValidator) ManufacturerNFTPrivCheck(ctx context.Context, obj interface{}, next graphql.Resolver, privs []model.Privilege) (res interface{}, err error) {
-	if err := pcv.checkPrivWithAddress(ctx, privs, pcv.ManufacturerNFTAddress); err != nil {
-		return nil, fmt.Errorf("unauthorized: %w", err)
-	}
-
-	return next(ctx)
-}
-
-// VehicleTokenCheck checks if the vehicle tokenID in the context matches the tokenID in the claim.
-func (tv *TokenValidator) VehicleTokenCheck(ctx context.Context, _ any, next graphql.Resolver) (any, error) {
-	vehicleTokenID, err := getArg[int](ctx, "tokenId")
-	if err != nil {
-		return nil, fmt.Errorf("unauthorized: %w", err)
-	}
-
-	if err := headerTokenMatchesQuery(ctx, func() (string, error) {
-		return strconv.Itoa(vehicleTokenID), nil
-	}); err != nil {
-		return nil, fmt.Errorf("unauthorized: %w", err)
-	}
-
-	return next(ctx)
-}
-
-func (tv *TokenValidator) ManufacturerTokenCheck(ctx context.Context, obj interface{}, next graphql.Resolver) (res interface{}, err error) {
-	// TODO(ae) allow user to search by addr, tokenID, or serial
-	aftermarketDeviceAddr, err := getArg[common.Address](ctx, "address")
-	if err != nil {
-		return nil, fmt.Errorf("unauthorized: %w", err)
-	}
-
-	if err := headerTokenMatchesQuery(ctx, func() (string, error) {
-		resp, err := tv.IdentitySvc.AftermarketDevice(ctx, &aftermarketDeviceAddr, nil, nil)
+	return func(ctx context.Context, _ any, next graphql.Resolver) (any, error) {
+		claim, err := getTelemetryClaim(ctx)
 		if err != nil {
-			return "", err
+			return nil, UnauthorizedError{err: err}
 		}
-		return strconv.Itoa(resp.ManufacturerTokenID), nil
-	}); err != nil {
-		return nil, fmt.Errorf("unauthorized: %w", err)
-	}
 
-	return next(ctx)
+		if claim.ContractAddress != requiredAddr {
+			return nil, newError("contract in claim is %s instead of the required %s", claim.ContractAddress, requiredAddr)
+		}
+
+		fCtx := graphql.GetFieldContext(ctx)
+		if fCtx == nil {
+			return nil, newError("no field context")
+		}
+		byAny, ok := fCtx.Args[byArg]
+		if !ok {
+			return nil, newError("no argument named %s", byArg)
+		}
+		by, ok := byAny.(model.AftermarketDeviceBy)
+		if !ok {
+			return nil, newError("argument %s has type %T instead of the expected %T", byArg, byAny, by)
+		}
+
+		ad, err := idSvc.AftermarketDevice(ctx, by.Address, by.TokenID, by.Serial)
+		if err != nil {
+			return nil, err
+		}
+
+		if strconv.Itoa(ad.ManufacturerTokenID) != claim.TokenID {
+			return nil, newError("token id %s in the claim does not match device manufacturer token id %d", claim.TokenID, ad.ManufacturerTokenID)
+		}
+
+		return next(ctx)
+	}
 }
 
-func (pcv *PrivilegeValidator) checkPrivWithAddress(ctx context.Context, privs []model.Privilege, expectedAddr common.Address) error {
+// PrivilegeCheck checks if the claim set in the context includes the required privileges.
+func PrivilegeCheck(ctx context.Context, _ any, next graphql.Resolver, privs []model.Privilege) (any, error) {
 	claim, err := getTelemetryClaim(ctx)
 	if err != nil {
-		return err
-	}
-
-	if claim.ContractAddress != expectedAddr {
-		return fmt.Errorf("expected contract %s but recieved: %s", expectedAddr, claim.ContractAddress.Hex())
+		return nil, UnauthorizedError{err: err}
 	}
 
 	for _, priv := range privs {
-		if _, ok := claim.privileges[priv]; !ok {
-			return fmt.Errorf("missing required privilege: %s", priv)
+		if !claim.privileges.Contains(priv) {
+			return nil, newError("missing required privilege %s", priv)
 		}
 	}
 
-	return nil
-}
-
-func headerTokenMatchesQuery(ctx context.Context, getTokenStrFromArgs func() (string, error)) error {
-	claim, err := getTelemetryClaim(ctx)
-	if err != nil {
-		return err
-	}
-
-	tknStr, err := getTokenStrFromArgs()
-	if err != nil {
-		return err
-	}
-
-	if tknStr != claim.TokenID {
-		return fmt.Errorf("token id does not match")
-	}
-
-	return nil
-}
-
-func getArg[T any](ctx context.Context, name string) (T, error) {
-	var resp T
-	fCtx := graphql.GetFieldContext(ctx)
-	if fCtx == nil {
-		return resp, errors.New("no field context found")
-	}
-
-	val, ok := fCtx.Args[name]
-	if !ok {
-		return resp, fmt.Errorf("no argument named %s", name)
-	}
-
-	resp, ok = val.(T)
-	if !ok {
-		return resp, fmt.Errorf("argument %s had type %T instead of the expected %T", name, val, resp)
-	}
-
-	return resp, nil
+	return next(ctx)
 }

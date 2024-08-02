@@ -9,7 +9,7 @@ extend type Query {
     The token ID of the vehicle.
     """
     tokenId: Int!
-  ): VINVC @requiresVehicleToken @requiresVehiclePrivilege(privileges: [VEHICLE_VIN_CREDENTIAL])
+  ): VINVC @requiresVehicleToken @requiresPrivileges(privileges: [VEHICLE_VIN_CREDENTIAL])
 }
 
 type VINVC {
