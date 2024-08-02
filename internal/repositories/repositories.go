@@ -19,6 +19,7 @@ var (
 	errTimeout  = errors.New("request exceeded or is estimated to exceed the maximum execution time")
 	hashDogMtr  = "hashdog"
 	macaronMtr  = "macaron"
+	unixEpoch   = time.Unix(0, 0).UTC()
 )
 
 // CHService is the interface for the ClickHouse service.
@@ -123,7 +124,7 @@ func (r *Repository) GetDeviceActivity(ctx context.Context, vehicleTokenID int, 
 		return nil, err
 	}
 
-	if *latest.LastSeen == time.Unix(0, 0).UTC() {
+	if *latest.LastSeen == unixEpoch {
 		return &model.DeviceActivity{}, nil
 	}
 
@@ -145,7 +146,7 @@ func handleDBError(err error, log *zerolog.Logger) error {
 }
 
 func bin(t time.Time, d time.Duration) time.Time {
-	r := t.Sub(time.Unix(0, 0).UTC()) % d
+	r := t.Sub(unixEpoch) % d
 	if r < 0 {
 		r += d
 	}

@@ -35,7 +35,7 @@ func TestGetSignal(t *testing.T) {
 		ToTS:     time.Now().Add(time.Hour),
 		Interval: 1,
 	}
-	// idSvc := identity.NewMockIdentityService(gomock.NewController(t))
+
 	tests := []struct {
 		name           string
 		aggArgs        *model.AggregatedSignalArgs
@@ -277,8 +277,6 @@ func TestGetSignalLatest(t *testing.T) {
 		},
 	}
 
-	// idSvc := identity.NewMockIdentityService(gomock.NewController(t))
-	// var idSvc *identity.MockIdentityService
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			mocks := setupMocks(t)
@@ -289,6 +287,78 @@ func TestGetSignalLatest(t *testing.T) {
 
 			repo := repositories.NewRepository(&logger, mocks.CHService, 2)
 			result, err := repo.GetSignalLatest(context.Background(), tt.latestArgs)
+			if tt.expectError {
+				require.Error(t, err)
+				require.Nil(t, result)
+			} else {
+				require.NoError(t, err)
+				require.Equal(t, tt.expectedResult, result)
+			}
+		})
+	}
+}
+
+func TestDeviceActivity(t *testing.T) {
+	logger := zerolog.New(nil)
+	vehicleTokenID := int64(1)
+	source := "macaron"
+	lastSeen := time.Date(2024, 6, 11, 1, 2, 3, 3, time.UTC)
+	lastSeenBin := time.Date(2024, 6, 11, 0, 0, 0, 0, time.UTC)
+
+	latestArgs := &model.LatestSignalsArgs{
+		IncludeLastSeen: true,
+		SignalArgs: model.SignalArgs{
+			TokenID: uint32(vehicleTokenID),
+			Filter: &model.SignalFilter{
+				Source: &source,
+			},
+		},
+	}
+
+	tests := []struct {
+		name           string
+		mockSetup      func(m *Mocks)
+		expectedResult *model.DeviceActivity
+		expectError    bool
+	}{
+		{
+			name: "Success case - valid last seen",
+			mockSetup: func(m *Mocks) {
+				m.CHService.EXPECT().
+					GetLatestSignals(gomock.Any(), latestArgs).
+					Return([]*vss.Signal{
+						{Timestamp: lastSeen, Name: model.LastSeenField},
+					}, nil)
+			},
+			expectedResult: &model.DeviceActivity{
+				LastActive: &lastSeenBin,
+			},
+			expectError: false,
+		},
+		{
+			name: "vehicle has not transmitted any signals",
+			mockSetup: func(m *Mocks) {
+				m.CHService.EXPECT().
+					GetLatestSignals(gomock.Any(), latestArgs).
+					Return([]*vss.Signal{
+						{Timestamp: time.Unix(0, 0).UTC(), Name: model.LastSeenField},
+					}, nil)
+			},
+			expectedResult: &model.DeviceActivity{},
+			expectError:    false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			mocks := setupMocks(t)
+
+			if tt.mockSetup != nil {
+				tt.mockSetup(mocks)
+			}
+
+			repo := repositories.NewRepository(&logger, mocks.CHService, 2)
+			result, err := repo.GetDeviceActivity(context.Background(), int(vehicleTokenID), source)
 			if tt.expectError {
 				require.Error(t, err)
 				require.Nil(t, result)
