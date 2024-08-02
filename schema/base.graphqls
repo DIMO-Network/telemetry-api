@@ -29,11 +29,11 @@ type Query {
     from: Time!
     to: Time!
     filter: SignalFilter
-  ): [SignalAggregations!] @requiresToken
+  ): [SignalAggregations!] @requiresVehicleToken
   """
   SignalsLatest returns the latest signals for a given token.
   """
-  signalsLatest(tokenId: Int!, filter: SignalFilter): SignalCollection @requiresToken
+  signalsLatest(tokenId: Int!, filter: SignalFilter): SignalCollection @requiresVehicleToken
 }
 type SignalAggregations {
   """

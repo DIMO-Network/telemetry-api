@@ -4,8 +4,11 @@ import (
 	"context"
 
 	"github.com/DIMO-Network/shared/middleware/privilegetoken"
+	"github.com/DIMO-Network/shared/privileges"
+	"github.com/DIMO-Network/shared/set"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	jwtmiddleware "github.com/auth0/go-jwt-middleware/v2"
+	"github.com/ethereum/go-ethereum/common"
 )
 
 // TelemetryClaimContextKey is a custom key for the context to store the custom claims.
@@ -13,21 +16,32 @@ type TelemetryClaimContextKey struct{}
 
 // TelemetryClaim is a custom claim for the telemetry API.
 type TelemetryClaim struct {
-	privileges map[model.Privilege]struct{}
+	privileges set.Set[model.Privilege]
 	privilegetoken.CustomClaims
-}
-
-// SetPrivileges sets the privileges from the embedded CustomClaims.
-func (t *TelemetryClaim) SetPrivileges() {
-	t.privileges = make(map[model.Privilege]struct{}, len(t.CustomClaims.PrivilegeIDs))
-	for _, priv := range t.CustomClaims.PrivilegeIDs {
-		t.privileges[privToAPI[priv]] = struct{}{}
-	}
 }
 
 // Validate function is required to implement the validator.CustomClaims interface.
 func (t *TelemetryClaim) Validate(context.Context) error {
 	return nil
+}
+
+// SetPrivileges populates the set of GraphQL privileges on the claim object. To do this,
+// it combines the address and privilege ids on the token together with the given map.
+func (t *TelemetryClaim) SetPrivileges(contractPrivMaps map[common.Address]map[privileges.Privilege]model.Privilege) {
+	t.privileges = set.New[model.Privilege]()
+
+	contractClaims, ok := contractPrivMaps[t.ContractAddress]
+	if !ok {
+		return
+	}
+
+	for _, privID := range t.CustomClaims.PrivilegeIDs {
+		modelPriv, ok := contractClaims[privID]
+		if !ok {
+			continue
+		}
+		t.privileges.Add(modelPriv)
+	}
 }
 
 func getTelemetryClaim(ctx context.Context) (*TelemetryClaim, error) {

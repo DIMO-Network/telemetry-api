@@ -7,9 +7,12 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/DIMO-Network/shared/privileges"
+	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	jwtmiddleware "github.com/auth0/go-jwt-middleware/v2"
 	"github.com/auth0/go-jwt-middleware/v2/jwks"
 	"github.com/auth0/go-jwt-middleware/v2/validator"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/rs/zerolog"
 )
 
@@ -52,8 +55,14 @@ func NewJWTMiddleware(issuer, jwksURI string, logger *zerolog.Logger) (*jwtmiddl
 	return middleware, nil
 }
 
-// AddClaimHandler is a middleware that adds the telemetry claim to the context.
-func AddClaimHandler(next http.Handler, logger *zerolog.Logger) http.Handler {
+// AddClaimHandler is a middleware that fills in GraphQL-friendly privilege information on
+// the *TelemetryClaim object in the context.
+func AddClaimHandler(next http.Handler, logger *zerolog.Logger, vehicleAddr, mfrAddr string) http.Handler {
+	contractPrivMaps := map[common.Address]map[privileges.Privilege]model.Privilege{
+		common.HexToAddress(vehicleAddr): vehiclePrivToAPI,
+		common.HexToAddress(mfrAddr):     manufacturerPrivToAPI,
+	}
+
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		claims, ok := r.Context().Value(jwtmiddleware.ContextKey{}).(*validator.ValidatedClaims)
 		if !ok || claims == nil || claims.CustomClaims == nil {
@@ -64,10 +73,12 @@ func AddClaimHandler(next http.Handler, logger *zerolog.Logger) http.Handler {
 
 		telClaim, ok := claims.CustomClaims.(*TelemetryClaim)
 		if !ok {
-			logger.Error().Msg("could not cast claims to telemetyClaim")
+			logger.Error().Msg("Could not cast claims to TelemetryClaim")
 			jwtmiddleware.DefaultErrorHandler(w, r, jwtmiddleware.ErrJWTMissing)
+			return
 		}
-		telClaim.SetPrivileges()
+
+		telClaim.SetPrivileges(contractPrivMaps)
 
 		// add the custom claims to the context under a new custom key
 		r = r.Clone(context.WithValue(r.Context(), TelemetryClaimContextKey{}, telClaim))

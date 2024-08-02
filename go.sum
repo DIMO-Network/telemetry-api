@@ -82,8 +82,8 @@ github.com/DIMO-Network/model-garage v0.2.11 h1:3ofR3McKnngQb6ehApA9u80MfCyhugMi
 github.com/DIMO-Network/model-garage v0.2.11/go.mod h1:voOvGWwtAnazsciDVTqjPYDttIkXx0YG4xA+MIjM/8k=
 github.com/DIMO-Network/nameindexer v0.0.1 h1:eQqsaLa84CYzwE0vZ2j0Qu4arl2/qfNQ5lLYK8Dk7Qc=
 github.com/DIMO-Network/nameindexer v0.0.1/go.mod h1:M+KvLHakKW8ce4/tZlOsii++9zkjtxEjy3kyEF2+h2E=
-github.com/DIMO-Network/shared v0.10.19 h1:f3WFBXr2pZ8Se2rzw1IdKrmjlG+Q5c3ATiOyfFOXkuA=
-github.com/DIMO-Network/shared v0.10.19/go.mod h1:LDNCMzOGA+MqXtHbvRDFS/1kl8sHMQgxAS8fFh4GKJA=
+github.com/DIMO-Network/shared v0.11.0 h1:9/GLrT2sM5a6jPzpywtzNoLRaOzq8M2DcbuSTVbLuZI=
+github.com/DIMO-Network/shared v0.11.0/go.mod h1:lm7rUB5i7Jx7t3EomtCwep0aC+sB+nlYYTJkTdUeKHM=
 github.com/DataDog/datadog-go v3.2.0+incompatible/go.mod h1:LButxg5PwREeZtORoXG3tL4fMGNddJ+vMq1mwgfaqoQ=
 github.com/Masterminds/goutils v1.1.1/go.mod h1:8cTjp+g8YejhMuvIA5y2vz3BpJxksy863GQaJW2MFNU=
 github.com/Masterminds/semver/v3 v3.1.1/go.mod h1:VPu/7SZ7ePZ3QOrcuXROw5FAcLl4a0cBrbBpGY/8hQs=
