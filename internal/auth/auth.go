@@ -37,7 +37,7 @@ type IdentityService interface {
 }
 
 type TokenValidator struct {
-	IdentitySvc *identity.APIClient
+	IdentitySvc IdentityService
 }
 
 // VehicleNFTPrivCheck checks if the claim set in the context includes the correct address the required privileges for the VehicleNFT contract.

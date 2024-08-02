@@ -75,7 +75,7 @@ func TestRequiresVehicleTokenCheck(t *testing.T) {
 	}
 
 	tknValidator := &TokenValidator{
-		// IdentitySvc: &identity.MockIdentityService{},
+		IdentitySvc: NewMockIdentityService(gomock.NewController(t)),
 	}
 
 	for _, tc := range testCases {
@@ -102,16 +102,16 @@ func TestRequiresManufacturerTokenCheck(t *testing.T) {
 
 	validAutoPiAddr := common.BigToAddress(big.NewInt(123))
 	invalidAutoPiAddr := common.BigToAddress(big.NewInt(456))
-	id := identity.NewMockIdentityService(gomock.NewController(t))
-	id.EXPECT().AftermarketDevice(gomock.Any(), &validAutoPiAddr, gomock.Any(), gomock.Any()).Return(
+	id := NewMockIdentityService(gomock.NewController(t))
+	id.EXPECT().GetAftermarketDevice(gomock.Any(), &validAutoPiAddr, gomock.Any(), gomock.Any()).Return(
 		&identity.DeviceInfos{
 			ManufacturerTokenID: 137,
 		}, nil).AnyTimes()
-	id.EXPECT().AftermarketDevice(gomock.Any(), &invalidAutoPiAddr, gomock.Any(), gomock.Any()).Return(
+	id.EXPECT().GetAftermarketDevice(gomock.Any(), &invalidAutoPiAddr, gomock.Any(), gomock.Any()).Return(
 		nil, fmt.Errorf("")).AnyTimes()
 
-	tokenValidator := &TokenValidator{
-		// IdentitySvc: id,
+	tknValidator := &TokenValidator{
+		IdentitySvc: id,
 	}
 
 	testCases := []struct {
@@ -124,39 +124,45 @@ func TestRequiresManufacturerTokenCheck(t *testing.T) {
 		{
 			name: "valid_manufacturer_token",
 			args: map[string]any{
-				"address": validAutoPiAddr,
+				"by": model.AftermarketDeviceBy{
+					Address: &validAutoPiAddr,
+				},
 			},
 			telmetryClaim: &TelemetryClaim{
 				CustomClaims: privilegetoken.CustomClaims{
 					TokenID: "137",
 				},
 			},
-			tokenValidatorFunc: tokenValidator.ManufacturerTokenCheck,
+			tokenValidatorFunc: tknValidator.ManufacturerTokenCheck,
 		},
 		{
 			name: "wrong aftermarket device manufacturer",
 			args: map[string]any{
-				"address": validAutoPiAddr,
+				"by": model.AftermarketDeviceBy{
+					Address: &validAutoPiAddr,
+				},
 			},
 			telmetryClaim: &TelemetryClaim{
 				CustomClaims: privilegetoken.CustomClaims{
 					TokenID: "138",
 				},
 			},
-			tokenValidatorFunc: tokenValidator.ManufacturerTokenCheck,
+			tokenValidatorFunc: tknValidator.ManufacturerTokenCheck,
 			expectedError:      fmt.Errorf("unauthorized: token id does not match"),
 		},
 		{
 			name: "wrong address",
 			args: map[string]any{
-				"address": invalidAutoPiAddr,
+				"by": model.AftermarketDeviceBy{
+					Address: &invalidAutoPiAddr,
+				},
 			},
 			telmetryClaim: &TelemetryClaim{
 				CustomClaims: privilegetoken.CustomClaims{
 					TokenID: "137",
 				},
 			},
-			tokenValidatorFunc: tokenValidator.ManufacturerTokenCheck,
+			tokenValidatorFunc: tknValidator.ManufacturerTokenCheck,
 			expectedError:      fmt.Errorf(""), // not sure what the error would be, putting this here bc its what the mock returns
 		},
 	}
