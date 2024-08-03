@@ -9,8 +9,7 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/DIMO-Network/shared/privileges"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
-	identity "github.com/DIMO-Network/telemetry-api/internal/service/identity"
-
+	"github.com/DIMO-Network/telemetry-api/internal/service/identity"
 	"github.com/ethereum/go-ethereum/common"
 )
 
