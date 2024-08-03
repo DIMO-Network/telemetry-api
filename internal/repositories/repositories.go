@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"strings"
 	"time"
 
 	"github.com/ClickHouse/clickhouse-go/v2/lib/proto"
@@ -17,10 +16,13 @@ import (
 var (
 	errInternal = errors.New("internal error")
 	errTimeout  = errors.New("request exceeded or is estimated to exceed the maximum execution time")
-	hashDogMtr  = "hashdog"
-	macaronMtr  = "macaron"
 	unixEpoch   = time.Unix(0, 0).UTC()
 )
+
+var ManufacturerSourceTranslations = map[string]string{
+	"AutoPi":  "autopi",
+	"Hashdog": "macaron",
+}
 
 // CHService is the interface for the ClickHouse service.
 //
@@ -104,10 +106,10 @@ func (r *Repository) GetSignalLatest(ctx context.Context, latestArgs *model.Late
 }
 
 // GetDeviceActivity returns device status activity level.
-func (r *Repository) GetDeviceActivity(ctx context.Context, vehicleTokenID int, adManuf string) (*model.DeviceActivity, error) {
-	mtrLower := strings.ToLower(adManuf)
-	if mtrLower == hashDogMtr {
-		mtrLower = macaronMtr
+func (r *Repository) GetDeviceActivity(ctx context.Context, vehicleTokenID int, adMfrName string) (*model.DeviceActivity, error) {
+	source, ok := ManufacturerSourceTranslations[adMfrName]
+	if !ok {
+		return nil, fmt.Errorf("unrecognized manufacturer name %s", adMfrName)
 	}
 
 	args := &model.LatestSignalsArgs{
@@ -115,7 +117,7 @@ func (r *Repository) GetDeviceActivity(ctx context.Context, vehicleTokenID int, 
 		SignalArgs: model.SignalArgs{
 			TokenID: uint32(vehicleTokenID),
 			Filter: &model.SignalFilter{
-				Source: &mtrLower,
+				Source: &source,
 			},
 		},
 	}
@@ -125,14 +127,14 @@ func (r *Repository) GetDeviceActivity(ctx context.Context, vehicleTokenID int, 
 		return nil, err
 	}
 
-	if latest.LastSeen == nil {
-		return &model.DeviceActivity{}, nil
+	var out model.DeviceActivity
+
+	if latest.LastSeen != nil {
+		binned := latest.LastSeen.Truncate(r.lastSeenBin)
+		out.LastActive = &binned
 	}
 
-	activeBin := bin(*latest.LastSeen, r.lastSeenBin)
-	return &model.DeviceActivity{
-		LastActive: &activeBin,
-	}, nil
+	return &out, nil
 }
 
 // handleDBError logs the error and returns a generic error message.
@@ -144,12 +146,4 @@ func handleDBError(err error, log *zerolog.Logger) error {
 	}
 	log.Error().Err(err).Msg("failed to query db")
 	return errInternal
-}
-
-func bin(t time.Time, d time.Duration) time.Time {
-	r := t.Sub(unixEpoch) % d
-	if r < 0 {
-		r += d
-	}
-	return t.Add(-r)
 }
