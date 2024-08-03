@@ -19,6 +19,7 @@ var (
 	unixEpoch   = time.Unix(0, 0).UTC()
 )
 
+// TODO(elffjs): Get rid of this when we have device addresses in CH.
 var ManufacturerSourceTranslations = map[string]string{
 	"AutoPi":  "autopi",
 	"Hashdog": "macaron",
