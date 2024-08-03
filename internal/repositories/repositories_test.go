@@ -306,7 +306,7 @@ func TestGetSignalLatest(t *testing.T) {
 func TestDeviceActivity(t *testing.T) {
 	logger := zerolog.New(nil)
 	vehicleTokenID := int64(1)
-	manufacturer := "Hashdog"
+	hashdog := "Hashdog"
 	source := "macaron"
 	lastSeen := time.Date(2024, 6, 11, 1, 2, 3, 3, time.UTC)
 	lastSeenBin := time.Date(2024, 6, 11, 0, 0, 0, 0, time.UTC)
@@ -324,6 +324,7 @@ func TestDeviceActivity(t *testing.T) {
 	tests := []struct {
 		name           string
 		mockSetup      func(m *Mocks)
+		manufacturer   string
 		expectedResult *model.DeviceActivity
 		expectError    bool
 	}{
@@ -336,6 +337,7 @@ func TestDeviceActivity(t *testing.T) {
 						{Timestamp: lastSeen, Name: model.LastSeenField},
 					}, nil)
 			},
+			manufacturer: hashdog,
 			expectedResult: &model.DeviceActivity{
 				LastActive: &lastSeenBin,
 			},
@@ -350,8 +352,14 @@ func TestDeviceActivity(t *testing.T) {
 						{Timestamp: time.Unix(0, 0).UTC(), Name: model.LastSeenField},
 					}, nil)
 			},
+			manufacturer:   hashdog,
 			expectedResult: &model.DeviceActivity{},
 			expectError:    false,
+		},
+		{
+			name:         "unrecognized aftermarket manufacturer",
+			manufacturer: "Zaphod",
+			expectError:  true,
 		},
 	}
 
@@ -364,7 +372,7 @@ func TestDeviceActivity(t *testing.T) {
 			}
 
 			repo := repositories.NewRepository(&logger, mocks.CHService, 2)
-			result, err := repo.GetDeviceActivity(context.Background(), int(vehicleTokenID), manufacturer)
+			result, err := repo.GetDeviceActivity(context.Background(), int(vehicleTokenID), tt.manufacturer)
 			if tt.expectError {
 				require.Error(t, err)
 				require.Nil(t, result)
