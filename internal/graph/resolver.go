@@ -3,7 +3,7 @@ package graph
 import (
 	"github.com/DIMO-Network/telemetry-api/internal/repositories"
 	"github.com/DIMO-Network/telemetry-api/internal/repositories/vinvc"
-	"github.com/DIMO-Network/telemetry-api/internal/services/identity"
+	"github.com/DIMO-Network/telemetry-api/internal/service/identity"
 )
 
 // This file will not be regenerated automatically.

@@ -8,7 +8,7 @@ import (
 	context "context"
 	reflect "reflect"
 
-	identity "github.com/DIMO-Network/telemetry-api/internal/services/identity"
+	identity "github.com/DIMO-Network/telemetry-api/internal/service/identity"
 	common "github.com/ethereum/go-ethereum/common"
 	gomock "go.uber.org/mock/gomock"
 )
