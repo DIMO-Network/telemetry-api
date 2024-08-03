@@ -306,6 +306,7 @@ func TestGetSignalLatest(t *testing.T) {
 func TestDeviceActivity(t *testing.T) {
 	logger := zerolog.New(nil)
 	vehicleTokenID := int64(1)
+	manufacturer := "Hashdog"
 	source := "macaron"
 	lastSeen := time.Date(2024, 6, 11, 1, 2, 3, 3, time.UTC)
 	lastSeenBin := time.Date(2024, 6, 11, 0, 0, 0, 0, time.UTC)
@@ -363,7 +364,7 @@ func TestDeviceActivity(t *testing.T) {
 			}
 
 			repo := repositories.NewRepository(&logger, mocks.CHService, 2)
-			result, err := repo.GetDeviceActivity(context.Background(), int(vehicleTokenID), source)
+			result, err := repo.GetDeviceActivity(context.Background(), int(vehicleTokenID), manufacturer)
 			if tt.expectError {
 				require.Error(t, err)
 				require.Nil(t, result)
