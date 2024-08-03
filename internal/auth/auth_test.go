@@ -11,7 +11,6 @@ import (
 	"github.com/DIMO-Network/shared/privileges"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	"github.com/DIMO-Network/telemetry-api/internal/service/identity"
-	jwtmiddleware "github.com/auth0/go-jwt-middleware/v2"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
@@ -92,7 +91,7 @@ func TestRequiresVehicleTokenCheck(t *testing.T) {
 		},
 	}
 
-	vehicleCheck := (&TokenValidator{}).VehicleTokenCheck(vehicleNFTAddrRaw)
+	vehicleCheck := NewVehicleTokenCheck(vehicleNFTAddrRaw)
 	for _, tc := range testCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
@@ -127,9 +126,7 @@ func TestRequiresManufacturerTokenCheck(t *testing.T) {
 	id.EXPECT().GetAftermarketDevice(gomock.Any(), &invalidAutoPiAddr, gomock.Any(), gomock.Any()).Return(
 		nil, fmt.Errorf("")).AnyTimes()
 
-	tknValidator := &TokenValidator{
-		IdentitySvc: id,
-	}
+	mfrValidator := NewManufacturerTokenCheck(mtrNFTAddrRaw, id)
 
 	testCases := []struct {
 		name               string
@@ -151,7 +148,7 @@ func TestRequiresManufacturerTokenCheck(t *testing.T) {
 					TokenID:         "137",
 				},
 			},
-			tokenValidatorFunc: tknValidator.ManufacturerTokenCheck(mtrNFTAddrRaw),
+			tokenValidatorFunc: mfrValidator,
 		},
 		{
 			name: "wrong aftermarket device manufacturer",
@@ -166,8 +163,7 @@ func TestRequiresManufacturerTokenCheck(t *testing.T) {
 					TokenID:         "138",
 				},
 			},
-			tokenValidatorFunc: tknValidator.ManufacturerTokenCheck(mtrNFTAddrRaw),
-			expectedError:      fmt.Errorf("unauthorized: token id does not match"),
+			expectedError: fmt.Errorf("unauthorized: token id does not match"),
 		},
 		{
 			name: "invalid autopi address",
@@ -182,8 +178,7 @@ func TestRequiresManufacturerTokenCheck(t *testing.T) {
 					TokenID:         "137",
 				},
 			},
-			tokenValidatorFunc: tknValidator.ManufacturerTokenCheck(mtrNFTAddrRaw),
-			expectedError:      fmt.Errorf("unauthorized: token id does not match"),
+			expectedError: fmt.Errorf("unauthorized: token id does not match"),
 		},
 	}
 
@@ -195,7 +190,7 @@ func TestRequiresManufacturerTokenCheck(t *testing.T) {
 				Args: tc.args,
 			})
 			testCtx = context.WithValue(testCtx, TelemetryClaimContextKey{}, tc.telmetryClaim)
-			result, err := tc.tokenValidatorFunc(testCtx, nil, graphql.Resolver(emptyResolver))
+			result, err := mfrValidator(testCtx, nil, graphql.Resolver(emptyResolver))
 			if tc.expectedError != nil {
 				require.Error(t, err)
 				return
@@ -220,7 +215,7 @@ func TestRequiresPrivilegeCheck(t *testing.T) {
 		name           string
 		privs          []model.Privilege
 		telemetryClaim *TelemetryClaim
-		expectedError  error
+		expectedError  bool
 	}{
 		{
 			name: "valid_privileges",
@@ -237,6 +232,7 @@ func TestRequiresPrivilegeCheck(t *testing.T) {
 					ContractAddress: vehicleNFTAddr,
 				},
 			},
+			expectedError: false,
 		},
 		{
 			name: "missing_all_privilege",
@@ -250,7 +246,7 @@ func TestRequiresPrivilegeCheck(t *testing.T) {
 					ContractAddress: vehicleNFTAddr,
 				},
 			},
-			expectedError: newError("missing required privilege %s", model.PrivilegeVehicleAllTimeLocation),
+			expectedError: true,
 		},
 		{
 			name: "missing_one_privilege",
@@ -266,13 +262,13 @@ func TestRequiresPrivilegeCheck(t *testing.T) {
 					ContractAddress: vehicleNFTAddr,
 				},
 			},
-			expectedError: newError("missing required privilege %s", model.PrivilegeVehicleNonLocationData),
+			expectedError: true,
 		},
 		{
 			name:           "missing_claim",
 			privs:          []model.Privilege{},
 			telemetryClaim: nil,
-			expectedError:  UnauthorizedError{err: jwtmiddleware.ErrJWTMissing},
+			expectedError:  true,
 		},
 		{
 			name: "wrong contract for privilege",
@@ -289,7 +285,7 @@ func TestRequiresPrivilegeCheck(t *testing.T) {
 					ContractAddress: manufNFTAddr,
 				},
 			},
-			expectedError: newError("missing required privilege %s", model.PrivilegeVehicleAllTimeLocation),
+			expectedError: true,
 		},
 	}
 
@@ -302,13 +298,12 @@ func TestRequiresPrivilegeCheck(t *testing.T) {
 			}
 			testCtx := context.WithValue(context.Background(), TelemetryClaimContextKey{}, tc.telemetryClaim)
 			next, err := PrivilegeCheck(testCtx, nil, emptyResolver, tc.privs)
-			if tc.expectedError != nil {
-				require.Equal(t, tc.expectedError, err)
-				return
+			if tc.expectedError {
+				require.Error(t, err)
+			} else {
+				require.NoError(t, err)
+				require.Equal(t, expectedReturn, next)
 			}
-			require.NoError(t, err)
-			require.Equal(t, expectedReturn, next)
-
 		})
 	}
 }

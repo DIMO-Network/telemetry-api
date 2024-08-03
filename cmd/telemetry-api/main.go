@@ -62,14 +62,9 @@ func main() {
 		IdentityService: idService,
 	}
 
-	tknValidator :=
-		auth.TokenValidator{
-			IdentitySvc: idService,
-		}
-
 	cfg := graph.Config{Resolvers: resolver}
-	cfg.Directives.RequiresVehicleToken = tknValidator.VehicleTokenCheck(settings.VehicleNFTAddress)
-	cfg.Directives.RequiresManufacturerToken = tknValidator.ManufacturerTokenCheck(settings.VehicleNFTAddress)
+	cfg.Directives.RequiresVehicleToken = auth.NewVehicleTokenCheck(settings.VehicleNFTAddress)
+	cfg.Directives.RequiresManufacturerToken = auth.NewManufacturerTokenCheck(settings.VehicleNFTAddress, idService)
 	cfg.Directives.RequiresPrivileges = auth.PrivilegeCheck
 	cfg.Directives.IsSignal = noOp
 	cfg.Directives.HasAggregation = noOp

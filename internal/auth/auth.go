@@ -64,7 +64,7 @@ func newError(msg string, args ...any) error {
 	return UnauthorizedError{message: fmt.Sprintf(msg, args...)}
 }
 
-func (tv *TokenValidator) VehicleTokenCheck(contractAddr string) func(context.Context, any, graphql.Resolver) (any, error) {
+func NewVehicleTokenCheck(contractAddr string) func(context.Context, any, graphql.Resolver) (any, error) {
 	requiredAddr := common.HexToAddress(contractAddr)
 
 	return func(ctx context.Context, _ any, next graphql.Resolver) (any, error) {
@@ -73,9 +73,7 @@ func (tv *TokenValidator) VehicleTokenCheck(contractAddr string) func(context.Co
 			return nil, UnauthorizedError{err: err}
 		}
 
-		if err := headerTokenMatchesQuery(ctx, requiredAddr, func() (string, error) {
-			return strconv.Itoa(vehicleTokenID), nil
-		}); err != nil {
+		if err := headerTokenMatchesQuery(ctx, requiredAddr, vehicleTokenID); err != nil {
 			return nil, UnauthorizedError{err: err}
 		}
 
@@ -83,7 +81,7 @@ func (tv *TokenValidator) VehicleTokenCheck(contractAddr string) func(context.Co
 	}
 }
 
-func (tv *TokenValidator) ManufacturerTokenCheck(contractAddr string) func(context.Context, any, graphql.Resolver) (any, error) {
+func NewManufacturerTokenCheck(contractAddr string, identitySvc IdentityService) func(context.Context, any, graphql.Resolver) (any, error) {
 	requiredAddr := common.HexToAddress(contractAddr)
 
 	return func(ctx context.Context, _ any, next graphql.Resolver) (any, error) {
@@ -92,18 +90,34 @@ func (tv *TokenValidator) ManufacturerTokenCheck(contractAddr string) func(conte
 			return nil, fmt.Errorf("unauthorized: %w", err)
 		}
 
-		if err := headerTokenMatchesQuery(ctx, requiredAddr, func() (string, error) {
-			resp, err := tv.IdentitySvc.GetAftermarketDevice(ctx, adFilter.Address, adFilter.TokenID, adFilter.Serial)
-			if err != nil {
-				return "", err
-			}
-			return strconv.Itoa(resp.ManufacturerTokenID), nil
-		}); err != nil {
+		adResp, err := identitySvc.GetAftermarketDevice(ctx, adFilter.Address, adFilter.TokenID, adFilter.Serial)
+		if err != nil {
+			return nil, err
+		}
+
+		if err := headerTokenMatchesQuery(ctx, requiredAddr, adResp.ManufacturerTokenID); err != nil {
 			return nil, UnauthorizedError{err: err}
 		}
 
 		return next(ctx)
 	}
+}
+
+func headerTokenMatchesQuery(ctx context.Context, requiredAddr common.Address, tokenID int) error {
+	claim, err := getTelemetryClaim(ctx)
+	if err != nil {
+		return err
+	}
+
+	if claim.ContractAddress != requiredAddr {
+		return newError("contract in claim is %s instead of the required %s", claim.ContractAddress, requiredAddr)
+	}
+
+	if strconv.Itoa(tokenID) != claim.TokenID {
+		return fmt.Errorf("token id does not match")
+	}
+
+	return nil
 }
 
 // PrivilegeCheck checks if the claim set in the context includes the required privileges.
@@ -120,28 +134,6 @@ func PrivilegeCheck(ctx context.Context, _ any, next graphql.Resolver, privs []m
 	}
 
 	return next(ctx)
-}
-
-func headerTokenMatchesQuery(ctx context.Context, requiredAddr common.Address, getTokenStrFromArgs func() (string, error)) error {
-	claim, err := getTelemetryClaim(ctx)
-	if err != nil {
-		return err
-	}
-
-	if claim.ContractAddress != requiredAddr {
-		return newError("contract in claim is %s instead of the required %s", claim.ContractAddress, requiredAddr)
-	}
-
-	tknStr, err := getTokenStrFromArgs()
-	if err != nil {
-		return err
-	}
-
-	if tknStr != claim.TokenID {
-		return fmt.Errorf("token id does not match")
-	}
-
-	return nil
 }
 
 func getArg[T any](ctx context.Context, name string) (T, error) {
