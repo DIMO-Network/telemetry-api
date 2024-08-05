@@ -13,7 +13,10 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 )
 
-const tokenIdArg = "tokenId"
+const (
+	tokenIdArg = "tokenId"
+	byArg      = "by"
+)
 
 var (
 	vehiclePrivToAPI = map[privileges.Privilege]model.Privilege{
@@ -85,7 +88,7 @@ func NewManufacturerTokenCheck(contractAddr string, identitySvc IdentityService)
 	requiredAddr := common.HexToAddress(contractAddr)
 
 	return func(ctx context.Context, _ any, next graphql.Resolver) (any, error) {
-		adFilter, err := getArg[model.AftermarketDeviceBy](ctx, "by")
+		adFilter, err := getArg[model.AftermarketDeviceBy](ctx, byArg)
 		if err != nil {
 			return nil, fmt.Errorf("unauthorized: %w", err)
 		}
