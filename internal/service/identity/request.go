@@ -2,7 +2,7 @@ package identity
 
 import (
 	"context"
-	"fmt"
+	"errors"
 	"net/http"
 	"time"
 
@@ -34,7 +34,7 @@ func (i *APIClient) GetAftermarketDevice(ctx context.Context, address *common.Ad
 	}
 
 	if resp.AftermarketDevice.Vehicle == nil {
-		return nil, fmt.Errorf("no vehicle attached to device")
+		return nil, errors.New("no vehicle attached to device")
 	}
 
 	return &DeviceInfos{
@@ -46,8 +46,8 @@ func (i *APIClient) GetAftermarketDevice(ctx context.Context, address *common.Ad
 }
 
 type DeviceInfos struct {
-	ManufacturerTokenID      int    `json:"manufacturerTokenId"`
-	VehicleTokenID           int    `json:"vehicleTokenId"`
-	AftermarketDeviceTokenID int    `json:"aftermarketDeviceTokenId"`
-	ManufacturerName         string `json:"manufacturerName"`
+	ManufacturerTokenID      int
+	VehicleTokenID           int
+	AftermarketDeviceTokenID int
+	ManufacturerName         string
 }
