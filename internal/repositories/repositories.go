@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"slices"
 	"strings"
 	"time"
 
@@ -122,17 +121,13 @@ func (r *Repository) GetAvailableSignals(ctx context.Context, tokenID uint32, fi
 	if err != nil {
 		return nil, handleDBError(err, r.log)
 	}
-	for i, signal := range allSignals {
-		// remove signals that are not queryable
-		if _, ok := r.queryableSignals[signal]; !ok {
-			allSignals = slices.Delete(allSignals, i, i+1)
+	var retSignals []string
+	for _, signal := range allSignals {
+		if _, ok := r.queryableSignals[signal]; ok {
+			retSignals = append(retSignals, signal)
 		}
 	}
-	if len(allSignals) == 0 {
-		// return nil slice instead of empty slice
-		return nil, nil
-	}
-	return allSignals, nil
+	return retSignals, nil
 }
 
 // handleDBError logs the error and returns a generic error message.

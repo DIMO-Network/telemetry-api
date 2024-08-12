@@ -354,11 +354,21 @@ func TestGetAvailableSignals(t *testing.T) {
 			expectError:    false,
 		},
 		{
-			name: "all unknown signals",
+			name: "one unknown signals",
 			mockSetup: func(m *Mocks) {
 				m.CHService.EXPECT().
 					GetAvailableSignals(gomock.Any(), testTokenId, nil).
 					Return([]string{"newSignalName"}, nil)
+			},
+			expectedResult: nil,
+			expectError:    false,
+		},
+		{
+			name: "multiple unknown signals",
+			mockSetup: func(m *Mocks) {
+				m.CHService.EXPECT().
+					GetAvailableSignals(gomock.Any(), testTokenId, nil).
+					Return([]string{"newSignalName", "newSignalName2"}, nil)
 			},
 			expectedResult: nil,
 			expectError:    false,
