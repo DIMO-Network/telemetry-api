@@ -332,6 +332,18 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 	return stmt, args, nil
 }
 
+func getDistinctQuery(tokenId uint32, filter *model.SignalFilter) (string, []any) {
+	mods := []qm.QueryMod{
+		qm.Distinct(vss.NameCol),
+		qm.From(vss.TableName),
+		qm.Where(tokenIDWhere, tokenId),
+		qm.OrderBy(vss.NameCol),
+	}
+	mods = append(mods, getFilterMods(filter)...)
+	stmt, args := newQuery(mods...)
+	return stmt, args
+}
+
 // getFilterMods returns the query mods for the filter.
 func getFilterMods(filter *model.SignalFilter) []qm.QueryMod {
 	if filter == nil {

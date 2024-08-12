@@ -149,3 +149,24 @@ func (s *Service) getAggSignals(ctx context.Context, stmt string, args []any) ([
 	}
 	return signals, nil
 }
+
+// GetAvailableSignals returns a slice of available signals from the ClickHouse database.
+// if no signals are available, a nil slice is returned.
+func (s *Service) GetAvailableSignals(ctx context.Context, tokenId uint32, filter *model.SignalFilter) ([]string, error) {
+	stmt, args := getDistinctQuery(tokenId, filter)
+	rows, err := s.conn.Query(ctx, stmt, args...)
+	if err != nil {
+		return nil, fmt.Errorf("failed querying clickhouse: %w", err)
+	}
+	defer rows.Close() //nolint:errcheck // we don't care about the error here
+	var signals []string
+	for rows.Next() {
+		var signal string
+		err := rows.Scan(&signal)
+		if err != nil {
+			return nil, fmt.Errorf("failed scanning clickhouse row: %w", err)
+		}
+		signals = append(signals, signal)
+	}
+	return signals, nil
+}

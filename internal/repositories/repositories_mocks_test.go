@@ -56,6 +56,21 @@ func (mr *MockCHServiceMockRecorder) GetAggregatedSignals(ctx, aggArgs any) *gom
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAggregatedSignals", reflect.TypeOf((*MockCHService)(nil).GetAggregatedSignals), ctx, aggArgs)
 }
 
+// GetAvailableSignals mocks base method.
+func (m *MockCHService) GetAvailableSignals(ctx context.Context, tokenID uint32, filter *model.SignalFilter) ([]string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetAvailableSignals", ctx, tokenID, filter)
+	ret0, _ := ret[0].([]string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetAvailableSignals indicates an expected call of GetAvailableSignals.
+func (mr *MockCHServiceMockRecorder) GetAvailableSignals(ctx, tokenID, filter any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAvailableSignals", reflect.TypeOf((*MockCHService)(nil).GetAvailableSignals), ctx, tokenID, filter)
+}
+
 // GetLatestSignals mocks base method.
 func (m *MockCHService) GetLatestSignals(ctx context.Context, latestArgs *model.LatestSignalsArgs) ([]*vss.Signal, error) {
 	m.ctrl.T.Helper()

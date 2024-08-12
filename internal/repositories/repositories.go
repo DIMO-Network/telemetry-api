@@ -26,6 +26,7 @@ var unixEpoch = time.Unix(0, 0).UTC()
 type CHService interface {
 	GetAggregatedSignals(ctx context.Context, aggArgs *model.AggregatedSignalArgs) ([]*model.AggSignal, error)
 	GetLatestSignals(ctx context.Context, latestArgs *model.LatestSignalsArgs) ([]*vss.Signal, error)
+	GetAvailableSignals(ctx context.Context, tokenID uint32, filter *model.SignalFilter) ([]string, error)
 }
 
 // Repository is the base repository for all repositories.
@@ -97,6 +98,16 @@ func (r *Repository) GetSignalLatest(ctx context.Context, latestArgs *model.Late
 	}
 
 	return coll, nil
+}
+
+// GetAvailableSignals returns the available signals for the given tokenID and filter.
+// If no signals are found, a nil slice is returned.
+func (r *Repository) GetAvailableSignals(ctx context.Context, tokenID uint32, filter *model.SignalFilter) ([]string, error) {
+	allSignals, err := r.chService.GetAvailableSignals(ctx, tokenID, filter)
+	if err != nil {
+		return nil, handleDBError(err, r.log)
+	}
+	return allSignals, nil
 }
 
 // handleDBError logs the error and returns a generic error message.

@@ -420,6 +420,30 @@ func (c *CHServiceTestSuite) TestGetLatestSignal() {
 		})
 	}
 }
+
+func (c *CHServiceTestSuite) TestGetAvailableSignals() {
+	ctx := context.Background()
+	c.Run("has signals", func() {
+		result, err := c.chService.GetAvailableSignals(ctx, 1, nil)
+		c.Require().NoError(err)
+		c.Require().Len(result, 2)
+		c.Require().Equal([]string{vss.FieldPowertrainType, vss.FieldSpeed}, result)
+	})
+
+	c.Run("no signals", func() {
+		// validate empty result
+		result, err := c.chService.GetAvailableSignals(ctx, 2, nil)
+		c.Require().NoError(err)
+		c.Require().Nil(result)
+	})
+
+	c.Run("filter signals", func() {
+		result, err := c.chService.GetAvailableSignals(ctx, 1, &model.SignalFilter{Source: ref("Unknown")})
+		c.Require().NoError(err)
+		c.Require().Nil(result)
+	})
+}
+
 func (c *CHServiceTestSuite) TestExecutionTimeout() {
 	ctx := context.Background()
 
