@@ -1182,7 +1182,9 @@ type Query {
   """
   signalsLatest(tokenId: Int!, filter: SignalFilter): SignalCollection
     @requiresVehicleToken
-
+  """
+  availableSignals returns a list of queryable signal names that have stored data for a given tokenId.
+  """
   availableSignals(tokenId: Int!, filter: SignalFilter): [String!]
     @requiresVehicleToken
 }

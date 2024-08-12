@@ -4,9 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"slices"
+	"strings"
 	"time"
 
 	"github.com/ClickHouse/clickhouse-go/v2/lib/proto"
+	"github.com/DIMO-Network/model-garage/pkg/schema"
 	"github.com/DIMO-Network/model-garage/pkg/vss"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	"github.com/DIMO-Network/telemetry-api/internal/service/ch"
@@ -31,17 +34,29 @@ type CHService interface {
 
 // Repository is the base repository for all repositories.
 type Repository struct {
-	chService CHService
-	log       *zerolog.Logger
+	queryableSignals map[string]struct{}
+	chService        CHService
+	log              *zerolog.Logger
 }
 
 // NewRepository creates a new base repository.
 // clientCAs is optional and can be nil.
-func NewRepository(logger *zerolog.Logger, chService CHService) *Repository {
-	return &Repository{
-		chService: chService,
-		log:       logger,
+func NewRepository(logger *zerolog.Logger, chService CHService) (*Repository, error) {
+	definitions, err := schema.LoadDefinitionFile(strings.NewReader(schema.DefinitionsYAML()))
+	if err != nil {
+		return nil, fmt.Errorf("error reading definition file: %w", err)
 	}
+	queryableSignals := make(map[string]struct{}, len(definitions.FromName))
+	for vssName := range definitions.FromName {
+		queryableSignals[schema.VSSToJSONName(vssName)] = struct{}{}
+	}
+
+	return &Repository{
+		chService:        chService,
+		log:              logger,
+		queryableSignals: queryableSignals,
+	}, nil
+
 }
 
 // GetSignal returns the aggregated signals for the given tokenID, interval, from, to and filter.
@@ -106,6 +121,16 @@ func (r *Repository) GetAvailableSignals(ctx context.Context, tokenID uint32, fi
 	allSignals, err := r.chService.GetAvailableSignals(ctx, tokenID, filter)
 	if err != nil {
 		return nil, handleDBError(err, r.log)
+	}
+	for i, signal := range allSignals {
+		// remove signals that are not queryable
+		if _, ok := r.queryableSignals[signal]; !ok {
+			allSignals = slices.Delete(allSignals, i, i+1)
+		}
+	}
+	if len(allSignals) == 0 {
+		// return nil slice instead of empty slice
+		return nil, nil
 	}
 	return allSignals, nil
 }
