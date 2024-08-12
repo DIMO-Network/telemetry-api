@@ -52,9 +52,10 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	Query struct {
-		Signals       func(childComplexity int, tokenID int, interval string, from time.Time, to time.Time, filter *model.SignalFilter) int
-		SignalsLatest func(childComplexity int, tokenID int, filter *model.SignalFilter) int
-		VinVCLatest   func(childComplexity int, tokenID int) int
+		AvailableSignals func(childComplexity int, tokenID int, filter *model.SignalFilter) int
+		Signals          func(childComplexity int, tokenID int, interval string, from time.Time, to time.Time, filter *model.SignalFilter) int
+		SignalsLatest    func(childComplexity int, tokenID int, filter *model.SignalFilter) int
+		VinVCLatest      func(childComplexity int, tokenID int) int
 	}
 
 	SignalAggregations struct {
@@ -161,6 +162,7 @@ type ComplexityRoot struct {
 type QueryResolver interface {
 	Signals(ctx context.Context, tokenID int, interval string, from time.Time, to time.Time, filter *model.SignalFilter) ([]*model.SignalAggregations, error)
 	SignalsLatest(ctx context.Context, tokenID int, filter *model.SignalFilter) (*model.SignalCollection, error)
+	AvailableSignals(ctx context.Context, tokenID int, filter *model.SignalFilter) ([]string, error)
 	VinVCLatest(ctx context.Context, tokenID int) (*model.Vinvc, error)
 }
 type SignalAggregationsResolver interface {
@@ -219,6 +221,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	ec := executionContext{nil, e, 0, 0, nil}
 	_ = ec
 	switch typeName + "." + field {
+
+	case "Query.availableSignals":
+		if e.complexity.Query.AvailableSignals == nil {
+			break
+		}
+
+		args, err := ec.field_Query_availableSignals_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.AvailableSignals(childComplexity, args["tokenId"].(int), args["filter"].(*model.SignalFilter)), true
 
 	case "Query.signals":
 		if e.complexity.Query.Signals == nil {
@@ -1166,7 +1180,13 @@ type Query {
   """
   SignalsLatest returns the latest signals for a given token.
   """
-  signalsLatest(tokenId: Int!, filter: SignalFilter): SignalCollection @requiresVehicleToken
+  signalsLatest(tokenId: Int!, filter: SignalFilter): SignalCollection
+    @requiresVehicleToken
+  """
+  availableSignals returns a list of queryable signal names that have stored data for a given tokenId.
+  """
+  availableSignals(tokenId: Int!, filter: SignalFilter): [String!]
+    @requiresVehicleToken
 }
 type SignalAggregations {
   """
@@ -1842,6 +1862,30 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 		}
 	}
 	args["name"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_availableSignals_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 int
+	if tmp, ok := rawArgs["tokenId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tokenId"))
+		arg0, err = ec.unmarshalNInt2int(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["tokenId"] = arg0
+	var arg1 *model.SignalFilter
+	if tmp, ok := rawArgs["filter"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+		arg1, err = ec.unmarshalOSignalFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFilter(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 
@@ -2784,6 +2828,78 @@ func (ec *executionContext) fieldContext_Query_signalsLatest(ctx context.Context
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Query_signalsLatest_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_availableSignals(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_availableSignals(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Query().AvailableSignals(rctx, fc.Args["tokenId"].(int), fc.Args["filter"].(*model.SignalFilter))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.RequiresVehicleToken == nil {
+				return nil, errors.New("directive requiresVehicleToken is not implemented")
+			}
+			return ec.directives.RequiresVehicleToken(ctx, nil, directive0)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.([]string); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be []string`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]string)
+	fc.Result = res
+	return ec.marshalOString2ᚕstringᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_availableSignals(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_availableSignals_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -11294,6 +11410,25 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "availableSignals":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_availableSignals(ctx, field)
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
 		case "vinVCLatest":
 			field := field
 
@@ -13674,6 +13809,44 @@ func (ec *executionContext) marshalOSignalString2ᚖgithubᚗcomᚋDIMOᚑNetwor
 		return graphql.Null
 	}
 	return ec._SignalString(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOString2ᚕstringᚄ(ctx context.Context, v interface{}) ([]string, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []interface{}
+	if v != nil {
+		vSlice = graphql.CoerceList(v)
+	}
+	var err error
+	res := make([]string, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNString2string(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalOString2ᚕstringᚄ(ctx context.Context, sel ast.SelectionSet, v []string) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	for i := range v {
+		ret[i] = ec.marshalNString2string(ctx, sel, v[i])
+	}
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
 }
 
 func (ec *executionContext) unmarshalOString2ᚖstring(ctx context.Context, v interface{}) (*string, error) {

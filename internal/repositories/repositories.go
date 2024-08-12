@@ -4,9 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/ClickHouse/clickhouse-go/v2/lib/proto"
+	"github.com/DIMO-Network/model-garage/pkg/schema"
 	"github.com/DIMO-Network/model-garage/pkg/vss"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	"github.com/DIMO-Network/telemetry-api/internal/service/ch"
@@ -26,21 +28,34 @@ var unixEpoch = time.Unix(0, 0).UTC()
 type CHService interface {
 	GetAggregatedSignals(ctx context.Context, aggArgs *model.AggregatedSignalArgs) ([]*model.AggSignal, error)
 	GetLatestSignals(ctx context.Context, latestArgs *model.LatestSignalsArgs) ([]*vss.Signal, error)
+	GetAvailableSignals(ctx context.Context, tokenID uint32, filter *model.SignalFilter) ([]string, error)
 }
 
 // Repository is the base repository for all repositories.
 type Repository struct {
-	chService CHService
-	log       *zerolog.Logger
+	queryableSignals map[string]struct{}
+	chService        CHService
+	log              *zerolog.Logger
 }
 
 // NewRepository creates a new base repository.
 // clientCAs is optional and can be nil.
-func NewRepository(logger *zerolog.Logger, chService CHService) *Repository {
-	return &Repository{
-		chService: chService,
-		log:       logger,
+func NewRepository(logger *zerolog.Logger, chService CHService) (*Repository, error) {
+	definitions, err := schema.LoadDefinitionFile(strings.NewReader(schema.DefinitionsYAML()))
+	if err != nil {
+		return nil, fmt.Errorf("error reading definition file: %w", err)
 	}
+	queryableSignals := make(map[string]struct{}, len(definitions.FromName))
+	for vssName := range definitions.FromName {
+		queryableSignals[schema.VSSToJSONName(vssName)] = struct{}{}
+	}
+
+	return &Repository{
+		chService:        chService,
+		log:              logger,
+		queryableSignals: queryableSignals,
+	}, nil
+
 }
 
 // GetSignal returns the aggregated signals for the given tokenID, interval, from, to and filter.
@@ -97,6 +112,22 @@ func (r *Repository) GetSignalLatest(ctx context.Context, latestArgs *model.Late
 	}
 
 	return coll, nil
+}
+
+// GetAvailableSignals returns the available signals for the given tokenID and filter.
+// If no signals are found, a nil slice is returned.
+func (r *Repository) GetAvailableSignals(ctx context.Context, tokenID uint32, filter *model.SignalFilter) ([]string, error) {
+	allSignals, err := r.chService.GetAvailableSignals(ctx, tokenID, filter)
+	if err != nil {
+		return nil, handleDBError(err, r.log)
+	}
+	var retSignals []string
+	for _, signal := range allSignals {
+		if _, ok := r.queryableSignals[signal]; ok {
+			retSignals = append(retSignals, signal)
+		}
+	}
+	return retSignals, nil
 }
 
 // handleDBError logs the error and returns a generic error message.

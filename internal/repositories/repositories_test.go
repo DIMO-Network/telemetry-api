@@ -167,7 +167,8 @@ func TestGetSignal(t *testing.T) {
 				tt.mockSetup(mocks)
 			}
 
-			repo := repositories.NewRepository(&logger, mocks.CHService)
+			repo, err := repositories.NewRepository(&logger, mocks.CHService)
+			require.NoError(t, err)
 			result, err := repo.GetSignal(context.Background(), tt.aggArgs)
 			if tt.expectError {
 				require.Error(t, err)
@@ -289,8 +290,112 @@ func TestGetSignalLatest(t *testing.T) {
 				tt.mockSetup(mocks)
 			}
 
-			repo := repositories.NewRepository(&logger, mocks.CHService)
+			repo, err := repositories.NewRepository(&logger, mocks.CHService)
+			require.NoError(t, err)
 			result, err := repo.GetSignalLatest(context.Background(), tt.latestArgs)
+			if tt.expectError {
+				require.Error(t, err)
+				require.Nil(t, result)
+			} else {
+				require.NoError(t, err)
+				require.Equal(t, tt.expectedResult, result)
+			}
+		})
+	}
+}
+
+func TestGetAvailableSignals(t *testing.T) {
+	logger := zerolog.New(nil)
+	testTokenId := uint32(1)
+	tests := []struct {
+		name           string
+		mockSetup      func(m *Mocks)
+		expectedResult []string
+		expectError    bool
+	}{
+		{
+			name: "No signals",
+			mockSetup: func(m *Mocks) {
+				m.CHService.EXPECT().
+					GetAvailableSignals(gomock.Any(), testTokenId, nil).
+					Return(nil, nil)
+			},
+			expectedResult: nil,
+			expectError:    false,
+		},
+		{
+			name: "One signal",
+			mockSetup: func(m *Mocks) {
+				m.CHService.EXPECT().
+					GetAvailableSignals(gomock.Any(), testTokenId, nil).
+					Return([]string{"speed"}, nil)
+			},
+			expectedResult: []string{"speed"},
+			expectError:    false,
+		},
+		{
+			name: "Multiple signals",
+			mockSetup: func(m *Mocks) {
+				m.CHService.EXPECT().
+					GetAvailableSignals(gomock.Any(), testTokenId, nil).
+					Return([]string{"speed", "powertrainTractionBatteryStateOfChargeCurrent"}, nil)
+			},
+			expectedResult: []string{"speed", "powertrainTractionBatteryStateOfChargeCurrent"},
+			expectError:    false,
+		},
+		{
+			name: "Mix Unknown signals",
+			mockSetup: func(m *Mocks) {
+				m.CHService.EXPECT().
+					GetAvailableSignals(gomock.Any(), testTokenId, nil).
+					Return([]string{"speed", "newSignalName"}, nil)
+			},
+			expectedResult: []string{"speed"},
+			expectError:    false,
+		},
+		{
+			name: "one unknown signals",
+			mockSetup: func(m *Mocks) {
+				m.CHService.EXPECT().
+					GetAvailableSignals(gomock.Any(), testTokenId, nil).
+					Return([]string{"newSignalName"}, nil)
+			},
+			expectedResult: nil,
+			expectError:    false,
+		},
+		{
+			name: "multiple unknown signals",
+			mockSetup: func(m *Mocks) {
+				m.CHService.EXPECT().
+					GetAvailableSignals(gomock.Any(), testTokenId, nil).
+					Return([]string{"newSignalName", "newSignalName2"}, nil)
+			},
+			expectedResult: nil,
+			expectError:    false,
+		},
+		{
+			name: "CHService error",
+			mockSetup: func(m *Mocks) {
+				m.CHService.EXPECT().
+					GetAvailableSignals(gomock.Any(), testTokenId, nil).
+					Return(nil, errors.New("service error"))
+			},
+			expectedResult: nil,
+			expectError:    true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			mocks := setupMocks(t)
+
+			if tt.mockSetup != nil {
+				tt.mockSetup(mocks)
+			}
+
+			repo, err := repositories.NewRepository(&logger, mocks.CHService)
+			require.NoError(t, err)
+			result, err := repo.GetAvailableSignals(context.Background(), 1, nil)
 			if tt.expectError {
 				require.Error(t, err)
 				require.Nil(t, result)

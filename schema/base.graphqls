@@ -33,7 +33,13 @@ type Query {
   """
   SignalsLatest returns the latest signals for a given token.
   """
-  signalsLatest(tokenId: Int!, filter: SignalFilter): SignalCollection @requiresVehicleToken
+  signalsLatest(tokenId: Int!, filter: SignalFilter): SignalCollection
+    @requiresVehicleToken
+  """
+  availableSignals returns a list of queryable signal names that have stored data for a given tokenId.
+  """
+  availableSignals(tokenId: Int!, filter: SignalFilter): [String!]
+    @requiresVehicleToken
 }
 type SignalAggregations {
   """
