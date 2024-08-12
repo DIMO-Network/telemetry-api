@@ -112,16 +112,17 @@ func (s *Service) getSignals(ctx context.Context, stmt string, args []any) ([]*v
 	if err != nil {
 		return nil, fmt.Errorf("failed querying clickhouse: %w", err)
 	}
-	defer rows.Close() //nolint:errcheck // we don't care about the error here
 	signals := []*vss.Signal{}
 	for rows.Next() {
 		var signal vss.Signal
 		err := rows.Scan(&signal.Name, &signal.Timestamp, &signal.ValueNumber, &signal.ValueString)
 		if err != nil {
+			_ = rows.Close()
 			return nil, fmt.Errorf("failed scanning clickhouse row: %w", err)
 		}
 		signals = append(signals, &signal)
 	}
+	_ = rows.Close()
 	if rows.Err() != nil {
 		return nil, fmt.Errorf("clickhouse row error: %w", rows.Err())
 	}
@@ -134,16 +135,17 @@ func (s *Service) getAggSignals(ctx context.Context, stmt string, args []any) ([
 	if err != nil {
 		return nil, fmt.Errorf("failed querying clickhouse: %w", err)
 	}
-	defer rows.Close() //nolint:errcheck // we don't care about the error here
 	signals := []*model.AggSignal{}
 	for rows.Next() {
 		var signal model.AggSignal
 		err := rows.Scan(&signal.Name, &signal.Agg, &signal.Timestamp, &signal.ValueNumber, &signal.ValueString)
 		if err != nil {
+			_ = rows.Close()
 			return nil, fmt.Errorf("failed scanning clickhouse row: %w", err)
 		}
 		signals = append(signals, &signal)
 	}
+	_ = rows.Close()
 	if rows.Err() != nil {
 		return nil, fmt.Errorf("clickhouse row error: %w", rows.Err())
 	}
@@ -158,15 +160,20 @@ func (s *Service) GetAvailableSignals(ctx context.Context, tokenId uint32, filte
 	if err != nil {
 		return nil, fmt.Errorf("failed querying clickhouse: %w", err)
 	}
-	defer rows.Close() //nolint:errcheck // we don't care about the error here
 	var signals []string
 	for rows.Next() {
 		var signal string
 		err := rows.Scan(&signal)
 		if err != nil {
+			_ = rows.Close()
 			return nil, fmt.Errorf("failed scanning clickhouse row: %w", err)
 		}
 		signals = append(signals, signal)
+	}
+
+	_ = rows.Close()
+	if rows.Err() != nil {
+		return nil, fmt.Errorf("clickhouse row error: %w", rows.Err())
 	}
 	return signals, nil
 }
