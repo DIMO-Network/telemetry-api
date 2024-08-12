@@ -9,18 +9,21 @@ Run `make` to see some helpful sub-commands:
 
 Specify a subcommand:
 
-  `build`               Compile the Go code and output the binary to the `bin/` directory.
-  `run`                 Build the project (if not already built) and run the binary.
-  `clean`               Remove the `bin/` directory.
-  `install`             Build the project and copy the binary to the `INSTALL_DIR`.
-  `test`                Run tests.
-  `lint`                Lint the project.
-  `format`              Format the project.
-  `docker`              Build a Docker image of the project.
-  `gqlgen`              Generate gqlgen code.
-  `gql-model`           Generate gqlgen data model.
-  `gql`                 Generate gqlgen code and data model.
-  `tools`               Install `golangci-lint`, `gqlgen`, and `model-garage`.
+  build                Build the binary
+  run                  Run the binary
+  clean                Remove previous built binaries
+  tidy                 tidy go modules
+  test                 Run tests
+  lint                 Run linter
+  gqlgen               Generate gqlgen code.
+  gql-model            Generate gqlgen data model.
+  gql                  Generate all gql code.
+  generate             Runs all code generators for the repository.
+  tools-gqlgen         install gqlgen tool
+  tools-model-garage   install model-garage tool
+  tools-golangci-lint  install golangci-lint tool
+  tools-mockgen        install mockgen tool
+  tools                Install all tools required for development.
 ```
 
 ## License
