@@ -21,31 +21,36 @@ VER_CUT   := $(shell echo $(VERSION) | cut -c2-)
 GOLANGCI_VERSION   = v1.56.2
 GQLGEN_VERSION     = $(shell go list -m -f '{{.Version}}' github.com/99designs/gqlgen)
 MODEL_GARAGE_VERSION = $(shell go list -m -f '{{.Version}}' github.com/DIMO-Network/model-garage)
+MOCKGEN_VERSION    = $(shell go list -m -f '{{.Version}}' go.uber.org/mock)
 
+help:
+	@echo "\nSpecify a subcommand:\n"
+	@grep -hE '^[0-9a-zA-Z_-]+:.*?## .*$$' ${MAKEFILE_LIST} | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[0;36m%-20s\033[m %s\n", $$1, $$2}'
+	@echo ""
 
-build:
+build: ## Build the binary
 	@CGO_ENABLED=0 GOOS=$(GOOS) GOARCH=$(ARCH) \
 		go build -o $(PATHINSTBIN)/$(BIN_NAME) ./cmd/$(BIN_NAME)
 
-run: build
+run: build ## Run the binary
 	@./$(PATHINSTBIN)/$(BIN_NAME)
 all: clean target
 
-clean:
+clean: ## Remove previous built binaries
 	@rm -rf $(PATHINSTBIN)
 	
-install: build
+install: build 
 	@install -d $(INSTALL_DIR)
 	@rm -f $(INSTALL_DIR)/$(BIN_NAME)
 	@cp $(PATHINSTBIN)/$(BIN_NAME) $(INSTALL_DIR)/$(BIN_NAME)
 
-tidy: 
+tidy: ## tidy go modules
 	@go mod tidy
 
-test:
+test: ## Run tests
 	@go test -v ./...
 
-lint:
+lint: ## Run linter
 	@golangci-lint run
 
 format:
@@ -63,18 +68,25 @@ gql-model: ## Generate gqlgen data model.
 	@codegen -output=internal/graph/model  -generators=custom -custom.output-file=signalSetter_gen.go -custom.template-file=./internal/graph/model/signalSetter.tmpl -custom.format=true
 	@codegen -output=internal/graph -generators=custom -custom.output-file=signals_gen.resolvers.go -custom.template-file=./internal/graph/signals_gen.resolvers.tmpl -custom.format=true
 
-gql: gql-model gqlgen
+gql: gql-model gqlgen ## Generate all gql code.
 
-tools-gqlgen:
+generate: gql ## Runs all code generators for the repository.
+	@go generate ./...
+
+tools-gqlgen: ## install gqlgen tool
 	@mkdir -p $(PATHINSTBIN)
 	GOBIN=$(PATHINSTBIN) go install github.com/99designs/gqlgen@${GQLGEN_VERSION}
 
-tools-model-garage:
+tools-model-garage: ## install model-garage tool
 	@mkdir -p $(PATHINSTBIN)
 	GOBIN=$(PATHINSTBIN) go install github.com/DIMO-Network/model-garage/cmd/codegen@${MODEL_GARAGE_VERSION}
 
-tools-golangci-lint:
+tools-golangci-lint: ## install golangci-lint tool
 	@mkdir -p $(PATHINSTBIN)
 	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(PATHINSTBIN) $(GOLANGCI_VERSION)
 
-tools: tools-golangci-lint tools-gqlgen tools-model-garage
+tools-mockgen: ## install mockgen tool
+	@mkdir -p $(PATHINSTBIN)
+	GOBIN=$(PATHINSTBIN) go install go.uber.org/mock/mockgen@$(MOCKGEN_VERSION)
+
+tools: tools-golangci-lint tools-gqlgen tools-model-garage tools-mockgen ## Install all tools required for development.

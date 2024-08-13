@@ -51,7 +51,10 @@ func main() {
 	if err != nil {
 		logger.Fatal().Err(err).Msg("Couldn't create ClickHouse service.")
 	}
-	baseRepo := repositories.NewRepository(&repoLogger, chService, settings.DeviceLastSeenBinHrs)
+	baseRepo, err := repositories.NewRepository(&repoLogger, chService, settings.DeviceLastSeenBinHrs)
+	if err != nil {
+		logger.Fatal().Err(err).Msg("Couldn't create base repository.")
+	}
 	vinvcRepo, err := newVinVCServiceFromSettings(settings, &logger)
 	if err != nil {
 		logger.Fatal().Err(err).Msg("Couldn't create VINVC repository.")

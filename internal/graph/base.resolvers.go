@@ -29,6 +29,11 @@ func (r *queryResolver) SignalsLatest(ctx context.Context, tokenID int, filter *
 	return r.Repository.GetSignalLatest(ctx, latestArgs)
 }
 
+// AvailableSignals is the resolver for the AvailableSignals field.
+func (r *queryResolver) AvailableSignals(ctx context.Context, tokenID int, filter *model.SignalFilter) ([]string, error) {
+	return r.Repository.GetAvailableSignals(ctx, uint32(tokenID), filter)
+}
+
 // Query returns QueryResolver implementation.
 func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
