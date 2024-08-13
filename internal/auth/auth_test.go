@@ -116,30 +116,22 @@ func TestRequiresManufacturerTokenCheck(t *testing.T) {
 	mtrNFTAddrRaw := "0x1"
 	mtrNFTAddr := common.HexToAddress(mtrNFTAddrRaw)
 
-	validAutoPiAddr := common.BigToAddress(big.NewInt(123))
-	invalidAutoPiAddr := common.BigToAddress(big.NewInt(456))
-	id := NewMockIdentityService(gomock.NewController(t))
-	id.EXPECT().GetAftermarketDevice(gomock.Any(), &validAutoPiAddr, gomock.Any(), gomock.Any()).Return(
-		&identity.DeviceInfos{
-			ManufacturerTokenID: 137,
-		}, nil).AnyTimes()
-	id.EXPECT().GetAftermarketDevice(gomock.Any(), &invalidAutoPiAddr, gomock.Any(), gomock.Any()).Return(
-		nil, fmt.Errorf("")).AnyTimes()
-
-	mfrValidator := NewManufacturerTokenCheck(mtrNFTAddrRaw, id)
+	autopiAddr := common.BigToAddress(big.NewInt(123))
+	autopiTknID := 123
+	autopiSerial := "serial"
 
 	testCases := []struct {
-		name          string
-		args          map[string]any
-		telmetryClaim *TelemetryClaim
-		expectedError error
+		name             string
+		args             model.AftermarketDeviceBy
+		telmetryClaim    *TelemetryClaim
+		identityResponse *identity.DeviceInfos
+		identityError    error
+		expectedError    error
 	}{
 		{
-			name: "valid_manufacturer_token",
-			args: map[string]any{
-				"by": model.AftermarketDeviceBy{
-					Address: &validAutoPiAddr,
-				},
+			name: "valid_manufacturer_token_by_address",
+			args: model.AftermarketDeviceBy{
+				Address: &autopiAddr,
 			},
 			telmetryClaim: &TelemetryClaim{
 				CustomClaims: privilegetoken.CustomClaims{
@@ -147,35 +139,68 @@ func TestRequiresManufacturerTokenCheck(t *testing.T) {
 					TokenID:         "137",
 				},
 			},
+			identityResponse: &identity.DeviceInfos{
+				ManufacturerTokenID: 137,
+			},
+		},
+		{
+			name: "valid_manufacturer_token_by_token_id",
+			args: model.AftermarketDeviceBy{
+				TokenID: &autopiTknID,
+			},
+			telmetryClaim: &TelemetryClaim{
+				CustomClaims: privilegetoken.CustomClaims{
+					ContractAddress: mtrNFTAddr,
+					TokenID:         "137",
+				},
+			},
+			identityResponse: &identity.DeviceInfos{
+				ManufacturerTokenID: 137,
+			},
+		},
+		{
+			name: "valid_manufacturer_token_by_serial",
+			args: model.AftermarketDeviceBy{
+				Serial: &autopiSerial,
+			},
+			telmetryClaim: &TelemetryClaim{
+				CustomClaims: privilegetoken.CustomClaims{
+					ContractAddress: mtrNFTAddr,
+					TokenID:         "137",
+				},
+			},
+			identityResponse: &identity.DeviceInfos{
+				ManufacturerTokenID: 137,
+			},
 		},
 		{
 			name: "wrong aftermarket device manufacturer",
-			args: map[string]any{
-				"by": model.AftermarketDeviceBy{
-					Address: &validAutoPiAddr,
-				},
-			},
 			telmetryClaim: &TelemetryClaim{
 				CustomClaims: privilegetoken.CustomClaims{
 					ContractAddress: mtrNFTAddr,
 					TokenID:         "138",
 				},
 			},
+			args: model.AftermarketDeviceBy{
+				Address: &autopiAddr,
+			},
+			identityError: fmt.Errorf("invalid autopi address"),
 			expectedError: fmt.Errorf("unauthorized: token id does not match"),
 		},
 		{
 			name: "invalid autopi address",
-			args: map[string]any{
-				"by": model.AftermarketDeviceBy{
-					Address: &invalidAutoPiAddr,
-				},
-			},
 			telmetryClaim: &TelemetryClaim{
 				CustomClaims: privilegetoken.CustomClaims{
 					ContractAddress: mtrNFTAddr,
 					TokenID:         "137",
 				},
 			},
+			args: model.AftermarketDeviceBy{
+				Address: &autopiAddr,
+				TokenID: &autopiTknID,
+				Serial:  &autopiSerial,
+			},
+			identityError: fmt.Errorf("invalid autopi address"),
 			expectedError: fmt.Errorf("unauthorized: token id does not match"),
 		},
 	}
@@ -185,8 +210,17 @@ func TestRequiresManufacturerTokenCheck(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 			testCtx := graphql.WithFieldContext(context.Background(), &graphql.FieldContext{
-				Args: tc.args,
+				Args: map[string]any{
+					"by": tc.args,
+				},
 			})
+
+			id := NewMockIdentityService(gomock.NewController(t))
+			id.EXPECT().GetAftermarketDevice(context.WithValue(testCtx, TelemetryClaimContextKey{}, tc.telmetryClaim), tc.args.Address, tc.args.TokenID, tc.args.Serial).Return(
+				tc.identityResponse, tc.identityError).AnyTimes()
+
+			mfrValidator := NewManufacturerTokenCheck(mtrNFTAddrRaw, id)
+
 			testCtx = context.WithValue(testCtx, TelemetryClaimContextKey{}, tc.telmetryClaim)
 			result, err := mfrValidator(testCtx, nil, graphql.Resolver(emptyResolver))
 			if tc.expectedError != nil {
