@@ -129,11 +129,10 @@ func TestRequiresManufacturerTokenCheck(t *testing.T) {
 	mfrValidator := NewManufacturerTokenCheck(mtrNFTAddrRaw, id)
 
 	testCases := []struct {
-		name               string
-		args               map[string]any
-		telmetryClaim      *TelemetryClaim
-		expectedError      error
-		tokenValidatorFunc func(ctx context.Context, _ any, next graphql.Resolver) (any, error)
+		name          string
+		args          map[string]any
+		telmetryClaim *TelemetryClaim
+		expectedError error
 	}{
 		{
 			name: "valid_manufacturer_token",
@@ -148,7 +147,6 @@ func TestRequiresManufacturerTokenCheck(t *testing.T) {
 					TokenID:         "137",
 				},
 			},
-			tokenValidatorFunc: mfrValidator,
 		},
 		{
 			name: "wrong aftermarket device manufacturer",
