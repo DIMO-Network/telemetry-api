@@ -1,4 +1,4 @@
-package vinvc
+package vc
 
 import (
 	"context"
@@ -17,26 +17,26 @@ import (
 )
 
 type Repository struct {
-	logger       *zerolog.Logger
-	indexService *service.Service
-	dataType     string
+	logger        *zerolog.Logger
+	indexService  *service.Service
+	vinVCdataType string
 }
 
 // New creates a new instance of Service.
-func New(chConn clickhouse.Conn, objGetter service.ObjectGetter, bucketName, vinvcDataType string, logger *zerolog.Logger) *Repository {
+func New(chConn clickhouse.Conn, objGetter service.ObjectGetter, vinBucketName, vinVCDataType, pomBucketName, pomVCDataType string, logger *zerolog.Logger) *Repository {
 	return &Repository{
-		indexService: service.New(chConn, objGetter, bucketName),
-		dataType:     vinvcDataType,
-		logger:       logger,
+		indexService:  service.New(chConn, objGetter, vinBucketName),
+		vinVCdataType: vinVCDataType,
+		logger:        logger,
 	}
 }
 
-// GetLatestVC fetches the latest fingerprint message from S3.
-func (s *Repository) GetLatestVC(ctx context.Context, vehicleTokenID uint32) (*model.Vinvc, error) {
+// GetLatestVINVC fetches the latest fingerprint message from S3.
+func (s *Repository) GetLatestVINVC(ctx context.Context, vehicleTokenID uint32) (*model.Vinvc, error) {
 	subject := nameindexer.Subject{
 		TokenID: &vehicleTokenID,
 	}
-	data, err := s.indexService.GetLatestData(ctx, s.dataType, subject)
+	data, err := s.indexService.GetLatestData(ctx, s.vinVCdataType, subject)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, nil

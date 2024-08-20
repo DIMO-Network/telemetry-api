@@ -1,6 +1,6 @@
-//go:generate mockgen -destination=mock_service_test.go -package=vinvc_test github.com/DIMO-Network/nameindexer/pkg/clickhouse/service ObjectGetter
-//go:generate mockgen -destination=mock_clickhouse_test.go -package=vinvc_test github.com/ClickHouse/clickhouse-go/v2 Conn
-package vinvc_test
+//go:generate mockgen -destination=mock_service_test.go -package=vc_test github.com/DIMO-Network/nameindexer/pkg/clickhouse/service ObjectGetter
+//go:generate mockgen -destination=mock_clickhouse_test.go -package=vc_test github.com/ClickHouse/clickhouse-go/v2 Conn
+package vc_test
 
 import (
 	"bytes"
@@ -15,7 +15,7 @@ import (
 
 	"github.com/DIMO-Network/attestation-api/pkg/verifiable"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
-	"github.com/DIMO-Network/telemetry-api/internal/repositories/vinvc"
+	"github.com/DIMO-Network/telemetry-api/internal/repositories/vc"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
@@ -66,7 +66,7 @@ func TestGetLatestVC(t *testing.T) {
 	mockObjGetter := NewMockObjectGetter(ctrl)
 
 	// Initialize the service with mock dependencies
-	svc := vinvc.New(mockChConn, mockObjGetter, bucketName, dataType, &logger)
+	svc := vc.New(mockChConn, mockObjGetter, bucketName, dataType, "", "", &logger)
 
 	defaultVC := verifiable.Credential{
 		ValidTo:   time.Now().Add(24 * time.Hour).Format(time.RFC3339),
@@ -142,7 +142,7 @@ func TestGetLatestVC(t *testing.T) {
 			tt.mockSetup()
 
 			// Call the method
-			vc, err := svc.GetLatestVC(ctx, vehicleTokenID)
+			vc, err := svc.GetLatestVINVC(ctx, vehicleTokenID)
 
 			// Assert the results
 			if tt.expectedErr != nil {
