@@ -5,7 +5,7 @@ go 1.22.0
 require (
 	github.com/99designs/gqlgen v0.17.49
 	github.com/ClickHouse/clickhouse-go/v2 v2.26.0
-	github.com/DIMO-Network/attestation-api v0.0.6-0.20240820175454-233483fcfc80
+	github.com/DIMO-Network/attestation-api v0.0.6-0.20240820200935-34d951685e8e
 	github.com/DIMO-Network/clickhouse-infra v0.0.2
 	github.com/DIMO-Network/model-garage v0.2.12
 	github.com/DIMO-Network/nameindexer v0.0.6
