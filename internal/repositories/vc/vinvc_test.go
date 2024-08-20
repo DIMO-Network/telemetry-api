@@ -1,4 +1,4 @@
-//go:generate mockgen -destination=mock_service_test.go -package=vc_test github.com/DIMO-Network/nameindexer/pkg/clickhouse/service ObjectGetter
+//go:generate mockgen -destination=mock_service_test.go -package=vc_test github.com/DIMO-Network/nameindexer/pkg/clickhouse/indexrepo ObjectGetter
 //go:generate mockgen -destination=mock_clickhouse_test.go -package=vc_test github.com/ClickHouse/clickhouse-go/v2 Conn
 package vc_test
 

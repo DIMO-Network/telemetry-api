@@ -13,6 +13,7 @@ env:
   TOKEN_EXCHANGE_ISSUER_URL: https://auth-roles-rights.dimo.zone
   VEHICLE_NFT_ADDRESS: '0xbA5738a18d83D41847dfFbDC6101d37C69c9B0cF'
   VINVC_BUCKET: dimo-network-vinvc-prod
+  POMVC_BUCKET: dimo-network-pomvc-prod
 ingress:
   enabled: true
   className: nginx

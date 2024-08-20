@@ -6,7 +6,6 @@ package graph
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 )
@@ -18,5 +17,5 @@ func (r *queryResolver) VinVCLatest(ctx context.Context, tokenID int) (*model.Vi
 
 // PomVCLatest is the resolver for the pomVCLatest field.
 func (r *queryResolver) PomVCLatest(ctx context.Context, tokenID int) (*model.Pomvc, error) {
-	panic(fmt.Errorf("not implemented: PomVCLatest - pomVCLatest"))
+	return r.VCRepo.GetLatestPOMVC(ctx, uint32(tokenID))
 }

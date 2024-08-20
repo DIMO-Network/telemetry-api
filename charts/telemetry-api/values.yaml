@@ -35,6 +35,8 @@ env:
   S3_AWS_REGION: us-east-2
   VINVC_BUCKET: dimo-network-vinvc-dev
   VINVC_DATA_TYPE: VINVCv0.0
+  POMVC_BUCKET: dimo-network-pomvc-dev
+  POMVC_DATA_TYPE: POMVCv0.0
   CLICKHOUSE_FILE_INDEX_DATABASE: file_index
 service:
   type: ClusterIP
