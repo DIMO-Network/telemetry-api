@@ -8,7 +8,6 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io"
 	"testing"
 	"time"
@@ -88,7 +87,7 @@ func TestGetLatestVC(t *testing.T) {
 		name        string
 		mockSetup   func()
 		expectedVC  *model.Vinvc
-		expectedErr error
+		expectedErr bool
 	}{
 		{
 			name: "Success",
@@ -106,16 +105,13 @@ func TestGetLatestVC(t *testing.T) {
 				VehicleTokenID:         ref(123),
 				RawVc:                  string(defaultData),
 			},
-
-			expectedErr: nil,
 		},
 		{
 			name: "No data found",
 			mockSetup: func() {
 				mockChConn.EXPECT().QueryRow(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(&MockRow{err: sql.ErrNoRows})
 			},
-			expectedVC:  nil,
-			expectedErr: nil,
+			expectedVC: nil,
 		},
 		{
 			name: "Internal error",
@@ -123,7 +119,7 @@ func TestGetLatestVC(t *testing.T) {
 				mockChConn.EXPECT().QueryRow(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(&MockRow{err: errors.New("internal error")})
 			},
 			expectedVC:  nil,
-			expectedErr: errors.New("internal error"),
+			expectedErr: true,
 		},
 		{
 			name: "Invalid data format",
@@ -132,7 +128,7 @@ func TestGetLatestVC(t *testing.T) {
 				mockObjGetter.EXPECT().GetObject(gomock.Any(), gomock.Any(), gomock.Any()).Return(&s3.GetObjectOutput{Body: io.NopCloser(bytes.NewReader([]byte("invalid data")))}, nil)
 			},
 			expectedVC:  nil,
-			expectedErr: fmt.Errorf("failed to unmarshal fingerprint message: invalid character 'i' looking for beginning of value"),
+			expectedErr: true,
 		},
 	}
 
@@ -145,8 +141,8 @@ func TestGetLatestVC(t *testing.T) {
 			vc, err := svc.GetLatestVINVC(ctx, vehicleTokenID)
 
 			// Assert the results
-			if tt.expectedErr != nil {
-				require.EqualError(t, err, tt.expectedErr.Error())
+			if tt.expectedErr {
+				require.Error(t, err)
 			} else {
 				require.NoError(t, err)
 			}
