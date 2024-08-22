@@ -12,5 +12,10 @@ import (
 
 // VinVCLatest is the resolver for the vinVCLatest field.
 func (r *queryResolver) VinVCLatest(ctx context.Context, tokenID int) (*model.Vinvc, error) {
-	return r.VINVCRepo.GetLatestVC(ctx, uint32(tokenID))
+	return r.VCRepo.GetLatestVINVC(ctx, uint32(tokenID))
+}
+
+// PomVCLatest is the resolver for the pomVCLatest field.
+func (r *queryResolver) PomVCLatest(ctx context.Context, tokenID int) (*model.Pomvc, error) {
+	return r.VCRepo.GetLatestPOMVC(ctx, uint32(tokenID))
 }
