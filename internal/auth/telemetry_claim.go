@@ -18,7 +18,6 @@ type TelemetryClaimContextKey struct{}
 type TelemetryClaim struct {
 	privileges set.Set[model.Privilege]
 	privilegetoken.CustomClaims
-	contractPrivMap map[common.Address]map[privileges.Privilege]model.Privilege
 }
 
 // Validate function is required to implement the validator.CustomClaims interface.

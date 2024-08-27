@@ -33,12 +33,7 @@ func NewJWTMiddleware(issuer, jwksURI, vehAddr, mfrAddr string, logger *zerolog.
 	}
 	provider := jwks.NewCachingProvider(issuerURL, 1*time.Minute, opts...)
 	newCustomClaims := func() validator.CustomClaims {
-		return &TelemetryClaim{
-			contractPrivMap: map[common.Address]map[privileges.Privilege]model.Privilege{
-				common.HexToAddress(vehAddr): vehiclePrivToAPI,
-				common.HexToAddress(mfrAddr): manufacturerPrivToAPI,
-			},
-		}
+		return &TelemetryClaim{}
 	}
 	// Set up the validator.
 	jwtValidator, err := validator.New(
