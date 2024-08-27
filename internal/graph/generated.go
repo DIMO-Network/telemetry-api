@@ -58,9 +58,18 @@ type ComplexityRoot struct {
 		LastActive func(childComplexity int) int
 	}
 
+	POMVC struct {
+		RawVc                  func(childComplexity int) int
+		RecordedBy             func(childComplexity int) int
+		ValidFrom              func(childComplexity int) int
+		VehicleContractAddress func(childComplexity int) int
+		VehicleTokenID         func(childComplexity int) int
+	}
+
 	Query struct {
 		AvailableSignals func(childComplexity int, tokenID int, filter *model.SignalFilter) int
 		DeviceActivity   func(childComplexity int, by model.AftermarketDeviceBy) int
+		PomVCLatest      func(childComplexity int, tokenID int) int
 		Signals          func(childComplexity int, tokenID int, interval string, from time.Time, to time.Time, filter *model.SignalFilter) int
 		SignalsLatest    func(childComplexity int, tokenID int, filter *model.SignalFilter) int
 		VinVCLatest      func(childComplexity int, tokenID int) int
@@ -173,6 +182,7 @@ type QueryResolver interface {
 	AvailableSignals(ctx context.Context, tokenID int, filter *model.SignalFilter) ([]string, error)
 	DeviceActivity(ctx context.Context, by model.AftermarketDeviceBy) (*model.DeviceActivity, error)
 	VinVCLatest(ctx context.Context, tokenID int) (*model.Vinvc, error)
+	PomVCLatest(ctx context.Context, tokenID int) (*model.Pomvc, error)
 }
 type SignalAggregationsResolver interface {
 	ChassisAxleRow1WheelLeftTirePressure(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
@@ -238,6 +248,41 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.DeviceActivity.LastActive(childComplexity), true
 
+	case "POMVC.rawVC":
+		if e.complexity.POMVC.RawVc == nil {
+			break
+		}
+
+		return e.complexity.POMVC.RawVc(childComplexity), true
+
+	case "POMVC.recordedBy":
+		if e.complexity.POMVC.RecordedBy == nil {
+			break
+		}
+
+		return e.complexity.POMVC.RecordedBy(childComplexity), true
+
+	case "POMVC.validFrom":
+		if e.complexity.POMVC.ValidFrom == nil {
+			break
+		}
+
+		return e.complexity.POMVC.ValidFrom(childComplexity), true
+
+	case "POMVC.vehicleContractAddress":
+		if e.complexity.POMVC.VehicleContractAddress == nil {
+			break
+		}
+
+		return e.complexity.POMVC.VehicleContractAddress(childComplexity), true
+
+	case "POMVC.vehicleTokenId":
+		if e.complexity.POMVC.VehicleTokenID == nil {
+			break
+		}
+
+		return e.complexity.POMVC.VehicleTokenID(childComplexity), true
+
 	case "Query.availableSignals":
 		if e.complexity.Query.AvailableSignals == nil {
 			break
@@ -261,6 +306,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.DeviceActivity(childComplexity, args["by"].(model.AftermarketDeviceBy)), true
+
+	case "Query.pomVCLatest":
+		if e.complexity.Query.PomVCLatest == nil {
+			break
+		}
+
+		args, err := ec.field_Query_pomVCLatest_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.PomVCLatest(childComplexity, args["tokenId"].(int)), true
 
 	case "Query.signals":
 		if e.complexity.Query.Signals == nil {
@@ -1839,9 +1896,9 @@ extend type SignalCollection {
 }
 
 `, BuiltIn: false},
-	{Name: "../../schema/vinvc.graphqls", Input: `extend type Query {
+	{Name: "../../schema/vc.graphqls", Input: `extend type Query {
   """
-  vinVC returns the latest VINVC data for a given token.
+  vinVCLatest returns the latest VINVC data for a given token.
 
   Required Privileges: [VEHICLE_VIN_CREDENTIAL]
   """
@@ -1850,7 +1907,23 @@ extend type SignalCollection {
     The token ID of the vehicle.
     """
     tokenId: Int!
-  ): VINVC @requiresVehicleToken @requiresPrivileges(privileges: [VEHICLE_VIN_CREDENTIAL])
+  ): VINVC
+    @requiresVehicleToken
+    @requiresPrivileges(privileges: [VEHICLE_VIN_CREDENTIAL])
+
+  """
+  pomVCLatest returns the latest POMVC data for a given token.
+
+  Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
+  """
+  pomVCLatest(
+    """
+    The token ID of the vehicle.
+    """
+    tokenId: Int!
+  ): POMVC
+    @requiresVehicleToken
+    @requiresPrivileges(privileges: [VEHICLE_ALL_TIME_LOCATION])
 }
 
 type VINVC {
@@ -1893,6 +1966,32 @@ type VINVC {
   validTo is the time the VC is valid to.
   """
   validTo: Time
+
+  """
+  rawVC is the raw VC JSON.
+  """
+  rawVC: String!
+}
+
+type POMVC {
+  """
+  vehicleTokenId is the token ID of the vehicle.
+  """
+  vehicleTokenId: Int
+
+  """
+  recordedBy is the entity that recorded the VIN.
+  """
+  recordedBy: String
+  """
+  vehicleContractAddress is the address of the vehicle contract.
+  """
+  vehicleContractAddress: String
+
+  """
+  validFrom is the time the VC is valid from.
+  """
+  validFrom: Time
 
   """
   rawVC is the raw VC JSON.
@@ -1973,6 +2072,21 @@ func (ec *executionContext) field_Query_deviceActivity_args(ctx context.Context,
 		}
 	}
 	args["by"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_pomVCLatest_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 int
+	if tmp, ok := rawArgs["tokenId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tokenId"))
+		arg0, err = ec.unmarshalNInt2int(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["tokenId"] = arg0
 	return args, nil
 }
 
@@ -2670,6 +2784,214 @@ func (ec *executionContext) fieldContext_DeviceActivity_lastActive(_ context.Con
 	return fc, nil
 }
 
+func (ec *executionContext) _POMVC_vehicleTokenId(ctx context.Context, field graphql.CollectedField, obj *model.Pomvc) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_POMVC_vehicleTokenId(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.VehicleTokenID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_POMVC_vehicleTokenId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "POMVC",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _POMVC_recordedBy(ctx context.Context, field graphql.CollectedField, obj *model.Pomvc) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_POMVC_recordedBy(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.RecordedBy, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_POMVC_recordedBy(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "POMVC",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _POMVC_vehicleContractAddress(ctx context.Context, field graphql.CollectedField, obj *model.Pomvc) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_POMVC_vehicleContractAddress(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.VehicleContractAddress, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_POMVC_vehicleContractAddress(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "POMVC",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _POMVC_validFrom(ctx context.Context, field graphql.CollectedField, obj *model.Pomvc) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_POMVC_validFrom(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ValidFrom, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalOTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_POMVC_validFrom(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "POMVC",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _POMVC_rawVC(ctx context.Context, field graphql.CollectedField, obj *model.Pomvc) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_POMVC_rawVC(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.RawVc, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_POMVC_rawVC(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "POMVC",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Query_signals(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Query_signals(ctx, field)
 	if err != nil {
@@ -3216,6 +3538,100 @@ func (ec *executionContext) fieldContext_Query_vinVCLatest(ctx context.Context, 
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Query_vinVCLatest_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_pomVCLatest(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_pomVCLatest(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Query().PomVCLatest(rctx, fc.Args["tokenId"].(int))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.RequiresVehicleToken == nil {
+				return nil, errors.New("directive requiresVehicleToken is not implemented")
+			}
+			return ec.directives.RequiresVehicleToken(ctx, nil, directive0)
+		}
+		directive2 := func(ctx context.Context) (interface{}, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_ALL_TIME_LOCATION"})
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
+			}
+			return ec.directives.RequiresPrivileges(ctx, nil, directive1, privileges)
+		}
+
+		tmp, err := directive2(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*model.Pomvc); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.Pomvc`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.Pomvc)
+	fc.Result = res
+	return ec.marshalOPOMVC2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPomvc(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_pomVCLatest(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "vehicleTokenId":
+				return ec.fieldContext_POMVC_vehicleTokenId(ctx, field)
+			case "recordedBy":
+				return ec.fieldContext_POMVC_recordedBy(ctx, field)
+			case "vehicleContractAddress":
+				return ec.fieldContext_POMVC_vehicleContractAddress(ctx, field)
+			case "validFrom":
+				return ec.fieldContext_POMVC_validFrom(ctx, field)
+			case "rawVC":
+				return ec.fieldContext_POMVC_rawVC(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type POMVC", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_pomVCLatest_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -11691,6 +12107,53 @@ func (ec *executionContext) _DeviceActivity(ctx context.Context, sel ast.Selecti
 	return out
 }
 
+var pOMVCImplementors = []string{"POMVC"}
+
+func (ec *executionContext) _POMVC(ctx context.Context, sel ast.SelectionSet, obj *model.Pomvc) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, pOMVCImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("POMVC")
+		case "vehicleTokenId":
+			out.Values[i] = ec._POMVC_vehicleTokenId(ctx, field, obj)
+		case "recordedBy":
+			out.Values[i] = ec._POMVC_recordedBy(ctx, field, obj)
+		case "vehicleContractAddress":
+			out.Values[i] = ec._POMVC_vehicleContractAddress(ctx, field, obj)
+		case "validFrom":
+			out.Values[i] = ec._POMVC_validFrom(ctx, field, obj)
+		case "rawVC":
+			out.Values[i] = ec._POMVC_rawVC(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var queryImplementors = []string{"Query"}
 
 func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) graphql.Marshaler {
@@ -11796,6 +12259,25 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_vinVCLatest(ctx, field)
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "pomVCLatest":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_pomVCLatest(ctx, field)
 				return res
 			}
 
@@ -14118,6 +14600,13 @@ func (ec *executionContext) marshalOInt2ᚖint(ctx context.Context, sel ast.Sele
 	}
 	res := graphql.MarshalInt(*v)
 	return res
+}
+
+func (ec *executionContext) marshalOPOMVC2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPomvc(ctx context.Context, sel ast.SelectionSet, v *model.Pomvc) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._POMVC(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalOSignalAggregations2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalAggregationsᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.SignalAggregations) graphql.Marshaler {

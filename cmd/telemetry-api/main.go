@@ -19,7 +19,7 @@ import (
 	"github.com/DIMO-Network/telemetry-api/internal/graph"
 	"github.com/DIMO-Network/telemetry-api/internal/limits"
 	"github.com/DIMO-Network/telemetry-api/internal/repositories"
-	"github.com/DIMO-Network/telemetry-api/internal/repositories/vinvc"
+	"github.com/DIMO-Network/telemetry-api/internal/repositories/vc"
 	"github.com/DIMO-Network/telemetry-api/internal/service/ch"
 	"github.com/DIMO-Network/telemetry-api/internal/service/identity"
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -55,14 +55,14 @@ func main() {
 	if err != nil {
 		logger.Fatal().Err(err).Msg("Couldn't create base repository.")
 	}
-	vinvcRepo, err := newVinVCServiceFromSettings(settings, &logger)
+	vcRepo, err := newVinVCServiceFromSettings(settings, &logger)
 	if err != nil {
 		logger.Fatal().Err(err).Msg("Couldn't create VINVC repository.")
 	}
 	resolver := &graph.Resolver{
 		Repository:      baseRepo,
-		VINVCRepo:       vinvcRepo,
 		IdentityService: idService,
+		VCRepo:          vcRepo,
 	}
 
 	cfg := graph.Config{Resolvers: resolver}
@@ -138,7 +138,7 @@ func noOp(ctx context.Context, obj interface{}, next graphql.Resolver) (res inte
 	return next(ctx)
 }
 
-func newVinVCServiceFromSettings(settings config.Settings, parentLogger *zerolog.Logger) (*vinvc.Repository, error) {
+func newVinVCServiceFromSettings(settings config.Settings, parentLogger *zerolog.Logger) (*vc.Repository, error) {
 	chConfig := settings.CLickhouse
 	chConfig.Database = settings.ClickhouseFileIndexDatabase
 	chConn, err := connect.GetClickhouseConn(&chConfig)
@@ -150,7 +150,7 @@ func newVinVCServiceFromSettings(settings config.Settings, parentLogger *zerolog
 		return nil, fmt.Errorf("failed to create s3 client: %w", err)
 	}
 	vinvcLogger := parentLogger.With().Str("component", "vinvc").Logger()
-	return vinvc.New(chConn, s3Client, settings.VINVCBucket, settings.VINVCDataType, &vinvcLogger), nil
+	return vc.New(chConn, s3Client, settings.VINVCBucket, settings.VINVCDataType, settings.POMVCBucket, settings.POMVCDataType, &vinvcLogger), nil
 }
 
 // s3ClientFromSettings creates an S3 client from the given settings.

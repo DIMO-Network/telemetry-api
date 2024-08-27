@@ -23,6 +23,19 @@ type DeviceActivity struct {
 	LastActive *time.Time `json:"lastActive,omitempty"`
 }
 
+type Pomvc struct {
+	// vehicleTokenId is the token ID of the vehicle.
+	VehicleTokenID *int `json:"vehicleTokenId,omitempty"`
+	// recordedBy is the entity that recorded the VIN.
+	RecordedBy *string `json:"recordedBy,omitempty"`
+	// vehicleContractAddress is the address of the vehicle contract.
+	VehicleContractAddress *string `json:"vehicleContractAddress,omitempty"`
+	// validFrom is the time the VC is valid from.
+	ValidFrom *time.Time `json:"validFrom,omitempty"`
+	// rawVC is the raw VC JSON.
+	RawVc string `json:"rawVC"`
+}
+
 // The root query type for the GraphQL schema.
 type Query struct {
 }

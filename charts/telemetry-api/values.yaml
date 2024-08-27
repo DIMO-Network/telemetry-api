@@ -2,7 +2,7 @@ replicaCount: 1
 image:
   repository: dimozone/telemetry-api
   pullPolicy: IfNotPresent
-  tag: '87e3260'
+  tag: 59b4512
 imagePullSecrets: []
 nameOverride: ''
 fullnameOverride: ''
@@ -36,6 +36,8 @@ env:
   S3_AWS_REGION: us-east-2
   VINVC_BUCKET: dimo-network-vinvc-dev
   VINVC_DATA_TYPE: VINVCv0.0
+  POMVC_BUCKET: dimo-network-pomvc-dev
+  POMVC_DATA_TYPE: POMVCv0.1
   CLICKHOUSE_FILE_INDEX_DATABASE: file_index
   IDENTITY_API_URL: https://identity-api.dimo.zone/query
   IDENTITY_API_REQUEST_TIMEOUT_SECONDS: 5

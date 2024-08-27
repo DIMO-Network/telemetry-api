@@ -2,7 +2,7 @@ replicaCount: 2
 image:
   repository: dimozone/telemetry-api
   pullPolicy: IfNotPresent
-  tag: 0.0.21
+  tag: 0.0.22
 cronJob:
   enabled: false
   schedule: 0 0 * * 0
@@ -17,6 +17,7 @@ env:
   IDENTITY_API_URL: https://identity-api.dimo.zone/query
   IDENTITY_API_REQUEST_TIMEOUT_SECONDS: 5
   DEVICE_LAST_SEEN_BIN_HOURS: 3
+  POMVC_BUCKET: dimo-network-pomvc-prod
 ingress:
   enabled: true
   className: nginx

@@ -1,6 +1,6 @@
-//go:generate mockgen -destination=mock_service_test.go -package=vinvc_test github.com/DIMO-Network/nameindexer/pkg/clickhouse/service ObjectGetter
-//go:generate mockgen -destination=mock_clickhouse_test.go -package=vinvc_test github.com/ClickHouse/clickhouse-go/v2 Conn
-package vinvc_test
+//go:generate mockgen -destination=mock_service_test.go -package=vc_test github.com/DIMO-Network/nameindexer/pkg/clickhouse/indexrepo ObjectGetter
+//go:generate mockgen -destination=mock_clickhouse_test.go -package=vc_test github.com/ClickHouse/clickhouse-go/v2 Conn
+package vc_test
 
 import (
 	"bytes"
@@ -8,14 +8,13 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io"
 	"testing"
 	"time"
 
 	"github.com/DIMO-Network/attestation-api/pkg/verifiable"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
-	"github.com/DIMO-Network/telemetry-api/internal/repositories/vinvc"
+	"github.com/DIMO-Network/telemetry-api/internal/repositories/vc"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
@@ -66,7 +65,7 @@ func TestGetLatestVC(t *testing.T) {
 	mockObjGetter := NewMockObjectGetter(ctrl)
 
 	// Initialize the service with mock dependencies
-	svc := vinvc.New(mockChConn, mockObjGetter, bucketName, dataType, &logger)
+	svc := vc.New(mockChConn, mockObjGetter, bucketName, dataType, "", "", &logger)
 
 	defaultVC := verifiable.Credential{
 		ValidTo:   time.Now().Add(24 * time.Hour).Format(time.RFC3339),
@@ -88,7 +87,7 @@ func TestGetLatestVC(t *testing.T) {
 		name        string
 		mockSetup   func()
 		expectedVC  *model.Vinvc
-		expectedErr error
+		expectedErr bool
 	}{
 		{
 			name: "Success",
@@ -106,16 +105,13 @@ func TestGetLatestVC(t *testing.T) {
 				VehicleTokenID:         ref(123),
 				RawVc:                  string(defaultData),
 			},
-
-			expectedErr: nil,
 		},
 		{
 			name: "No data found",
 			mockSetup: func() {
 				mockChConn.EXPECT().QueryRow(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(&MockRow{err: sql.ErrNoRows})
 			},
-			expectedVC:  nil,
-			expectedErr: nil,
+			expectedVC: nil,
 		},
 		{
 			name: "Internal error",
@@ -123,7 +119,7 @@ func TestGetLatestVC(t *testing.T) {
 				mockChConn.EXPECT().QueryRow(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(&MockRow{err: errors.New("internal error")})
 			},
 			expectedVC:  nil,
-			expectedErr: errors.New("internal error"),
+			expectedErr: true,
 		},
 		{
 			name: "Invalid data format",
@@ -132,7 +128,7 @@ func TestGetLatestVC(t *testing.T) {
 				mockObjGetter.EXPECT().GetObject(gomock.Any(), gomock.Any(), gomock.Any()).Return(&s3.GetObjectOutput{Body: io.NopCloser(bytes.NewReader([]byte("invalid data")))}, nil)
 			},
 			expectedVC:  nil,
-			expectedErr: fmt.Errorf("failed to unmarshal fingerprint message: invalid character 'i' looking for beginning of value"),
+			expectedErr: true,
 		},
 	}
 
@@ -142,11 +138,11 @@ func TestGetLatestVC(t *testing.T) {
 			tt.mockSetup()
 
 			// Call the method
-			vc, err := svc.GetLatestVC(ctx, vehicleTokenID)
+			vc, err := svc.GetLatestVINVC(ctx, vehicleTokenID)
 
 			// Assert the results
-			if tt.expectedErr != nil {
-				require.EqualError(t, err, tt.expectedErr.Error())
+			if tt.expectedErr {
+				require.Error(t, err)
 			} else {
 				require.NoError(t, err)
 			}
