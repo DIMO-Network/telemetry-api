@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	"fmt"
 	"math/big"
 	"testing"
 
@@ -9,8 +10,10 @@ import (
 	"github.com/DIMO-Network/shared/middleware/privilegetoken"
 	"github.com/DIMO-Network/shared/privileges"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
+	"github.com/DIMO-Network/telemetry-api/internal/service/identity"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/require"
+	"go.uber.org/mock/gomock"
 )
 
 var expectedReturn = struct{}{}
@@ -19,7 +22,7 @@ func emptyResolver(_ context.Context) (any, error) {
 	return expectedReturn, nil
 }
 
-func TestRequiresTokenCheck(t *testing.T) {
+func TestRequiresVehicleTokenCheck(t *testing.T) {
 	t.Parallel()
 
 	vehicleNFTAddrRaw := "0x1"
@@ -88,8 +91,7 @@ func TestRequiresTokenCheck(t *testing.T) {
 		},
 	}
 
-	vehicleCheck := CreateVehicleTokenCheck(vehicleNFTAddrRaw)
-
+	vehicleCheck := NewVehicleTokenCheck(vehicleNFTAddrRaw)
 	for _, tc := range testCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
@@ -108,6 +110,129 @@ func TestRequiresTokenCheck(t *testing.T) {
 		})
 	}
 }
+
+func TestRequiresManufacturerTokenCheck(t *testing.T) {
+	t.Parallel()
+	mtrNFTAddrRaw := "0x1"
+	mtrNFTAddr := common.HexToAddress(mtrNFTAddrRaw)
+
+	autopiAddr := common.BigToAddress(big.NewInt(123))
+	autopiTknID := 123
+	autopiSerial := "serial"
+
+	testCases := []struct {
+		name             string
+		args             model.AftermarketDeviceBy
+		telmetryClaim    *TelemetryClaim
+		identityResponse *identity.DeviceInfos
+		identityError    error
+		expectedError    error
+	}{
+		{
+			name: "valid_manufacturer_token_by_address",
+			args: model.AftermarketDeviceBy{
+				Address: &autopiAddr,
+			},
+			telmetryClaim: &TelemetryClaim{
+				CustomClaims: privilegetoken.CustomClaims{
+					ContractAddress: mtrNFTAddr,
+					TokenID:         "137",
+				},
+			},
+			identityResponse: &identity.DeviceInfos{
+				ManufacturerTokenID: 137,
+			},
+		},
+		{
+			name: "valid_manufacturer_token_by_token_id",
+			args: model.AftermarketDeviceBy{
+				TokenID: &autopiTknID,
+			},
+			telmetryClaim: &TelemetryClaim{
+				CustomClaims: privilegetoken.CustomClaims{
+					ContractAddress: mtrNFTAddr,
+					TokenID:         "137",
+				},
+			},
+			identityResponse: &identity.DeviceInfos{
+				ManufacturerTokenID: 137,
+			},
+		},
+		{
+			name: "valid_manufacturer_token_by_serial",
+			args: model.AftermarketDeviceBy{
+				Serial: &autopiSerial,
+			},
+			telmetryClaim: &TelemetryClaim{
+				CustomClaims: privilegetoken.CustomClaims{
+					ContractAddress: mtrNFTAddr,
+					TokenID:         "137",
+				},
+			},
+			identityResponse: &identity.DeviceInfos{
+				ManufacturerTokenID: 137,
+			},
+		},
+		{
+			name: "wrong aftermarket device manufacturer",
+			telmetryClaim: &TelemetryClaim{
+				CustomClaims: privilegetoken.CustomClaims{
+					ContractAddress: mtrNFTAddr,
+					TokenID:         "138",
+				},
+			},
+			args: model.AftermarketDeviceBy{
+				Address: &autopiAddr,
+			},
+			identityError: fmt.Errorf("invalid autopi address"),
+			expectedError: fmt.Errorf("unauthorized: token id does not match"),
+		},
+		{
+			name: "invalid autopi address",
+			telmetryClaim: &TelemetryClaim{
+				CustomClaims: privilegetoken.CustomClaims{
+					ContractAddress: mtrNFTAddr,
+					TokenID:         "137",
+				},
+			},
+			args: model.AftermarketDeviceBy{
+				Address: &autopiAddr,
+				TokenID: &autopiTknID,
+				Serial:  &autopiSerial,
+			},
+			identityError: fmt.Errorf("invalid autopi address"),
+			expectedError: fmt.Errorf("unauthorized: token id does not match"),
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			testCtx := graphql.WithFieldContext(context.Background(), &graphql.FieldContext{
+				Args: map[string]any{
+					"by": tc.args,
+				},
+			})
+
+			id := NewMockIdentityService(gomock.NewController(t))
+			id.EXPECT().GetAftermarketDevice(context.WithValue(testCtx, TelemetryClaimContextKey{}, tc.telmetryClaim), tc.args.Address, tc.args.TokenID, tc.args.Serial).Return(
+				tc.identityResponse, tc.identityError).AnyTimes()
+
+			mfrValidator := NewManufacturerTokenCheck(mtrNFTAddrRaw, id)
+
+			testCtx = context.WithValue(testCtx, TelemetryClaimContextKey{}, tc.telmetryClaim)
+			result, err := mfrValidator(testCtx, nil, graphql.Resolver(emptyResolver))
+			if tc.expectedError != nil {
+				require.Error(t, err)
+				return
+			}
+			require.NoError(t, err)
+			require.Equal(t, expectedReturn, result)
+		})
+	}
+}
+
 func TestRequiresPrivilegeCheck(t *testing.T) {
 	t.Parallel()
 	vehicleNFTAddr := common.BigToAddress(big.NewInt(10))
@@ -139,6 +264,7 @@ func TestRequiresPrivilegeCheck(t *testing.T) {
 					ContractAddress: vehicleNFTAddr,
 				},
 			},
+			expectedError: false,
 		},
 		{
 			name: "missing_all_privilege",
@@ -177,15 +303,16 @@ func TestRequiresPrivilegeCheck(t *testing.T) {
 			expectedError:  true,
 		},
 		{
-			name: "wrongAddr",
+			name: "wrong contract for privilege",
+			// this will be the same as no privilege bc we dont have this priv for the passed contract
 			privs: []model.Privilege{
 				model.PrivilegeVehicleAllTimeLocation,
-				model.PrivilegeVehicleNonLocationData,
 			},
 			telemetryClaim: &TelemetryClaim{
 				CustomClaims: privilegetoken.CustomClaims{
 					PrivilegeIDs: []privileges.Privilege{
-						privileges.VehicleAllTimeLocation,
+						// this is the same number priv but from a different contract
+						privileges.ManufacturerDeviceDefinitionInsert,
 					},
 					ContractAddress: manufNFTAddr,
 				},
@@ -205,10 +332,10 @@ func TestRequiresPrivilegeCheck(t *testing.T) {
 			next, err := PrivilegeCheck(testCtx, nil, emptyResolver, tc.privs)
 			if tc.expectedError {
 				require.Error(t, err)
-				return
+			} else {
+				require.NoError(t, err)
+				require.Equal(t, expectedReturn, next)
 			}
-			require.NoError(t, err)
-			require.Equal(t, expectedReturn, next)
 		})
 	}
 }

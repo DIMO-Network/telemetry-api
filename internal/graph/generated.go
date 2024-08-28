@@ -15,6 +15,7 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
+	"github.com/ethereum/go-ethereum/common"
 	gqlparser "github.com/vektah/gqlparser/v2"
 	"github.com/vektah/gqlparser/v2/ast"
 )
@@ -44,13 +45,19 @@ type ResolverRoot interface {
 }
 
 type DirectiveRoot struct {
-	HasAggregation       func(ctx context.Context, obj interface{}, next graphql.Resolver) (res interface{}, err error)
-	IsSignal             func(ctx context.Context, obj interface{}, next graphql.Resolver) (res interface{}, err error)
-	RequiresPrivileges   func(ctx context.Context, obj interface{}, next graphql.Resolver, privileges []model.Privilege) (res interface{}, err error)
-	RequiresVehicleToken func(ctx context.Context, obj interface{}, next graphql.Resolver) (res interface{}, err error)
+	HasAggregation            func(ctx context.Context, obj interface{}, next graphql.Resolver) (res interface{}, err error)
+	IsSignal                  func(ctx context.Context, obj interface{}, next graphql.Resolver) (res interface{}, err error)
+	OneOf                     func(ctx context.Context, obj interface{}, next graphql.Resolver) (res interface{}, err error)
+	RequiresManufacturerToken func(ctx context.Context, obj interface{}, next graphql.Resolver) (res interface{}, err error)
+	RequiresPrivileges        func(ctx context.Context, obj interface{}, next graphql.Resolver, privileges []model.Privilege) (res interface{}, err error)
+	RequiresVehicleToken      func(ctx context.Context, obj interface{}, next graphql.Resolver) (res interface{}, err error)
 }
 
 type ComplexityRoot struct {
+	DeviceActivity struct {
+		LastActive func(childComplexity int) int
+	}
+
 	POMVC struct {
 		RawVc                  func(childComplexity int) int
 		RecordedBy             func(childComplexity int) int
@@ -61,6 +68,7 @@ type ComplexityRoot struct {
 
 	Query struct {
 		AvailableSignals func(childComplexity int, tokenID int, filter *model.SignalFilter) int
+		DeviceActivity   func(childComplexity int, by model.AftermarketDeviceBy) int
 		PomVCLatest      func(childComplexity int, tokenID int) int
 		Signals          func(childComplexity int, tokenID int, interval string, from time.Time, to time.Time, filter *model.SignalFilter) int
 		SignalsLatest    func(childComplexity int, tokenID int, filter *model.SignalFilter) int
@@ -172,6 +180,7 @@ type QueryResolver interface {
 	Signals(ctx context.Context, tokenID int, interval string, from time.Time, to time.Time, filter *model.SignalFilter) ([]*model.SignalAggregations, error)
 	SignalsLatest(ctx context.Context, tokenID int, filter *model.SignalFilter) (*model.SignalCollection, error)
 	AvailableSignals(ctx context.Context, tokenID int, filter *model.SignalFilter) ([]string, error)
+	DeviceActivity(ctx context.Context, by model.AftermarketDeviceBy) (*model.DeviceActivity, error)
 	VinVCLatest(ctx context.Context, tokenID int) (*model.Vinvc, error)
 	PomVCLatest(ctx context.Context, tokenID int) (*model.Pomvc, error)
 }
@@ -232,6 +241,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	_ = ec
 	switch typeName + "." + field {
 
+	case "DeviceActivity.lastActive":
+		if e.complexity.DeviceActivity.LastActive == nil {
+			break
+		}
+
+		return e.complexity.DeviceActivity.LastActive(childComplexity), true
+
 	case "POMVC.rawVC":
 		if e.complexity.POMVC.RawVc == nil {
 			break
@@ -278,6 +294,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.AvailableSignals(childComplexity, args["tokenId"].(int), args["filter"].(*model.SignalFilter)), true
+
+	case "Query.deviceActivity":
+		if e.complexity.Query.DeviceActivity == nil {
+			break
+		}
+
+		args, err := ec.field_Query_deviceActivity_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.DeviceActivity(childComplexity, args["by"].(model.AftermarketDeviceBy)), true
 
 	case "Query.pomVCLatest":
 		if e.complexity.Query.PomVCLatest == nil {
@@ -1105,6 +1133,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	rc := graphql.GetOperationContext(ctx)
 	ec := executionContext{rc, e, 0, 0, make(chan graphql.DeferredResult)}
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
+		ec.unmarshalInputAftermarketDeviceBy,
 		ec.unmarshalInputSignalFilter,
 	)
 	first := true
@@ -1198,9 +1227,11 @@ enum Privilege {
   VEHICLE_CURRENT_LOCATION
   VEHICLE_ALL_TIME_LOCATION
   VEHICLE_VIN_CREDENTIAL
+  MANUFACTURER_DEVICE_LAST_SEEN
 }
 
 directive @requiresVehicleToken on FIELD_DEFINITION
+directive @requiresManufacturerToken on FIELD_DEFINITION
 `, BuiltIn: false},
 	{Name: "../../schema/base.graphqls", Input: `"""
 A point in time, encoded per RFC-3999. Typically these will be in second precision,
@@ -1325,6 +1356,47 @@ input SignalFilter {
   """
   source: String
 }
+`, BuiltIn: false},
+	{Name: "../../schema/device_activity.graphqls", Input: `extend type Query {
+  """
+  DeviceActivity indicates when a given device last transmitted data. For privacy, ranges are used rather than exact timestamps.
+
+  Required Privileges: MANUFACTURER_DEVICE_LAST_SEEN
+  """
+  deviceActivity(
+    """
+    The token ID of the aftermarket device.
+    """
+    by: AftermarketDeviceBy!
+  ): DeviceActivity @requiresManufacturerToken @requiresPrivileges(privileges: [MANUFACTURER_DEVICE_LAST_SEEN])
+}
+
+type DeviceActivity {
+  """
+  lastActive indicates the start of a 3 hour block during which the device was last active.
+  """
+  lastActive: Time
+}
+
+"""
+The AftermarketDeviceBy input is used to specify a unique aftermarket device to query for last active status.
+"""
+input AftermarketDeviceBy @oneOf {
+  tokenId: Int
+  address: Address
+  serial: String
+}
+`, BuiltIn: false},
+	{Name: "../../schema/schema.graphqls", Input: `"""
+This directive on an input object indicates that a client must specify one of the
+fields of the object and no others. Typically used for lookups.
+"""
+directive @oneOf on INPUT_OBJECT
+
+"""
+A 20-byte Ethereum address, encoded as a checksummed hex string with 0x prefix.
+"""
+scalar Address
 `, BuiltIn: false},
 	{Name: "../../schema/signals_gen.graphqls", Input: `# Code generated  with ` + "`" + `make gql-model` + "`" + ` DO NOT EDIT.
 extend type SignalAggregations {
@@ -1985,6 +2057,21 @@ func (ec *executionContext) field_Query_availableSignals_args(ctx context.Contex
 		}
 	}
 	args["filter"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_deviceActivity_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.AftermarketDeviceBy
+	if tmp, ok := rawArgs["by"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("by"))
+		arg0, err = ec.unmarshalNAftermarketDeviceBy2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐAftermarketDeviceBy(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["by"] = arg0
 	return args, nil
 }
 
@@ -2656,6 +2743,47 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 
 // region    **************************** field.gotpl *****************************
 
+func (ec *executionContext) _DeviceActivity_lastActive(ctx context.Context, field graphql.CollectedField, obj *model.DeviceActivity) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DeviceActivity_lastActive(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.LastActive, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalOTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DeviceActivity_lastActive(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DeviceActivity",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _POMVC_vehicleTokenId(ctx context.Context, field graphql.CollectedField, obj *model.Pomvc) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_POMVC_vehicleTokenId(ctx, field)
 	if err != nil {
@@ -3222,6 +3350,92 @@ func (ec *executionContext) fieldContext_Query_availableSignals(ctx context.Cont
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Query_availableSignals_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_deviceActivity(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_deviceActivity(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Query().DeviceActivity(rctx, fc.Args["by"].(model.AftermarketDeviceBy))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.RequiresManufacturerToken == nil {
+				return nil, errors.New("directive requiresManufacturerToken is not implemented")
+			}
+			return ec.directives.RequiresManufacturerToken(ctx, nil, directive0)
+		}
+		directive2 := func(ctx context.Context) (interface{}, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"MANUFACTURER_DEVICE_LAST_SEEN"})
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.RequiresPrivileges == nil {
+				return nil, errors.New("directive requiresPrivileges is not implemented")
+			}
+			return ec.directives.RequiresPrivileges(ctx, nil, directive1, privileges)
+		}
+
+		tmp, err := directive2(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*model.DeviceActivity); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.DeviceActivity`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.DeviceActivity)
+	fc.Result = res
+	return ec.marshalODeviceActivity2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐDeviceActivity(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_deviceActivity(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "lastActive":
+				return ec.fieldContext_DeviceActivity_lastActive(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type DeviceActivity", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_deviceActivity_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -11734,6 +11948,94 @@ func (ec *executionContext) fieldContext___Type_specifiedByURL(_ context.Context
 
 // region    **************************** input.gotpl *****************************
 
+func (ec *executionContext) unmarshalInputAftermarketDeviceBy(ctx context.Context, obj interface{}) (model.AftermarketDeviceBy, error) {
+	var it model.AftermarketDeviceBy
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"tokenId", "address", "serial"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "tokenId":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tokenId"))
+			directive0 := func(ctx context.Context) (interface{}, error) { return ec.unmarshalOInt2ᚖint(ctx, v) }
+			directive1 := func(ctx context.Context) (interface{}, error) {
+				if ec.directives.OneOf == nil {
+					return nil, errors.New("directive oneOf is not implemented")
+				}
+				return ec.directives.OneOf(ctx, obj, directive0)
+			}
+
+			tmp, err := directive1(ctx)
+			if err != nil {
+				return it, graphql.ErrorOnPath(ctx, err)
+			}
+			if data, ok := tmp.(*int); ok {
+				it.TokenID = data
+			} else if tmp == nil {
+				it.TokenID = nil
+			} else {
+				err := fmt.Errorf(`unexpected type %T from directive, should be *int`, tmp)
+				return it, graphql.ErrorOnPath(ctx, err)
+			}
+		case "address":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("address"))
+			directive0 := func(ctx context.Context) (interface{}, error) {
+				return ec.unmarshalOAddress2ᚖgithubᚗcomᚋethereumᚋgoᚑethereumᚋcommonᚐAddress(ctx, v)
+			}
+			directive1 := func(ctx context.Context) (interface{}, error) {
+				if ec.directives.OneOf == nil {
+					return nil, errors.New("directive oneOf is not implemented")
+				}
+				return ec.directives.OneOf(ctx, obj, directive0)
+			}
+
+			tmp, err := directive1(ctx)
+			if err != nil {
+				return it, graphql.ErrorOnPath(ctx, err)
+			}
+			if data, ok := tmp.(*common.Address); ok {
+				it.Address = data
+			} else if tmp == nil {
+				it.Address = nil
+			} else {
+				err := fmt.Errorf(`unexpected type %T from directive, should be *github.com/ethereum/go-ethereum/common.Address`, tmp)
+				return it, graphql.ErrorOnPath(ctx, err)
+			}
+		case "serial":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("serial"))
+			directive0 := func(ctx context.Context) (interface{}, error) { return ec.unmarshalOString2ᚖstring(ctx, v) }
+			directive1 := func(ctx context.Context) (interface{}, error) {
+				if ec.directives.OneOf == nil {
+					return nil, errors.New("directive oneOf is not implemented")
+				}
+				return ec.directives.OneOf(ctx, obj, directive0)
+			}
+
+			tmp, err := directive1(ctx)
+			if err != nil {
+				return it, graphql.ErrorOnPath(ctx, err)
+			}
+			if data, ok := tmp.(*string); ok {
+				it.Serial = data
+			} else if tmp == nil {
+				it.Serial = nil
+			} else {
+				err := fmt.Errorf(`unexpected type %T from directive, should be *string`, tmp)
+				return it, graphql.ErrorOnPath(ctx, err)
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputSignalFilter(ctx context.Context, obj interface{}) (model.SignalFilter, error) {
 	var it model.SignalFilter
 	asMap := map[string]interface{}{}
@@ -11768,6 +12070,42 @@ func (ec *executionContext) unmarshalInputSignalFilter(ctx context.Context, obj 
 // endregion ************************** interface.gotpl ***************************
 
 // region    **************************** object.gotpl ****************************
+
+var deviceActivityImplementors = []string{"DeviceActivity"}
+
+func (ec *executionContext) _DeviceActivity(ctx context.Context, sel ast.SelectionSet, obj *model.DeviceActivity) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, deviceActivityImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("DeviceActivity")
+		case "lastActive":
+			out.Values[i] = ec._DeviceActivity_lastActive(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
 
 var pOMVCImplementors = []string{"POMVC"}
 
@@ -11883,6 +12221,25 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_availableSignals(ctx, field)
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "deviceActivity":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_deviceActivity(ctx, field)
 				return res
 			}
 
@@ -13730,6 +14087,11 @@ func (ec *executionContext) ___Type(ctx context.Context, sel ast.SelectionSet, o
 
 // region    ***************************** type.gotpl *****************************
 
+func (ec *executionContext) unmarshalNAftermarketDeviceBy2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐAftermarketDeviceBy(ctx context.Context, v interface{}) (model.AftermarketDeviceBy, error) {
+	res, err := ec.unmarshalInputAftermarketDeviceBy(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNBoolean2bool(ctx context.Context, v interface{}) (bool, error) {
 	res, err := graphql.UnmarshalBoolean(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -14159,6 +14521,22 @@ func (ec *executionContext) marshalN__TypeKind2string(ctx context.Context, sel a
 	return res
 }
 
+func (ec *executionContext) unmarshalOAddress2ᚖgithubᚗcomᚋethereumᚋgoᚑethereumᚋcommonᚐAddress(ctx context.Context, v interface{}) (*common.Address, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := model.UnmarshalAddress(v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOAddress2ᚖgithubᚗcomᚋethereumᚋgoᚑethereumᚋcommonᚐAddress(ctx context.Context, sel ast.SelectionSet, v *common.Address) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	res := model.MarshalAddress(*v)
+	return res
+}
+
 func (ec *executionContext) unmarshalOBoolean2bool(ctx context.Context, v interface{}) (bool, error) {
 	res, err := graphql.UnmarshalBoolean(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -14183,6 +14561,13 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 	}
 	res := graphql.MarshalBoolean(*v)
 	return res
+}
+
+func (ec *executionContext) marshalODeviceActivity2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐDeviceActivity(ctx context.Context, sel ast.SelectionSet, v *model.DeviceActivity) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._DeviceActivity(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalOFloat2ᚖfloat64(ctx context.Context, v interface{}) (*float64, error) {

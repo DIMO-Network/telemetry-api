@@ -80,3 +80,6 @@ models:
   SignalAggregations:
     model:
       - github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalAggregations
+  Address:
+    model:
+      - github.com/DIMO-Network/telemetry-api/internal/graph/model.Address

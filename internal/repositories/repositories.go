@@ -18,9 +18,14 @@ import (
 var (
 	errInternal = errors.New("internal error")
 	errTimeout  = errors.New("request exceeded or is estimated to exceed the maximum execution time")
+	unixEpoch   = time.Unix(0, 0).UTC()
 )
 
-var unixEpoch = time.Unix(0, 0).UTC()
+// TODO(elffjs): Get rid of this when we have device addresses in CH.
+var ManufacturerSourceTranslations = map[string]string{
+	"AutoPi":  "autopi",
+	"Hashdog": "macaron",
+}
 
 // CHService is the interface for the ClickHouse service.
 //
@@ -36,11 +41,12 @@ type Repository struct {
 	queryableSignals map[string]struct{}
 	chService        CHService
 	log              *zerolog.Logger
+	lastSeenBin      time.Duration
 }
 
 // NewRepository creates a new base repository.
 // clientCAs is optional and can be nil.
-func NewRepository(logger *zerolog.Logger, chService CHService) (*Repository, error) {
+func NewRepository(logger *zerolog.Logger, chService CHService, lastSeenBin int64) (*Repository, error) {
 	definitions, err := schema.LoadDefinitionFile(strings.NewReader(schema.DefinitionsYAML()))
 	if err != nil {
 		return nil, fmt.Errorf("error reading definition file: %w", err)
@@ -54,6 +60,7 @@ func NewRepository(logger *zerolog.Logger, chService CHService) (*Repository, er
 		chService:        chService,
 		log:              logger,
 		queryableSignals: queryableSignals,
+		lastSeenBin:      time.Duration(lastSeenBin) * time.Hour,
 	}, nil
 
 }
@@ -112,6 +119,38 @@ func (r *Repository) GetSignalLatest(ctx context.Context, latestArgs *model.Late
 	}
 
 	return coll, nil
+}
+
+// GetDeviceActivity returns device status activity level.
+func (r *Repository) GetDeviceActivity(ctx context.Context, vehicleTokenID int, adMfrName string) (*model.DeviceActivity, error) {
+	source, ok := ManufacturerSourceTranslations[adMfrName]
+	if !ok {
+		return nil, fmt.Errorf("unrecognized manufacturer name %s", adMfrName)
+	}
+
+	args := &model.LatestSignalsArgs{
+		IncludeLastSeen: true,
+		SignalArgs: model.SignalArgs{
+			TokenID: uint32(vehicleTokenID),
+			Filter: &model.SignalFilter{
+				Source: &source,
+			},
+		},
+	}
+
+	latest, err := r.GetSignalLatest(ctx, args)
+	if err != nil {
+		return nil, err
+	}
+
+	var out model.DeviceActivity
+
+	if latest.LastSeen != nil {
+		binned := latest.LastSeen.Truncate(r.lastSeenBin)
+		out.LastActive = &binned
+	}
+
+	return &out, nil
 }
 
 // GetAvailableSignals returns the available signals for the given tokenID and filter.

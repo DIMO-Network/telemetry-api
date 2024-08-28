@@ -21,6 +21,7 @@ import (
 	"github.com/DIMO-Network/telemetry-api/internal/repositories"
 	"github.com/DIMO-Network/telemetry-api/internal/repositories/vc"
 	"github.com/DIMO-Network/telemetry-api/internal/service/ch"
+	"github.com/DIMO-Network/telemetry-api/internal/service/identity"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
@@ -44,12 +45,13 @@ func main() {
 	// create clickhouse connection
 	_ = ctx
 
+	idService := identity.NewService(settings.IdentityAPIURL, settings.IdentityAPIReqTimeoutSeconds)
 	repoLogger := logger.With().Str("component", "repository").Logger()
 	chService, err := ch.NewService(settings)
 	if err != nil {
 		logger.Fatal().Err(err).Msg("Couldn't create ClickHouse service.")
 	}
-	baseRepo, err := repositories.NewRepository(&repoLogger, chService)
+	baseRepo, err := repositories.NewRepository(&repoLogger, chService, settings.DeviceLastSeenBinHrs)
 	if err != nil {
 		logger.Fatal().Err(err).Msg("Couldn't create base repository.")
 	}
@@ -58,15 +60,18 @@ func main() {
 		logger.Fatal().Err(err).Msg("Couldn't create VINVC repository.")
 	}
 	resolver := &graph.Resolver{
-		Repository: baseRepo,
-		VCRepo:     vcRepo,
+		Repository:      baseRepo,
+		IdentityService: idService,
+		VCRepo:          vcRepo,
 	}
 
 	cfg := graph.Config{Resolvers: resolver}
-	cfg.Directives.RequiresVehicleToken = auth.CreateVehicleTokenCheck(settings.VehicleNFTAddress)
+	cfg.Directives.RequiresVehicleToken = auth.NewVehicleTokenCheck(settings.VehicleNFTAddress)
+	cfg.Directives.RequiresManufacturerToken = auth.NewManufacturerTokenCheck(settings.VehicleNFTAddress, idService)
 	cfg.Directives.RequiresPrivileges = auth.PrivilegeCheck
 	cfg.Directives.IsSignal = noOp
 	cfg.Directives.HasAggregation = noOp
+	cfg.Directives.OneOf = noOp
 
 	serveMonitoring(strconv.Itoa(settings.MonPort), &logger)
 
@@ -76,7 +81,7 @@ func main() {
 
 	logger.Info().Str("jwksUrl", settings.TokenExchangeJWTKeySetURL).Str("issuerURL", settings.TokenExchangeIssuer).Str("vehicleAddr", settings.VehicleNFTAddress).Msg("Privileges enabled.")
 
-	authMiddleware, err := auth.NewJWTMiddleware(settings.TokenExchangeIssuer, settings.TokenExchangeJWTKeySetURL, &logger)
+	authMiddleware, err := auth.NewJWTMiddleware(settings.TokenExchangeIssuer, settings.TokenExchangeJWTKeySetURL, settings.VehicleNFTAddress, settings.ManufacturerNFTAddress, &logger)
 	if err != nil {
 		logger.Fatal().Err(err).Msg("Couldn't create JWT middleware.")
 	}

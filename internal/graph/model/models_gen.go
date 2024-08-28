@@ -7,7 +7,21 @@ import (
 	"io"
 	"strconv"
 	"time"
+
+	"github.com/ethereum/go-ethereum/common"
 )
+
+// The AftermarketDeviceBy input is used to specify a unique aftermarket device to query for last active status.
+type AftermarketDeviceBy struct {
+	TokenID *int            `json:"tokenId,omitempty"`
+	Address *common.Address `json:"address,omitempty"`
+	Serial  *string         `json:"serial,omitempty"`
+}
+
+type DeviceActivity struct {
+	// lastActive indicates the start of a 3 hour block during which the device was last active.
+	LastActive *time.Time `json:"lastActive,omitempty"`
+}
 
 type Pomvc struct {
 	// vehicleTokenId is the token ID of the vehicle.
@@ -232,11 +246,12 @@ func (e FloatAggregation) MarshalGQL(w io.Writer) {
 type Privilege string
 
 const (
-	PrivilegeVehicleNonLocationData Privilege = "VEHICLE_NON_LOCATION_DATA"
-	PrivilegeVehicleCommands        Privilege = "VEHICLE_COMMANDS"
-	PrivilegeVehicleCurrentLocation Privilege = "VEHICLE_CURRENT_LOCATION"
-	PrivilegeVehicleAllTimeLocation Privilege = "VEHICLE_ALL_TIME_LOCATION"
-	PrivilegeVehicleVinCredential   Privilege = "VEHICLE_VIN_CREDENTIAL"
+	PrivilegeVehicleNonLocationData     Privilege = "VEHICLE_NON_LOCATION_DATA"
+	PrivilegeVehicleCommands            Privilege = "VEHICLE_COMMANDS"
+	PrivilegeVehicleCurrentLocation     Privilege = "VEHICLE_CURRENT_LOCATION"
+	PrivilegeVehicleAllTimeLocation     Privilege = "VEHICLE_ALL_TIME_LOCATION"
+	PrivilegeVehicleVinCredential       Privilege = "VEHICLE_VIN_CREDENTIAL"
+	PrivilegeManufacturerDeviceLastSeen Privilege = "MANUFACTURER_DEVICE_LAST_SEEN"
 )
 
 var AllPrivilege = []Privilege{
@@ -245,11 +260,12 @@ var AllPrivilege = []Privilege{
 	PrivilegeVehicleCurrentLocation,
 	PrivilegeVehicleAllTimeLocation,
 	PrivilegeVehicleVinCredential,
+	PrivilegeManufacturerDeviceLastSeen,
 }
 
 func (e Privilege) IsValid() bool {
 	switch e {
-	case PrivilegeVehicleNonLocationData, PrivilegeVehicleCommands, PrivilegeVehicleCurrentLocation, PrivilegeVehicleAllTimeLocation, PrivilegeVehicleVinCredential:
+	case PrivilegeVehicleNonLocationData, PrivilegeVehicleCommands, PrivilegeVehicleCurrentLocation, PrivilegeVehicleAllTimeLocation, PrivilegeVehicleVinCredential, PrivilegeManufacturerDeviceLastSeen:
 		return true
 	}
 	return false

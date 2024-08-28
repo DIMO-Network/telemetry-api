@@ -1,0 +1,29 @@
+extend type Query {
+  """
+  DeviceActivity indicates when a given device last transmitted data. For privacy, ranges are used rather than exact timestamps.
+
+  Required Privileges: MANUFACTURER_DEVICE_LAST_SEEN
+  """
+  deviceActivity(
+    """
+    The token ID of the aftermarket device.
+    """
+    by: AftermarketDeviceBy!
+  ): DeviceActivity @requiresManufacturerToken @requiresPrivileges(privileges: [MANUFACTURER_DEVICE_LAST_SEEN])
+}
+
+type DeviceActivity {
+  """
+  lastActive indicates the start of a 3 hour block during which the device was last active.
+  """
+  lastActive: Time
+}
+
+"""
+The AftermarketDeviceBy input is used to specify a unique aftermarket device to query for last active status.
+"""
+input AftermarketDeviceBy @oneOf {
+  tokenId: Int
+  address: Address
+  serial: String
+}

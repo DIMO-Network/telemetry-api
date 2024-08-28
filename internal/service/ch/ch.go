@@ -22,7 +22,8 @@ const (
 
 // Service is a ClickHouse service that interacts with the ClickHouse database.
 type Service struct {
-	conn clickhouse.Conn
+	conn              clickhouse.Conn
+	lastSeenBucketHrs int64
 }
 
 // NewService creates a new ClickHouse service.
@@ -57,7 +58,7 @@ func NewService(settings config.Settings) (*Service, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to ping clickhouse: %w", err)
 	}
-	return &Service{conn: conn}, nil
+	return &Service{conn: conn, lastSeenBucketHrs: settings.DeviceLastSeenBinHrs}, nil
 }
 
 func getMaxExecutionTime(maxRequestDuration string) (int, error) {
