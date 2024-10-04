@@ -9,8 +9,23 @@ func SetCollectionField(collection *SignalCollection, signal *vss.Signal) {
 		return
 	}
 	switch signal.Name {
+	case "angularVelocityYaw":
+		collection.AngularVelocityYaw = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
+	case "chassisAxleRow1WheelLeftSpeed":
+		collection.ChassisAxleRow1WheelLeftSpeed = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
 	case "chassisAxleRow1WheelLeftTirePressure":
 		collection.ChassisAxleRow1WheelLeftTirePressure = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
+	case "chassisAxleRow1WheelRightSpeed":
+		collection.ChassisAxleRow1WheelRightSpeed = &SignalFloat{
 			Timestamp: signal.Timestamp,
 			Value:     signal.ValueNumber,
 		}
@@ -84,6 +99,21 @@ func SetCollectionField(collection *SignalCollection, signal *vss.Signal) {
 			Timestamp: signal.Timestamp,
 			Value:     signal.ValueNumber,
 		}
+	case "obdCommandedEGR":
+		collection.OBDCommandedEGR = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
+	case "obdDistanceSinceDTCClear":
+		collection.OBDDistanceSinceDTCClear = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
+	case "obdDistanceWithMIL":
+		collection.OBDDistanceWithMIL = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
 	case "obdEngineLoad":
 		collection.OBDEngineLoad = &SignalFloat{
 			Timestamp: signal.Timestamp,
@@ -94,8 +124,28 @@ func SetCollectionField(collection *SignalCollection, signal *vss.Signal) {
 			Timestamp: signal.Timestamp,
 			Value:     signal.ValueNumber,
 		}
+	case "obdLongTermFuelTrim1":
+		collection.OBDLongTermFuelTrim1 = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
+	case "obdMAP":
+		collection.OBDMAP = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
 	case "obdRunTime":
 		collection.OBDRunTime = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
+	case "obdShortTermFuelTrim1":
+		collection.OBDShortTermFuelTrim1 = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
+	case "obdWarmupsSinceDTCClear":
+		collection.OBDWarmupsSinceDTCClear = &SignalFloat{
 			Timestamp: signal.Timestamp,
 			Value:     signal.ValueNumber,
 		}
@@ -126,6 +176,11 @@ func SetCollectionField(collection *SignalCollection, signal *vss.Signal) {
 		}
 	case "powertrainCombustionEngineTPS":
 		collection.PowertrainCombustionEngineTPS = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
+	case "powertrainFuelSystemAbsoluteLevel":
+		collection.PowertrainFuelSystemAbsoluteLevel = &SignalFloat{
 			Timestamp: signal.Timestamp,
 			Value:     signal.ValueNumber,
 		}
@@ -169,6 +224,11 @@ func SetCollectionField(collection *SignalCollection, signal *vss.Signal) {
 			Timestamp: signal.Timestamp,
 			Value:     signal.ValueNumber,
 		}
+	case "powertrainTractionBatteryTemperatureAverage":
+		collection.PowertrainTractionBatteryTemperatureAverage = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
 	case "powertrainTransmissionTravelledDistance":
 		collection.PowertrainTransmissionTravelledDistance = &SignalFloat{
 			Timestamp: signal.Timestamp,
@@ -193,7 +253,13 @@ func SetAggregationField(aggregations *SignalAggregations, signal *AggSignal) {
 		return
 	}
 	switch signal.Name {
+	case "angularVelocityYaw":
+		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
+	case "chassisAxleRow1WheelLeftSpeed":
+		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
 	case "chassisAxleRow1WheelLeftTirePressure":
+		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
+	case "chassisAxleRow1WheelRightSpeed":
 		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
 	case "chassisAxleRow1WheelRightTirePressure":
 		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
@@ -223,11 +289,25 @@ func SetAggregationField(aggregations *SignalAggregations, signal *AggSignal) {
 		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
 	case "obdBarometricPressure":
 		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
+	case "obdCommandedEGR":
+		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
+	case "obdDistanceSinceDTCClear":
+		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
+	case "obdDistanceWithMIL":
+		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
 	case "obdEngineLoad":
 		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
 	case "obdIntakeTemp":
 		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
+	case "obdLongTermFuelTrim1":
+		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
+	case "obdMAP":
+		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
 	case "obdRunTime":
+		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
+	case "obdShortTermFuelTrim1":
+		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
+	case "obdWarmupsSinceDTCClear":
 		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
 	case "powertrainCombustionEngineECT":
 		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
@@ -240,6 +320,8 @@ func SetAggregationField(aggregations *SignalAggregations, signal *AggSignal) {
 	case "powertrainCombustionEngineSpeed":
 		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
 	case "powertrainCombustionEngineTPS":
+		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
+	case "powertrainFuelSystemAbsoluteLevel":
 		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
 	case "powertrainFuelSystemRelativeLevel":
 		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
@@ -256,6 +338,8 @@ func SetAggregationField(aggregations *SignalAggregations, signal *AggSignal) {
 	case "powertrainTractionBatteryGrossCapacity":
 		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
 	case "powertrainTractionBatteryStateOfChargeCurrent":
+		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
+	case "powertrainTractionBatteryTemperatureAverage":
 		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
 	case "powertrainTransmissionTravelledDistance":
 		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber

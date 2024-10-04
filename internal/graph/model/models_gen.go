@@ -43,9 +43,18 @@ type Query struct {
 type SignalCollection struct {
 	// The last time any signal was seen matching the filter.
 	LastSeen *time.Time `json:"lastSeen,omitempty"`
+	// Vehicle rotation rate along Z (vertical).
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	AngularVelocityYaw *SignalFloat `json:"angularVelocityYaw,omitempty"`
+	// Rotational speed of a vehicle's wheel.
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	ChassisAxleRow1WheelLeftSpeed *SignalFloat `json:"chassisAxleRow1WheelLeftSpeed,omitempty"`
 	// Tire pressure in kilo-Pascal.
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	ChassisAxleRow1WheelLeftTirePressure *SignalFloat `json:"chassisAxleRow1WheelLeftTirePressure,omitempty"`
+	// Rotational speed of a vehicle's wheel.
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	ChassisAxleRow1WheelRightSpeed *SignalFloat `json:"chassisAxleRow1WheelRightSpeed,omitempty"`
 	// Tire pressure in kilo-Pascal.
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	ChassisAxleRow1WheelRightTirePressure *SignalFloat `json:"chassisAxleRow1WheelRightTirePressure,omitempty"`
@@ -88,15 +97,36 @@ type SignalCollection struct {
 	// PID 33 - Barometric pressure
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	OBDBarometricPressure *SignalFloat `json:"obdBarometricPressure,omitempty"`
+	// PID 2C - Commanded exhaust gas recirculation (EGR)
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	OBDCommandedEGR *SignalFloat `json:"obdCommandedEGR,omitempty"`
+	// PID 31 - Distance traveled since codes cleared
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	OBDDistanceSinceDTCClear *SignalFloat `json:"obdDistanceSinceDTCClear,omitempty"`
+	// PID 21 - Distance traveled with MIL on
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	OBDDistanceWithMIL *SignalFloat `json:"obdDistanceWithMIL,omitempty"`
 	// PID 04 - Engine load in percent - 0 = no load, 100 = full load
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	OBDEngineLoad *SignalFloat `json:"obdEngineLoad,omitempty"`
 	// PID 0F - Intake temperature
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	OBDIntakeTemp *SignalFloat `json:"obdIntakeTemp,omitempty"`
+	// PID 07 - Long Term (learned) Fuel Trim - Bank 1 - negative percent leaner, positive percent richer
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	OBDLongTermFuelTrim1 *SignalFloat `json:"obdLongTermFuelTrim1,omitempty"`
+	// PID 0B - Intake manifold pressure
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	OBDMAP *SignalFloat `json:"obdMAP,omitempty"`
 	// PID 1F - Engine run time
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	OBDRunTime *SignalFloat `json:"obdRunTime,omitempty"`
+	// PID 06 - Short Term (immediate) Fuel Trim - Bank 1 - negative percent leaner, positive percent richer
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	OBDShortTermFuelTrim1 *SignalFloat `json:"obdShortTermFuelTrim1,omitempty"`
+	// PID 30 - Number of warm-ups since codes cleared
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	OBDWarmupsSinceDTCClear *SignalFloat `json:"obdWarmupsSinceDTCClear,omitempty"`
 	// Engine coolant temperature.
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainCombustionEngineECT *SignalFloat `json:"powertrainCombustionEngineECT,omitempty"`
@@ -115,6 +145,9 @@ type SignalCollection struct {
 	// Current throttle position.
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainCombustionEngineTPS *SignalFloat `json:"powertrainCombustionEngineTPS,omitempty"`
+	// Current available fuel in the fuel tank expressed in liters.
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	PowertrainFuelSystemAbsoluteLevel *SignalFloat `json:"powertrainFuelSystemAbsoluteLevel,omitempty"`
 	// Level in fuel tank as percent of capacity. 0 = empty. 100 = full.
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainFuelSystemRelativeLevel *SignalFloat `json:"powertrainFuelSystemRelativeLevel,omitempty"`
@@ -139,6 +172,9 @@ type SignalCollection struct {
 	// Physical state of charge of the high voltage battery, relative to net capacity. This is not necessarily the state of charge being displayed to the customer.
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainTractionBatteryStateOfChargeCurrent *SignalFloat `json:"powertrainTractionBatteryStateOfChargeCurrent,omitempty"`
+	// Current average temperature of the battery cells.
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	PowertrainTractionBatteryTemperatureAverage *SignalFloat `json:"powertrainTractionBatteryTemperatureAverage,omitempty"`
 	// Odometer reading, total distance travelled during the lifetime of the transmission.
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainTransmissionTravelledDistance *SignalFloat `json:"powertrainTransmissionTravelledDistance,omitempty"`
