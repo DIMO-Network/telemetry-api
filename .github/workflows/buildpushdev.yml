@@ -32,7 +32,7 @@ jobs:
           tags: dimozone/telemetry-api:${{ steps.slug.outputs.sha7 }}, dimozone/telemetry-api:latest
 
       - name: Update Image Version in the worker HelmChart values.yaml
-        uses: fjogeleit/yaml-update-action@master
+        uses: fjogeleit/yaml-update-action@main
         with:
           valueFile: 'charts/telemetry-api/values.yaml'
           propertyPath: 'image.tag'

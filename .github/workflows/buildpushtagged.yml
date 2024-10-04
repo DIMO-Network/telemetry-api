@@ -38,7 +38,7 @@ jobs:
           tags: dimozone/telemetry-api:${{steps.tag.outputs.tag}}
 
       - name: Update Image Version in the related HelmChart values.yaml
-        uses: fjogeleit/yaml-update-action@v1
+        uses: fjogeleit/yaml-update-action@main
         with:
           valueFile: 'charts/telemetry-api/values-prod.yaml'
           propertyPath: 'image.tag'
