@@ -10,9 +10,36 @@ import (
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 )
 
+// AngularVelocityYaw is the resolver for the angularVelocityYaw
+func (r *signalAggregationsResolver) AngularVelocityYaw(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
+	vn, ok := obj.ValueNumbers[model.AliasKey{Name: "angularVelocityYaw", Agg: agg.String()}]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
+// ChassisAxleRow1WheelLeftSpeed is the resolver for the chassisAxleRow1WheelLeftSpeed
+func (r *signalAggregationsResolver) ChassisAxleRow1WheelLeftSpeed(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
+	vn, ok := obj.ValueNumbers[model.AliasKey{Name: "chassisAxleRow1WheelLeftSpeed", Agg: agg.String()}]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
 // ChassisAxleRow1WheelLeftTirePressure is the resolver for the chassisAxleRow1WheelLeftTirePressure
 func (r *signalAggregationsResolver) ChassisAxleRow1WheelLeftTirePressure(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
 	vn, ok := obj.ValueNumbers[model.AliasKey{Name: "chassisAxleRow1WheelLeftTirePressure", Agg: agg.String()}]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
+// ChassisAxleRow1WheelRightSpeed is the resolver for the chassisAxleRow1WheelRightSpeed
+func (r *signalAggregationsResolver) ChassisAxleRow1WheelRightSpeed(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
+	vn, ok := obj.ValueNumbers[model.AliasKey{Name: "chassisAxleRow1WheelRightSpeed", Agg: agg.String()}]
 	if !ok {
 		return nil, nil
 	}
@@ -145,6 +172,33 @@ func (r *signalAggregationsResolver) ObdBarometricPressure(ctx context.Context, 
 	return &vn, nil
 }
 
+// ObdCommandedEgr is the resolver for the obdCommandedEGR
+func (r *signalAggregationsResolver) ObdCommandedEgr(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
+	vn, ok := obj.ValueNumbers[model.AliasKey{Name: "obdCommandedEGR", Agg: agg.String()}]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
+// ObdDistanceSinceDTCClear is the resolver for the obdDistanceSinceDTCClear
+func (r *signalAggregationsResolver) ObdDistanceSinceDTCClear(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
+	vn, ok := obj.ValueNumbers[model.AliasKey{Name: "obdDistanceSinceDTCClear", Agg: agg.String()}]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
+// ObdDistanceWithMil is the resolver for the obdDistanceWithMIL
+func (r *signalAggregationsResolver) ObdDistanceWithMil(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
+	vn, ok := obj.ValueNumbers[model.AliasKey{Name: "obdDistanceWithMIL", Agg: agg.String()}]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
 // ObdEngineLoad is the resolver for the obdEngineLoad
 func (r *signalAggregationsResolver) ObdEngineLoad(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
 	vn, ok := obj.ValueNumbers[model.AliasKey{Name: "obdEngineLoad", Agg: agg.String()}]
@@ -163,9 +217,45 @@ func (r *signalAggregationsResolver) ObdIntakeTemp(ctx context.Context, obj *mod
 	return &vn, nil
 }
 
+// ObdLongTermFuelTrim1 is the resolver for the obdLongTermFuelTrim1
+func (r *signalAggregationsResolver) ObdLongTermFuelTrim1(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
+	vn, ok := obj.ValueNumbers[model.AliasKey{Name: "obdLongTermFuelTrim1", Agg: agg.String()}]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
+// ObdMap is the resolver for the obdMAP
+func (r *signalAggregationsResolver) ObdMap(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
+	vn, ok := obj.ValueNumbers[model.AliasKey{Name: "obdMAP", Agg: agg.String()}]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
 // ObdRunTime is the resolver for the obdRunTime
 func (r *signalAggregationsResolver) ObdRunTime(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
 	vn, ok := obj.ValueNumbers[model.AliasKey{Name: "obdRunTime", Agg: agg.String()}]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
+// ObdShortTermFuelTrim1 is the resolver for the obdShortTermFuelTrim1
+func (r *signalAggregationsResolver) ObdShortTermFuelTrim1(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
+	vn, ok := obj.ValueNumbers[model.AliasKey{Name: "obdShortTermFuelTrim1", Agg: agg.String()}]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
+// ObdWarmupsSinceDTCClear is the resolver for the obdWarmupsSinceDTCClear
+func (r *signalAggregationsResolver) ObdWarmupsSinceDTCClear(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
+	vn, ok := obj.ValueNumbers[model.AliasKey{Name: "obdWarmupsSinceDTCClear", Agg: agg.String()}]
 	if !ok {
 		return nil, nil
 	}
@@ -220,6 +310,15 @@ func (r *signalAggregationsResolver) PowertrainCombustionEngineSpeed(ctx context
 // PowertrainCombustionEngineTps is the resolver for the powertrainCombustionEngineTPS
 func (r *signalAggregationsResolver) PowertrainCombustionEngineTps(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
 	vn, ok := obj.ValueNumbers[model.AliasKey{Name: "powertrainCombustionEngineTPS", Agg: agg.String()}]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
+// PowertrainFuelSystemAbsoluteLevel is the resolver for the powertrainFuelSystemAbsoluteLevel
+func (r *signalAggregationsResolver) PowertrainFuelSystemAbsoluteLevel(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
+	vn, ok := obj.ValueNumbers[model.AliasKey{Name: "powertrainFuelSystemAbsoluteLevel", Agg: agg.String()}]
 	if !ok {
 		return nil, nil
 	}
@@ -292,6 +391,15 @@ func (r *signalAggregationsResolver) PowertrainTractionBatteryGrossCapacity(ctx 
 // PowertrainTractionBatteryStateOfChargeCurrent is the resolver for the powertrainTractionBatteryStateOfChargeCurrent
 func (r *signalAggregationsResolver) PowertrainTractionBatteryStateOfChargeCurrent(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
 	vn, ok := obj.ValueNumbers[model.AliasKey{Name: "powertrainTractionBatteryStateOfChargeCurrent", Agg: agg.String()}]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
+// PowertrainTractionBatteryTemperatureAverage is the resolver for the powertrainTractionBatteryTemperatureAverage
+func (r *signalAggregationsResolver) PowertrainTractionBatteryTemperatureAverage(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
+	vn, ok := obj.ValueNumbers[model.AliasKey{Name: "powertrainTractionBatteryTemperatureAverage", Agg: agg.String()}]
 	if !ok {
 		return nil, nil
 	}

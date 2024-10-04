@@ -1,12 +1,36 @@
 # Code generated  with `make gql-model` DO NOT EDIT.
 extend type SignalAggregations {
   """
+  Vehicle rotation rate along Z (vertical).
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  angularVelocityYaw(
+    agg: FloatAggregation!
+  ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "AngularVelocityYaw", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  Rotational speed of a vehicle's wheel.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  chassisAxleRow1WheelLeftSpeed(
+    agg: FloatAggregation!
+  ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisAxleRow1WheelLeftSpeed", forceResolver: true) @isSignal @hasAggregation
+  
+  """
   Tire pressure in kilo-Pascal.
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   chassisAxleRow1WheelLeftTirePressure(
     agg: FloatAggregation!
   ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisAxleRow1WheelLeftTirePressure", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  Rotational speed of a vehicle's wheel.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  chassisAxleRow1WheelRightSpeed(
+    agg: FloatAggregation!
+  ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisAxleRow1WheelRightSpeed", forceResolver: true) @isSignal @hasAggregation
   
   """
   Tire pressure in kilo-Pascal.
@@ -121,6 +145,30 @@ extend type SignalAggregations {
   ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDBarometricPressure", forceResolver: true) @isSignal @hasAggregation
   
   """
+  PID 2C - Commanded exhaust gas recirculation (EGR)
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  obdCommandedEGR(
+    agg: FloatAggregation!
+  ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDCommandedEGR", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  PID 31 - Distance traveled since codes cleared
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  obdDistanceSinceDTCClear(
+    agg: FloatAggregation!
+  ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDDistanceSinceDTCClear", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  PID 21 - Distance traveled with MIL on
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  obdDistanceWithMIL(
+    agg: FloatAggregation!
+  ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDDistanceWithMIL", forceResolver: true) @isSignal @hasAggregation
+  
+  """
   PID 04 - Engine load in percent - 0 = no load, 100 = full load
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
@@ -137,12 +185,44 @@ extend type SignalAggregations {
   ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDIntakeTemp", forceResolver: true) @isSignal @hasAggregation
   
   """
+  PID 07 - Long Term (learned) Fuel Trim - Bank 1 - negative percent leaner, positive percent richer
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  obdLongTermFuelTrim1(
+    agg: FloatAggregation!
+  ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDLongTermFuelTrim1", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  PID 0B - Intake manifold pressure
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  obdMAP(
+    agg: FloatAggregation!
+  ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDMAP", forceResolver: true) @isSignal @hasAggregation
+  
+  """
   PID 1F - Engine run time
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   obdRunTime(
     agg: FloatAggregation!
   ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDRunTime", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  PID 06 - Short Term (immediate) Fuel Trim - Bank 1 - negative percent leaner, positive percent richer
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  obdShortTermFuelTrim1(
+    agg: FloatAggregation!
+  ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDShortTermFuelTrim1", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  PID 30 - Number of warm-ups since codes cleared
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  obdWarmupsSinceDTCClear(
+    agg: FloatAggregation!
+  ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDWarmupsSinceDTCClear", forceResolver: true) @isSignal @hasAggregation
   
   """
   Engine coolant temperature.
@@ -191,6 +271,14 @@ extend type SignalAggregations {
   powertrainCombustionEngineTPS(
     agg: FloatAggregation!
   ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineTPS", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  Current available fuel in the fuel tank expressed in liters.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  powertrainFuelSystemAbsoluteLevel(
+    agg: FloatAggregation!
+  ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainFuelSystemAbsoluteLevel", forceResolver: true) @isSignal @hasAggregation
   
   """
   Level in fuel tank as percent of capacity. 0 = empty. 100 = full.
@@ -257,6 +345,14 @@ extend type SignalAggregations {
   ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryStateOfChargeCurrent", forceResolver: true) @isSignal @hasAggregation
   
   """
+  Current average temperature of the battery cells.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  powertrainTractionBatteryTemperatureAverage(
+    agg: FloatAggregation!
+  ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryTemperatureAverage", forceResolver: true) @isSignal @hasAggregation
+  
+  """
   Odometer reading, total distance travelled during the lifetime of the transmission.
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
@@ -284,10 +380,28 @@ extend type SignalAggregations {
 
 extend type SignalCollection {
   """
+  Vehicle rotation rate along Z (vertical).
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  angularVelocityYaw: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "AngularVelocityYaw") @isSignal
+  
+  """
+  Rotational speed of a vehicle's wheel.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  chassisAxleRow1WheelLeftSpeed: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisAxleRow1WheelLeftSpeed") @isSignal
+  
+  """
   Tire pressure in kilo-Pascal.
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   chassisAxleRow1WheelLeftTirePressure: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisAxleRow1WheelLeftTirePressure") @isSignal
+  
+  """
+  Rotational speed of a vehicle's wheel.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  chassisAxleRow1WheelRightSpeed: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisAxleRow1WheelRightSpeed") @isSignal
   
   """
   Tire pressure in kilo-Pascal.
@@ -374,6 +488,24 @@ extend type SignalCollection {
   obdBarometricPressure: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDBarometricPressure") @isSignal
   
   """
+  PID 2C - Commanded exhaust gas recirculation (EGR)
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  obdCommandedEGR: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDCommandedEGR") @isSignal
+  
+  """
+  PID 31 - Distance traveled since codes cleared
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  obdDistanceSinceDTCClear: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDDistanceSinceDTCClear") @isSignal
+  
+  """
+  PID 21 - Distance traveled with MIL on
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  obdDistanceWithMIL: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDDistanceWithMIL") @isSignal
+  
+  """
   PID 04 - Engine load in percent - 0 = no load, 100 = full load
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
@@ -386,10 +518,34 @@ extend type SignalCollection {
   obdIntakeTemp: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDIntakeTemp") @isSignal
   
   """
+  PID 07 - Long Term (learned) Fuel Trim - Bank 1 - negative percent leaner, positive percent richer
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  obdLongTermFuelTrim1: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDLongTermFuelTrim1") @isSignal
+  
+  """
+  PID 0B - Intake manifold pressure
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  obdMAP: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDMAP") @isSignal
+  
+  """
   PID 1F - Engine run time
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   obdRunTime: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDRunTime") @isSignal
+  
+  """
+  PID 06 - Short Term (immediate) Fuel Trim - Bank 1 - negative percent leaner, positive percent richer
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  obdShortTermFuelTrim1: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDShortTermFuelTrim1") @isSignal
+  
+  """
+  PID 30 - Number of warm-ups since codes cleared
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  obdWarmupsSinceDTCClear: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDWarmupsSinceDTCClear") @isSignal
   
   """
   Engine coolant temperature.
@@ -426,6 +582,12 @@ extend type SignalCollection {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainCombustionEngineTPS: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineTPS") @isSignal
+  
+  """
+  Current available fuel in the fuel tank expressed in liters.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  powertrainFuelSystemAbsoluteLevel: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainFuelSystemAbsoluteLevel") @isSignal
   
   """
   Level in fuel tank as percent of capacity. 0 = empty. 100 = full.
@@ -474,6 +636,12 @@ extend type SignalCollection {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainTractionBatteryStateOfChargeCurrent: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryStateOfChargeCurrent") @isSignal
+  
+  """
+  Current average temperature of the battery cells.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  powertrainTractionBatteryTemperatureAverage: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryTemperatureAverage") @isSignal
   
   """
   Odometer reading, total distance travelled during the lifetime of the transmission.

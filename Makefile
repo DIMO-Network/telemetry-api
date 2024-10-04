@@ -64,9 +64,9 @@ gqlgen: ## Generate gqlgen code.
 	@gqlgen generate
 
 gql-model: ## Generate gqlgen data model.
-	@codegen -output=schema  -generators=custom -custom.output-file=signals_gen.graphqls -custom.template-file=./schema/signals.tmpl
-	@codegen -output=internal/graph/model  -generators=custom -custom.output-file=signalSetter_gen.go -custom.template-file=./internal/graph/model/signalSetter.tmpl -custom.format=true
-	@codegen -output=internal/graph -generators=custom -custom.output-file=signals_gen.resolvers.go -custom.template-file=./internal/graph/signals_gen.resolvers.tmpl -custom.format=true
+	@codegen -generators=custom -custom.output-file=schema/signals_gen.graphqls -custom.template-file=./schema/signals.tmpl
+	@codegen -generators=custom -custom.output-file=internal/graph/model/signalSetter_gen.go -custom.template-file=./internal/graph/model/signalSetter.tmpl -custom.format=true
+	@codegen -generators=custom -custom.output-file=internal/graph/signals_gen.resolvers.go -custom.template-file=./internal/graph/signals_gen.resolvers.tmpl -custom.format=true
 
 gql: gql-model gqlgen ## Generate all gql code.
 
