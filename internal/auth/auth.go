@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"strconv"
 
 	"github.com/99designs/gqlgen/graphql"
@@ -115,6 +116,7 @@ func validateHeader(ctx context.Context, requiredAddr common.Address, tokenID in
 	}
 
 	if strconv.Itoa(tokenID) != claim.TokenID {
+		log.Printf("device manufacturer token id: %d, JWT token id: %d", tokenID, claim.TokenID)
 		return fmt.Errorf("token id does not match")
 	}
 
