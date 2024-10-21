@@ -25,6 +25,7 @@ var (
 var ManufacturerSourceTranslations = map[string]string{
 	"AutoPi":  "autopi",
 	"Hashdog": "macaron",
+	"Ruptela": "ruptela",
 }
 
 // CHService is the interface for the ClickHouse service.
