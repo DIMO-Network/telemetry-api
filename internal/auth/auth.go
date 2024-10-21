@@ -97,6 +97,8 @@ func NewManufacturerTokenCheck(contractAddr string, identitySvc IdentityService)
 			return nil, err
 		}
 
+		log.Printf("AD resp %#+v", adResp)
+
 		if err := validateHeader(ctx, requiredAddr, adResp.ManufacturerTokenID); err != nil {
 			return nil, UnauthorizedError{err: err}
 		}
@@ -116,7 +118,7 @@ func validateHeader(ctx context.Context, requiredAddr common.Address, tokenID in
 	}
 
 	if strconv.Itoa(tokenID) != claim.TokenID {
-		log.Printf("device manufacturer token id: %d, JWT token id: %d", tokenID, claim.TokenID)
+		log.Printf("device manufacturer token id: %d, JWT token id: %s", tokenID, claim.TokenID)
 		return fmt.Errorf("token id does not match")
 	}
 
