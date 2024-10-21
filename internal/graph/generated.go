@@ -1616,7 +1616,7 @@ SignalFilter holds the filter parameters for the signal querys.
 input SignalFilter {
   """
   Filter signals by source type.
-  avalible sources are: "autopi", "macaron", "smartcar", "tesla"
+  available sources are: "autopi", "macaron", "ruptela", "smartcar", "tesla"
   """
   source: String
 }
