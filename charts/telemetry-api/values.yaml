@@ -39,7 +39,7 @@ env:
   POMVC_BUCKET: dimo-network-pomvc-dev
   POMVC_DATA_TYPE: POMVCv0.1
   CLICKHOUSE_FILE_INDEX_DATABASE: file_index
-  IDENTITY_API_URL: https://identity-api.dimo.zone/query
+  IDENTITY_API_URL: https://identity-api.dev.dimo.zone/query
   IDENTITY_API_REQUEST_TIMEOUT_SECONDS: 5
   DEVICE_LAST_SEEN_BIN_HOURS: 3
 service:
