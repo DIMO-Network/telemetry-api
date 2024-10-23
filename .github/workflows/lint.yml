@@ -3,27 +3,24 @@ on:
   push:
     branches: [main]
   pull_request:
-    branches: [ '**' ]
-env:
-  GOPRIVATE: github.com/DIMO-Network
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    branches: ["**"]
+
 jobs:
   golangci:
-    runs-on: self-hosted
-
     name: lint
+    runs-on: ubuntu-latest
+    # Condition to skip merge commits
+    if: "!contains(github.event.head_commit.message, 'Merge pull request')"
     steps:
-      - name: Install Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: 1.22
+      - uses: actions/checkout@v4
 
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: 'go.mod'
 
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v6
         with:
           version: latest
           only-new-issues: false
-          args: --modules-download-mode=readonly --timeout=5m
+          args: --modules-download-mode=readonly --timeout=10m
