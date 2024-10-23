@@ -1,23 +1,22 @@
 name: generate files
 on:
+  push:
+    branches: [main]
   pull_request:
-    branches: [ '**' ]
-env:
-  GOPRIVATE: github.com/DIMO-Network
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    branches: ["**"]
+
 jobs:
-  golangci:
+  generate:
+    name: generate
     runs-on: ubuntu-latest
-
-    name: lint
+    # Condition to skip merge commits
+    if: "!contains(github.event.head_commit.message, 'Merge pull request')"
     steps:
-      - name: Install Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: 1.22
+      - uses: actions/checkout@v4
 
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: 'go.mod'
 
       - name: go mod tidy
         run: go mod tidy

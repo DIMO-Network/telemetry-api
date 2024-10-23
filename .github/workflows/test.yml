@@ -1,5 +1,4 @@
-name: gotest
-
+name: test
 on:
   push:
     branches: [main]
@@ -8,21 +7,16 @@ on:
 
 jobs:
   tests:
-    runs-on: self-hosted
-
+    name: test
+    runs-on: ubuntu-latest
+    # Condition to skip merge commits
+    if: "!contains(github.event.head_commit.message, 'Merge pull request')"
     steps:
-      - name: Install Go
-        uses: actions/setup-go@v5
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
         with:
-          go-version: 1.22
-
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Get dependencies
-        run: |
-          go get -v -t ./...
-          go install gotest.tools/gotestsum@latest
+          go-version-file: 'go.mod'
 
       - name: modVerify
         run: go mod verify
