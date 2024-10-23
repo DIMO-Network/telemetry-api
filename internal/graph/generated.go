@@ -1666,6 +1666,7 @@ scalar Address
 extend type SignalAggregations {
   """
   Vehicle rotation rate along Z (vertical).
+  Unit: 'degrees/s'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   angularVelocityYaw(
@@ -1674,6 +1675,7 @@ extend type SignalAggregations {
   
   """
   Rotational speed of a vehicle's wheel.
+  Unit: 'km/h'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   chassisAxleRow1WheelLeftSpeed(
@@ -1682,6 +1684,7 @@ extend type SignalAggregations {
   
   """
   Tire pressure in kilo-Pascal.
+  Unit: 'kPa'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   chassisAxleRow1WheelLeftTirePressure(
@@ -1690,6 +1693,7 @@ extend type SignalAggregations {
   
   """
   Rotational speed of a vehicle's wheel.
+  Unit: 'km/h'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   chassisAxleRow1WheelRightSpeed(
@@ -1698,6 +1702,7 @@ extend type SignalAggregations {
   
   """
   Tire pressure in kilo-Pascal.
+  Unit: 'kPa'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   chassisAxleRow1WheelRightTirePressure(
@@ -1706,6 +1711,7 @@ extend type SignalAggregations {
   
   """
   Tire pressure in kilo-Pascal.
+  Unit: 'kPa'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   chassisAxleRow2WheelLeftTirePressure(
@@ -1714,6 +1720,7 @@ extend type SignalAggregations {
   
   """
   Tire pressure in kilo-Pascal.
+  Unit: 'kPa'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   chassisAxleRow2WheelRightTirePressure(
@@ -1722,6 +1729,7 @@ extend type SignalAggregations {
   
   """
   Current altitude relative to WGS 84 reference ellipsoid, as measured at the position of GNSS receiver antenna.
+  Unit: 'm'
   Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
   """
   currentLocationAltitude(
@@ -1738,6 +1746,7 @@ extend type SignalAggregations {
   
   """
   Current latitude of vehicle in WGS 84 geodetic coordinates, as measured at the position of GNSS receiver antenna.
+  Unit: 'degrees' Min: '-90' Max: '90'
   Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
   """
   currentLocationLatitude(
@@ -1746,6 +1755,7 @@ extend type SignalAggregations {
   
   """
   Current longitude of vehicle in WGS 84 geodetic coordinates, as measured at the position of GNSS receiver antenna.
+  Unit: 'degrees' Min: '-180' Max: '180'
   Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
   """
   currentLocationLongitude(
@@ -1786,6 +1796,7 @@ extend type SignalAggregations {
   
   """
   Air temperature outside the vehicle.
+  Unit: 'celsius'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   exteriorAirTemperature(
@@ -1794,6 +1805,7 @@ extend type SignalAggregations {
   
   """
   Current Voltage of the low voltage battery.
+  Unit: 'V'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   lowVoltageBatteryCurrentVoltage(
@@ -1802,6 +1814,7 @@ extend type SignalAggregations {
   
   """
   PID 33 - Barometric pressure
+  Unit: 'kPa'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   obdBarometricPressure(
@@ -1810,6 +1823,7 @@ extend type SignalAggregations {
   
   """
   PID 2C - Commanded exhaust gas recirculation (EGR)
+  Unit: 'percent'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   obdCommandedEGR(
@@ -1818,6 +1832,7 @@ extend type SignalAggregations {
   
   """
   PID 31 - Distance traveled since codes cleared
+  Unit: 'km'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   obdDistanceSinceDTCClear(
@@ -1826,6 +1841,7 @@ extend type SignalAggregations {
   
   """
   PID 21 - Distance traveled with MIL on
+  Unit: 'km'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   obdDistanceWithMIL(
@@ -1834,6 +1850,7 @@ extend type SignalAggregations {
   
   """
   PID 04 - Engine load in percent - 0 = no load, 100 = full load
+  Unit: 'percent'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   obdEngineLoad(
@@ -1842,6 +1859,7 @@ extend type SignalAggregations {
   
   """
   PID 0F - Intake temperature
+  Unit: 'celsius'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   obdIntakeTemp(
@@ -1850,6 +1868,7 @@ extend type SignalAggregations {
   
   """
   PID 07 - Long Term (learned) Fuel Trim - Bank 1 - negative percent leaner, positive percent richer
+  Unit: 'percent'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   obdLongTermFuelTrim1(
@@ -1858,6 +1877,7 @@ extend type SignalAggregations {
   
   """
   PID 0B - Intake manifold pressure
+  Unit: 'kPa'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   obdMAP(
@@ -1866,6 +1886,7 @@ extend type SignalAggregations {
   
   """
   PID 1F - Engine run time
+  Unit: 's'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   obdRunTime(
@@ -1874,6 +1895,7 @@ extend type SignalAggregations {
   
   """
   PID 06 - Short Term (immediate) Fuel Trim - Bank 1 - negative percent leaner, positive percent richer
+  Unit: 'percent'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   obdShortTermFuelTrim1(
@@ -1890,6 +1912,7 @@ extend type SignalAggregations {
   
   """
   Engine coolant temperature.
+  Unit: 'celsius'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainCombustionEngineECT(
@@ -1906,6 +1929,7 @@ extend type SignalAggregations {
   
   """
   Engine oil level as a percentage.
+  Unit: 'percent' Min: '0' Max: '100'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainCombustionEngineEngineOilRelativeLevel(
@@ -1914,6 +1938,7 @@ extend type SignalAggregations {
   
   """
   Grams of air drawn into engine per second.
+  Unit: 'g/s'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainCombustionEngineMAF(
@@ -1922,6 +1947,7 @@ extend type SignalAggregations {
   
   """
   Engine speed measured as rotations per minute.
+  Unit: 'rpm'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainCombustionEngineSpeed(
@@ -1930,6 +1956,7 @@ extend type SignalAggregations {
   
   """
   Current throttle position.
+  Unit: 'percent' Max: '100'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainCombustionEngineTPS(
@@ -1938,6 +1965,7 @@ extend type SignalAggregations {
   
   """
   Current available fuel in the fuel tank expressed in liters.
+  Unit: 'l'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainFuelSystemAbsoluteLevel(
@@ -1946,6 +1974,7 @@ extend type SignalAggregations {
   
   """
   Level in fuel tank as percent of capacity. 0 = empty. 100 = full.
+  Unit: 'percent' Min: '0' Max: '100'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainFuelSystemRelativeLevel(
@@ -1962,6 +1991,7 @@ extend type SignalAggregations {
   
   """
   Remaining range in meters using all energy sources available in the vehicle.
+  Unit: 'm'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainRange(
@@ -1970,6 +2000,7 @@ extend type SignalAggregations {
   
   """
   Target charge limit (state of charge) for battery.
+  Unit: 'percent' Min: '0' Max: '100'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainTractionBatteryChargingChargeLimit(
@@ -1986,6 +2017,7 @@ extend type SignalAggregations {
   
   """
   Current electrical energy flowing in/out of battery. Positive = Energy flowing in to battery, e.g. during charging. Negative = Energy flowing out of battery, e.g. during driving.
+  Unit: 'W'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainTractionBatteryCurrentPower(
@@ -1994,6 +2026,7 @@ extend type SignalAggregations {
   
   """
   Gross capacity of the battery.
+  Unit: 'kWh'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainTractionBatteryGrossCapacity(
@@ -2002,6 +2035,7 @@ extend type SignalAggregations {
   
   """
   Physical state of charge of the high voltage battery, relative to net capacity. This is not necessarily the state of charge being displayed to the customer.
+  Unit: 'percent' Min: '0' Max: '100.0'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainTractionBatteryStateOfChargeCurrent(
@@ -2010,6 +2044,7 @@ extend type SignalAggregations {
   
   """
   Current average temperature of the battery cells.
+  Unit: 'celsius'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainTractionBatteryTemperatureAverage(
@@ -2018,6 +2053,7 @@ extend type SignalAggregations {
   
   """
   Odometer reading, total distance travelled during the lifetime of the transmission.
+  Unit: 'km'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainTransmissionTravelledDistance(
@@ -2034,6 +2070,7 @@ extend type SignalAggregations {
   
   """
   Vehicle speed.
+  Unit: 'km/h'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   speed(
