@@ -2,7 +2,7 @@ replicaCount: 2
 image:
   repository: dimozone/telemetry-api
   pullPolicy: IfNotPresent
-  tag: 0.0.26
+  tag: 0.0.27
 cronJob:
   enabled: false
   schedule: 0 0 * * 0
@@ -18,7 +18,7 @@ env:
   IDENTITY_API_REQUEST_TIMEOUT_SECONDS: 5
   DEVICE_LAST_SEEN_BIN_HOURS: 3
   POMVC_BUCKET: dimo-network-pomvc-prod
-  RUPTELA_CONNECTION_ID: "0x3A6603E1065C9b3142403b1b7e349a6Ae936E819"
+  RUPTELA_CONNECTION_ID: '0x3A6603E1065C9b3142403b1b7e349a6Ae936E819'
 ingress:
   enabled: true
   className: nginx
