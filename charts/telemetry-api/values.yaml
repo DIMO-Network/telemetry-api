@@ -2,7 +2,7 @@ replicaCount: 1
 image:
   repository: dimozone/telemetry-api
   pullPolicy: IfNotPresent
-  tag: c01749b
+  tag: 09cefd7
 imagePullSecrets: []
 nameOverride: ''
 fullnameOverride: ''
@@ -42,7 +42,7 @@ env:
   IDENTITY_API_URL: https://identity-api.dev.dimo.zone/query
   IDENTITY_API_REQUEST_TIMEOUT_SECONDS: 5
   DEVICE_LAST_SEEN_BIN_HOURS: 3
-  RUPTELA_CONNECTION_ID: "0x4Dc84a226102c08e911A5159e165e616e3A877A8"
+  RUPTELA_CONNECTION_ID: '0x4Dc84a226102c08e911A5159e165e616e3A877A8'
 service:
   type: ClusterIP
   ports:
