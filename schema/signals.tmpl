@@ -23,6 +23,9 @@ extend type SignalCollection {
   {{- range .Signals }}
   """
   {{ .Desc }}
+  {{- if or .Unit .Min .Max }}
+  {{ if .Unit }}Unit: '{{ .Unit }}'{{ end }}{{ if .Min }} Min: '{{ .Min }}'{{ end }}{{ if .Max }} Max: '{{ .Max }}'{{ end }}
+  {{- end }}
   Required Privileges: {{ .Privileges }}
   """
   

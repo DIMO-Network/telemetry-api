@@ -418,48 +418,56 @@ extend type SignalAggregations {
 extend type SignalCollection {
   """
   Vehicle rotation rate along Z (vertical).
+  Unit: 'degrees/s'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   angularVelocityYaw: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "AngularVelocityYaw") @isSignal
   
   """
   Rotational speed of a vehicle's wheel.
+  Unit: 'km/h'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   chassisAxleRow1WheelLeftSpeed: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisAxleRow1WheelLeftSpeed") @isSignal
   
   """
   Tire pressure in kilo-Pascal.
+  Unit: 'kPa'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   chassisAxleRow1WheelLeftTirePressure: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisAxleRow1WheelLeftTirePressure") @isSignal
   
   """
   Rotational speed of a vehicle's wheel.
+  Unit: 'km/h'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   chassisAxleRow1WheelRightSpeed: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisAxleRow1WheelRightSpeed") @isSignal
   
   """
   Tire pressure in kilo-Pascal.
+  Unit: 'kPa'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   chassisAxleRow1WheelRightTirePressure: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisAxleRow1WheelRightTirePressure") @isSignal
   
   """
   Tire pressure in kilo-Pascal.
+  Unit: 'kPa'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   chassisAxleRow2WheelLeftTirePressure: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisAxleRow2WheelLeftTirePressure") @isSignal
   
   """
   Tire pressure in kilo-Pascal.
+  Unit: 'kPa'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   chassisAxleRow2WheelRightTirePressure: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisAxleRow2WheelRightTirePressure") @isSignal
   
   """
   Current altitude relative to WGS 84 reference ellipsoid, as measured at the position of GNSS receiver antenna.
+  Unit: 'm'
   Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
   """
   currentLocationAltitude: SignalFloat @requiresPrivileges(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationAltitude") @isSignal
@@ -472,12 +480,14 @@ extend type SignalCollection {
   
   """
   Current latitude of vehicle in WGS 84 geodetic coordinates, as measured at the position of GNSS receiver antenna.
+  Unit: 'degrees' Min: '-90' Max: '90'
   Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
   """
   currentLocationLatitude: SignalFloat @requiresPrivileges(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationLatitude") @isSignal
   
   """
   Current longitude of vehicle in WGS 84 geodetic coordinates, as measured at the position of GNSS receiver antenna.
+  Unit: 'degrees' Min: '-180' Max: '180'
   Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
   """
   currentLocationLongitude: SignalFloat @requiresPrivileges(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationLongitude") @isSignal
@@ -508,72 +518,84 @@ extend type SignalCollection {
   
   """
   Air temperature outside the vehicle.
+  Unit: 'celsius'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   exteriorAirTemperature: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ExteriorAirTemperature") @isSignal
   
   """
   Current Voltage of the low voltage battery.
+  Unit: 'V'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   lowVoltageBatteryCurrentVoltage: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "LowVoltageBatteryCurrentVoltage") @isSignal
   
   """
   PID 33 - Barometric pressure
+  Unit: 'kPa'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   obdBarometricPressure: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDBarometricPressure") @isSignal
   
   """
   PID 2C - Commanded exhaust gas recirculation (EGR)
+  Unit: 'percent'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   obdCommandedEGR: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDCommandedEGR") @isSignal
   
   """
   PID 31 - Distance traveled since codes cleared
+  Unit: 'km'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   obdDistanceSinceDTCClear: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDDistanceSinceDTCClear") @isSignal
   
   """
   PID 21 - Distance traveled with MIL on
+  Unit: 'km'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   obdDistanceWithMIL: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDDistanceWithMIL") @isSignal
   
   """
   PID 04 - Engine load in percent - 0 = no load, 100 = full load
+  Unit: 'percent'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   obdEngineLoad: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDEngineLoad") @isSignal
   
   """
   PID 0F - Intake temperature
+  Unit: 'celsius'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   obdIntakeTemp: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDIntakeTemp") @isSignal
   
   """
   PID 07 - Long Term (learned) Fuel Trim - Bank 1 - negative percent leaner, positive percent richer
+  Unit: 'percent'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   obdLongTermFuelTrim1: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDLongTermFuelTrim1") @isSignal
   
   """
   PID 0B - Intake manifold pressure
+  Unit: 'kPa'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   obdMAP: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDMAP") @isSignal
   
   """
   PID 1F - Engine run time
+  Unit: 's'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   obdRunTime: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDRunTime") @isSignal
   
   """
   PID 06 - Short Term (immediate) Fuel Trim - Bank 1 - negative percent leaner, positive percent richer
+  Unit: 'percent'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   obdShortTermFuelTrim1: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDShortTermFuelTrim1") @isSignal
@@ -586,6 +608,7 @@ extend type SignalCollection {
   
   """
   Engine coolant temperature.
+  Unit: 'celsius'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainCombustionEngineECT: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineECT") @isSignal
@@ -598,36 +621,42 @@ extend type SignalCollection {
   
   """
   Engine oil level as a percentage.
+  Unit: 'percent' Min: '0' Max: '100'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainCombustionEngineEngineOilRelativeLevel: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineEngineOilRelativeLevel") @isSignal
   
   """
   Grams of air drawn into engine per second.
+  Unit: 'g/s'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainCombustionEngineMAF: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineMAF") @isSignal
   
   """
   Engine speed measured as rotations per minute.
+  Unit: 'rpm'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainCombustionEngineSpeed: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineSpeed") @isSignal
   
   """
   Current throttle position.
+  Unit: 'percent' Max: '100'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainCombustionEngineTPS: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineTPS") @isSignal
   
   """
   Current available fuel in the fuel tank expressed in liters.
+  Unit: 'l'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainFuelSystemAbsoluteLevel: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainFuelSystemAbsoluteLevel") @isSignal
   
   """
   Level in fuel tank as percent of capacity. 0 = empty. 100 = full.
+  Unit: 'percent' Min: '0' Max: '100'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainFuelSystemRelativeLevel: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainFuelSystemRelativeLevel") @isSignal
@@ -640,12 +669,14 @@ extend type SignalCollection {
   
   """
   Remaining range in meters using all energy sources available in the vehicle.
+  Unit: 'm'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainRange: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainRange") @isSignal
   
   """
   Target charge limit (state of charge) for battery.
+  Unit: 'percent' Min: '0' Max: '100'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainTractionBatteryChargingChargeLimit: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryChargingChargeLimit") @isSignal
@@ -658,30 +689,35 @@ extend type SignalCollection {
   
   """
   Current electrical energy flowing in/out of battery. Positive = Energy flowing in to battery, e.g. during charging. Negative = Energy flowing out of battery, e.g. during driving.
+  Unit: 'W'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainTractionBatteryCurrentPower: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryCurrentPower") @isSignal
   
   """
   Gross capacity of the battery.
+  Unit: 'kWh'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainTractionBatteryGrossCapacity: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryGrossCapacity") @isSignal
   
   """
   Physical state of charge of the high voltage battery, relative to net capacity. This is not necessarily the state of charge being displayed to the customer.
+  Unit: 'percent' Min: '0' Max: '100.0'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainTractionBatteryStateOfChargeCurrent: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryStateOfChargeCurrent") @isSignal
   
   """
   Current average temperature of the battery cells.
+  Unit: 'celsius'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainTractionBatteryTemperatureAverage: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryTemperatureAverage") @isSignal
   
   """
   Odometer reading, total distance travelled during the lifetime of the transmission.
+  Unit: 'km'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainTransmissionTravelledDistance: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTransmissionTravelledDistance") @isSignal
@@ -694,6 +730,7 @@ extend type SignalCollection {
   
   """
   Vehicle speed.
+  Unit: 'km/h'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   speed: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "Speed") @isSignal

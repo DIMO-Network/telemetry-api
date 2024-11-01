@@ -44,36 +44,46 @@ type SignalCollection struct {
 	// The last time any signal was seen matching the filter.
 	LastSeen *time.Time `json:"lastSeen,omitempty"`
 	// Vehicle rotation rate along Z (vertical).
+	// Unit: 'degrees/s'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	AngularVelocityYaw *SignalFloat `json:"angularVelocityYaw,omitempty"`
 	// Rotational speed of a vehicle's wheel.
+	// Unit: 'km/h'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	ChassisAxleRow1WheelLeftSpeed *SignalFloat `json:"chassisAxleRow1WheelLeftSpeed,omitempty"`
 	// Tire pressure in kilo-Pascal.
+	// Unit: 'kPa'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	ChassisAxleRow1WheelLeftTirePressure *SignalFloat `json:"chassisAxleRow1WheelLeftTirePressure,omitempty"`
 	// Rotational speed of a vehicle's wheel.
+	// Unit: 'km/h'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	ChassisAxleRow1WheelRightSpeed *SignalFloat `json:"chassisAxleRow1WheelRightSpeed,omitempty"`
 	// Tire pressure in kilo-Pascal.
+	// Unit: 'kPa'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	ChassisAxleRow1WheelRightTirePressure *SignalFloat `json:"chassisAxleRow1WheelRightTirePressure,omitempty"`
 	// Tire pressure in kilo-Pascal.
+	// Unit: 'kPa'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	ChassisAxleRow2WheelLeftTirePressure *SignalFloat `json:"chassisAxleRow2WheelLeftTirePressure,omitempty"`
 	// Tire pressure in kilo-Pascal.
+	// Unit: 'kPa'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	ChassisAxleRow2WheelRightTirePressure *SignalFloat `json:"chassisAxleRow2WheelRightTirePressure,omitempty"`
 	// Current altitude relative to WGS 84 reference ellipsoid, as measured at the position of GNSS receiver antenna.
+	// Unit: 'm'
 	// Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
 	CurrentLocationAltitude *SignalFloat `json:"currentLocationAltitude,omitempty"`
 	// Indicates if the latitude and longitude signals at the current timestamp have been redacted using a privacy zone.
 	// Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
 	CurrentLocationIsRedacted *SignalFloat `json:"currentLocationIsRedacted,omitempty"`
 	// Current latitude of vehicle in WGS 84 geodetic coordinates, as measured at the position of GNSS receiver antenna.
+	// Unit: 'degrees' Min: '-90' Max: '90'
 	// Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
 	CurrentLocationLatitude *SignalFloat `json:"currentLocationLatitude,omitempty"`
 	// Current longitude of vehicle in WGS 84 geodetic coordinates, as measured at the position of GNSS receiver antenna.
+	// Unit: 'degrees' Min: '-180' Max: '180'
 	// Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
 	CurrentLocationLongitude *SignalFloat `json:"currentLocationLongitude,omitempty"`
 	// Horizontal dilution of precision of GPS
@@ -89,99 +99,126 @@ type SignalCollection struct {
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	DIMOAftermarketWPAState *SignalString `json:"dimoAftermarketWPAState,omitempty"`
 	// Air temperature outside the vehicle.
+	// Unit: 'celsius'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	ExteriorAirTemperature *SignalFloat `json:"exteriorAirTemperature,omitempty"`
 	// Current Voltage of the low voltage battery.
+	// Unit: 'V'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	LowVoltageBatteryCurrentVoltage *SignalFloat `json:"lowVoltageBatteryCurrentVoltage,omitempty"`
 	// PID 33 - Barometric pressure
+	// Unit: 'kPa'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	OBDBarometricPressure *SignalFloat `json:"obdBarometricPressure,omitempty"`
 	// PID 2C - Commanded exhaust gas recirculation (EGR)
+	// Unit: 'percent'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	OBDCommandedEGR *SignalFloat `json:"obdCommandedEGR,omitempty"`
 	// PID 31 - Distance traveled since codes cleared
+	// Unit: 'km'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	OBDDistanceSinceDTCClear *SignalFloat `json:"obdDistanceSinceDTCClear,omitempty"`
 	// PID 21 - Distance traveled with MIL on
+	// Unit: 'km'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	OBDDistanceWithMIL *SignalFloat `json:"obdDistanceWithMIL,omitempty"`
 	// PID 04 - Engine load in percent - 0 = no load, 100 = full load
+	// Unit: 'percent'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	OBDEngineLoad *SignalFloat `json:"obdEngineLoad,omitempty"`
 	// PID 0F - Intake temperature
+	// Unit: 'celsius'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	OBDIntakeTemp *SignalFloat `json:"obdIntakeTemp,omitempty"`
 	// PID 07 - Long Term (learned) Fuel Trim - Bank 1 - negative percent leaner, positive percent richer
+	// Unit: 'percent'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	OBDLongTermFuelTrim1 *SignalFloat `json:"obdLongTermFuelTrim1,omitempty"`
 	// PID 0B - Intake manifold pressure
+	// Unit: 'kPa'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	OBDMAP *SignalFloat `json:"obdMAP,omitempty"`
 	// PID 1F - Engine run time
+	// Unit: 's'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	OBDRunTime *SignalFloat `json:"obdRunTime,omitempty"`
 	// PID 06 - Short Term (immediate) Fuel Trim - Bank 1 - negative percent leaner, positive percent richer
+	// Unit: 'percent'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	OBDShortTermFuelTrim1 *SignalFloat `json:"obdShortTermFuelTrim1,omitempty"`
 	// PID 30 - Number of warm-ups since codes cleared
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	OBDWarmupsSinceDTCClear *SignalFloat `json:"obdWarmupsSinceDTCClear,omitempty"`
 	// Engine coolant temperature.
+	// Unit: 'celsius'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainCombustionEngineECT *SignalFloat `json:"powertrainCombustionEngineECT,omitempty"`
 	// Engine oil level.
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainCombustionEngineEngineOilLevel *SignalString `json:"powertrainCombustionEngineEngineOilLevel,omitempty"`
 	// Engine oil level as a percentage.
+	// Unit: 'percent' Min: '0' Max: '100'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainCombustionEngineEngineOilRelativeLevel *SignalFloat `json:"powertrainCombustionEngineEngineOilRelativeLevel,omitempty"`
 	// Grams of air drawn into engine per second.
+	// Unit: 'g/s'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainCombustionEngineMAF *SignalFloat `json:"powertrainCombustionEngineMAF,omitempty"`
 	// Engine speed measured as rotations per minute.
+	// Unit: 'rpm'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainCombustionEngineSpeed *SignalFloat `json:"powertrainCombustionEngineSpeed,omitempty"`
 	// Current throttle position.
+	// Unit: 'percent' Max: '100'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainCombustionEngineTPS *SignalFloat `json:"powertrainCombustionEngineTPS,omitempty"`
 	// Current available fuel in the fuel tank expressed in liters.
+	// Unit: 'l'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainFuelSystemAbsoluteLevel *SignalFloat `json:"powertrainFuelSystemAbsoluteLevel,omitempty"`
 	// Level in fuel tank as percent of capacity. 0 = empty. 100 = full.
+	// Unit: 'percent' Min: '0' Max: '100'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainFuelSystemRelativeLevel *SignalFloat `json:"powertrainFuelSystemRelativeLevel,omitempty"`
 	// High level information of fuel types supported
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainFuelSystemSupportedFuelTypes *SignalString `json:"powertrainFuelSystemSupportedFuelTypes,omitempty"`
 	// Remaining range in meters using all energy sources available in the vehicle.
+	// Unit: 'm'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainRange *SignalFloat `json:"powertrainRange,omitempty"`
 	// Target charge limit (state of charge) for battery.
+	// Unit: 'percent' Min: '0' Max: '100'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainTractionBatteryChargingChargeLimit *SignalFloat `json:"powertrainTractionBatteryChargingChargeLimit,omitempty"`
 	// True if charging is ongoing. Charging is considered to be ongoing if energy is flowing from charger to vehicle.
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainTractionBatteryChargingIsCharging *SignalFloat `json:"powertrainTractionBatteryChargingIsCharging,omitempty"`
 	// Current electrical energy flowing in/out of battery. Positive = Energy flowing in to battery, e.g. during charging. Negative = Energy flowing out of battery, e.g. during driving.
+	// Unit: 'W'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainTractionBatteryCurrentPower *SignalFloat `json:"powertrainTractionBatteryCurrentPower,omitempty"`
 	// Gross capacity of the battery.
+	// Unit: 'kWh'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainTractionBatteryGrossCapacity *SignalFloat `json:"powertrainTractionBatteryGrossCapacity,omitempty"`
 	// Physical state of charge of the high voltage battery, relative to net capacity. This is not necessarily the state of charge being displayed to the customer.
+	// Unit: 'percent' Min: '0' Max: '100.0'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainTractionBatteryStateOfChargeCurrent *SignalFloat `json:"powertrainTractionBatteryStateOfChargeCurrent,omitempty"`
 	// Current average temperature of the battery cells.
+	// Unit: 'celsius'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainTractionBatteryTemperatureAverage *SignalFloat `json:"powertrainTractionBatteryTemperatureAverage,omitempty"`
 	// Odometer reading, total distance travelled during the lifetime of the transmission.
+	// Unit: 'km'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainTransmissionTravelledDistance *SignalFloat `json:"powertrainTransmissionTravelledDistance,omitempty"`
 	// Defines the powertrain type of the vehicle.
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainType *SignalString `json:"powertrainType,omitempty"`
 	// Vehicle speed.
+	// Unit: 'km/h'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	Speed *SignalFloat `json:"speed,omitempty"`
 }
