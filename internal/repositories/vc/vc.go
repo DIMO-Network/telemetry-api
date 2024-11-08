@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"time"
 
 	"github.com/ClickHouse/clickhouse-go/v2"
@@ -64,7 +63,8 @@ func (r *Repository) GetLatestVINVC(ctx context.Context, vehicleTokenID uint32) 
 	}
 	msg := cloudevent.CloudEvent[verifiable.Credential]{}
 	if err := json.Unmarshal(dataObj.Data, &msg); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal VIN VC: %w", err)
+		r.logger.Error().Err(err).Msg("failed to unmarshal VIN VC")
+		return nil, errors.New("internal error")
 	}
 
 	var expiresAt *time.Time
@@ -77,7 +77,8 @@ func (r *Repository) GetLatestVINVC(ctx context.Context, vehicleTokenID uint32) 
 	}
 	credSubject := verifiable.VINSubject{}
 	if err := json.Unmarshal(msg.Data.CredentialSubject, &credSubject); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal VIN credential subject: %w", err)
+		r.logger.Error().Err(err).Msg("failed to unmarshal VIN credential subject")
+		return nil, errors.New("internal error")
 	}
 	var vin *string
 	if credSubject.VehicleIdentificationNumber != "" {
@@ -137,7 +138,8 @@ func (r *Repository) GetLatestPOMVC(ctx context.Context, vehicleTokenID uint32) 
 	}
 	msg := cloudevent.CloudEvent[verifiable.Credential]{}
 	if err := json.Unmarshal(dataObj.Data, &msg); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal POM VC: %w", err)
+		r.logger.Error().Err(err).Msg("failed to unmarshal POM VC")
+		return nil, errors.New("internal error")
 	}
 
 	var createdAt *time.Time
@@ -146,7 +148,8 @@ func (r *Repository) GetLatestPOMVC(ctx context.Context, vehicleTokenID uint32) 
 	}
 	credSubject := verifiable.POMSubject{}
 	if err := json.Unmarshal(msg.Data.CredentialSubject, &credSubject); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal POM credential subject: %w", err)
+		r.logger.Error().Err(err).Msg("failed to unmarshal POM credential subject")
+		return nil, errors.New("internal error")
 	}
 	var recordedBy *string
 	if credSubject.RecordedBy != "" {
