@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/DIMO-Network/attestation-api/pkg/verifiable"
+	"github.com/DIMO-Network/model-garage/pkg/cloudevent"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	"github.com/DIMO-Network/telemetry-api/internal/repositories/vc"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
@@ -81,7 +82,10 @@ func TestGetLatestVC(t *testing.T) {
 			"vehicleTokenID": 123
 		}`),
 	}
-	defaultData, err := json.Marshal(defaultVC)
+	event := cloudevent.CloudEvent[verifiable.Credential]{
+		Data: defaultVC,
+	}
+	defaultData, err := json.Marshal(event)
 	require.NoError(t, err, "failed to marshal defaultVC")
 
 	// Test cases

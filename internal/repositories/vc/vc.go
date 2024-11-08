@@ -62,21 +62,21 @@ func (r *Repository) GetLatestVINVC(ctx context.Context, vehicleTokenID uint32) 
 		r.logger.Error().Err(err).Msg("failed to get latest VIN VC data")
 		return nil, errors.New("internal error")
 	}
-	msg := verifiable.Credential{}
+	msg := cloudevent.CloudEvent[verifiable.Credential]{}
 	if err := json.Unmarshal(dataObj.Data, &msg); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal VIN VC: %w", err)
 	}
 
 	var expiresAt *time.Time
-	if expirationDate, err := time.Parse(time.RFC3339, msg.ValidTo); err == nil {
+	if expirationDate, err := time.Parse(time.RFC3339, msg.Data.ValidTo); err == nil {
 		expiresAt = &expirationDate
 	}
 	var createdAt *time.Time
-	if issuanceDate, err := time.Parse(time.RFC3339, msg.ValidFrom); err == nil {
+	if issuanceDate, err := time.Parse(time.RFC3339, msg.Data.ValidFrom); err == nil {
 		createdAt = &issuanceDate
 	}
 	credSubject := verifiable.VINSubject{}
-	if err := json.Unmarshal(msg.CredentialSubject, &credSubject); err != nil {
+	if err := json.Unmarshal(msg.Data.CredentialSubject, &credSubject); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal VIN credential subject: %w", err)
 	}
 	var vin *string
@@ -135,17 +135,17 @@ func (r *Repository) GetLatestPOMVC(ctx context.Context, vehicleTokenID uint32) 
 		r.logger.Error().Err(err).Msg("failed to get latest POM VC data")
 		return nil, errors.New("internal error")
 	}
-	msg := verifiable.Credential{}
+	msg := cloudevent.CloudEvent[verifiable.Credential]{}
 	if err := json.Unmarshal(dataObj.Data, &msg); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal POM VC: %w", err)
 	}
 
 	var createdAt *time.Time
-	if issuanceDate, err := time.Parse(time.RFC3339, msg.ValidFrom); err == nil {
+	if issuanceDate, err := time.Parse(time.RFC3339, msg.Data.ValidFrom); err == nil {
 		createdAt = &issuanceDate
 	}
 	credSubject := verifiable.POMSubject{}
-	if err := json.Unmarshal(msg.CredentialSubject, &credSubject); err != nil {
+	if err := json.Unmarshal(msg.Data.CredentialSubject, &credSubject); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal POM credential subject: %w", err)
 	}
 	var recordedBy *string
