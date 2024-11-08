@@ -16,6 +16,7 @@ import (
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	"github.com/DIMO-Network/telemetry-api/internal/repositories/vc"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
@@ -63,9 +64,10 @@ func TestGetLatestVC(t *testing.T) {
 	// Create mock services
 	mockChConn := NewMockConn(ctrl)
 	mockObjGetter := NewMockObjectGetter(ctrl)
-
+	vehicleAddress := common.HexToAddress("0x123")
+	chainID := uint64(3)
 	// Initialize the service with mock dependencies
-	svc := vc.New(mockChConn, mockObjGetter, bucketName, dataType, "", "", &logger)
+	svc := vc.New(mockChConn, mockObjGetter, bucketName, dataType, "", chainID, vehicleAddress, &logger)
 
 	defaultVC := verifiable.Credential{
 		ValidTo:   time.Now().Add(24 * time.Hour).Format(time.RFC3339),
@@ -93,7 +95,7 @@ func TestGetLatestVC(t *testing.T) {
 			name: "Success",
 			mockSetup: func() {
 				// Create a mock verifiable credential
-				mockChConn.EXPECT().QueryRow(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(&MockRow{data: "filename"})
+				mockChConn.EXPECT().QueryRow(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(&MockRow{data: "filename"})
 				mockObjGetter.EXPECT().GetObject(gomock.Any(), gomock.Any(), gomock.Any()).Return(&s3.GetObjectOutput{Body: io.NopCloser(bytes.NewReader(defaultData))}, nil)
 			},
 			expectedVC: &model.Vinvc{
@@ -109,14 +111,14 @@ func TestGetLatestVC(t *testing.T) {
 		{
 			name: "No data found",
 			mockSetup: func() {
-				mockChConn.EXPECT().QueryRow(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(&MockRow{err: sql.ErrNoRows})
+				mockChConn.EXPECT().QueryRow(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(&MockRow{err: sql.ErrNoRows})
 			},
 			expectedVC: nil,
 		},
 		{
 			name: "Internal error",
 			mockSetup: func() {
-				mockChConn.EXPECT().QueryRow(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(&MockRow{err: errors.New("internal error")})
+				mockChConn.EXPECT().QueryRow(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(&MockRow{err: errors.New("internal error")})
 			},
 			expectedVC:  nil,
 			expectedErr: true,
@@ -124,7 +126,7 @@ func TestGetLatestVC(t *testing.T) {
 		{
 			name: "Invalid data format",
 			mockSetup: func() {
-				mockChConn.EXPECT().QueryRow(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(&MockRow{data: "filename"})
+				mockChConn.EXPECT().QueryRow(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(&MockRow{data: "filename"})
 				mockObjGetter.EXPECT().GetObject(gomock.Any(), gomock.Any(), gomock.Any()).Return(&s3.GetObjectOutput{Body: io.NopCloser(bytes.NewReader([]byte("invalid data")))}, nil)
 			},
 			expectedVC:  nil,
