@@ -155,7 +155,7 @@ func newVinVCServiceFromSettings(settings config.Settings, parentLogger *zerolog
 		return nil, fmt.Errorf("invalid vehicle address: %s", settings.VehicleNFTAddress)
 	}
 	vehicleAddr := common.HexToAddress(settings.VehicleNFTAddress)
-	return vc.New(chConn, s3Client, settings.VINVCBucket, settings.VINVCDataType, settings.POMVCDataType, uint64(settings.ChainID), vehicleAddr, &vinvcLogger), nil
+	return vc.New(chConn, s3Client, settings.VCBucket, settings.VINVCDataType, settings.POMVCDataType, uint64(settings.ChainID), vehicleAddr, &vinvcLogger), nil
 }
 
 // s3ClientFromSettings creates an S3 client from the given settings.

@@ -15,9 +15,8 @@ type Settings struct {
 	S3AWSRegion                  string          `yaml:"S3_AWS_REGION"`
 	S3AWSAccessKeyID             string          `yaml:"S3_AWS_ACCESS_KEY_ID"`
 	S3AWSSecretAccessKey         string          `yaml:"S3_AWS_SECRET_ACCESS_KEY"`
-	VINVCBucket                  string          `yaml:"VINVC_BUCKET"`
+	VCBucket                     string          `yaml:"VC_BUCKET"`
 	VINVCDataType                string          `yaml:"VINVC_DATA_TYPE"`
-	POMVCBucket                  string          `yaml:"POMVC_BUCKET"`
 	POMVCDataType                string          `yaml:"POMVC_DATA_TYPE"`
 	ManufacturerNFTAddress       string          `yaml:"MANUFACTURER_NFT_ADDRESS"`
 	IdentityAPIURL               string          `yaml:"IDENTITY_API_URL"`
