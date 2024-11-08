@@ -19,6 +19,7 @@ env:
   DEVICE_LAST_SEEN_BIN_HOURS: 3
   POMVC_BUCKET: dimo-network-pomvc-prod
   RUPTELA_CONNECTION_ID: '0x3A6603E1065C9b3142403b1b7e349a6Ae936E819'
+  DIMO_REGISTRY_CHAIN_ID: 137
 ingress:
   enabled: true
   className: nginx

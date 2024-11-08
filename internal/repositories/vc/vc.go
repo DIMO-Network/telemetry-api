@@ -10,42 +10,51 @@ import (
 
 	"github.com/ClickHouse/clickhouse-go/v2"
 	"github.com/DIMO-Network/attestation-api/pkg/verifiable"
+	"github.com/DIMO-Network/model-garage/pkg/cloudevent"
 	"github.com/DIMO-Network/nameindexer"
 	"github.com/DIMO-Network/nameindexer/pkg/clickhouse/indexrepo"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/rs/zerolog"
 )
 
 type Repository struct {
-	logger        *zerolog.Logger
-	indexService  *indexrepo.Service
-	vinVCDataType string
-	vinVCBucket   string
-	pomVCDataType string
-	pomBucket     string
+	logger         *zerolog.Logger
+	indexService   *indexrepo.Service
+	vcBucket       string
+	vinVCDataType  string
+	pomVCDataType  string
+	chainID        uint64
+	vehicleAddress common.Address
 }
 
 // New creates a new instance of Service.
-func New(chConn clickhouse.Conn, objGetter indexrepo.ObjectGetter, vinVCBucketName, vinVCDataType, pomBucketName, pomVCDataType string, logger *zerolog.Logger) *Repository {
+func New(chConn clickhouse.Conn, objGetter indexrepo.ObjectGetter, vcBucketName, vinVCDataType, pomVCDataType string, chainID uint64, vehicleAddress common.Address, logger *zerolog.Logger) *Repository {
 	return &Repository{
-		indexService:  indexrepo.New(chConn, objGetter),
-		vinVCDataType: vinVCDataType,
-		vinVCBucket:   vinVCBucketName,
-		pomVCDataType: pomVCDataType,
-		pomBucket:     pomBucketName,
-		logger:        logger,
+		indexService:   indexrepo.New(chConn, objGetter),
+		vcBucket:       vcBucketName,
+		vinVCDataType:  vinVCDataType,
+		pomVCDataType:  pomVCDataType,
+		chainID:        chainID,
+		vehicleAddress: vehicleAddress,
+		logger:         logger,
 	}
 }
 
 // GetLatestVINVC fetches the latest VIN VC for the given vehicle.
 func (r *Repository) GetLatestVINVC(ctx context.Context, vehicleTokenID uint32) (*model.Vinvc, error) {
-	opts := indexrepo.SearchOptions{
-		DataType: &r.vinVCDataType,
-		Subject: &nameindexer.Subject{
-			Identifier: nameindexer.TokenID(vehicleTokenID),
-		},
+	filler := nameindexer.FillerVerifiableCredential
+	vehicleDID := cloudevent.NFTDID{
+		ChainID:         r.chainID,
+		ContractAddress: r.vehicleAddress,
+		TokenID:         vehicleTokenID,
 	}
-	data, err := r.indexService.GetLatestData(ctx, r.vinVCBucket, opts)
+	opts := indexrepo.CloudEventSearchOptions{
+		DataType:      &r.vinVCDataType,
+		PrimaryFiller: &filler,
+		Subject:       &vehicleDID,
+	}
+	dataObj, err := r.indexService.GetLatestCloudEventData(ctx, r.vcBucket, opts)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, nil
@@ -54,7 +63,7 @@ func (r *Repository) GetLatestVINVC(ctx context.Context, vehicleTokenID uint32) 
 		return nil, errors.New("internal error")
 	}
 	msg := verifiable.Credential{}
-	if err := json.Unmarshal(data, &msg); err != nil {
+	if err := json.Unmarshal(dataObj.Data, &msg); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal VIN VC: %w", err)
 	}
 
@@ -95,7 +104,7 @@ func (r *Repository) GetLatestVINVC(ctx context.Context, vehicleTokenID uint32) 
 	return &model.Vinvc{
 		ValidFrom:              createdAt,
 		ValidTo:                expiresAt,
-		RawVc:                  string(data),
+		RawVc:                  string(dataObj.Data),
 		Vin:                    vin,
 		RecordedBy:             recordedBy,
 		RecordedAt:             recordedAt,
@@ -107,13 +116,18 @@ func (r *Repository) GetLatestVINVC(ctx context.Context, vehicleTokenID uint32) 
 
 // GetLatestPOMVC fetches the latest POM VC for the given vehicle.
 func (r *Repository) GetLatestPOMVC(ctx context.Context, vehicleTokenID uint32) (*model.Pomvc, error) {
-	opts := indexrepo.SearchOptions{
-		DataType: &r.pomVCDataType,
-		Subject: &nameindexer.Subject{
-			Identifier: nameindexer.TokenID(vehicleTokenID),
-		},
+	filler := nameindexer.FillerVerifiableCredential
+	vehicleDID := cloudevent.NFTDID{
+		ChainID:         r.chainID,
+		ContractAddress: r.vehicleAddress,
+		TokenID:         vehicleTokenID,
 	}
-	data, err := r.indexService.GetLatestData(ctx, r.pomBucket, opts)
+	opts := indexrepo.CloudEventSearchOptions{
+		DataType:      &r.pomVCDataType,
+		PrimaryFiller: &filler,
+		Subject:       &vehicleDID,
+	}
+	dataObj, err := r.indexService.GetLatestCloudEventData(ctx, r.vcBucket, opts)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, nil
@@ -122,7 +136,7 @@ func (r *Repository) GetLatestPOMVC(ctx context.Context, vehicleTokenID uint32) 
 		return nil, errors.New("internal error")
 	}
 	msg := verifiable.Credential{}
-	if err := json.Unmarshal(data, &msg); err != nil {
+	if err := json.Unmarshal(dataObj.Data, &msg); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal POM VC: %w", err)
 	}
 
@@ -146,7 +160,7 @@ func (r *Repository) GetLatestPOMVC(ctx context.Context, vehicleTokenID uint32) 
 
 	return &model.Pomvc{
 		ValidFrom:              createdAt,
-		RawVc:                  string(data),
+		RawVc:                  string(dataObj.Data),
 		RecordedBy:             recordedBy,
 		VehicleContractAddress: vehicleContractAddress,
 		VehicleTokenID:         &tokenIDInt,

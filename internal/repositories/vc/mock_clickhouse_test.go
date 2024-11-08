@@ -22,6 +22,7 @@ import (
 type MockConn struct {
 	ctrl     *gomock.Controller
 	recorder *MockConnMockRecorder
+	isgomock struct{}
 }
 
 // MockConnMockRecorder is the mock recorder for MockConn.
@@ -42,10 +43,10 @@ func (m *MockConn) EXPECT() *MockConnMockRecorder {
 }
 
 // AsyncInsert mocks base method.
-func (m *MockConn) AsyncInsert(arg0 context.Context, arg1 string, arg2 bool, arg3 ...any) error {
+func (m *MockConn) AsyncInsert(ctx context.Context, query string, wait bool, args ...any) error {
 	m.ctrl.T.Helper()
-	varargs := []any{arg0, arg1, arg2}
-	for _, a := range arg3 {
+	varargs := []any{ctx, query, wait}
+	for _, a := range args {
 		varargs = append(varargs, a)
 	}
 	ret := m.ctrl.Call(m, "AsyncInsert", varargs...)
@@ -54,9 +55,9 @@ func (m *MockConn) AsyncInsert(arg0 context.Context, arg1 string, arg2 bool, arg
 }
 
 // AsyncInsert indicates an expected call of AsyncInsert.
-func (mr *MockConnMockRecorder) AsyncInsert(arg0, arg1, arg2 any, arg3 ...any) *gomock.Call {
+func (mr *MockConnMockRecorder) AsyncInsert(ctx, query, wait any, args ...any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	varargs := append([]any{arg0, arg1, arg2}, arg3...)
+	varargs := append([]any{ctx, query, wait}, args...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AsyncInsert", reflect.TypeOf((*MockConn)(nil).AsyncInsert), varargs...)
 }
 
@@ -89,10 +90,10 @@ func (mr *MockConnMockRecorder) Contributors() *gomock.Call {
 }
 
 // Exec mocks base method.
-func (m *MockConn) Exec(arg0 context.Context, arg1 string, arg2 ...any) error {
+func (m *MockConn) Exec(ctx context.Context, query string, args ...any) error {
 	m.ctrl.T.Helper()
-	varargs := []any{arg0, arg1}
-	for _, a := range arg2 {
+	varargs := []any{ctx, query}
+	for _, a := range args {
 		varargs = append(varargs, a)
 	}
 	ret := m.ctrl.Call(m, "Exec", varargs...)
@@ -101,9 +102,9 @@ func (m *MockConn) Exec(arg0 context.Context, arg1 string, arg2 ...any) error {
 }
 
 // Exec indicates an expected call of Exec.
-func (mr *MockConnMockRecorder) Exec(arg0, arg1 any, arg2 ...any) *gomock.Call {
+func (mr *MockConnMockRecorder) Exec(ctx, query any, args ...any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	varargs := append([]any{arg0, arg1}, arg2...)
+	varargs := append([]any{ctx, query}, args...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Exec", reflect.TypeOf((*MockConn)(nil).Exec), varargs...)
 }
 
@@ -122,10 +123,10 @@ func (mr *MockConnMockRecorder) Ping(arg0 any) *gomock.Call {
 }
 
 // PrepareBatch mocks base method.
-func (m *MockConn) PrepareBatch(arg0 context.Context, arg1 string, arg2 ...driver.PrepareBatchOption) (driver.Batch, error) {
+func (m *MockConn) PrepareBatch(ctx context.Context, query string, opts ...driver.PrepareBatchOption) (driver.Batch, error) {
 	m.ctrl.T.Helper()
-	varargs := []any{arg0, arg1}
-	for _, a := range arg2 {
+	varargs := []any{ctx, query}
+	for _, a := range opts {
 		varargs = append(varargs, a)
 	}
 	ret := m.ctrl.Call(m, "PrepareBatch", varargs...)
@@ -135,17 +136,17 @@ func (m *MockConn) PrepareBatch(arg0 context.Context, arg1 string, arg2 ...drive
 }
 
 // PrepareBatch indicates an expected call of PrepareBatch.
-func (mr *MockConnMockRecorder) PrepareBatch(arg0, arg1 any, arg2 ...any) *gomock.Call {
+func (mr *MockConnMockRecorder) PrepareBatch(ctx, query any, opts ...any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	varargs := append([]any{arg0, arg1}, arg2...)
+	varargs := append([]any{ctx, query}, opts...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PrepareBatch", reflect.TypeOf((*MockConn)(nil).PrepareBatch), varargs...)
 }
 
 // Query mocks base method.
-func (m *MockConn) Query(arg0 context.Context, arg1 string, arg2 ...any) (driver.Rows, error) {
+func (m *MockConn) Query(ctx context.Context, query string, args ...any) (driver.Rows, error) {
 	m.ctrl.T.Helper()
-	varargs := []any{arg0, arg1}
-	for _, a := range arg2 {
+	varargs := []any{ctx, query}
+	for _, a := range args {
 		varargs = append(varargs, a)
 	}
 	ret := m.ctrl.Call(m, "Query", varargs...)
@@ -155,17 +156,17 @@ func (m *MockConn) Query(arg0 context.Context, arg1 string, arg2 ...any) (driver
 }
 
 // Query indicates an expected call of Query.
-func (mr *MockConnMockRecorder) Query(arg0, arg1 any, arg2 ...any) *gomock.Call {
+func (mr *MockConnMockRecorder) Query(ctx, query any, args ...any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	varargs := append([]any{arg0, arg1}, arg2...)
+	varargs := append([]any{ctx, query}, args...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Query", reflect.TypeOf((*MockConn)(nil).Query), varargs...)
 }
 
 // QueryRow mocks base method.
-func (m *MockConn) QueryRow(arg0 context.Context, arg1 string, arg2 ...any) driver.Row {
+func (m *MockConn) QueryRow(ctx context.Context, query string, args ...any) driver.Row {
 	m.ctrl.T.Helper()
-	varargs := []any{arg0, arg1}
-	for _, a := range arg2 {
+	varargs := []any{ctx, query}
+	for _, a := range args {
 		varargs = append(varargs, a)
 	}
 	ret := m.ctrl.Call(m, "QueryRow", varargs...)
@@ -174,17 +175,17 @@ func (m *MockConn) QueryRow(arg0 context.Context, arg1 string, arg2 ...any) driv
 }
 
 // QueryRow indicates an expected call of QueryRow.
-func (mr *MockConnMockRecorder) QueryRow(arg0, arg1 any, arg2 ...any) *gomock.Call {
+func (mr *MockConnMockRecorder) QueryRow(ctx, query any, args ...any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	varargs := append([]any{arg0, arg1}, arg2...)
+	varargs := append([]any{ctx, query}, args...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "QueryRow", reflect.TypeOf((*MockConn)(nil).QueryRow), varargs...)
 }
 
 // Select mocks base method.
-func (m *MockConn) Select(arg0 context.Context, arg1 any, arg2 string, arg3 ...any) error {
+func (m *MockConn) Select(ctx context.Context, dest any, query string, args ...any) error {
 	m.ctrl.T.Helper()
-	varargs := []any{arg0, arg1, arg2}
-	for _, a := range arg3 {
+	varargs := []any{ctx, dest, query}
+	for _, a := range args {
 		varargs = append(varargs, a)
 	}
 	ret := m.ctrl.Call(m, "Select", varargs...)
@@ -193,9 +194,9 @@ func (m *MockConn) Select(arg0 context.Context, arg1 any, arg2 string, arg3 ...a
 }
 
 // Select indicates an expected call of Select.
-func (mr *MockConnMockRecorder) Select(arg0, arg1, arg2 any, arg3 ...any) *gomock.Call {
+func (mr *MockConnMockRecorder) Select(ctx, dest, query any, args ...any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	varargs := append([]any{arg0, arg1, arg2}, arg3...)
+	varargs := append([]any{ctx, dest, query}, args...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Select", reflect.TypeOf((*MockConn)(nil).Select), varargs...)
 }
 

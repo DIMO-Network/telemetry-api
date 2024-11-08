@@ -21,6 +21,7 @@ import (
 type MockObjectGetter struct {
 	ctrl     *gomock.Controller
 	recorder *MockObjectGetterMockRecorder
+	isgomock struct{}
 }
 
 // MockObjectGetterMockRecorder is the mock recorder for MockObjectGetter.
@@ -41,10 +42,10 @@ func (m *MockObjectGetter) EXPECT() *MockObjectGetterMockRecorder {
 }
 
 // GetObject mocks base method.
-func (m *MockObjectGetter) GetObject(arg0 context.Context, arg1 *s3.GetObjectInput, arg2 ...func(*s3.Options)) (*s3.GetObjectOutput, error) {
+func (m *MockObjectGetter) GetObject(ctx context.Context, params *s3.GetObjectInput, optFns ...func(*s3.Options)) (*s3.GetObjectOutput, error) {
 	m.ctrl.T.Helper()
-	varargs := []any{arg0, arg1}
-	for _, a := range arg2 {
+	varargs := []any{ctx, params}
+	for _, a := range optFns {
 		varargs = append(varargs, a)
 	}
 	ret := m.ctrl.Call(m, "GetObject", varargs...)
@@ -54,17 +55,17 @@ func (m *MockObjectGetter) GetObject(arg0 context.Context, arg1 *s3.GetObjectInp
 }
 
 // GetObject indicates an expected call of GetObject.
-func (mr *MockObjectGetterMockRecorder) GetObject(arg0, arg1 any, arg2 ...any) *gomock.Call {
+func (mr *MockObjectGetterMockRecorder) GetObject(ctx, params any, optFns ...any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	varargs := append([]any{arg0, arg1}, arg2...)
+	varargs := append([]any{ctx, params}, optFns...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetObject", reflect.TypeOf((*MockObjectGetter)(nil).GetObject), varargs...)
 }
 
 // PutObject mocks base method.
-func (m *MockObjectGetter) PutObject(arg0 context.Context, arg1 *s3.PutObjectInput, arg2 ...func(*s3.Options)) (*s3.PutObjectOutput, error) {
+func (m *MockObjectGetter) PutObject(ctx context.Context, params *s3.PutObjectInput, optFns ...func(*s3.Options)) (*s3.PutObjectOutput, error) {
 	m.ctrl.T.Helper()
-	varargs := []any{arg0, arg1}
-	for _, a := range arg2 {
+	varargs := []any{ctx, params}
+	for _, a := range optFns {
 		varargs = append(varargs, a)
 	}
 	ret := m.ctrl.Call(m, "PutObject", varargs...)
@@ -74,8 +75,8 @@ func (m *MockObjectGetter) PutObject(arg0 context.Context, arg1 *s3.PutObjectInp
 }
 
 // PutObject indicates an expected call of PutObject.
-func (mr *MockObjectGetterMockRecorder) PutObject(arg0, arg1 any, arg2 ...any) *gomock.Call {
+func (mr *MockObjectGetterMockRecorder) PutObject(ctx, params any, optFns ...any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	varargs := append([]any{arg0, arg1}, arg2...)
+	varargs := append([]any{ctx, params}, optFns...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PutObject", reflect.TypeOf((*MockObjectGetter)(nil).PutObject), varargs...)
 }

@@ -23,6 +23,7 @@ type Settings struct {
 	IdentityAPIURL               string          `yaml:"IDENTITY_API_URL"`
 	IdentityAPIReqTimeoutSeconds int             `yaml:"IDENTITY_API_REQUEST_TIMEOUT_SECONDS"`
 	DeviceLastSeenBinHrs         int64           `yaml:"DEVICE_LAST_SEEN_BIN_HOURS"`
+	ChainID                      int             `yaml:"DIMO_REGISTRY_CHAIN_ID"`
 
 	// TODO (kevin): We should pull this from the chain when we have the ability to do so.
 	RuptelaConnectionId string `yaml:"RUPTELA_CONNECTION_ID"`

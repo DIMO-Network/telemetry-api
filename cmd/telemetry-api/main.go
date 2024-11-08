@@ -25,6 +25,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/adaptor"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -150,7 +151,11 @@ func newVinVCServiceFromSettings(settings config.Settings, parentLogger *zerolog
 		return nil, fmt.Errorf("failed to create s3 client: %w", err)
 	}
 	vinvcLogger := parentLogger.With().Str("component", "vinvc").Logger()
-	return vc.New(chConn, s3Client, settings.VINVCBucket, settings.VINVCDataType, settings.POMVCBucket, settings.POMVCDataType, &vinvcLogger), nil
+	if !common.IsHexAddress(settings.VehicleNFTAddress) {
+		return nil, fmt.Errorf("invalid vehicle address: %s", settings.VehicleNFTAddress)
+	}
+	vehicleAddr := common.HexToAddress(settings.VehicleNFTAddress)
+	return vc.New(chConn, s3Client, settings.VINVCBucket, settings.VINVCDataType, settings.POMVCDataType, uint64(settings.ChainID), vehicleAddr, &vinvcLogger), nil
 }
 
 // s3ClientFromSettings creates an S3 client from the given settings.

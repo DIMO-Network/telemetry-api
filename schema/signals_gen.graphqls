@@ -167,6 +167,15 @@ extend type SignalAggregations {
   ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDCommandedEGR", forceResolver: true) @isSignal @hasAggregation
   
   """
+  PID 2E - Commanded evaporative purge (EVAP) valve
+  Unit: 'percent'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  obdCommandedEVAP(
+    agg: FloatAggregation!
+  ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDCommandedEVAP", forceResolver: true) @isSignal @hasAggregation
+  
+  """
   PID 31 - Distance traveled since codes cleared
   Unit: 'km'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
@@ -194,6 +203,15 @@ extend type SignalAggregations {
   ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDEngineLoad", forceResolver: true) @isSignal @hasAggregation
   
   """
+  PID 0A - Fuel pressure
+  Unit: 'kPa'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  obdFuelPressure(
+    agg: FloatAggregation!
+  ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDFuelPressure", forceResolver: true) @isSignal @hasAggregation
+  
+  """
   PID 0F - Intake temperature
   Unit: 'celsius'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
@@ -219,6 +237,24 @@ extend type SignalAggregations {
   obdMAP(
     agg: FloatAggregation!
   ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDMAP", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  PID 2x (byte CD) - Voltage for wide range/band oxygen sensor
+  Unit: 'V'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  obdO2WRSensor1Voltage(
+    agg: FloatAggregation!
+  ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDO2WRSensor1Voltage", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  PID 2x (byte CD) - Voltage for wide range/band oxygen sensor
+  Unit: 'V'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  obdO2WRSensor2Voltage(
+    agg: FloatAggregation!
+  ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDO2WRSensor2Voltage", forceResolver: true) @isSignal @hasAggregation
   
   """
   PID 1F - Engine run time
@@ -300,6 +336,15 @@ extend type SignalAggregations {
   ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineTPS", forceResolver: true) @isSignal @hasAggregation
   
   """
+  Current engine torque. Shall be reported as 0 during engine breaking.
+  Unit: 'Nm'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  powertrainCombustionEngineTorque(
+    agg: FloatAggregation!
+  ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineTorque", forceResolver: true) @isSignal @hasAggregation
+  
+  """
   Current available fuel in the fuel tank expressed in liters.
   Unit: 'l'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
@@ -361,6 +406,15 @@ extend type SignalAggregations {
   ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryCurrentPower", forceResolver: true) @isSignal @hasAggregation
   
   """
+  Current Voltage of the battery.
+  Unit: 'V'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  powertrainTractionBatteryCurrentVoltage(
+    agg: FloatAggregation!
+  ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryCurrentVoltage", forceResolver: true) @isSignal @hasAggregation
+  
+  """
   Gross capacity of the battery.
   Unit: 'kWh'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
@@ -388,6 +442,23 @@ extend type SignalAggregations {
   ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryTemperatureAverage", forceResolver: true) @isSignal @hasAggregation
   
   """
+  The current gear. 0=Neutral, 1/2/..=Forward, -1/-2/..=Reverse.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  powertrainTransmissionCurrentGear(
+    agg: FloatAggregation!
+  ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTransmissionCurrentGear", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  The current gearbox temperature.
+  Unit: 'celsius'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  powertrainTransmissionTemperature(
+    agg: FloatAggregation!
+  ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTransmissionTemperature", forceResolver: true) @isSignal @hasAggregation
+  
+  """
   Odometer reading, total distance travelled during the lifetime of the transmission.
   Unit: 'km'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
@@ -403,6 +474,15 @@ extend type SignalAggregations {
   powertrainType(
     agg: StringAggregation!
   ):  String @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainType", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  Remaining distance to service (of any kind). Negative values indicate service overdue.
+  Unit: 'km'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  serviceDistanceToService(
+    agg: FloatAggregation!
+  ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ServiceDistanceToService", forceResolver: true) @isSignal @hasAggregation
   
   """
   Vehicle speed.
@@ -531,6 +611,12 @@ extend type SignalCollection {
   obdCommandedEGR: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDCommandedEGR") @isSignal
   
   """
+  PID 2E - Commanded evaporative purge (EVAP) valve
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  obdCommandedEVAP: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDCommandedEVAP") @isSignal
+  
+  """
   PID 31 - Distance traveled since codes cleared
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
@@ -549,6 +635,12 @@ extend type SignalCollection {
   obdEngineLoad: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDEngineLoad") @isSignal
   
   """
+  PID 0A - Fuel pressure
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  obdFuelPressure: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDFuelPressure") @isSignal
+  
+  """
   PID 0F - Intake temperature
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
@@ -565,6 +657,18 @@ extend type SignalCollection {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   obdMAP: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDMAP") @isSignal
+  
+  """
+  PID 2x (byte CD) - Voltage for wide range/band oxygen sensor
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  obdO2WRSensor1Voltage: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDO2WRSensor1Voltage") @isSignal
+  
+  """
+  PID 2x (byte CD) - Voltage for wide range/band oxygen sensor
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  obdO2WRSensor2Voltage: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDO2WRSensor2Voltage") @isSignal
   
   """
   PID 1F - Engine run time
@@ -621,6 +725,12 @@ extend type SignalCollection {
   powertrainCombustionEngineTPS: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineTPS") @isSignal
   
   """
+  Current engine torque. Shall be reported as 0 during engine breaking.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  powertrainCombustionEngineTorque: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineTorque") @isSignal
+  
+  """
   Current available fuel in the fuel tank expressed in liters.
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
@@ -663,6 +773,12 @@ extend type SignalCollection {
   powertrainTractionBatteryCurrentPower: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryCurrentPower") @isSignal
   
   """
+  Current Voltage of the battery.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  powertrainTractionBatteryCurrentVoltage: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryCurrentVoltage") @isSignal
+  
+  """
   Gross capacity of the battery.
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
@@ -681,6 +797,18 @@ extend type SignalCollection {
   powertrainTractionBatteryTemperatureAverage: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryTemperatureAverage") @isSignal
   
   """
+  The current gear. 0=Neutral, 1/2/..=Forward, -1/-2/..=Reverse.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  powertrainTransmissionCurrentGear: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTransmissionCurrentGear") @isSignal
+  
+  """
+  The current gearbox temperature.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  powertrainTransmissionTemperature: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTransmissionTemperature") @isSignal
+  
+  """
   Odometer reading, total distance travelled during the lifetime of the transmission.
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
@@ -691,6 +819,12 @@ extend type SignalCollection {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainType: SignalString @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainType") @isSignal
+  
+  """
+  Remaining distance to service (of any kind). Negative values indicate service overdue.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  serviceDistanceToService: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ServiceDistanceToService") @isSignal
   
   """
   Vehicle speed.
