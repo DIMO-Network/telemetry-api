@@ -100,6 +100,9 @@ type SignalCollection struct {
 	// PID 2C - Commanded exhaust gas recirculation (EGR)
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	OBDCommandedEGR *SignalFloat `json:"obdCommandedEGR,omitempty"`
+	// PID 2E - Commanded evaporative purge (EVAP) valve
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	OBDCommandedEVAP *SignalFloat `json:"obdCommandedEVAP,omitempty"`
 	// PID 31 - Distance traveled since codes cleared
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	OBDDistanceSinceDTCClear *SignalFloat `json:"obdDistanceSinceDTCClear,omitempty"`
@@ -109,6 +112,9 @@ type SignalCollection struct {
 	// PID 04 - Engine load in percent - 0 = no load, 100 = full load
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	OBDEngineLoad *SignalFloat `json:"obdEngineLoad,omitempty"`
+	// PID 0A - Fuel pressure
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	OBDFuelPressure *SignalFloat `json:"obdFuelPressure,omitempty"`
 	// PID 0F - Intake temperature
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	OBDIntakeTemp *SignalFloat `json:"obdIntakeTemp,omitempty"`
@@ -118,6 +124,12 @@ type SignalCollection struct {
 	// PID 0B - Intake manifold pressure
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	OBDMAP *SignalFloat `json:"obdMAP,omitempty"`
+	// PID 2x (byte CD) - Voltage for wide range/band oxygen sensor
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	OBDO2WRSensor1Voltage *SignalFloat `json:"obdO2WRSensor1Voltage,omitempty"`
+	// PID 2x (byte CD) - Voltage for wide range/band oxygen sensor
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	OBDO2WRSensor2Voltage *SignalFloat `json:"obdO2WRSensor2Voltage,omitempty"`
 	// PID 1F - Engine run time
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	OBDRunTime *SignalFloat `json:"obdRunTime,omitempty"`
@@ -145,6 +157,9 @@ type SignalCollection struct {
 	// Current throttle position.
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainCombustionEngineTPS *SignalFloat `json:"powertrainCombustionEngineTPS,omitempty"`
+	// Current engine torque. Shall be reported as 0 during engine breaking.
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	PowertrainCombustionEngineTorque *SignalFloat `json:"powertrainCombustionEngineTorque,omitempty"`
 	// Current available fuel in the fuel tank expressed in liters.
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainFuelSystemAbsoluteLevel *SignalFloat `json:"powertrainFuelSystemAbsoluteLevel,omitempty"`
@@ -166,6 +181,9 @@ type SignalCollection struct {
 	// Current electrical energy flowing in/out of battery. Positive = Energy flowing in to battery, e.g. during charging. Negative = Energy flowing out of battery, e.g. during driving.
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainTractionBatteryCurrentPower *SignalFloat `json:"powertrainTractionBatteryCurrentPower,omitempty"`
+	// Current Voltage of the battery.
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	PowertrainTractionBatteryCurrentVoltage *SignalFloat `json:"powertrainTractionBatteryCurrentVoltage,omitempty"`
 	// Gross capacity of the battery.
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainTractionBatteryGrossCapacity *SignalFloat `json:"powertrainTractionBatteryGrossCapacity,omitempty"`
@@ -175,12 +193,21 @@ type SignalCollection struct {
 	// Current average temperature of the battery cells.
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainTractionBatteryTemperatureAverage *SignalFloat `json:"powertrainTractionBatteryTemperatureAverage,omitempty"`
+	// The current gear. 0=Neutral, 1/2/..=Forward, -1/-2/..=Reverse.
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	PowertrainTransmissionCurrentGear *SignalFloat `json:"powertrainTransmissionCurrentGear,omitempty"`
+	// The current gearbox temperature.
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	PowertrainTransmissionTemperature *SignalFloat `json:"powertrainTransmissionTemperature,omitempty"`
 	// Odometer reading, total distance travelled during the lifetime of the transmission.
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainTransmissionTravelledDistance *SignalFloat `json:"powertrainTransmissionTravelledDistance,omitempty"`
 	// Defines the powertrain type of the vehicle.
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainType *SignalString `json:"powertrainType,omitempty"`
+	// Remaining distance to service (of any kind). Negative values indicate service overdue.
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	ServiceDistanceToService *SignalFloat `json:"serviceDistanceToService,omitempty"`
 	// Vehicle speed.
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	Speed *SignalFloat `json:"speed,omitempty"`
