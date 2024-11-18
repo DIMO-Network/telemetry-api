@@ -115,6 +115,7 @@ type SignalCollection struct {
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	OBDCommandedEGR *SignalFloat `json:"obdCommandedEGR,omitempty"`
 	// PID 2E - Commanded evaporative purge (EVAP) valve
+	// Unit: 'percent'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	OBDCommandedEVAP *SignalFloat `json:"obdCommandedEVAP,omitempty"`
 	// PID 31 - Distance traveled since codes cleared
@@ -130,6 +131,7 @@ type SignalCollection struct {
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	OBDEngineLoad *SignalFloat `json:"obdEngineLoad,omitempty"`
 	// PID 0A - Fuel pressure
+	// Unit: 'kPa'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	OBDFuelPressure *SignalFloat `json:"obdFuelPressure,omitempty"`
 	// PID 0F - Intake temperature
@@ -145,9 +147,11 @@ type SignalCollection struct {
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	OBDMAP *SignalFloat `json:"obdMAP,omitempty"`
 	// PID 2x (byte CD) - Voltage for wide range/band oxygen sensor
+	// Unit: 'V'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	OBDO2WRSensor1Voltage *SignalFloat `json:"obdO2WRSensor1Voltage,omitempty"`
 	// PID 2x (byte CD) - Voltage for wide range/band oxygen sensor
+	// Unit: 'V'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	OBDO2WRSensor2Voltage *SignalFloat `json:"obdO2WRSensor2Voltage,omitempty"`
 	// PID 1F - Engine run time
@@ -161,6 +165,14 @@ type SignalCollection struct {
 	// PID 30 - Number of warm-ups since codes cleared
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	OBDWarmupsSinceDTCClear *SignalFloat `json:"obdWarmupsSinceDTCClear,omitempty"`
+	// Capacity in liters of the Diesel Exhaust Fluid Tank.
+	// Unit: 'l'
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	PowertrainCombustionEngineDieselExhaustFluidCapacity *SignalFloat `json:"powertrainCombustionEngineDieselExhaustFluidCapacity,omitempty"`
+	// Level of the Diesel Exhaust Fluid tank as percent of capacity. 0 = empty. 100 = full.
+	// Unit: 'percent' Min: '0' Max: '100'
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	PowertrainCombustionEngineDieselExhaustFluidLevel *SignalFloat `json:"powertrainCombustionEngineDieselExhaustFluidLevel,omitempty"`
 	// Engine coolant temperature.
 	// Unit: 'celsius'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
@@ -185,6 +197,7 @@ type SignalCollection struct {
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainCombustionEngineTPS *SignalFloat `json:"powertrainCombustionEngineTPS,omitempty"`
 	// Current engine torque. Shall be reported as 0 during engine breaking.
+	// Unit: 'Nm'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainCombustionEngineTorque *SignalFloat `json:"powertrainCombustionEngineTorque,omitempty"`
 	// Current available fuel in the fuel tank expressed in liters.
@@ -202,6 +215,10 @@ type SignalCollection struct {
 	// Unit: 'm'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainRange *SignalFloat `json:"powertrainRange,omitempty"`
+	// Amount of charge added to the high voltage battery during the current charging session, expressed in kilowatt-hours.
+	// Unit: 'kWh'
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	PowertrainTractionBatteryChargingAddedEnergy *SignalFloat `json:"powertrainTractionBatteryChargingAddedEnergy,omitempty"`
 	// Target charge limit (state of charge) for battery.
 	// Unit: 'percent' Min: '0' Max: '100'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
@@ -214,12 +231,17 @@ type SignalCollection struct {
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainTractionBatteryCurrentPower *SignalFloat `json:"powertrainTractionBatteryCurrentPower,omitempty"`
 	// Current Voltage of the battery.
+	// Unit: 'V'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainTractionBatteryCurrentVoltage *SignalFloat `json:"powertrainTractionBatteryCurrentVoltage,omitempty"`
 	// Gross capacity of the battery.
 	// Unit: 'kWh'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainTractionBatteryGrossCapacity *SignalFloat `json:"powertrainTractionBatteryGrossCapacity,omitempty"`
+	// Remaining range in meters using only battery.
+	// Unit: 'm'
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	PowertrainTractionBatteryRange *SignalFloat `json:"powertrainTractionBatteryRange,omitempty"`
 	// Physical state of charge of the high voltage battery, relative to net capacity. This is not necessarily the state of charge being displayed to the customer.
 	// Unit: 'percent' Min: '0' Max: '100.0'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
@@ -232,6 +254,7 @@ type SignalCollection struct {
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainTransmissionCurrentGear *SignalFloat `json:"powertrainTransmissionCurrentGear,omitempty"`
 	// The current gearbox temperature.
+	// Unit: 'celsius'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainTransmissionTemperature *SignalFloat `json:"powertrainTransmissionTemperature,omitempty"`
 	// Odometer reading, total distance travelled during the lifetime of the transmission.
@@ -242,6 +265,7 @@ type SignalCollection struct {
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainType *SignalString `json:"powertrainType,omitempty"`
 	// Remaining distance to service (of any kind). Negative values indicate service overdue.
+	// Unit: 'km'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	ServiceDistanceToService *SignalFloat `json:"serviceDistanceToService,omitempty"`
 	// Vehicle speed.
