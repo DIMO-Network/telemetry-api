@@ -48,7 +48,7 @@ type Repository struct {
 // NewRepository creates a new base repository.
 // clientCAs is optional and can be nil.
 func NewRepository(logger *zerolog.Logger, chService CHService, lastSeenBin int64) (*Repository, error) {
-	definitions, err := schema.LoadDefinitionFile(strings.NewReader(schema.DefinitionsYAML()))
+	definitions, err := schema.LoadDefinitionFile(strings.NewReader(schema.DefaultDefinitionsYAML()))
 	if err != nil {
 		return nil, fmt.Errorf("error reading definition file: %w", err)
 	}
