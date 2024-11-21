@@ -283,24 +283,6 @@ extend type SignalAggregations {
   ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDWarmupsSinceDTCClear", forceResolver: true) @isSignal @hasAggregation
   
   """
-  Capacity in liters of the Diesel Exhaust Fluid Tank.
-  Unit: 'l'
-  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-  """
-  powertrainCombustionEngineDieselExhaustFluidCapacity(
-    agg: FloatAggregation!
-  ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineDieselExhaustFluidCapacity", forceResolver: true) @isSignal @hasAggregation
-  
-  """
-  Level of the Diesel Exhaust Fluid tank as percent of capacity. 0 = empty. 100 = full.
-  Unit: 'percent' Min: '0' Max: '100'
-  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-  """
-  powertrainCombustionEngineDieselExhaustFluidLevel(
-    agg: FloatAggregation!
-  ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineDieselExhaustFluidLevel", forceResolver: true) @isSignal @hasAggregation
-  
-  """
   Engine coolant temperature.
   Unit: 'celsius'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
@@ -398,15 +380,6 @@ extend type SignalAggregations {
   ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainRange", forceResolver: true) @isSignal @hasAggregation
   
   """
-  Amount of charge added to the high voltage battery during the current charging session, expressed in kilowatt-hours.
-  Unit: 'kWh'
-  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-  """
-  powertrainTractionBatteryChargingAddedEnergy(
-    agg: FloatAggregation!
-  ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryChargingAddedEnergy", forceResolver: true) @isSignal @hasAggregation
-  
-  """
   Target charge limit (state of charge) for battery.
   Unit: 'percent' Min: '0' Max: '100'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
@@ -449,15 +422,6 @@ extend type SignalAggregations {
   powertrainTractionBatteryGrossCapacity(
     agg: FloatAggregation!
   ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryGrossCapacity", forceResolver: true) @isSignal @hasAggregation
-  
-  """
-  Remaining range in meters using only battery.
-  Unit: 'm'
-  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-  """
-  powertrainTractionBatteryRange(
-    agg: FloatAggregation!
-  ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryRange", forceResolver: true) @isSignal @hasAggregation
   
   """
   Physical state of charge of the high voltage battery, relative to net capacity. This is not necessarily the state of charge being displayed to the customer.
@@ -751,20 +715,6 @@ extend type SignalCollection {
   obdWarmupsSinceDTCClear: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDWarmupsSinceDTCClear") @isSignal
   
   """
-  Capacity in liters of the Diesel Exhaust Fluid Tank.
-  Unit: 'l'
-  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-  """
-  powertrainCombustionEngineDieselExhaustFluidCapacity: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineDieselExhaustFluidCapacity") @isSignal
-  
-  """
-  Level of the Diesel Exhaust Fluid tank as percent of capacity. 0 = empty. 100 = full.
-  Unit: 'percent' Min: '0' Max: '100'
-  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-  """
-  powertrainCombustionEngineDieselExhaustFluidLevel: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineDieselExhaustFluidLevel") @isSignal
-  
-  """
   Engine coolant temperature.
   Unit: 'celsius'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
@@ -840,13 +790,6 @@ extend type SignalCollection {
   powertrainRange: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainRange") @isSignal
   
   """
-  Amount of charge added to the high voltage battery during the current charging session, expressed in kilowatt-hours.
-  Unit: 'kWh'
-  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-  """
-  powertrainTractionBatteryChargingAddedEnergy: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryChargingAddedEnergy") @isSignal
-  
-  """
   Target charge limit (state of charge) for battery.
   Unit: 'percent' Min: '0' Max: '100'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
@@ -879,13 +822,6 @@ extend type SignalCollection {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainTractionBatteryGrossCapacity: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryGrossCapacity") @isSignal
-  
-  """
-  Remaining range in meters using only battery.
-  Unit: 'm'
-  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-  """
-  powertrainTractionBatteryRange: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryRange") @isSignal
   
   """
   Physical state of charge of the high voltage battery, relative to net capacity. This is not necessarily the state of charge being displayed to the customer.

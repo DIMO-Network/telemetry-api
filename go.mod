@@ -24,6 +24,7 @@ require (
 	github.com/stretchr/testify v1.9.0
 	github.com/testcontainers/testcontainers-go v0.34.0
 	github.com/testcontainers/testcontainers-go/modules/minio v0.34.0
+	github.com/uber/h3-go/v4 v4.1.2
 	github.com/vektah/gqlparser/v2 v2.5.19
 	github.com/volatiletech/sqlboiler/v4 v4.16.2
 	go.uber.org/mock v0.5.0

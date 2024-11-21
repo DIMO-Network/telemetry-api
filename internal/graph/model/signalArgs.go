@@ -7,6 +7,10 @@ import (
 const (
 	// LastSeenField is the field name for the last seen timestamp.
 	LastSeenField = "lastSeen"
+	// ApproximateLongField is the field name for the approximate longitude.
+	ApproximateLongField = "currentLocationApproximateLongitude"
+	// ApproximateLatField is the field name for the approximate latitude.
+	ApproximateLatField = "currentLocationApproximateLatitude"
 )
 
 // SignalArgs is the base arguments for querying signals.

@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/99designs/gqlgen/graphql"
+	"github.com/DIMO-Network/model-garage/pkg/vss"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 )
 
@@ -36,7 +37,19 @@ func aggregationArgsFromContext(ctx context.Context, tokenID int, interval strin
 		if err != nil {
 			return nil, fmt.Errorf("failed to get child field: %w", err)
 		}
-		if err := addSignalAggregation(&aggArgs, child); err != nil {
+
+		// check for approximate location fields and force pull the latitude and longitude
+		if field.Name == model.ApproximateLatField || field.Name == model.ApproximateLongField {
+			if err := addSignalAggregation(&aggArgs, child, vss.FieldCurrentLocationLatitude); err != nil {
+				return nil, err
+			}
+			if err := addSignalAggregation(&aggArgs, child, vss.FieldCurrentLocationLongitude); err != nil {
+				return nil, err
+			}
+			continue
+		}
+
+		if err := addSignalAggregation(&aggArgs, child, child.Field.Name); err != nil {
 			return nil, err
 		}
 	}
@@ -44,17 +57,17 @@ func aggregationArgsFromContext(ctx context.Context, tokenID int, interval strin
 }
 
 // addSignalAggregation gets the aggregation arguments from the child field and adds them to the aggregated signal arguments as eiter a float or string aggregation.
-func addSignalAggregation(aggArgs *model.AggregatedSignalArgs, child *graphql.FieldContext) error {
+func addSignalAggregation(aggArgs *model.AggregatedSignalArgs, child *graphql.FieldContext, name string) error {
 	agg := child.Args["agg"]
 	switch typedAgg := agg.(type) {
 	case model.FloatAggregation:
 		aggArgs.FloatArgs = append(aggArgs.FloatArgs, model.FloatSignalArgs{
-			Name: child.Field.Name,
+			Name: name,
 			Agg:  typedAgg,
 		})
 	case model.StringAggregation:
 		aggArgs.StringArgs = append(aggArgs.StringArgs, model.StringSignalArgs{
-			Name: child.Field.Name,
+			Name: name,
 			Agg:  typedAgg,
 		})
 	default:
@@ -74,12 +87,16 @@ func latestArgsFromContext(ctx context.Context, tokenID int, filter *model.Signa
 	fields := graphql.CollectFieldsCtx(ctx, nil)
 	for _, field := range fields {
 		if !isSignal(field) {
-			if field.Name == model.LastSeenField {
+			switch field.Name {
+			case model.LastSeenField:
 				latestArgs.IncludeLastSeen = true
+			case model.ApproximateLatField:
+				fallthrough
+			case model.ApproximateLongField:
+				latestArgs.SignalNames = append(latestArgs.SignalNames, vss.FieldCurrentLocationLatitude, vss.FieldCurrentLocationLongitude)
 			}
 			continue
 		}
-
 		latestArgs.SignalNames = append(latestArgs.SignalNames, field.Name)
 	}
 	return &latestArgs, nil

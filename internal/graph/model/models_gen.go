@@ -43,6 +43,14 @@ type Query struct {
 type SignalCollection struct {
 	// The last time any signal was seen matching the filter.
 	LastSeen *time.Time `json:"lastSeen,omitempty"`
+	// Approximate Latitude of vehicle in WGS 84 geodetic coordinates, as measured at the position of GNSS receiver antenna.
+	// Unit: 'degrees' Min: '-90' Max: '90'
+	// Required Privileges: [VEHICLE_APPROXIMATE_LOCATION]
+	CurrentLocationApproximateLatitude *SignalFloat `json:"currentLocationApproximateLatitude,omitempty"`
+	// Approximate Longitude of vehicle in WGS 84 geodetic coordinates, as measured at the position of GNSS receiver antenna.
+	// Unit: 'degrees' Min: '-180' Max: '180'
+	// Required Privileges: [VEHICLE_APPROXIMATE_LOCATION]
+	CurrentLocationApproximateLongitude *SignalFloat `json:"currentLocationApproximateLongitude,omitempty"`
 	// Vehicle rotation rate along Z (vertical).
 	// Unit: 'degrees/s'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
@@ -165,14 +173,6 @@ type SignalCollection struct {
 	// PID 30 - Number of warm-ups since codes cleared
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	OBDWarmupsSinceDTCClear *SignalFloat `json:"obdWarmupsSinceDTCClear,omitempty"`
-	// Capacity in liters of the Diesel Exhaust Fluid Tank.
-	// Unit: 'l'
-	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-	PowertrainCombustionEngineDieselExhaustFluidCapacity *SignalFloat `json:"powertrainCombustionEngineDieselExhaustFluidCapacity,omitempty"`
-	// Level of the Diesel Exhaust Fluid tank as percent of capacity. 0 = empty. 100 = full.
-	// Unit: 'percent' Min: '0' Max: '100'
-	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-	PowertrainCombustionEngineDieselExhaustFluidLevel *SignalFloat `json:"powertrainCombustionEngineDieselExhaustFluidLevel,omitempty"`
 	// Engine coolant temperature.
 	// Unit: 'celsius'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
@@ -215,10 +215,6 @@ type SignalCollection struct {
 	// Unit: 'm'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainRange *SignalFloat `json:"powertrainRange,omitempty"`
-	// Amount of charge added to the high voltage battery during the current charging session, expressed in kilowatt-hours.
-	// Unit: 'kWh'
-	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-	PowertrainTractionBatteryChargingAddedEnergy *SignalFloat `json:"powertrainTractionBatteryChargingAddedEnergy,omitempty"`
 	// Target charge limit (state of charge) for battery.
 	// Unit: 'percent' Min: '0' Max: '100'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
@@ -238,10 +234,6 @@ type SignalCollection struct {
 	// Unit: 'kWh'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainTractionBatteryGrossCapacity *SignalFloat `json:"powertrainTractionBatteryGrossCapacity,omitempty"`
-	// Remaining range in meters using only battery.
-	// Unit: 'm'
-	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-	PowertrainTractionBatteryRange *SignalFloat `json:"powertrainTractionBatteryRange,omitempty"`
 	// Physical state of charge of the high voltage battery, relative to net capacity. This is not necessarily the state of charge being displayed to the customer.
 	// Unit: 'percent' Min: '0' Max: '100.0'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
@@ -375,6 +367,7 @@ const (
 	PrivilegeVehicleCurrentLocation     Privilege = "VEHICLE_CURRENT_LOCATION"
 	PrivilegeVehicleAllTimeLocation     Privilege = "VEHICLE_ALL_TIME_LOCATION"
 	PrivilegeVehicleVinCredential       Privilege = "VEHICLE_VIN_CREDENTIAL"
+	PrivilegeVehicleApproximateLocation Privilege = "VEHICLE_APPROXIMATE_LOCATION"
 	PrivilegeManufacturerDeviceLastSeen Privilege = "MANUFACTURER_DEVICE_LAST_SEEN"
 )
 
@@ -384,12 +377,13 @@ var AllPrivilege = []Privilege{
 	PrivilegeVehicleCurrentLocation,
 	PrivilegeVehicleAllTimeLocation,
 	PrivilegeVehicleVinCredential,
+	PrivilegeVehicleApproximateLocation,
 	PrivilegeManufacturerDeviceLastSeen,
 }
 
 func (e Privilege) IsValid() bool {
 	switch e {
-	case PrivilegeVehicleNonLocationData, PrivilegeVehicleCommands, PrivilegeVehicleCurrentLocation, PrivilegeVehicleAllTimeLocation, PrivilegeVehicleVinCredential, PrivilegeManufacturerDeviceLastSeen:
+	case PrivilegeVehicleNonLocationData, PrivilegeVehicleCommands, PrivilegeVehicleCurrentLocation, PrivilegeVehicleAllTimeLocation, PrivilegeVehicleVinCredential, PrivilegeVehicleApproximateLocation, PrivilegeManufacturerDeviceLastSeen:
 		return true
 	}
 	return false
