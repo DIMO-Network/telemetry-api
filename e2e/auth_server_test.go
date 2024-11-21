@@ -14,13 +14,15 @@ import (
 )
 
 type mockAuthServer struct {
-	server        *httptest.Server
-	signer        jose.Signer
-	jwks          jose.JSONWebKey
-	defaultClaims map[string]any
+	server                      *httptest.Server
+	signer                      jose.Signer
+	jwks                        jose.JSONWebKey
+	defaultClaims               map[string]any
+	VehicleContractAddress      string
+	ManufacturerContractAddress string
 }
 
-func setupAuthServer(t *testing.T) *mockAuthServer {
+func setupAuthServer(t *testing.T, vehicleContractAddress, manufacturerContractAddress string) *mockAuthServer {
 	t.Helper()
 
 	// Generate RSA key
@@ -68,9 +70,11 @@ func setupAuthServer(t *testing.T) *mockAuthServer {
 	}
 
 	auth := &mockAuthServer{
-		signer:        sig,
-		jwks:          jwk,
-		defaultClaims: defaultClaims,
+		signer:                      sig,
+		jwks:                        jwk,
+		defaultClaims:               defaultClaims,
+		VehicleContractAddress:      vehicleContractAddress,
+		ManufacturerContractAddress: manufacturerContractAddress,
 	}
 
 	// Create test server with only JWKS endpoint
@@ -79,9 +83,12 @@ func setupAuthServer(t *testing.T) *mockAuthServer {
 			http.NotFound(w, r)
 			return
 		}
-		json.NewEncoder(w).Encode(jose.JSONWebKeySet{
+		err := json.NewEncoder(w).Encode(jose.JSONWebKeySet{
 			Keys: []jose.JSONWebKey{jwk},
 		})
+		if err != nil {
+			http.Error(w, "Failed to encode JWKS", http.StatusInternalServerError)
+		}
 	}))
 
 	auth.server = server
@@ -117,7 +124,7 @@ func (m *mockAuthServer) CreateToken(t *testing.T, customClaims map[string]inter
 	for k, v := range customClaims {
 		claims[k] = v
 	}
-	
+
 	// Add privileges if provided
 	if privileges != nil {
 		claims["privilege_ids"] = privileges
@@ -143,14 +150,14 @@ func (m *mockAuthServer) Close() {
 func (m *mockAuthServer) CreateVehicleToken(t *testing.T, tokenID string, privileges []int) string {
 	return m.CreateToken(t, map[string]interface{}{
 		"token_id":         tokenID,
-		"contract_address": "0x45fbCD3ef7361d156e8b16F5538AE36DEdf61Da8",
+		"contract_address": m.VehicleContractAddress,
 	}, privileges)
 }
 
-func (m *mockAuthServer) CreateManufacturerToken(t *testing.T, contractAddr string, tokenID string, privileges []int) string {
+func (m *mockAuthServer) CreateManufacturerToken(t *testing.T, tokenID string, privileges []int) string {
 	return m.CreateToken(t, map[string]interface{}{
-		"contract_address": contractAddr,
-		"token_id":        tokenID,
+		"contract_address": m.ManufacturerContractAddress,
+		"token_id":         tokenID,
 	}, privileges)
 }
 

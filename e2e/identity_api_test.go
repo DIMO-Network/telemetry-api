@@ -43,7 +43,12 @@ func setupIdentityServer() *mockIdentityServer {
 		}
 
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(response)
+
+		if err = json.NewEncoder(w).Encode(response); err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			_, _ = w.Write([]byte(err.Error()))
+			return
+		}
 	}))
 
 	m.server = server
@@ -51,7 +56,7 @@ func setupIdentityServer() *mockIdentityServer {
 }
 
 // SetRequestResponse sets a response for an exact request payload
-func (m *mockIdentityServer) SetRequestResponse(request, response interface{}) error {
+func (m *mockIdentityServer) SetRequestResponse(request, response any) error {
 	reqBytes, err := json.Marshal(request)
 	if err != nil {
 		return err

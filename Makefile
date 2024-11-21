@@ -18,7 +18,7 @@ VERSION   := $(shell git describe --tags || echo "v0.0.0")
 VER_CUT   := $(shell echo $(VERSION) | cut -c2-)
 
 # Dependency versions
-GOLANGCI_VERSION   = v1.56.2
+GOLANGCI_VERSION   = latest
 GQLGEN_VERSION     = $(shell go list -m -f '{{.Version}}' github.com/99designs/gqlgen)
 MODEL_GARAGE_VERSION = $(shell go list -m -f '{{.Version}}' github.com/DIMO-Network/model-garage)
 MOCKGEN_VERSION    = $(shell go list -m -f '{{.Version}}' go.uber.org/mock)

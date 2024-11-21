@@ -5,23 +5,25 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/DIMO-Network/clickhouse-infra/pkg/connect"
 	chconfig "github.com/DIMO-Network/clickhouse-infra/pkg/connect/config"
 	"github.com/DIMO-Network/clickhouse-infra/pkg/container"
 	sigmigrations "github.com/DIMO-Network/model-garage/pkg/migrations"
 	"github.com/DIMO-Network/model-garage/pkg/vss"
+	indexmigrations "github.com/DIMO-Network/nameindexer/pkg/clickhouse/migrations"
 	"github.com/stretchr/testify/require"
 )
 
-func setupClickhouseContainer(t *testing.T) *container.Container {
+func setupClickhouseContainer(t *testing.T, indexDB string) *container.Container {
 	t.Helper()
 	ctx := context.Background()
 
-	container, err := container.CreateClickHouseContainer(ctx, chconfig.Settings{})
+	chContainer, err := container.CreateClickHouseContainer(ctx, chconfig.Settings{})
 	if err != nil {
 		t.Fatalf("Failed to create clickhouse container: %v", err)
 	}
 
-	db, err := container.GetClickhouseAsDB()
+	db, err := chContainer.GetClickhouseAsDB()
 	if err != nil {
 		t.Fatalf("Failed to get clickhouse connection: %v", err)
 	}
@@ -30,12 +32,21 @@ func setupClickhouseContainer(t *testing.T) *container.Container {
 	if err != nil {
 		t.Fatalf("Failed to run migrations: %v", err)
 	}
-	// err = indexmigrations.RunGoose(ctx, []string{"up", "-v"}, db)
-	// if err != nil {
-	// 	t.Fatalf("Failed to run migrations: %v", err)
-	// }
+	// Create index database
+	_, err = db.Exec("CREATE DATABASE IF NOT EXISTS " + indexDB)
+	require.NoError(t, err, "Failed to create index database")
+	chConfig := chContainer.Config()
+	chConfig.Database = indexDB
+	fileDB := connect.GetClickhouseDB(&chConfig)
+	if err != nil {
+		t.Fatalf("Failed to get clickhouse connection: %v", err)
+	}
+	err = indexmigrations.RunGoose(ctx, []string{"up", "-v"}, fileDB)
+	if err != nil {
+		t.Fatalf("Failed to run migrations: %v", err)
+	}
 
-	return container
+	return chContainer
 }
 
 // insertSignal inserts a test signal into Clickhouse

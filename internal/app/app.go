@@ -131,7 +131,9 @@ func s3ClientFromSettings(settings *config.Settings) (*s3.Client, error) {
 			"",
 		),
 	}
-	return s3.NewFromConfig(conf), nil
+	return s3.NewFromConfig(conf, func(o *s3.Options) {
+		o.BaseEndpoint = settings.S3BaseEndpoint
+	}), nil
 }
 
 func errorHandler(log zerolog.Logger) func(ctx context.Context, e error) *gqlerror.Error {

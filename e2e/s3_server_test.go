@@ -3,10 +3,8 @@ package e2e_test
 import (
 	"context"
 	"fmt"
-	"log"
 	"testing"
 
-	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
@@ -15,13 +13,14 @@ import (
 	"github.com/testcontainers/testcontainers-go/modules/minio"
 )
 
-type s3Server struct {
-	container testcontainers.Container
-	client    *s3.Client
-	vcBucket  string
+type mockS3Server struct {
+	container    testcontainers.Container
+	client       *s3.Client
+	vcBucket     string
+	baseEndpoint *string
 }
 
-func setupS3Server(t *testing.T, vcBucket, pomBucket string) *s3Server {
+func setupS3Server(t *testing.T, vcBucket string) *mockS3Server {
 	t.Helper()
 	ctx := context.Background()
 
@@ -33,11 +32,6 @@ func setupS3Server(t *testing.T, vcBucket, pomBucket string) *s3Server {
 		testcontainers.WithHostPortAccess(9000),
 	)
 
-	defer func() {
-		if err := testcontainers.TerminateContainer(minioContainer); err != nil {
-			log.Printf("failed to terminate container: %s", err)
-		}
-	}()
 	if err != nil {
 		require.NoError(t, err)
 	}
@@ -46,33 +40,25 @@ func setupS3Server(t *testing.T, vcBucket, pomBucket string) *s3Server {
 	if err != nil {
 		t.Fatalf("Failed to get container port: %v", err)
 	}
-
-	endpoint := fmt.Sprintf("http://localhost:%s", mappedPort.Port())
+	endpont := fmt.Sprintf("http://localhost:%s", mappedPort.Port())
 
 	// Create S3 client
-	customResolver := aws.EndpointResolverWithOptionsFunc(func(service, region string, options ...interface{}) (aws.Endpoint, error) {
-		return aws.Endpoint{
-			URL: endpoint,
-		}, nil
-	})
-
-	cfg, err := config.LoadDefaultConfig(ctx,
-		config.WithEndpointResolverWithOptions(customResolver),
+	cfg, err := config.LoadDefaultConfig(context.TODO(),
 		config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider("minioadmin", "minioadmin", "")),
 		config.WithRegion("us-east-1"),
 	)
 	if err != nil {
 		t.Fatalf("Failed to create AWS config: %v", err)
 	}
-
 	client := s3.NewFromConfig(cfg, func(o *s3.Options) {
 		o.UsePathStyle = true
+		o.BaseEndpoint = &endpont
 	})
-
-	s3srv := &s3Server{
-		container: minioContainer,
-		client:    client,
-		vcBucket:  vcBucket,
+	s3srv := &mockS3Server{
+		container:    minioContainer,
+		client:       client,
+		vcBucket:     vcBucket,
+		baseEndpoint: &endpont,
 	}
 
 	// Create VC bucket
@@ -85,15 +71,19 @@ func setupS3Server(t *testing.T, vcBucket, pomBucket string) *s3Server {
 	return s3srv
 }
 
-func (s *s3Server) GetClient() *s3.Client {
+func (s *mockS3Server) GetClient() *s3.Client {
 	return s.client
 }
 
-func (s *s3Server) GetVCBucket() string {
+func (s *mockS3Server) BaseEndpoint() *string {
+	return s.baseEndpoint
+}
+
+func (s *mockS3Server) GetVCBucket() string {
 	return s.vcBucket
 }
 
-func (s *s3Server) Cleanup(t *testing.T) {
+func (s *mockS3Server) Cleanup(t *testing.T) {
 	t.Helper()
 	if err := s.container.Terminate(context.Background()); err != nil {
 		t.Logf("Failed to terminate S3 container: %v", err)
