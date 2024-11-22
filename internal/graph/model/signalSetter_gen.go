@@ -169,6 +169,16 @@ func SetCollectionField(collection *SignalCollection, signal *vss.Signal) {
 			Timestamp: signal.Timestamp,
 			Value:     signal.ValueNumber,
 		}
+	case "powertrainCombustionEngineDieselExhaustFluidCapacity":
+		collection.PowertrainCombustionEngineDieselExhaustFluidCapacity = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
+	case "powertrainCombustionEngineDieselExhaustFluidLevel":
+		collection.PowertrainCombustionEngineDieselExhaustFluidLevel = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
 	case "powertrainCombustionEngineECT":
 		collection.PowertrainCombustionEngineECT = &SignalFloat{
 			Timestamp: signal.Timestamp,
@@ -224,6 +234,11 @@ func SetCollectionField(collection *SignalCollection, signal *vss.Signal) {
 			Timestamp: signal.Timestamp,
 			Value:     signal.ValueNumber,
 		}
+	case "powertrainTractionBatteryChargingAddedEnergy":
+		collection.PowertrainTractionBatteryChargingAddedEnergy = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
 	case "powertrainTractionBatteryChargingChargeLimit":
 		collection.PowertrainTractionBatteryChargingChargeLimit = &SignalFloat{
 			Timestamp: signal.Timestamp,
@@ -246,6 +261,11 @@ func SetCollectionField(collection *SignalCollection, signal *vss.Signal) {
 		}
 	case "powertrainTractionBatteryGrossCapacity":
 		collection.PowertrainTractionBatteryGrossCapacity = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
+	case "powertrainTractionBatteryRange":
+		collection.PowertrainTractionBatteryRange = &SignalFloat{
 			Timestamp: signal.Timestamp,
 			Value:     signal.ValueNumber,
 		}
@@ -362,6 +382,10 @@ func SetAggregationField(aggregations *SignalAggregations, signal *AggSignal) {
 		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
 	case "obdWarmupsSinceDTCClear":
 		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
+	case "powertrainCombustionEngineDieselExhaustFluidCapacity":
+		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
+	case "powertrainCombustionEngineDieselExhaustFluidLevel":
+		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
 	case "powertrainCombustionEngineECT":
 		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
 	case "powertrainCombustionEngineEngineOilLevel":
@@ -384,6 +408,8 @@ func SetAggregationField(aggregations *SignalAggregations, signal *AggSignal) {
 		aggregations.ValueStrings[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueString
 	case "powertrainRange":
 		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
+	case "powertrainTractionBatteryChargingAddedEnergy":
+		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
 	case "powertrainTractionBatteryChargingChargeLimit":
 		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
 	case "powertrainTractionBatteryChargingIsCharging":
@@ -393,6 +419,8 @@ func SetAggregationField(aggregations *SignalAggregations, signal *AggSignal) {
 	case "powertrainTractionBatteryCurrentVoltage":
 		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
 	case "powertrainTractionBatteryGrossCapacity":
+		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
+	case "powertrainTractionBatteryRange":
 		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
 	case "powertrainTractionBatteryStateOfChargeCurrent":
 		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber

@@ -76,127 +76,135 @@ type ComplexityRoot struct {
 	}
 
 	SignalAggregations struct {
-		AngularVelocityYaw                               func(childComplexity int, agg model.FloatAggregation) int
-		ChassisAxleRow1WheelLeftSpeed                    func(childComplexity int, agg model.FloatAggregation) int
-		ChassisAxleRow1WheelLeftTirePressure             func(childComplexity int, agg model.FloatAggregation) int
-		ChassisAxleRow1WheelRightSpeed                   func(childComplexity int, agg model.FloatAggregation) int
-		ChassisAxleRow1WheelRightTirePressure            func(childComplexity int, agg model.FloatAggregation) int
-		ChassisAxleRow2WheelLeftTirePressure             func(childComplexity int, agg model.FloatAggregation) int
-		ChassisAxleRow2WheelRightTirePressure            func(childComplexity int, agg model.FloatAggregation) int
-		CurrentLocationAltitude                          func(childComplexity int, agg model.FloatAggregation) int
-		CurrentLocationApproximateLatitude               func(childComplexity int, agg model.FloatAggregation) int
-		CurrentLocationApproximateLongitude              func(childComplexity int, agg model.FloatAggregation) int
-		CurrentLocationIsRedacted                        func(childComplexity int, agg model.FloatAggregation) int
-		CurrentLocationLatitude                          func(childComplexity int, agg model.FloatAggregation) int
-		CurrentLocationLongitude                         func(childComplexity int, agg model.FloatAggregation) int
-		DimoAftermarketHdop                              func(childComplexity int, agg model.FloatAggregation) int
-		DimoAftermarketNsat                              func(childComplexity int, agg model.FloatAggregation) int
-		DimoAftermarketSsid                              func(childComplexity int, agg model.StringAggregation) int
-		DimoAftermarketWPAState                          func(childComplexity int, agg model.StringAggregation) int
-		ExteriorAirTemperature                           func(childComplexity int, agg model.FloatAggregation) int
-		LowVoltageBatteryCurrentVoltage                  func(childComplexity int, agg model.FloatAggregation) int
-		ObdBarometricPressure                            func(childComplexity int, agg model.FloatAggregation) int
-		ObdCommandedEgr                                  func(childComplexity int, agg model.FloatAggregation) int
-		ObdCommandedEvap                                 func(childComplexity int, agg model.FloatAggregation) int
-		ObdDistanceSinceDTCClear                         func(childComplexity int, agg model.FloatAggregation) int
-		ObdDistanceWithMil                               func(childComplexity int, agg model.FloatAggregation) int
-		ObdEngineLoad                                    func(childComplexity int, agg model.FloatAggregation) int
-		ObdFuelPressure                                  func(childComplexity int, agg model.FloatAggregation) int
-		ObdIntakeTemp                                    func(childComplexity int, agg model.FloatAggregation) int
-		ObdLongTermFuelTrim1                             func(childComplexity int, agg model.FloatAggregation) int
-		ObdMap                                           func(childComplexity int, agg model.FloatAggregation) int
-		ObdO2WRSensor1Voltage                            func(childComplexity int, agg model.FloatAggregation) int
-		ObdO2WRSensor2Voltage                            func(childComplexity int, agg model.FloatAggregation) int
-		ObdRunTime                                       func(childComplexity int, agg model.FloatAggregation) int
-		ObdShortTermFuelTrim1                            func(childComplexity int, agg model.FloatAggregation) int
-		ObdWarmupsSinceDTCClear                          func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainCombustionEngineEct                    func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainCombustionEngineEngineOilLevel         func(childComplexity int, agg model.StringAggregation) int
-		PowertrainCombustionEngineEngineOilRelativeLevel func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainCombustionEngineMaf                    func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainCombustionEngineSpeed                  func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainCombustionEngineTorque                 func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainCombustionEngineTps                    func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainFuelSystemAbsoluteLevel                func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainFuelSystemRelativeLevel                func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainFuelSystemSupportedFuelTypes           func(childComplexity int, agg model.StringAggregation) int
-		PowertrainRange                                  func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainTractionBatteryChargingChargeLimit     func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainTractionBatteryChargingIsCharging      func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainTractionBatteryCurrentPower            func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainTractionBatteryCurrentVoltage          func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainTractionBatteryGrossCapacity           func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainTractionBatteryStateOfChargeCurrent    func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainTractionBatteryTemperatureAverage      func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainTransmissionCurrentGear                func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainTransmissionTemperature                func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainTransmissionTravelledDistance          func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainType                                   func(childComplexity int, agg model.StringAggregation) int
-		ServiceDistanceToService                         func(childComplexity int, agg model.FloatAggregation) int
-		Speed                                            func(childComplexity int, agg model.FloatAggregation) int
-		Timestamp                                        func(childComplexity int) int
+		AngularVelocityYaw                                   func(childComplexity int, agg model.FloatAggregation) int
+		ChassisAxleRow1WheelLeftSpeed                        func(childComplexity int, agg model.FloatAggregation) int
+		ChassisAxleRow1WheelLeftTirePressure                 func(childComplexity int, agg model.FloatAggregation) int
+		ChassisAxleRow1WheelRightSpeed                       func(childComplexity int, agg model.FloatAggregation) int
+		ChassisAxleRow1WheelRightTirePressure                func(childComplexity int, agg model.FloatAggregation) int
+		ChassisAxleRow2WheelLeftTirePressure                 func(childComplexity int, agg model.FloatAggregation) int
+		ChassisAxleRow2WheelRightTirePressure                func(childComplexity int, agg model.FloatAggregation) int
+		CurrentLocationAltitude                              func(childComplexity int, agg model.FloatAggregation) int
+		CurrentLocationApproximateLatitude                   func(childComplexity int, agg model.FloatAggregation) int
+		CurrentLocationApproximateLongitude                  func(childComplexity int, agg model.FloatAggregation) int
+		CurrentLocationIsRedacted                            func(childComplexity int, agg model.FloatAggregation) int
+		CurrentLocationLatitude                              func(childComplexity int, agg model.FloatAggregation) int
+		CurrentLocationLongitude                             func(childComplexity int, agg model.FloatAggregation) int
+		DimoAftermarketHdop                                  func(childComplexity int, agg model.FloatAggregation) int
+		DimoAftermarketNsat                                  func(childComplexity int, agg model.FloatAggregation) int
+		DimoAftermarketSsid                                  func(childComplexity int, agg model.StringAggregation) int
+		DimoAftermarketWPAState                              func(childComplexity int, agg model.StringAggregation) int
+		ExteriorAirTemperature                               func(childComplexity int, agg model.FloatAggregation) int
+		LowVoltageBatteryCurrentVoltage                      func(childComplexity int, agg model.FloatAggregation) int
+		ObdBarometricPressure                                func(childComplexity int, agg model.FloatAggregation) int
+		ObdCommandedEgr                                      func(childComplexity int, agg model.FloatAggregation) int
+		ObdCommandedEvap                                     func(childComplexity int, agg model.FloatAggregation) int
+		ObdDistanceSinceDTCClear                             func(childComplexity int, agg model.FloatAggregation) int
+		ObdDistanceWithMil                                   func(childComplexity int, agg model.FloatAggregation) int
+		ObdEngineLoad                                        func(childComplexity int, agg model.FloatAggregation) int
+		ObdFuelPressure                                      func(childComplexity int, agg model.FloatAggregation) int
+		ObdIntakeTemp                                        func(childComplexity int, agg model.FloatAggregation) int
+		ObdLongTermFuelTrim1                                 func(childComplexity int, agg model.FloatAggregation) int
+		ObdMap                                               func(childComplexity int, agg model.FloatAggregation) int
+		ObdO2WRSensor1Voltage                                func(childComplexity int, agg model.FloatAggregation) int
+		ObdO2WRSensor2Voltage                                func(childComplexity int, agg model.FloatAggregation) int
+		ObdRunTime                                           func(childComplexity int, agg model.FloatAggregation) int
+		ObdShortTermFuelTrim1                                func(childComplexity int, agg model.FloatAggregation) int
+		ObdWarmupsSinceDTCClear                              func(childComplexity int, agg model.FloatAggregation) int
+		PowertrainCombustionEngineDieselExhaustFluidCapacity func(childComplexity int, agg model.FloatAggregation) int
+		PowertrainCombustionEngineDieselExhaustFluidLevel    func(childComplexity int, agg model.FloatAggregation) int
+		PowertrainCombustionEngineEct                        func(childComplexity int, agg model.FloatAggregation) int
+		PowertrainCombustionEngineEngineOilLevel             func(childComplexity int, agg model.StringAggregation) int
+		PowertrainCombustionEngineEngineOilRelativeLevel     func(childComplexity int, agg model.FloatAggregation) int
+		PowertrainCombustionEngineMaf                        func(childComplexity int, agg model.FloatAggregation) int
+		PowertrainCombustionEngineSpeed                      func(childComplexity int, agg model.FloatAggregation) int
+		PowertrainCombustionEngineTorque                     func(childComplexity int, agg model.FloatAggregation) int
+		PowertrainCombustionEngineTps                        func(childComplexity int, agg model.FloatAggregation) int
+		PowertrainFuelSystemAbsoluteLevel                    func(childComplexity int, agg model.FloatAggregation) int
+		PowertrainFuelSystemRelativeLevel                    func(childComplexity int, agg model.FloatAggregation) int
+		PowertrainFuelSystemSupportedFuelTypes               func(childComplexity int, agg model.StringAggregation) int
+		PowertrainRange                                      func(childComplexity int, agg model.FloatAggregation) int
+		PowertrainTractionBatteryChargingAddedEnergy         func(childComplexity int, agg model.FloatAggregation) int
+		PowertrainTractionBatteryChargingChargeLimit         func(childComplexity int, agg model.FloatAggregation) int
+		PowertrainTractionBatteryChargingIsCharging          func(childComplexity int, agg model.FloatAggregation) int
+		PowertrainTractionBatteryCurrentPower                func(childComplexity int, agg model.FloatAggregation) int
+		PowertrainTractionBatteryCurrentVoltage              func(childComplexity int, agg model.FloatAggregation) int
+		PowertrainTractionBatteryGrossCapacity               func(childComplexity int, agg model.FloatAggregation) int
+		PowertrainTractionBatteryRange                       func(childComplexity int, agg model.FloatAggregation) int
+		PowertrainTractionBatteryStateOfChargeCurrent        func(childComplexity int, agg model.FloatAggregation) int
+		PowertrainTractionBatteryTemperatureAverage          func(childComplexity int, agg model.FloatAggregation) int
+		PowertrainTransmissionCurrentGear                    func(childComplexity int, agg model.FloatAggregation) int
+		PowertrainTransmissionTemperature                    func(childComplexity int, agg model.FloatAggregation) int
+		PowertrainTransmissionTravelledDistance              func(childComplexity int, agg model.FloatAggregation) int
+		PowertrainType                                       func(childComplexity int, agg model.StringAggregation) int
+		ServiceDistanceToService                             func(childComplexity int, agg model.FloatAggregation) int
+		Speed                                                func(childComplexity int, agg model.FloatAggregation) int
+		Timestamp                                            func(childComplexity int) int
 	}
 
 	SignalCollection struct {
-		AngularVelocityYaw                               func(childComplexity int) int
-		ChassisAxleRow1WheelLeftSpeed                    func(childComplexity int) int
-		ChassisAxleRow1WheelLeftTirePressure             func(childComplexity int) int
-		ChassisAxleRow1WheelRightSpeed                   func(childComplexity int) int
-		ChassisAxleRow1WheelRightTirePressure            func(childComplexity int) int
-		ChassisAxleRow2WheelLeftTirePressure             func(childComplexity int) int
-		ChassisAxleRow2WheelRightTirePressure            func(childComplexity int) int
-		CurrentLocationAltitude                          func(childComplexity int) int
-		CurrentLocationApproximateLatitude               func(childComplexity int) int
-		CurrentLocationApproximateLongitude              func(childComplexity int) int
-		CurrentLocationIsRedacted                        func(childComplexity int) int
-		CurrentLocationLatitude                          func(childComplexity int) int
-		CurrentLocationLongitude                         func(childComplexity int) int
-		DIMOAftermarketHDOP                              func(childComplexity int) int
-		DIMOAftermarketNSAT                              func(childComplexity int) int
-		DIMOAftermarketSSID                              func(childComplexity int) int
-		DIMOAftermarketWPAState                          func(childComplexity int) int
-		ExteriorAirTemperature                           func(childComplexity int) int
-		LastSeen                                         func(childComplexity int) int
-		LowVoltageBatteryCurrentVoltage                  func(childComplexity int) int
-		OBDBarometricPressure                            func(childComplexity int) int
-		OBDCommandedEGR                                  func(childComplexity int) int
-		OBDCommandedEVAP                                 func(childComplexity int) int
-		OBDDistanceSinceDTCClear                         func(childComplexity int) int
-		OBDDistanceWithMIL                               func(childComplexity int) int
-		OBDEngineLoad                                    func(childComplexity int) int
-		OBDFuelPressure                                  func(childComplexity int) int
-		OBDIntakeTemp                                    func(childComplexity int) int
-		OBDLongTermFuelTrim1                             func(childComplexity int) int
-		OBDMAP                                           func(childComplexity int) int
-		OBDO2WRSensor1Voltage                            func(childComplexity int) int
-		OBDO2WRSensor2Voltage                            func(childComplexity int) int
-		OBDRunTime                                       func(childComplexity int) int
-		OBDShortTermFuelTrim1                            func(childComplexity int) int
-		OBDWarmupsSinceDTCClear                          func(childComplexity int) int
-		PowertrainCombustionEngineECT                    func(childComplexity int) int
-		PowertrainCombustionEngineEngineOilLevel         func(childComplexity int) int
-		PowertrainCombustionEngineEngineOilRelativeLevel func(childComplexity int) int
-		PowertrainCombustionEngineMAF                    func(childComplexity int) int
-		PowertrainCombustionEngineSpeed                  func(childComplexity int) int
-		PowertrainCombustionEngineTPS                    func(childComplexity int) int
-		PowertrainCombustionEngineTorque                 func(childComplexity int) int
-		PowertrainFuelSystemAbsoluteLevel                func(childComplexity int) int
-		PowertrainFuelSystemRelativeLevel                func(childComplexity int) int
-		PowertrainFuelSystemSupportedFuelTypes           func(childComplexity int) int
-		PowertrainRange                                  func(childComplexity int) int
-		PowertrainTractionBatteryChargingChargeLimit     func(childComplexity int) int
-		PowertrainTractionBatteryChargingIsCharging      func(childComplexity int) int
-		PowertrainTractionBatteryCurrentPower            func(childComplexity int) int
-		PowertrainTractionBatteryCurrentVoltage          func(childComplexity int) int
-		PowertrainTractionBatteryGrossCapacity           func(childComplexity int) int
-		PowertrainTractionBatteryStateOfChargeCurrent    func(childComplexity int) int
-		PowertrainTractionBatteryTemperatureAverage      func(childComplexity int) int
-		PowertrainTransmissionCurrentGear                func(childComplexity int) int
-		PowertrainTransmissionTemperature                func(childComplexity int) int
-		PowertrainTransmissionTravelledDistance          func(childComplexity int) int
-		PowertrainType                                   func(childComplexity int) int
-		ServiceDistanceToService                         func(childComplexity int) int
-		Speed                                            func(childComplexity int) int
+		AngularVelocityYaw                                   func(childComplexity int) int
+		ChassisAxleRow1WheelLeftSpeed                        func(childComplexity int) int
+		ChassisAxleRow1WheelLeftTirePressure                 func(childComplexity int) int
+		ChassisAxleRow1WheelRightSpeed                       func(childComplexity int) int
+		ChassisAxleRow1WheelRightTirePressure                func(childComplexity int) int
+		ChassisAxleRow2WheelLeftTirePressure                 func(childComplexity int) int
+		ChassisAxleRow2WheelRightTirePressure                func(childComplexity int) int
+		CurrentLocationAltitude                              func(childComplexity int) int
+		CurrentLocationApproximateLatitude                   func(childComplexity int) int
+		CurrentLocationApproximateLongitude                  func(childComplexity int) int
+		CurrentLocationIsRedacted                            func(childComplexity int) int
+		CurrentLocationLatitude                              func(childComplexity int) int
+		CurrentLocationLongitude                             func(childComplexity int) int
+		DIMOAftermarketHDOP                                  func(childComplexity int) int
+		DIMOAftermarketNSAT                                  func(childComplexity int) int
+		DIMOAftermarketSSID                                  func(childComplexity int) int
+		DIMOAftermarketWPAState                              func(childComplexity int) int
+		ExteriorAirTemperature                               func(childComplexity int) int
+		LastSeen                                             func(childComplexity int) int
+		LowVoltageBatteryCurrentVoltage                      func(childComplexity int) int
+		OBDBarometricPressure                                func(childComplexity int) int
+		OBDCommandedEGR                                      func(childComplexity int) int
+		OBDCommandedEVAP                                     func(childComplexity int) int
+		OBDDistanceSinceDTCClear                             func(childComplexity int) int
+		OBDDistanceWithMIL                                   func(childComplexity int) int
+		OBDEngineLoad                                        func(childComplexity int) int
+		OBDFuelPressure                                      func(childComplexity int) int
+		OBDIntakeTemp                                        func(childComplexity int) int
+		OBDLongTermFuelTrim1                                 func(childComplexity int) int
+		OBDMAP                                               func(childComplexity int) int
+		OBDO2WRSensor1Voltage                                func(childComplexity int) int
+		OBDO2WRSensor2Voltage                                func(childComplexity int) int
+		OBDRunTime                                           func(childComplexity int) int
+		OBDShortTermFuelTrim1                                func(childComplexity int) int
+		OBDWarmupsSinceDTCClear                              func(childComplexity int) int
+		PowertrainCombustionEngineDieselExhaustFluidCapacity func(childComplexity int) int
+		PowertrainCombustionEngineDieselExhaustFluidLevel    func(childComplexity int) int
+		PowertrainCombustionEngineECT                        func(childComplexity int) int
+		PowertrainCombustionEngineEngineOilLevel             func(childComplexity int) int
+		PowertrainCombustionEngineEngineOilRelativeLevel     func(childComplexity int) int
+		PowertrainCombustionEngineMAF                        func(childComplexity int) int
+		PowertrainCombustionEngineSpeed                      func(childComplexity int) int
+		PowertrainCombustionEngineTPS                        func(childComplexity int) int
+		PowertrainCombustionEngineTorque                     func(childComplexity int) int
+		PowertrainFuelSystemAbsoluteLevel                    func(childComplexity int) int
+		PowertrainFuelSystemRelativeLevel                    func(childComplexity int) int
+		PowertrainFuelSystemSupportedFuelTypes               func(childComplexity int) int
+		PowertrainRange                                      func(childComplexity int) int
+		PowertrainTractionBatteryChargingAddedEnergy         func(childComplexity int) int
+		PowertrainTractionBatteryChargingChargeLimit         func(childComplexity int) int
+		PowertrainTractionBatteryChargingIsCharging          func(childComplexity int) int
+		PowertrainTractionBatteryCurrentPower                func(childComplexity int) int
+		PowertrainTractionBatteryCurrentVoltage              func(childComplexity int) int
+		PowertrainTractionBatteryGrossCapacity               func(childComplexity int) int
+		PowertrainTractionBatteryRange                       func(childComplexity int) int
+		PowertrainTractionBatteryStateOfChargeCurrent        func(childComplexity int) int
+		PowertrainTractionBatteryTemperatureAverage          func(childComplexity int) int
+		PowertrainTransmissionCurrentGear                    func(childComplexity int) int
+		PowertrainTransmissionTemperature                    func(childComplexity int) int
+		PowertrainTransmissionTravelledDistance              func(childComplexity int) int
+		PowertrainType                                       func(childComplexity int) int
+		ServiceDistanceToService                             func(childComplexity int) int
+		Speed                                                func(childComplexity int) int
 	}
 
 	SignalFloat struct {
@@ -265,6 +273,8 @@ type SignalAggregationsResolver interface {
 	ObdRunTime(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
 	ObdShortTermFuelTrim1(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
 	ObdWarmupsSinceDTCClear(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
+	PowertrainCombustionEngineDieselExhaustFluidCapacity(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
+	PowertrainCombustionEngineDieselExhaustFluidLevel(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
 	PowertrainCombustionEngineEct(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
 	PowertrainCombustionEngineEngineOilLevel(ctx context.Context, obj *model.SignalAggregations, agg model.StringAggregation) (*string, error)
 	PowertrainCombustionEngineEngineOilRelativeLevel(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
@@ -276,11 +286,13 @@ type SignalAggregationsResolver interface {
 	PowertrainFuelSystemRelativeLevel(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
 	PowertrainFuelSystemSupportedFuelTypes(ctx context.Context, obj *model.SignalAggregations, agg model.StringAggregation) (*string, error)
 	PowertrainRange(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
+	PowertrainTractionBatteryChargingAddedEnergy(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
 	PowertrainTractionBatteryChargingChargeLimit(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
 	PowertrainTractionBatteryChargingIsCharging(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
 	PowertrainTractionBatteryCurrentPower(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
 	PowertrainTractionBatteryCurrentVoltage(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
 	PowertrainTractionBatteryGrossCapacity(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
+	PowertrainTractionBatteryRange(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
 	PowertrainTractionBatteryStateOfChargeCurrent(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
 	PowertrainTractionBatteryTemperatureAverage(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
 	PowertrainTransmissionCurrentGear(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
@@ -832,6 +844,30 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.SignalAggregations.ObdWarmupsSinceDTCClear(childComplexity, args["agg"].(model.FloatAggregation)), true
 
+	case "SignalAggregations.powertrainCombustionEngineDieselExhaustFluidCapacity":
+		if e.complexity.SignalAggregations.PowertrainCombustionEngineDieselExhaustFluidCapacity == nil {
+			break
+		}
+
+		args, err := ec.field_SignalAggregations_powertrainCombustionEngineDieselExhaustFluidCapacity_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.SignalAggregations.PowertrainCombustionEngineDieselExhaustFluidCapacity(childComplexity, args["agg"].(model.FloatAggregation)), true
+
+	case "SignalAggregations.powertrainCombustionEngineDieselExhaustFluidLevel":
+		if e.complexity.SignalAggregations.PowertrainCombustionEngineDieselExhaustFluidLevel == nil {
+			break
+		}
+
+		args, err := ec.field_SignalAggregations_powertrainCombustionEngineDieselExhaustFluidLevel_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.SignalAggregations.PowertrainCombustionEngineDieselExhaustFluidLevel(childComplexity, args["agg"].(model.FloatAggregation)), true
+
 	case "SignalAggregations.powertrainCombustionEngineECT":
 		if e.complexity.SignalAggregations.PowertrainCombustionEngineEct == nil {
 			break
@@ -964,6 +1000,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.SignalAggregations.PowertrainRange(childComplexity, args["agg"].(model.FloatAggregation)), true
 
+	case "SignalAggregations.powertrainTractionBatteryChargingAddedEnergy":
+		if e.complexity.SignalAggregations.PowertrainTractionBatteryChargingAddedEnergy == nil {
+			break
+		}
+
+		args, err := ec.field_SignalAggregations_powertrainTractionBatteryChargingAddedEnergy_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.SignalAggregations.PowertrainTractionBatteryChargingAddedEnergy(childComplexity, args["agg"].(model.FloatAggregation)), true
+
 	case "SignalAggregations.powertrainTractionBatteryChargingChargeLimit":
 		if e.complexity.SignalAggregations.PowertrainTractionBatteryChargingChargeLimit == nil {
 			break
@@ -1023,6 +1071,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.SignalAggregations.PowertrainTractionBatteryGrossCapacity(childComplexity, args["agg"].(model.FloatAggregation)), true
+
+	case "SignalAggregations.powertrainTractionBatteryRange":
+		if e.complexity.SignalAggregations.PowertrainTractionBatteryRange == nil {
+			break
+		}
+
+		args, err := ec.field_SignalAggregations_powertrainTractionBatteryRange_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.SignalAggregations.PowertrainTractionBatteryRange(childComplexity, args["agg"].(model.FloatAggregation)), true
 
 	case "SignalAggregations.powertrainTractionBatteryStateOfChargeCurrent":
 		if e.complexity.SignalAggregations.PowertrainTractionBatteryStateOfChargeCurrent == nil {
@@ -1372,6 +1432,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.SignalCollection.OBDWarmupsSinceDTCClear(childComplexity), true
 
+	case "SignalCollection.powertrainCombustionEngineDieselExhaustFluidCapacity":
+		if e.complexity.SignalCollection.PowertrainCombustionEngineDieselExhaustFluidCapacity == nil {
+			break
+		}
+
+		return e.complexity.SignalCollection.PowertrainCombustionEngineDieselExhaustFluidCapacity(childComplexity), true
+
+	case "SignalCollection.powertrainCombustionEngineDieselExhaustFluidLevel":
+		if e.complexity.SignalCollection.PowertrainCombustionEngineDieselExhaustFluidLevel == nil {
+			break
+		}
+
+		return e.complexity.SignalCollection.PowertrainCombustionEngineDieselExhaustFluidLevel(childComplexity), true
+
 	case "SignalCollection.powertrainCombustionEngineECT":
 		if e.complexity.SignalCollection.PowertrainCombustionEngineECT == nil {
 			break
@@ -1449,6 +1523,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.SignalCollection.PowertrainRange(childComplexity), true
 
+	case "SignalCollection.powertrainTractionBatteryChargingAddedEnergy":
+		if e.complexity.SignalCollection.PowertrainTractionBatteryChargingAddedEnergy == nil {
+			break
+		}
+
+		return e.complexity.SignalCollection.PowertrainTractionBatteryChargingAddedEnergy(childComplexity), true
+
 	case "SignalCollection.powertrainTractionBatteryChargingChargeLimit":
 		if e.complexity.SignalCollection.PowertrainTractionBatteryChargingChargeLimit == nil {
 			break
@@ -1483,6 +1564,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.SignalCollection.PowertrainTractionBatteryGrossCapacity(childComplexity), true
+
+	case "SignalCollection.powertrainTractionBatteryRange":
+		if e.complexity.SignalCollection.PowertrainTractionBatteryRange == nil {
+			break
+		}
+
+		return e.complexity.SignalCollection.PowertrainTractionBatteryRange(childComplexity), true
 
 	case "SignalCollection.powertrainTractionBatteryStateOfChargeCurrent":
 		if e.complexity.SignalCollection.PowertrainTractionBatteryStateOfChargeCurrent == nil {
@@ -1636,15 +1724,15 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 }
 
 func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
-	rc := graphql.GetOperationContext(ctx)
-	ec := executionContext{rc, e, 0, 0, make(chan graphql.DeferredResult)}
+	opCtx := graphql.GetOperationContext(ctx)
+	ec := executionContext{opCtx, e, 0, 0, make(chan graphql.DeferredResult)}
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
 		ec.unmarshalInputAftermarketDeviceBy,
 		ec.unmarshalInputSignalFilter,
 	)
 	first := true
 
-	switch rc.Operation.Operation {
+	switch opCtx.Operation.Operation {
 	case ast.Query:
 		return func(ctx context.Context) *graphql.Response {
 			var response graphql.Response
@@ -1652,7 +1740,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 			if first {
 				first = false
 				ctx = graphql.WithUnmarshalerMap(ctx, inputUnmarshalMap)
-				data = ec._Query(ctx, rc.Operation.SelectionSet)
+				data = ec._Query(ctx, opCtx.Operation.SelectionSet)
 			} else {
 				if atomic.LoadInt32(&ec.pendingDeferred) > 0 {
 					result := <-ec.deferredResults
@@ -2232,6 +2320,24 @@ extend type SignalAggregations {
   ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDWarmupsSinceDTCClear", forceResolver: true) @isSignal @hasAggregation
   
   """
+  Capacity in liters of the Diesel Exhaust Fluid Tank.
+  Unit: 'l'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  powertrainCombustionEngineDieselExhaustFluidCapacity(
+    agg: FloatAggregation!
+  ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineDieselExhaustFluidCapacity", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  Level of the Diesel Exhaust Fluid tank as percent of capacity. 0 = empty. 100 = full.
+  Unit: 'percent' Min: '0' Max: '100'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  powertrainCombustionEngineDieselExhaustFluidLevel(
+    agg: FloatAggregation!
+  ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineDieselExhaustFluidLevel", forceResolver: true) @isSignal @hasAggregation
+  
+  """
   Engine coolant temperature.
   Unit: 'celsius'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
@@ -2329,6 +2435,15 @@ extend type SignalAggregations {
   ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainRange", forceResolver: true) @isSignal @hasAggregation
   
   """
+  Amount of charge added to the high voltage battery during the current charging session, expressed in kilowatt-hours.
+  Unit: 'kWh'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  powertrainTractionBatteryChargingAddedEnergy(
+    agg: FloatAggregation!
+  ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryChargingAddedEnergy", forceResolver: true) @isSignal @hasAggregation
+  
+  """
   Target charge limit (state of charge) for battery.
   Unit: 'percent' Min: '0' Max: '100'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
@@ -2371,6 +2486,15 @@ extend type SignalAggregations {
   powertrainTractionBatteryGrossCapacity(
     agg: FloatAggregation!
   ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryGrossCapacity", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  Remaining range in meters using only battery.
+  Unit: 'm'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  powertrainTractionBatteryRange(
+    agg: FloatAggregation!
+  ):  Float @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryRange", forceResolver: true) @isSignal @hasAggregation
   
   """
   Physical state of charge of the high voltage battery, relative to net capacity. This is not necessarily the state of charge being displayed to the customer.
@@ -2664,6 +2788,20 @@ extend type SignalCollection {
   obdWarmupsSinceDTCClear: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDWarmupsSinceDTCClear") @isSignal
   
   """
+  Capacity in liters of the Diesel Exhaust Fluid Tank.
+  Unit: 'l'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  powertrainCombustionEngineDieselExhaustFluidCapacity: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineDieselExhaustFluidCapacity") @isSignal
+  
+  """
+  Level of the Diesel Exhaust Fluid tank as percent of capacity. 0 = empty. 100 = full.
+  Unit: 'percent' Min: '0' Max: '100'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  powertrainCombustionEngineDieselExhaustFluidLevel: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineDieselExhaustFluidLevel") @isSignal
+  
+  """
   Engine coolant temperature.
   Unit: 'celsius'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
@@ -2739,6 +2877,13 @@ extend type SignalCollection {
   powertrainRange: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainRange") @isSignal
   
   """
+  Amount of charge added to the high voltage battery during the current charging session, expressed in kilowatt-hours.
+  Unit: 'kWh'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  powertrainTractionBatteryChargingAddedEnergy: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryChargingAddedEnergy") @isSignal
+  
+  """
   Target charge limit (state of charge) for battery.
   Unit: 'percent' Min: '0' Max: '100'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
@@ -2771,6 +2916,13 @@ extend type SignalCollection {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainTractionBatteryGrossCapacity: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryGrossCapacity") @isSignal
+  
+  """
+  Remaining range in meters using only battery.
+  Unit: 'm'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  powertrainTractionBatteryRange: SignalFloat @requiresPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryRange") @isSignal
   
   """
   Physical state of charge of the high voltage battery, relative to net capacity. This is not necessarily the state of charge being displayed to the customer.
@@ -4445,6 +4597,70 @@ func (ec *executionContext) field_SignalAggregations_obdWarmupsSinceDTCClear_arg
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineDieselExhaustFluidCapacity_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	arg0, err := ec.field_SignalAggregations_powertrainCombustionEngineDieselExhaustFluidCapacity_argsAgg(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["agg"] = arg0
+	return args, nil
+}
+func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineDieselExhaustFluidCapacity_argsAgg(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (model.FloatAggregation, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["agg"]
+	if !ok {
+		var zeroVal model.FloatAggregation
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
+	if tmp, ok := rawArgs["agg"]; ok {
+		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
+	}
+
+	var zeroVal model.FloatAggregation
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineDieselExhaustFluidLevel_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	arg0, err := ec.field_SignalAggregations_powertrainCombustionEngineDieselExhaustFluidLevel_argsAgg(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["agg"] = arg0
+	return args, nil
+}
+func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineDieselExhaustFluidLevel_argsAgg(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (model.FloatAggregation, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["agg"]
+	if !ok {
+		var zeroVal model.FloatAggregation
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
+	if tmp, ok := rawArgs["agg"]; ok {
+		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
+	}
+
+	var zeroVal model.FloatAggregation
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineECT_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -4797,6 +5013,38 @@ func (ec *executionContext) field_SignalAggregations_powertrainRange_argsAgg(
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryChargingAddedEnergy_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	arg0, err := ec.field_SignalAggregations_powertrainTractionBatteryChargingAddedEnergy_argsAgg(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["agg"] = arg0
+	return args, nil
+}
+func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryChargingAddedEnergy_argsAgg(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (model.FloatAggregation, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["agg"]
+	if !ok {
+		var zeroVal model.FloatAggregation
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
+	if tmp, ok := rawArgs["agg"]; ok {
+		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
+	}
+
+	var zeroVal model.FloatAggregation
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryChargingChargeLimit_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -4936,6 +5184,38 @@ func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryGr
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryGrossCapacity_argsAgg(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (model.FloatAggregation, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["agg"]
+	if !ok {
+		var zeroVal model.FloatAggregation
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
+	if tmp, ok := rawArgs["agg"]; ok {
+		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
+	}
+
+	var zeroVal model.FloatAggregation
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryRange_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	arg0, err := ec.field_SignalAggregations_powertrainTractionBatteryRange_argsAgg(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["agg"] = arg0
+	return args, nil
+}
+func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryRange_argsAgg(
 	ctx context.Context,
 	rawArgs map[string]interface{},
 ) (model.FloatAggregation, error) {
@@ -5662,6 +5942,10 @@ func (ec *executionContext) fieldContext_Query_signals(ctx context.Context, fiel
 				return ec.fieldContext_SignalAggregations_obdShortTermFuelTrim1(ctx, field)
 			case "obdWarmupsSinceDTCClear":
 				return ec.fieldContext_SignalAggregations_obdWarmupsSinceDTCClear(ctx, field)
+			case "powertrainCombustionEngineDieselExhaustFluidCapacity":
+				return ec.fieldContext_SignalAggregations_powertrainCombustionEngineDieselExhaustFluidCapacity(ctx, field)
+			case "powertrainCombustionEngineDieselExhaustFluidLevel":
+				return ec.fieldContext_SignalAggregations_powertrainCombustionEngineDieselExhaustFluidLevel(ctx, field)
 			case "powertrainCombustionEngineECT":
 				return ec.fieldContext_SignalAggregations_powertrainCombustionEngineECT(ctx, field)
 			case "powertrainCombustionEngineEngineOilLevel":
@@ -5684,6 +5968,8 @@ func (ec *executionContext) fieldContext_Query_signals(ctx context.Context, fiel
 				return ec.fieldContext_SignalAggregations_powertrainFuelSystemSupportedFuelTypes(ctx, field)
 			case "powertrainRange":
 				return ec.fieldContext_SignalAggregations_powertrainRange(ctx, field)
+			case "powertrainTractionBatteryChargingAddedEnergy":
+				return ec.fieldContext_SignalAggregations_powertrainTractionBatteryChargingAddedEnergy(ctx, field)
 			case "powertrainTractionBatteryChargingChargeLimit":
 				return ec.fieldContext_SignalAggregations_powertrainTractionBatteryChargingChargeLimit(ctx, field)
 			case "powertrainTractionBatteryChargingIsCharging":
@@ -5694,6 +5980,8 @@ func (ec *executionContext) fieldContext_Query_signals(ctx context.Context, fiel
 				return ec.fieldContext_SignalAggregations_powertrainTractionBatteryCurrentVoltage(ctx, field)
 			case "powertrainTractionBatteryGrossCapacity":
 				return ec.fieldContext_SignalAggregations_powertrainTractionBatteryGrossCapacity(ctx, field)
+			case "powertrainTractionBatteryRange":
+				return ec.fieldContext_SignalAggregations_powertrainTractionBatteryRange(ctx, field)
 			case "powertrainTractionBatteryStateOfChargeCurrent":
 				return ec.fieldContext_SignalAggregations_powertrainTractionBatteryStateOfChargeCurrent(ctx, field)
 			case "powertrainTractionBatteryTemperatureAverage":
@@ -5856,6 +6144,10 @@ func (ec *executionContext) fieldContext_Query_signalsLatest(ctx context.Context
 				return ec.fieldContext_SignalCollection_obdShortTermFuelTrim1(ctx, field)
 			case "obdWarmupsSinceDTCClear":
 				return ec.fieldContext_SignalCollection_obdWarmupsSinceDTCClear(ctx, field)
+			case "powertrainCombustionEngineDieselExhaustFluidCapacity":
+				return ec.fieldContext_SignalCollection_powertrainCombustionEngineDieselExhaustFluidCapacity(ctx, field)
+			case "powertrainCombustionEngineDieselExhaustFluidLevel":
+				return ec.fieldContext_SignalCollection_powertrainCombustionEngineDieselExhaustFluidLevel(ctx, field)
 			case "powertrainCombustionEngineECT":
 				return ec.fieldContext_SignalCollection_powertrainCombustionEngineECT(ctx, field)
 			case "powertrainCombustionEngineEngineOilLevel":
@@ -5878,6 +6170,8 @@ func (ec *executionContext) fieldContext_Query_signalsLatest(ctx context.Context
 				return ec.fieldContext_SignalCollection_powertrainFuelSystemSupportedFuelTypes(ctx, field)
 			case "powertrainRange":
 				return ec.fieldContext_SignalCollection_powertrainRange(ctx, field)
+			case "powertrainTractionBatteryChargingAddedEnergy":
+				return ec.fieldContext_SignalCollection_powertrainTractionBatteryChargingAddedEnergy(ctx, field)
 			case "powertrainTractionBatteryChargingChargeLimit":
 				return ec.fieldContext_SignalCollection_powertrainTractionBatteryChargingChargeLimit(ctx, field)
 			case "powertrainTractionBatteryChargingIsCharging":
@@ -5888,6 +6182,8 @@ func (ec *executionContext) fieldContext_Query_signalsLatest(ctx context.Context
 				return ec.fieldContext_SignalCollection_powertrainTractionBatteryCurrentVoltage(ctx, field)
 			case "powertrainTractionBatteryGrossCapacity":
 				return ec.fieldContext_SignalCollection_powertrainTractionBatteryGrossCapacity(ctx, field)
+			case "powertrainTractionBatteryRange":
+				return ec.fieldContext_SignalCollection_powertrainTractionBatteryRange(ctx, field)
 			case "powertrainTractionBatteryStateOfChargeCurrent":
 				return ec.fieldContext_SignalCollection_powertrainTractionBatteryStateOfChargeCurrent(ctx, field)
 			case "powertrainTractionBatteryTemperatureAverage":
@@ -9625,6 +9921,192 @@ func (ec *executionContext) fieldContext_SignalAggregations_obdWarmupsSinceDTCCl
 	return fc, nil
 }
 
+func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineDieselExhaustFluidCapacity(ctx context.Context, field graphql.CollectedField, obj *model.SignalAggregations) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignalAggregations_powertrainCombustionEngineDieselExhaustFluidCapacity(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.SignalAggregations().PowertrainCombustionEngineDieselExhaustFluidCapacity(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+		}
+
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+			if err != nil {
+				var zeroVal *float64
+				return zeroVal, err
+			}
+			if ec.directives.RequiresPrivileges == nil {
+				var zeroVal *float64
+				return zeroVal, errors.New("directive requiresPrivileges is not implemented")
+			}
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
+		}
+		directive2 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.IsSignal == nil {
+				var zeroVal *float64
+				return zeroVal, errors.New("directive isSignal is not implemented")
+			}
+			return ec.directives.IsSignal(ctx, obj, directive1)
+		}
+		directive3 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.HasAggregation == nil {
+				var zeroVal *float64
+				return zeroVal, errors.New("directive hasAggregation is not implemented")
+			}
+			return ec.directives.HasAggregation(ctx, obj, directive2)
+		}
+
+		tmp, err := directive3(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*float64); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*float64)
+	fc.Result = res
+	return ec.marshalOFloat2ᚖfloat64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SignalAggregations_powertrainCombustionEngineDieselExhaustFluidCapacity(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignalAggregations",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_SignalAggregations_powertrainCombustionEngineDieselExhaustFluidCapacity_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineDieselExhaustFluidLevel(ctx context.Context, field graphql.CollectedField, obj *model.SignalAggregations) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignalAggregations_powertrainCombustionEngineDieselExhaustFluidLevel(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.SignalAggregations().PowertrainCombustionEngineDieselExhaustFluidLevel(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+		}
+
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+			if err != nil {
+				var zeroVal *float64
+				return zeroVal, err
+			}
+			if ec.directives.RequiresPrivileges == nil {
+				var zeroVal *float64
+				return zeroVal, errors.New("directive requiresPrivileges is not implemented")
+			}
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
+		}
+		directive2 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.IsSignal == nil {
+				var zeroVal *float64
+				return zeroVal, errors.New("directive isSignal is not implemented")
+			}
+			return ec.directives.IsSignal(ctx, obj, directive1)
+		}
+		directive3 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.HasAggregation == nil {
+				var zeroVal *float64
+				return zeroVal, errors.New("directive hasAggregation is not implemented")
+			}
+			return ec.directives.HasAggregation(ctx, obj, directive2)
+		}
+
+		tmp, err := directive3(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*float64); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*float64)
+	fc.Result = res
+	return ec.marshalOFloat2ᚖfloat64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SignalAggregations_powertrainCombustionEngineDieselExhaustFluidLevel(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignalAggregations",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_SignalAggregations_powertrainCombustionEngineDieselExhaustFluidLevel_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineECT(ctx context.Context, field graphql.CollectedField, obj *model.SignalAggregations) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalAggregations_powertrainCombustionEngineECT(ctx, field)
 	if err != nil {
@@ -10648,6 +11130,99 @@ func (ec *executionContext) fieldContext_SignalAggregations_powertrainRange(ctx 
 	return fc, nil
 }
 
+func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryChargingAddedEnergy(ctx context.Context, field graphql.CollectedField, obj *model.SignalAggregations) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignalAggregations_powertrainTractionBatteryChargingAddedEnergy(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryChargingAddedEnergy(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+		}
+
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+			if err != nil {
+				var zeroVal *float64
+				return zeroVal, err
+			}
+			if ec.directives.RequiresPrivileges == nil {
+				var zeroVal *float64
+				return zeroVal, errors.New("directive requiresPrivileges is not implemented")
+			}
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
+		}
+		directive2 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.IsSignal == nil {
+				var zeroVal *float64
+				return zeroVal, errors.New("directive isSignal is not implemented")
+			}
+			return ec.directives.IsSignal(ctx, obj, directive1)
+		}
+		directive3 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.HasAggregation == nil {
+				var zeroVal *float64
+				return zeroVal, errors.New("directive hasAggregation is not implemented")
+			}
+			return ec.directives.HasAggregation(ctx, obj, directive2)
+		}
+
+		tmp, err := directive3(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*float64); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*float64)
+	fc.Result = res
+	return ec.marshalOFloat2ᚖfloat64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SignalAggregations_powertrainTractionBatteryChargingAddedEnergy(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignalAggregations",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_SignalAggregations_powertrainTractionBatteryChargingAddedEnergy_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryChargingChargeLimit(ctx context.Context, field graphql.CollectedField, obj *model.SignalAggregations) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalAggregations_powertrainTractionBatteryChargingChargeLimit(ctx, field)
 	if err != nil {
@@ -11107,6 +11682,99 @@ func (ec *executionContext) fieldContext_SignalAggregations_powertrainTractionBa
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_SignalAggregations_powertrainTractionBatteryGrossCapacity_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryRange(ctx context.Context, field graphql.CollectedField, obj *model.SignalAggregations) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignalAggregations_powertrainTractionBatteryRange(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryRange(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+		}
+
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+			if err != nil {
+				var zeroVal *float64
+				return zeroVal, err
+			}
+			if ec.directives.RequiresPrivileges == nil {
+				var zeroVal *float64
+				return zeroVal, errors.New("directive requiresPrivileges is not implemented")
+			}
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
+		}
+		directive2 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.IsSignal == nil {
+				var zeroVal *float64
+				return zeroVal, errors.New("directive isSignal is not implemented")
+			}
+			return ec.directives.IsSignal(ctx, obj, directive1)
+		}
+		directive3 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.HasAggregation == nil {
+				var zeroVal *float64
+				return zeroVal, errors.New("directive hasAggregation is not implemented")
+			}
+			return ec.directives.HasAggregation(ctx, obj, directive2)
+		}
+
+		tmp, err := directive3(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*float64); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*float64)
+	fc.Result = res
+	return ec.marshalOFloat2ᚖfloat64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SignalAggregations_powertrainTractionBatteryRange(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignalAggregations",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_SignalAggregations_powertrainTractionBatteryRange_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -14652,6 +15320,168 @@ func (ec *executionContext) fieldContext_SignalCollection_obdWarmupsSinceDTCClea
 	return fc, nil
 }
 
+func (ec *executionContext) _SignalCollection_powertrainCombustionEngineDieselExhaustFluidCapacity(ctx context.Context, field graphql.CollectedField, obj *model.SignalCollection) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignalCollection_powertrainCombustionEngineDieselExhaustFluidCapacity(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return obj.PowertrainCombustionEngineDieselExhaustFluidCapacity, nil
+		}
+
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+			if err != nil {
+				var zeroVal *model.SignalFloat
+				return zeroVal, err
+			}
+			if ec.directives.RequiresPrivileges == nil {
+				var zeroVal *model.SignalFloat
+				return zeroVal, errors.New("directive requiresPrivileges is not implemented")
+			}
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
+		}
+		directive2 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.IsSignal == nil {
+				var zeroVal *model.SignalFloat
+				return zeroVal, errors.New("directive isSignal is not implemented")
+			}
+			return ec.directives.IsSignal(ctx, obj, directive1)
+		}
+
+		tmp, err := directive2(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*model.SignalFloat); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.SignalFloat)
+	fc.Result = res
+	return ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SignalCollection_powertrainCombustionEngineDieselExhaustFluidCapacity(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignalCollection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "timestamp":
+				return ec.fieldContext_SignalFloat_timestamp(ctx, field)
+			case "value":
+				return ec.fieldContext_SignalFloat_value(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SignalFloat", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SignalCollection_powertrainCombustionEngineDieselExhaustFluidLevel(ctx context.Context, field graphql.CollectedField, obj *model.SignalCollection) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignalCollection_powertrainCombustionEngineDieselExhaustFluidLevel(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return obj.PowertrainCombustionEngineDieselExhaustFluidLevel, nil
+		}
+
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+			if err != nil {
+				var zeroVal *model.SignalFloat
+				return zeroVal, err
+			}
+			if ec.directives.RequiresPrivileges == nil {
+				var zeroVal *model.SignalFloat
+				return zeroVal, errors.New("directive requiresPrivileges is not implemented")
+			}
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
+		}
+		directive2 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.IsSignal == nil {
+				var zeroVal *model.SignalFloat
+				return zeroVal, errors.New("directive isSignal is not implemented")
+			}
+			return ec.directives.IsSignal(ctx, obj, directive1)
+		}
+
+		tmp, err := directive2(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*model.SignalFloat); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.SignalFloat)
+	fc.Result = res
+	return ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SignalCollection_powertrainCombustionEngineDieselExhaustFluidLevel(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignalCollection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "timestamp":
+				return ec.fieldContext_SignalFloat_timestamp(ctx, field)
+			case "value":
+				return ec.fieldContext_SignalFloat_value(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SignalFloat", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _SignalCollection_powertrainCombustionEngineECT(ctx context.Context, field graphql.CollectedField, obj *model.SignalCollection) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalCollection_powertrainCombustionEngineECT(ctx, field)
 	if err != nil {
@@ -15543,6 +16373,87 @@ func (ec *executionContext) fieldContext_SignalCollection_powertrainRange(_ cont
 	return fc, nil
 }
 
+func (ec *executionContext) _SignalCollection_powertrainTractionBatteryChargingAddedEnergy(ctx context.Context, field graphql.CollectedField, obj *model.SignalCollection) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignalCollection_powertrainTractionBatteryChargingAddedEnergy(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return obj.PowertrainTractionBatteryChargingAddedEnergy, nil
+		}
+
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+			if err != nil {
+				var zeroVal *model.SignalFloat
+				return zeroVal, err
+			}
+			if ec.directives.RequiresPrivileges == nil {
+				var zeroVal *model.SignalFloat
+				return zeroVal, errors.New("directive requiresPrivileges is not implemented")
+			}
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
+		}
+		directive2 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.IsSignal == nil {
+				var zeroVal *model.SignalFloat
+				return zeroVal, errors.New("directive isSignal is not implemented")
+			}
+			return ec.directives.IsSignal(ctx, obj, directive1)
+		}
+
+		tmp, err := directive2(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*model.SignalFloat); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.SignalFloat)
+	fc.Result = res
+	return ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SignalCollection_powertrainTractionBatteryChargingAddedEnergy(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignalCollection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "timestamp":
+				return ec.fieldContext_SignalFloat_timestamp(ctx, field)
+			case "value":
+				return ec.fieldContext_SignalFloat_value(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SignalFloat", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _SignalCollection_powertrainTractionBatteryChargingChargeLimit(ctx context.Context, field graphql.CollectedField, obj *model.SignalCollection) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalCollection_powertrainTractionBatteryChargingChargeLimit(ctx, field)
 	if err != nil {
@@ -15930,6 +16841,87 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryGrossCapa
 }
 
 func (ec *executionContext) fieldContext_SignalCollection_powertrainTractionBatteryGrossCapacity(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignalCollection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "timestamp":
+				return ec.fieldContext_SignalFloat_timestamp(ctx, field)
+			case "value":
+				return ec.fieldContext_SignalFloat_value(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SignalFloat", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SignalCollection_powertrainTractionBatteryRange(ctx context.Context, field graphql.CollectedField, obj *model.SignalCollection) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignalCollection_powertrainTractionBatteryRange(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return obj.PowertrainTractionBatteryRange, nil
+		}
+
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+			if err != nil {
+				var zeroVal *model.SignalFloat
+				return zeroVal, err
+			}
+			if ec.directives.RequiresPrivileges == nil {
+				var zeroVal *model.SignalFloat
+				return zeroVal, errors.New("directive requiresPrivileges is not implemented")
+			}
+			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
+		}
+		directive2 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.IsSignal == nil {
+				var zeroVal *model.SignalFloat
+				return zeroVal, errors.New("directive isSignal is not implemented")
+			}
+			return ec.directives.IsSignal(ctx, obj, directive1)
+		}
+
+		tmp, err := directive2(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*model.SignalFloat); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.SignalFloat)
+	fc.Result = res
+	return ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SignalCollection_powertrainTractionBatteryRange(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalCollection",
 		Field:      field,
@@ -20431,6 +21423,72 @@ func (ec *executionContext) _SignalAggregations(ctx context.Context, sel ast.Sel
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "powertrainCombustionEngineDieselExhaustFluidCapacity":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._SignalAggregations_powertrainCombustionEngineDieselExhaustFluidCapacity(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "powertrainCombustionEngineDieselExhaustFluidLevel":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._SignalAggregations_powertrainCombustionEngineDieselExhaustFluidLevel(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "powertrainCombustionEngineECT":
 			field := field
 
@@ -20794,6 +21852,39 @@ func (ec *executionContext) _SignalAggregations(ctx context.Context, sel ast.Sel
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "powertrainTractionBatteryChargingAddedEnergy":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._SignalAggregations_powertrainTractionBatteryChargingAddedEnergy(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "powertrainTractionBatteryChargingChargeLimit":
 			field := field
 
@@ -20936,6 +22027,39 @@ func (ec *executionContext) _SignalAggregations(ctx context.Context, sel ast.Sel
 					}
 				}()
 				res = ec._SignalAggregations_powertrainTractionBatteryGrossCapacity(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "powertrainTractionBatteryRange":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._SignalAggregations_powertrainTractionBatteryRange(ctx, field, obj)
 				return res
 			}
 
@@ -21327,6 +22451,10 @@ func (ec *executionContext) _SignalCollection(ctx context.Context, sel ast.Selec
 			out.Values[i] = ec._SignalCollection_obdShortTermFuelTrim1(ctx, field, obj)
 		case "obdWarmupsSinceDTCClear":
 			out.Values[i] = ec._SignalCollection_obdWarmupsSinceDTCClear(ctx, field, obj)
+		case "powertrainCombustionEngineDieselExhaustFluidCapacity":
+			out.Values[i] = ec._SignalCollection_powertrainCombustionEngineDieselExhaustFluidCapacity(ctx, field, obj)
+		case "powertrainCombustionEngineDieselExhaustFluidLevel":
+			out.Values[i] = ec._SignalCollection_powertrainCombustionEngineDieselExhaustFluidLevel(ctx, field, obj)
 		case "powertrainCombustionEngineECT":
 			out.Values[i] = ec._SignalCollection_powertrainCombustionEngineECT(ctx, field, obj)
 		case "powertrainCombustionEngineEngineOilLevel":
@@ -21349,6 +22477,8 @@ func (ec *executionContext) _SignalCollection(ctx context.Context, sel ast.Selec
 			out.Values[i] = ec._SignalCollection_powertrainFuelSystemSupportedFuelTypes(ctx, field, obj)
 		case "powertrainRange":
 			out.Values[i] = ec._SignalCollection_powertrainRange(ctx, field, obj)
+		case "powertrainTractionBatteryChargingAddedEnergy":
+			out.Values[i] = ec._SignalCollection_powertrainTractionBatteryChargingAddedEnergy(ctx, field, obj)
 		case "powertrainTractionBatteryChargingChargeLimit":
 			out.Values[i] = ec._SignalCollection_powertrainTractionBatteryChargingChargeLimit(ctx, field, obj)
 		case "powertrainTractionBatteryChargingIsCharging":
@@ -21359,6 +22489,8 @@ func (ec *executionContext) _SignalCollection(ctx context.Context, sel ast.Selec
 			out.Values[i] = ec._SignalCollection_powertrainTractionBatteryCurrentVoltage(ctx, field, obj)
 		case "powertrainTractionBatteryGrossCapacity":
 			out.Values[i] = ec._SignalCollection_powertrainTractionBatteryGrossCapacity(ctx, field, obj)
+		case "powertrainTractionBatteryRange":
+			out.Values[i] = ec._SignalCollection_powertrainTractionBatteryRange(ctx, field, obj)
 		case "powertrainTractionBatteryStateOfChargeCurrent":
 			out.Values[i] = ec._SignalCollection_powertrainTractionBatteryStateOfChargeCurrent(ctx, field, obj)
 		case "powertrainTractionBatteryTemperatureAverage":

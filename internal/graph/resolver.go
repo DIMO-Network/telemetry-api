@@ -32,7 +32,7 @@ func (r *signalAggregationsResolver) aproximateLocationSignalAggregations(obj *m
 		return nil, nil
 	}
 	h3LatLng := h3.NewLatLng(latVal, logVal)
-	cell := h3.LatLngToCell(h3LatLng, 6)
+	cell := h3.LatLngToCell(h3LatLng, approximateLocationResolution)
 	latLong := h3.CellToLatLng(cell)
 	return &latLong, nil
 }
