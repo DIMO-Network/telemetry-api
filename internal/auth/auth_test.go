@@ -339,3 +339,108 @@ func TestRequiresPrivilegeCheck(t *testing.T) {
 		})
 	}
 }
+
+func TestRequiresOneOfPrivilegeCheck(t *testing.T) {
+	t.Parallel()
+	vehicleNFTAddr := common.BigToAddress(big.NewInt(10))
+	manufNFTAddr := common.BigToAddress(big.NewInt(11))
+
+	privMaps := map[common.Address]map[privileges.Privilege]model.Privilege{
+		vehicleNFTAddr: vehiclePrivToAPI,
+		manufNFTAddr:   manufacturerPrivToAPI,
+	}
+
+	testCases := []struct {
+		name           string
+		privs          []model.Privilege
+		telemetryClaim *TelemetryClaim
+		expectedError  bool
+	}{
+		{
+			name: "has_one_of_required_privileges",
+			privs: []model.Privilege{
+				model.PrivilegeVehicleAllTimeLocation,
+				model.PrivilegeVehicleNonLocationData,
+			},
+			telemetryClaim: &TelemetryClaim{
+				CustomClaims: privilegetoken.CustomClaims{
+					PrivilegeIDs: []privileges.Privilege{
+						privileges.VehicleAllTimeLocation,
+					},
+					ContractAddress: vehicleNFTAddr,
+				},
+			},
+			expectedError: false,
+		},
+		{
+			name: "has_all_required_privileges",
+			privs: []model.Privilege{
+				model.PrivilegeVehicleAllTimeLocation,
+				model.PrivilegeVehicleNonLocationData,
+			},
+			telemetryClaim: &TelemetryClaim{
+				CustomClaims: privilegetoken.CustomClaims{
+					PrivilegeIDs: []privileges.Privilege{
+						privileges.VehicleAllTimeLocation,
+						privileges.VehicleNonLocationData,
+					},
+					ContractAddress: vehicleNFTAddr,
+				},
+			},
+			expectedError: false,
+		},
+		{
+			name: "missing_all_privileges",
+			privs: []model.Privilege{
+				model.PrivilegeVehicleAllTimeLocation,
+				model.PrivilegeVehicleNonLocationData,
+			},
+			telemetryClaim: &TelemetryClaim{
+				CustomClaims: privilegetoken.CustomClaims{
+					PrivilegeIDs:    nil,
+					ContractAddress: vehicleNFTAddr,
+				},
+			},
+			expectedError: true,
+		},
+		{
+			name:           "missing_claim",
+			privs:          []model.Privilege{},
+			telemetryClaim: nil,
+			expectedError:  true,
+		},
+		{
+			name: "wrong_contract_for_privilege",
+			privs: []model.Privilege{
+				model.PrivilegeVehicleAllTimeLocation,
+			},
+			telemetryClaim: &TelemetryClaim{
+				CustomClaims: privilegetoken.CustomClaims{
+					PrivilegeIDs: []privileges.Privilege{
+						privileges.ManufacturerDeviceDefinitionInsert,
+					},
+					ContractAddress: manufNFTAddr,
+				},
+			},
+			expectedError: true,
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			if tc.telemetryClaim != nil {
+				tc.telemetryClaim.SetPrivileges(privMaps)
+			}
+			testCtx := context.WithValue(context.Background(), TelemetryClaimContextKey{}, tc.telemetryClaim)
+			next, err := OneOfPrivilegeCheck(testCtx, nil, emptyResolver, tc.privs)
+			if tc.expectedError {
+				require.Error(t, err)
+			} else {
+				require.NoError(t, err)
+				require.Equal(t, expectedReturn, next)
+			}
+		})
+	}
+}
