@@ -1,11 +1,6 @@
 package e2e_test
 
 import (
-	"bytes"
-	"encoding/json"
-	"fmt"
-	"io"
-	"net/http"
 	"testing"
 	"time"
 
@@ -30,6 +25,20 @@ func TestSignalsLatest(t *testing.T) {
 			TokenID:     39718,
 		},
 		{
+			Source:      ch.SourceTranslations["smartcar"],
+			Timestamp:   smartCarTime,
+			Name:        vss.FieldCurrentLocationLatitude,
+			ValueNumber: 40.73899538333504,
+			TokenID:     39718,
+		},
+		{
+			Source:      ch.SourceTranslations["smartcar"],
+			Timestamp:   smartCarTime,
+			Name:        vss.FieldCurrentLocationLongitude,
+			ValueNumber: 73.99386110247163,
+			TokenID:     39718,
+		},
+		{
 			Source:      ch.SourceTranslations["autopi"],
 			Timestamp:   autopiTime,
 			Name:        vss.FieldSpeed,
@@ -48,11 +57,10 @@ func TestSignalsLatest(t *testing.T) {
 	insertSignal(t, services.CH, signals)
 
 	// Create and set up GraphQL server
-	server := NewGraphQLServer(t, services.Settings)
-	defer server.Close()
+	telemetryClient := NewGraphQLServer(t, services.Settings)
 
 	// Create auth token for vehicle
-	token := services.Auth.CreateVehicleToken(t, "39718", []int{1}) // Assuming 1 is the privilege needed
+	token := services.Auth.CreateVehicleToken(t, "39718", []int{1})
 
 	// Execute the query
 	query := `
@@ -83,69 +91,48 @@ func TestSignalsLatest(t *testing.T) {
 		}
 	}`
 
-	// Create request
-	body, err := json.Marshal(map[string]interface{}{
-		"query": query,
-	})
-	require.NoError(t, err)
-
-	req, err := http.NewRequest("POST", server.URL, bytes.NewBuffer(body))
-	require.NoError(t, err)
-	req.Header.Set("Authorization", "Bearer "+token)
-	req.Header.Set("Content-Type", "application/json")
-
 	// Execute request
-	resp, err := http.DefaultClient.Do(req)
-	require.NoError(t, err)
-	defer resp.Body.Close()
-
-	require.Equal(t, http.StatusOK, resp.StatusCode)
-
-	// Parse response
-	var result struct {
-		Data struct {
-			Smartcar struct {
-				LastSeen string          `json:"lastSeen"`
-				Speed    *SignalWithTime `json:"speed"`
-			} `json:"smartcar"`
-			Autopi struct {
-				LastSeen string          `json:"lastSeen"`
-				Speed    *SignalWithTime `json:"speed"`
-			} `json:"autopi"`
-			Macaron struct {
-				LastSeen string          `json:"lastSeen"`
-				Speed    *SignalWithTime `json:"speed"`
-			} `json:"macaron"`
-			Tesla struct {
-				LastSeen *string `json:"lastSeen"`
-			} `json:"tesla"`
-		} `json:"data"`
-	}
-	data, err := io.ReadAll(resp.Body)
-	require.NoError(t, err)
-	fmt.Println(string(data))
-	err = json.Unmarshal(data, &result)
+	result := LatestResult{}
+	err := telemetryClient.Post(query, &result, WithToken(token))
 	require.NoError(t, err)
 
 	// Assert the results
-	assert.Equal(t, smartCarTime.Format(time.RFC3339), result.Data.Smartcar.LastSeen)
-	assert.Equal(t, smartCarTime.Format(time.RFC3339), result.Data.Smartcar.Speed.Timestamp)
-	require.NotNil(t, result.Data.Autopi.Speed)
+	assert.Equal(t, smartCarTime.Format(time.RFC3339), result.Smartcar.LastSeen)
+	assert.Equal(t, smartCarTime.Format(time.RFC3339), result.Smartcar.Speed.Timestamp)
+	require.NotNil(t, result.Autopi.Speed)
 
-	assert.Equal(t, autopiTime.Format(time.RFC3339), result.Data.Autopi.LastSeen)
-	require.NotNil(t, result.Data.Autopi.Speed)
-	assert.Equal(t, autopiTime.Format(time.RFC3339), result.Data.Autopi.Speed.Timestamp)
-	assert.Equal(t, float64(14), result.Data.Autopi.Speed.Value)
+	assert.Equal(t, autopiTime.Format(time.RFC3339), result.Autopi.LastSeen)
+	require.NotNil(t, result.Autopi.Speed)
+	assert.Equal(t, autopiTime.Format(time.RFC3339), result.Autopi.Speed.Timestamp)
+	assert.Equal(t, float64(14), result.Autopi.Speed.Value)
 
-	assert.Equal(t, macaronTime.Format(time.RFC3339), result.Data.Macaron.LastSeen)
-	require.NotNil(t, result.Data.Macaron.Speed)
-	assert.Equal(t, macaronTime.Format(time.RFC3339), result.Data.Macaron.Speed.Timestamp)
-	assert.Equal(t, float64(3), result.Data.Macaron.Speed.Value)
+	assert.Equal(t, macaronTime.Format(time.RFC3339), result.Macaron.LastSeen)
+	require.NotNil(t, result.Macaron.Speed)
+	assert.Equal(t, macaronTime.Format(time.RFC3339), result.Macaron.Speed.Timestamp)
+	assert.Equal(t, float64(3), result.Macaron.Speed.Value)
 
-	assert.Nil(t, result.Data.Tesla.LastSeen)
+	assert.Nil(t, result.Tesla.LastSeen)
 }
 
 type SignalWithTime struct {
 	Timestamp string  `json:"timestamp"`
 	Value     float64 `json:"value"`
+}
+
+type LatestResult struct {
+	Smartcar struct {
+		LastSeen string          `json:"lastSeen"`
+		Speed    *SignalWithTime `json:"speed"`
+	} `json:"smartcar"`
+	Autopi struct {
+		LastSeen string          `json:"lastSeen"`
+		Speed    *SignalWithTime `json:"speed"`
+	} `json:"autopi"`
+	Macaron struct {
+		LastSeen string          `json:"lastSeen"`
+		Speed    *SignalWithTime `json:"speed"`
+	} `json:"macaron"`
+	Tesla struct {
+		LastSeen *string `json:"lastSeen"`
+	} `json:"tesla"`
 }
