@@ -22,9 +22,11 @@ func aggregationArgsFromContext(ctx context.Context, tokenID int, interval strin
 			TokenID: uint32(tokenID),
 			Filter:  filter,
 		},
-		FromTS:   from,
-		ToTS:     to,
-		Interval: intervalInt,
+		FromTS:     from,
+		ToTS:       to,
+		Interval:   intervalInt,
+		FloatArgs:  map[model.FloatSignalArgs]struct{}{},
+		StringArgs: map[model.StringSignalArgs]struct{}{},
 	}
 
 	fields := graphql.CollectFieldsCtx(ctx, nil)
@@ -78,24 +80,24 @@ func addSignalAggregation(aggArgs *model.AggregatedSignalArgs, child *graphql.Fi
 
 // latestArgsFromContext creates a latest signals arguments from the context and the provided arguments.
 func latestArgsFromContext(ctx context.Context, tokenID int, filter *model.SignalFilter) (*model.LatestSignalsArgs, error) {
+	fields := graphql.CollectFieldsCtx(ctx, nil)
 	latestArgs := model.LatestSignalsArgs{
 		SignalArgs: model.SignalArgs{
 			TokenID: uint32(tokenID),
 			Filter:  filter,
 		},
+		SignalNames: make(map[string]struct{}, len(fields)),
 	}
-	fields := graphql.CollectFieldsCtx(ctx, nil)
 	for _, field := range fields {
 		if !isSignal(field) {
-			switch field.Name {
-			case model.LastSeenField:
+			if field.Name == model.LastSeenField {
 				latestArgs.IncludeLastSeen = true
-			case model.ApproximateLatField:
-				fallthrough
-			case model.ApproximateLongField:
-				latestArgs.SignalNames[vss.FieldCurrentLocationLatitude] = struct{}{}
-				latestArgs.SignalNames[vss.FieldCurrentLocationLongitude] = struct{}{}
 			}
+			continue
+		}
+		if field.Name == model.ApproximateLatField || field.Name == model.ApproximateLongField {
+			latestArgs.SignalNames[vss.FieldCurrentLocationLatitude] = struct{}{}
+			latestArgs.SignalNames[vss.FieldCurrentLocationLongitude] = struct{}{}
 			continue
 		}
 		latestArgs.SignalNames[field.Name] = struct{}{}

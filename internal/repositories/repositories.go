@@ -13,7 +13,10 @@ import (
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	"github.com/DIMO-Network/telemetry-api/internal/service/ch"
 	"github.com/rs/zerolog"
+	"github.com/uber/h3-go/v4"
 )
+
+const approximateLocationResolution = 6
 
 var (
 	errInternal = errors.New("internal error")
@@ -118,7 +121,7 @@ func (r *Repository) GetSignalLatest(ctx context.Context, latestArgs *model.Late
 		}
 		model.SetCollectionField(coll, signal)
 	}
-
+	setApproximateLocationInCollection(coll)
 	return coll, nil
 }
 
@@ -179,4 +182,27 @@ func handleDBError(err error, log *zerolog.Logger) error {
 	}
 	log.Error().Err(err).Msg("failed to query db")
 	return errInternal
+}
+
+// GetApproximateLoc returns the approximate location for the given latitude and longitude.
+func GetApproximateLoc(lat, long float64) *h3.LatLng {
+	h3LatLng := h3.NewLatLng(lat, long)
+	cell := h3.LatLngToCell(h3LatLng, approximateLocationResolution)
+	latLong := h3.CellToLatLng(cell)
+	return &latLong
+}
+
+func setApproximateLocationInCollection(coll *model.SignalCollection) {
+	if coll == nil || coll.CurrentLocationLatitude == nil || coll.CurrentLocationLongitude == nil {
+		return
+	}
+	latLong := GetApproximateLoc(coll.CurrentLocationLatitude.Value, coll.CurrentLocationLongitude.Value)
+	coll.CurrentLocationApproximateLatitude = &model.SignalFloat{
+		Timestamp: coll.CurrentLocationLatitude.Timestamp,
+		Value:     latLong.Lat,
+	}
+	coll.CurrentLocationApproximateLongitude = &model.SignalFloat{
+		Timestamp: coll.CurrentLocationLongitude.Timestamp,
+		Value:     latLong.Lng,
+	}
 }

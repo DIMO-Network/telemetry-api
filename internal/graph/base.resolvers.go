@@ -36,7 +36,7 @@ func (r *queryResolver) AvailableSignals(ctx context.Context, tokenID int, filte
 
 // CurrentLocationApproximateLatitude is the resolver for the CurrentLocationApproximateLatitude
 func (r *signalAggregationsResolver) CurrentLocationApproximateLatitude(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
-	latLong, err := r.aproximateLocationSignalAggregations(obj, agg)
+	latLong, err := aproximateLocationSignalAggregations(obj, agg)
 	if err != nil || latLong == nil {
 		return nil, err
 	}
@@ -45,7 +45,7 @@ func (r *signalAggregationsResolver) CurrentLocationApproximateLatitude(ctx cont
 
 // CurrentLocationApproximateLongitude is the resolver for the CurrentLocationApproximateLongitude
 func (r *signalAggregationsResolver) CurrentLocationApproximateLongitude(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
-	latLong, err := r.aproximateLocationSignalAggregations(obj, agg)
+	latLong, err := aproximateLocationSignalAggregations(obj, agg)
 	if err != nil || latLong == nil {
 		return nil, err
 	}
