@@ -49,6 +49,7 @@ type DirectiveRoot struct {
 	IsSignal                  func(ctx context.Context, obj interface{}, next graphql.Resolver) (res interface{}, err error)
 	OneOf                     func(ctx context.Context, obj interface{}, next graphql.Resolver) (res interface{}, err error)
 	RequiresManufacturerToken func(ctx context.Context, obj interface{}, next graphql.Resolver) (res interface{}, err error)
+	RequiresOneOfPrivilege    func(ctx context.Context, obj interface{}, next graphql.Resolver, privileges []model.Privilege) (res interface{}, err error)
 	RequiresPrivileges        func(ctx context.Context, obj interface{}, next graphql.Resolver, privileges []model.Privilege) (res interface{}, err error)
 	RequiresVehicleToken      func(ctx context.Context, obj interface{}, next graphql.Resolver) (res interface{}, err error)
 }
@@ -1817,6 +1818,10 @@ directive @requiresPrivileges(
   privileges: [Privilege!]!
 ) on FIELD_DEFINITION | OBJECT | INTERFACE | SCALAR | ENUM
 
+directive @requiresOneOfPrivilege(
+  privileges: [Privilege!]!
+) on FIELD_DEFINITION | OBJECT | INTERFACE | SCALAR | ENUM
+
 enum Privilege {
   VEHICLE_NON_LOCATION_DATA
   VEHICLE_COMMANDS
@@ -1881,10 +1886,12 @@ type SignalAggregations {
   """
   Approximate Latitude of vehicle in WGS 84 geodetic coordinates, as measured at the position of GNSS receiver antenna.
   Unit: 'degrees' Min: '-90' Max: '90'
-  Required Privileges: [VEHICLE_APPROXIMATE_LOCATION]
+  Required Privileges: [VEHICLE_APPROXIMATE_LOCATION OR VEHICLE_ALL_TIME_LOCATION]
   """
   currentLocationApproximateLatitude(agg: FloatAggregation!): Float
-    @requiresPrivileges(privileges: [VEHICLE_APPROXIMATE_LOCATION])
+    @requiresOneOfPrivilege(
+      privileges: [VEHICLE_APPROXIMATE_LOCATION, VEHICLE_ALL_TIME_LOCATION]
+    )
     @goField(name: "CurrentLocationApproximateLatitude", forceResolver: true)
     @isSignal
     @hasAggregation
@@ -1892,10 +1899,12 @@ type SignalAggregations {
   """
   Approximate Longitude of vehicle in WGS 84 geodetic coordinates, as measured at the position of GNSS receiver antenna.
   Unit: 'degrees' Min: '-180' Max: '180'
-  Required Privileges: [VEHICLE_APPROXIMATE_LOCATION]
+  Required Privileges: [VEHICLE_APPROXIMATE_LOCATION OR VEHICLE_ALL_TIME_LOCATION]
   """
   currentLocationApproximateLongitude(agg: FloatAggregation!): Float
-    @requiresPrivileges(privileges: [VEHICLE_APPROXIMATE_LOCATION])
+    @requiresOneOfPrivilege(
+      privileges: [VEHICLE_APPROXIMATE_LOCATION, VEHICLE_ALL_TIME_LOCATION]
+    )
     @goField(name: "CurrentLocationApproximateLongitude", forceResolver: true)
     @isSignal
     @hasAggregation
@@ -1909,20 +1918,24 @@ type SignalCollection {
   """
   Approximate Latitude of vehicle in WGS 84 geodetic coordinates, as measured at the position of GNSS receiver antenna.
   Unit: 'degrees' Min: '-90' Max: '90'
-  Required Privileges: [VEHICLE_APPROXIMATE_LOCATION]
+  Required Privileges: [VEHICLE_APPROXIMATE_LOCATION OR VEHICLE_ALL_TIME_LOCATION]
   """
   currentLocationApproximateLatitude: SignalFloat
-    @requiresPrivileges(privileges: [VEHICLE_APPROXIMATE_LOCATION])
+    @requiresOneOfPrivilege(
+      privileges: [VEHICLE_APPROXIMATE_LOCATION, VEHICLE_ALL_TIME_LOCATION]
+    )
     @goField(name: "CurrentLocationApproximateLatitude")
     @isSignal
 
   """
   Approximate Longitude of vehicle in WGS 84 geodetic coordinates, as measured at the position of GNSS receiver antenna.
   Unit: 'degrees' Min: '-180' Max: '180'
-  Required Privileges: [VEHICLE_APPROXIMATE_LOCATION]
+  Required Privileges: [VEHICLE_APPROXIMATE_LOCATION OR VEHICLE_ALL_TIME_LOCATION]
   """
   currentLocationApproximateLongitude: SignalFloat
-    @requiresPrivileges(privileges: [VEHICLE_APPROXIMATE_LOCATION])
+    @requiresOneOfPrivilege(
+      privileges: [VEHICLE_APPROXIMATE_LOCATION, VEHICLE_ALL_TIME_LOCATION]
+    )
     @goField(name: "CurrentLocationApproximateLongitude")
     @isSignal
 }
@@ -3090,6 +3103,38 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 // endregion ************************** generated!.gotpl **************************
 
 // region    ***************************** args.gotpl *****************************
+
+func (ec *executionContext) dir_requiresOneOfPrivilege_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	arg0, err := ec.dir_requiresOneOfPrivilege_argsPrivileges(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["privileges"] = arg0
+	return args, nil
+}
+func (ec *executionContext) dir_requiresOneOfPrivilege_argsPrivileges(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) ([]model.Privilege, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["privileges"]
+	if !ok {
+		var zeroVal []model.Privilege
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("privileges"))
+	if tmp, ok := rawArgs["privileges"]; ok {
+		return ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, tmp)
+	}
+
+	var zeroVal []model.Privilege
+	return zeroVal, nil
+}
 
 func (ec *executionContext) dir_requiresPrivileges_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
@@ -6778,16 +6823,16 @@ func (ec *executionContext) _SignalAggregations_currentLocationApproximateLatitu
 		}
 
 		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_APPROXIMATE_LOCATION"})
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_APPROXIMATE_LOCATION", "VEHICLE_ALL_TIME_LOCATION"})
 			if err != nil {
 				var zeroVal *float64
 				return zeroVal, err
 			}
-			if ec.directives.RequiresPrivileges == nil {
+			if ec.directives.RequiresOneOfPrivilege == nil {
 				var zeroVal *float64
-				return zeroVal, errors.New("directive requiresPrivileges is not implemented")
+				return zeroVal, errors.New("directive requiresOneOfPrivilege is not implemented")
 			}
-			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresOneOfPrivilege(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -6871,16 +6916,16 @@ func (ec *executionContext) _SignalAggregations_currentLocationApproximateLongit
 		}
 
 		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_APPROXIMATE_LOCATION"})
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_APPROXIMATE_LOCATION", "VEHICLE_ALL_TIME_LOCATION"})
 			if err != nil {
 				var zeroVal *float64
 				return zeroVal, err
 			}
-			if ec.directives.RequiresPrivileges == nil {
+			if ec.directives.RequiresOneOfPrivilege == nil {
 				var zeroVal *float64
-				return zeroVal, errors.New("directive requiresPrivileges is not implemented")
+				return zeroVal, errors.New("directive requiresOneOfPrivilege is not implemented")
 			}
-			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresOneOfPrivilege(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -12585,16 +12630,16 @@ func (ec *executionContext) _SignalCollection_currentLocationApproximateLatitude
 		}
 
 		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_APPROXIMATE_LOCATION"})
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_APPROXIMATE_LOCATION", "VEHICLE_ALL_TIME_LOCATION"})
 			if err != nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, err
 			}
-			if ec.directives.RequiresPrivileges == nil {
+			if ec.directives.RequiresOneOfPrivilege == nil {
 				var zeroVal *model.SignalFloat
-				return zeroVal, errors.New("directive requiresPrivileges is not implemented")
+				return zeroVal, errors.New("directive requiresOneOfPrivilege is not implemented")
 			}
-			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresOneOfPrivilege(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
@@ -12666,16 +12711,16 @@ func (ec *executionContext) _SignalCollection_currentLocationApproximateLongitud
 		}
 
 		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_APPROXIMATE_LOCATION"})
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_APPROXIMATE_LOCATION", "VEHICLE_ALL_TIME_LOCATION"})
 			if err != nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, err
 			}
-			if ec.directives.RequiresPrivileges == nil {
+			if ec.directives.RequiresOneOfPrivilege == nil {
 				var zeroVal *model.SignalFloat
-				return zeroVal, errors.New("directive requiresPrivileges is not implemented")
+				return zeroVal, errors.New("directive requiresOneOfPrivilege is not implemented")
 			}
-			return ec.directives.RequiresPrivileges(ctx, obj, directive0, privileges)
+			return ec.directives.RequiresOneOfPrivilege(ctx, obj, directive0, privileges)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsSignal == nil {
