@@ -93,11 +93,11 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 				FromTS:   c.dataStartTime,
 				ToTS:     endTs,
 				Interval: day.Milliseconds(),
-				FloatArgs: []model.FloatSignalArgs{
+				FloatArgs: map[model.FloatSignalArgs]struct{}{
 					{
 						Name: vss.FieldSpeed,
 						Agg:  model.FloatAggregationAvg,
-					},
+					}: {},
 				},
 			},
 			expected: []model.AggSignal{
@@ -118,15 +118,15 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 				FromTS:   c.dataStartTime,
 				ToTS:     endTs,
 				Interval: day.Milliseconds(),
-				FloatArgs: []model.FloatSignalArgs{
+				FloatArgs: map[model.FloatSignalArgs]struct{}{
 					{
 						Name: vss.FieldSpeed,
 						Agg:  model.FloatAggregationMax,
-					},
+					}: {},
 					{
 						Name: vss.FieldSpeed,
 						Agg:  model.FloatAggregationMin,
-					},
+					}: {},
 				},
 			},
 			expected: []model.AggSignal{
@@ -156,11 +156,11 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 				FromTS:   c.dataStartTime,
 				ToTS:     endTs,
 				Interval: day.Milliseconds(),
-				FloatArgs: []model.FloatSignalArgs{
+				FloatArgs: map[model.FloatSignalArgs]struct{}{
 					{
 						Name: vss.FieldSpeed,
 						Agg:  model.FloatAggregationMax,
-					},
+					}: {},
 				},
 			},
 			expected: []model.AggSignal{
@@ -181,11 +181,11 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 				FromTS:   c.dataStartTime,
 				ToTS:     endTs,
 				Interval: day.Milliseconds(),
-				StringArgs: []model.StringSignalArgs{
+				StringArgs: map[model.StringSignalArgs]struct{}{
 					{
 						Name: vss.FieldPowertrainType,
 						Agg:  model.StringAggregationUnique,
-					},
+					}: {},
 				},
 			},
 			expected: []model.AggSignal{
@@ -209,11 +209,11 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 				FromTS:   c.dataStartTime,
 				ToTS:     c.dataStartTime.Add(time.Hour),
 				Interval: day.Milliseconds(),
-				StringArgs: []model.StringSignalArgs{
+				StringArgs: map[model.StringSignalArgs]struct{}{
 					{
 						Name: vss.FieldPowertrainType,
 						Agg:  model.StringAggregationTop,
-					},
+					}: {},
 				},
 			},
 			expected: []model.AggSignal{
@@ -234,11 +234,11 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 				FromTS:   c.dataStartTime,
 				ToTS:     endTs,
 				Interval: day.Milliseconds(),
-				FloatArgs: []model.FloatSignalArgs{
+				FloatArgs: map[model.FloatSignalArgs]struct{}{
 					{
 						Name: vss.FieldSpeed,
 						Agg:  model.FloatAggregationFirst,
-					},
+					}: {},
 				},
 			},
 			expected: []model.AggSignal{
@@ -259,11 +259,11 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 				FromTS:   c.dataStartTime,
 				ToTS:     endTs,
 				Interval: day.Milliseconds(),
-				FloatArgs: []model.FloatSignalArgs{
+				FloatArgs: map[model.FloatSignalArgs]struct{}{
 					{
 						Name: vss.FieldSpeed,
 						Agg:  model.FloatAggregationLast,
-					},
+					}: {},
 				},
 			},
 			expected: []model.AggSignal{
@@ -284,11 +284,11 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 				FromTS:   c.dataStartTime,
 				ToTS:     endTs,
 				Interval: day.Milliseconds(),
-				StringArgs: []model.StringSignalArgs{
+				StringArgs: map[model.StringSignalArgs]struct{}{
 					{
 						Name: vss.FieldPowertrainType,
 						Agg:  model.StringAggregationFirst,
-					},
+					}: {},
 				},
 			},
 			expected: []model.AggSignal{
@@ -309,11 +309,11 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 				FromTS:   c.dataStartTime,
 				ToTS:     endTs,
 				Interval: day.Milliseconds(),
-				StringArgs: []model.StringSignalArgs{
+				StringArgs: map[model.StringSignalArgs]struct{}{
 					{
 						Name: vss.FieldPowertrainType,
 						Agg:  model.StringAggregationLast,
-					},
+					}: {},
 				},
 			},
 			expected: []model.AggSignal{
@@ -328,15 +328,13 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 	}
 	for _, tc := range testCases {
 		c.Run(tc.name, func() {
-			// Call the GetSignalFloats method
 			result, err := c.chService.GetAggregatedSignals(ctx, &tc.aggArgs)
 			c.Require().NoError(err)
 
 			c.Require().Len(result, len(tc.expected))
 
-			// Standardize slice order so we can compare position by position.
 			slices.SortFunc(result, func(a, b *model.AggSignal) int {
-				if cmpName := cmp.Compare(a.Name, a.Name); cmpName != 0 {
+				if cmpName := cmp.Compare(a.Name, b.Name); cmpName != 0 {
 					return cmpName
 				}
 				return cmp.Compare(a.Agg, b.Agg)
@@ -348,11 +346,11 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 		})
 	}
 }
+
 func (c *CHServiceTestSuite) TestGetLatestSignal() {
 	ctx := context.Background()
 	testCases := []struct {
 		name       string
-		sigNames   []string
 		latestArgs model.LatestSignalsArgs
 		expected   []vss.Signal
 	}{
@@ -362,9 +360,10 @@ func (c *CHServiceTestSuite) TestGetLatestSignal() {
 				SignalArgs: model.SignalArgs{
 					TokenID: 1,
 				},
-				SignalNames: []string{vss.FieldSpeed},
+				SignalNames: map[string]struct{}{
+					vss.FieldSpeed: {},
+				},
 			},
-
 			expected: []vss.Signal{
 				{
 					Name:        vss.FieldSpeed,
@@ -382,9 +381,10 @@ func (c *CHServiceTestSuite) TestGetLatestSignal() {
 						Source: ref("smartcar"),
 					},
 				},
-				SignalNames: []string{vss.FieldSpeed},
+				SignalNames: map[string]struct{}{
+					vss.FieldSpeed: {},
+				},
 			},
-
 			expected: []vss.Signal{
 				{
 					Name:        vss.FieldSpeed,
@@ -400,7 +400,7 @@ func (c *CHServiceTestSuite) TestGetLatestSignal() {
 					TokenID: 1,
 				},
 				IncludeLastSeen: true,
-				SignalNames:     []string{},
+				SignalNames:     map[string]struct{}{},
 			},
 			expected: []vss.Signal{
 				{
@@ -412,7 +412,6 @@ func (c *CHServiceTestSuite) TestGetLatestSignal() {
 	}
 	for _, tc := range testCases {
 		c.Run(tc.name, func() {
-			// Call the GetLatestSignalFloat method
 			result, err := c.chService.GetLatestSignals(ctx, &tc.latestArgs)
 			c.Require().NoError(err)
 			for i, sig := range result {
@@ -432,7 +431,6 @@ func (c *CHServiceTestSuite) TestGetAvailableSignals() {
 	})
 
 	c.Run("no signals", func() {
-		// validate empty result
 		result, err := c.chService.GetAvailableSignals(ctx, 2, nil)
 		c.Require().NoError(err)
 		c.Require().Nil(result)
@@ -470,7 +468,6 @@ func (c *CHServiceTestSuite) TestExecutionTimeout() {
 	err = chService.conn.QueryRow(ctx, "SELECT sleep(2) as delay").Scan(&delay)
 	c.Require().Error(err, "Query returned without timeout error")
 	c.Require().True(errors.Is(err, context.DeadlineExceeded), "Expected error to be DeadlineExceeded, got %v", err)
-
 }
 
 // insertTestData inserts test data into the clickhouse database.
@@ -484,7 +481,6 @@ func (c *CHServiceTestSuite) insertTestData() {
 	testSignal := []vss.Signal{}
 	var sources = []string{"dimo/integration/2ULfuC8U9dOqRshZBAi0lMM1Rrx", "dimo/integration/27qftVRWQYpVDcO5DltO5Ojbjxk", "dimo/integration/22N2xaPOq2WW2gAHBHd0Ikn4Zob"}
 	for i := range dataPoints {
-
 		numSig := vss.Signal{
 			Name:        vss.FieldSpeed,
 			Timestamp:   c.dataStartTime.Add(time.Second * time.Duration(30*i)),
@@ -502,7 +498,6 @@ func (c *CHServiceTestSuite) insertTestData() {
 		}
 		testSignal = append(testSignal, numSig, strSig)
 	}
-
 	// insert the test data into the clickhouse database
 	batch, err := conn.PrepareBatch(ctx, fmt.Sprintf("INSERT INTO %s", vss.TableName))
 	c.Require().NoError(err, "Failed to prepare batch")

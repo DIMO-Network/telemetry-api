@@ -61,15 +61,15 @@ func addSignalAggregation(aggArgs *model.AggregatedSignalArgs, child *graphql.Fi
 	agg := child.Args["agg"]
 	switch typedAgg := agg.(type) {
 	case model.FloatAggregation:
-		aggArgs.FloatArgs = append(aggArgs.FloatArgs, model.FloatSignalArgs{
+		aggArgs.FloatArgs[model.FloatSignalArgs{
 			Name: name,
 			Agg:  typedAgg,
-		})
+		}] = struct{}{}
 	case model.StringAggregation:
-		aggArgs.StringArgs = append(aggArgs.StringArgs, model.StringSignalArgs{
+		aggArgs.StringArgs[model.StringSignalArgs{
 			Name: name,
 			Agg:  typedAgg,
-		})
+		}] = struct{}{}
 	default:
 		return fmt.Errorf("unknown aggregation type: %T", agg)
 	}
@@ -93,11 +93,12 @@ func latestArgsFromContext(ctx context.Context, tokenID int, filter *model.Signa
 			case model.ApproximateLatField:
 				fallthrough
 			case model.ApproximateLongField:
-				latestArgs.SignalNames = append(latestArgs.SignalNames, vss.FieldCurrentLocationLatitude, vss.FieldCurrentLocationLongitude)
+				latestArgs.SignalNames[vss.FieldCurrentLocationLatitude] = struct{}{}
+				latestArgs.SignalNames[vss.FieldCurrentLocationLongitude] = struct{}{}
 			}
 			continue
 		}
-		latestArgs.SignalNames = append(latestArgs.SignalNames, field.Name)
+		latestArgs.SignalNames[field.Name] = struct{}{}
 	}
 	return &latestArgs, nil
 }

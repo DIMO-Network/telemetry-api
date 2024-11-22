@@ -25,7 +25,7 @@ type SignalArgs struct {
 type LatestSignalsArgs struct {
 	SignalArgs
 	// SignalNames is the list of signal names to query.
-	SignalNames []string
+	SignalNames map[string]struct{}
 	// IncludeLastSeen is a flag to include a new signal for the last seen signal.
 	IncludeLastSeen bool
 }
@@ -40,9 +40,9 @@ type AggregatedSignalArgs struct {
 	// Interval in which the data is aggregated in milliseconds.
 	Interval int64
 	// FloatArgs represents arguments for each float signal.
-	FloatArgs []FloatSignalArgs
+	FloatArgs map[FloatSignalArgs]struct{}
 	// StringArgs represents arguments for each string signal.
-	StringArgs []StringSignalArgs
+	StringArgs map[StringSignalArgs]struct{}
 }
 
 // FloatSignalArgs is the arguments for querying a float signals.
