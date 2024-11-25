@@ -1,6 +1,7 @@
 package graph
 
 import (
+	"github.com/DIMO-Network/model-garage/pkg/vss"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	"github.com/DIMO-Network/telemetry-api/internal/repositories"
 	"github.com/DIMO-Network/telemetry-api/internal/repositories/vc"
@@ -18,14 +19,14 @@ type Resolver struct {
 	VCRepo          *vc.Repository
 }
 
-func aproximateLocationSignalAggregations(obj *model.SignalAggregations, agg model.FloatAggregation) (*h3.LatLng, error) {
-	latVal, ok := obj.ValueNumbers[model.AliasKey{Name: "currentLocationLatitude", Agg: agg.String()}]
+func approximateLocationSignalAggregations(obj *model.SignalAggregations, agg model.FloatAggregation) *h3.LatLng {
+	latVal, ok := obj.ValueNumbers[model.AliasKey{Name: vss.FieldCurrentLocationLatitude, Agg: agg.String()}]
 	if !ok {
-		return nil, nil
+		return nil
 	}
-	logVal, ok := obj.ValueNumbers[model.AliasKey{Name: "currentLocationLongitude", Agg: agg.String()}]
+	lngVal, ok := obj.ValueNumbers[model.AliasKey{Name: vss.FieldCurrentLocationLongitude, Agg: agg.String()}]
 	if !ok {
-		return nil, nil
+		return nil
 	}
-	return repositories.GetApproximateLoc(latVal, logVal), nil
+	return repositories.GetApproximateLoc(latVal, lngVal)
 }

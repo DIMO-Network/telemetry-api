@@ -329,7 +329,7 @@ func TestRequiresPrivilegeCheck(t *testing.T) {
 				tc.telemetryClaim.SetPrivileges(privMaps)
 			}
 			testCtx := context.WithValue(context.Background(), TelemetryClaimContextKey{}, tc.telemetryClaim)
-			next, err := PrivilegeCheck(testCtx, nil, emptyResolver, tc.privs)
+			next, err := AllOfPrivilegeCheck(testCtx, nil, emptyResolver, tc.privs)
 			if tc.expectedError {
 				require.Error(t, err)
 			} else {

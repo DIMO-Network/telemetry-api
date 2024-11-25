@@ -122,8 +122,8 @@ func validateHeader(ctx context.Context, requiredAddr common.Address, tokenID in
 	return nil
 }
 
-// PrivilegeCheck checks if the claim set in the context includes the required privileges.
-func PrivilegeCheck(ctx context.Context, _ any, next graphql.Resolver, requiredPrivs []model.Privilege) (any, error) {
+// AllOfPrivilegeCheck checks if the claim set in the context includes the required privileges.
+func AllOfPrivilegeCheck(ctx context.Context, _ any, next graphql.Resolver, requiredPrivs []model.Privilege) (any, error) {
 	claim, err := getTelemetryClaim(ctx)
 	if err != nil {
 		return nil, UnauthorizedError{err: err}
@@ -131,7 +131,7 @@ func PrivilegeCheck(ctx context.Context, _ any, next graphql.Resolver, requiredP
 
 	for _, priv := range requiredPrivs {
 		if !claim.privileges.Contains(priv) {
-			return nil, newError("missing required privilege %s", priv)
+			return nil, newError("missing required privilege(s) %s", priv)
 		}
 	}
 
@@ -151,7 +151,7 @@ func OneOfPrivilegeCheck(ctx context.Context, _ any, next graphql.Resolver, requ
 		}
 	}
 
-	return nil, newError("missing one of the required privileges %v", requiredPrivs)
+	return nil, newError("requires at least one of the following privileges %v", requiredPrivs)
 }
 
 func getArg[T any](ctx context.Context, name string) (T, error) {
