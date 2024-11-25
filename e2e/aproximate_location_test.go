@@ -177,7 +177,6 @@ func TestApproximateLocation(t *testing.T) {
 	assert.Equal(t, expectedEndLatLong.Lng, *aggResult.Signals[1].ApproxLong)
 	assert.Nil(t, aggResult.Signals[1].Lat)
 	assert.Nil(t, aggResult.Signals[1].Long)
-
 }
 
 type ApproxResult struct {

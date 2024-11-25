@@ -19,14 +19,14 @@ type Resolver struct {
 	VCRepo          *vc.Repository
 }
 
-func approximateLocationSignalAggregations(obj *model.SignalAggregations, agg model.FloatAggregation) *h3.LatLng {
+func approximateLocationSignalAggregations(obj *model.SignalAggregations, agg model.FloatAggregation) (*h3.LatLng, bool) {
 	latVal, ok := obj.ValueNumbers[model.AliasKey{Name: vss.FieldCurrentLocationLatitude, Agg: agg.String()}]
 	if !ok {
-		return nil
+		return nil, false
 	}
 	lngVal, ok := obj.ValueNumbers[model.AliasKey{Name: vss.FieldCurrentLocationLongitude, Agg: agg.String()}]
 	if !ok {
-		return nil
+		return nil, false
 	}
-	return repositories.GetApproximateLoc(latVal, lngVal)
+	return repositories.GetApproximateLoc(latVal, lngVal), true
 }

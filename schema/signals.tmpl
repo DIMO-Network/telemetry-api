@@ -15,7 +15,7 @@ extend type SignalAggregations {
   {{- else }}
     agg: StringAggregation!
   ):  String
-  {{- end }} @requiresPrivileges(privileges: {{ .Privileges }}) @goField(name: "{{ .GOName }}", forceResolver: true) @isSignal @hasAggregation
+  {{- end }} @requiresAllOfPrivileges(privileges: {{ .Privileges }}) @goField(name: "{{ .GOName }}", forceResolver: true) @isSignal @hasAggregation
   {{ end }}
 }
 
@@ -33,7 +33,7 @@ extend type SignalCollection {
   {{ .JSONName }}: SignalFloat
   {{- else }}
   {{ .JSONName }}: SignalString
-  {{- end }} @requiresPrivileges(privileges: {{ .Privileges }}) @goField(name: "{{ .GOName }}") @isSignal
+  {{- end }} @requiresAllOfPrivileges(privileges: {{ .Privileges }}) @goField(name: "{{ .GOName }}") @isSignal
   {{ end }}
 }
 
