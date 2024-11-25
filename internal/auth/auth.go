@@ -20,12 +20,12 @@ const (
 
 var (
 	vehiclePrivToAPI = map[privileges.Privilege]model.Privilege{
-		privileges.VehicleNonLocationData: model.PrivilegeVehicleNonLocationData,
-		privileges.VehicleCommands:        model.PrivilegeVehicleCommands,
-		privileges.VehicleCurrentLocation: model.PrivilegeVehicleCurrentLocation,
-		privileges.VehicleAllTimeLocation: model.PrivilegeVehicleAllTimeLocation,
-		privileges.VehicleVinCredential:   model.PrivilegeVehicleVinCredential,
-		8:                                 model.PrivilegeVehicleApproximateLocation,
+		privileges.VehicleNonLocationData:     model.PrivilegeVehicleNonLocationData,
+		privileges.VehicleCommands:            model.PrivilegeVehicleCommands,
+		privileges.VehicleCurrentLocation:     model.PrivilegeVehicleCurrentLocation,
+		privileges.VehicleAllTimeLocation:     model.PrivilegeVehicleAllTimeLocation,
+		privileges.VehicleVinCredential:       model.PrivilegeVehicleVinCredential,
+		privileges.VehicleApproximateLocation: model.PrivilegeVehicleApproximateLocation,
 	}
 
 	manufacturerPrivToAPI = map[privileges.Privilege]model.Privilege{
