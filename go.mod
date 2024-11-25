@@ -9,7 +9,7 @@ require (
 	github.com/DIMO-Network/clickhouse-infra v0.0.3
 	github.com/DIMO-Network/model-garage v0.4.2
 	github.com/DIMO-Network/nameindexer v0.0.11
-	github.com/DIMO-Network/shared v0.12.6-0.20241125170819-34c34a40a26d
+	github.com/DIMO-Network/shared v0.12.6
 	github.com/Khan/genqlient v0.7.0
 	github.com/auth0/go-jwt-middleware/v2 v2.2.1
 	github.com/aws/aws-sdk-go-v2 v1.32.2
