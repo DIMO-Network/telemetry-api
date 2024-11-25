@@ -53,7 +53,7 @@ func TestPermission(t *testing.T) {
 				}
 			}`,
 			permissions: []int{},
-			expectedErr: `[{"message":"unauthorized: missing required privilege VEHICLE_NON_LOCATION_DATA","path":["signalsLatest","speed"]}]`,
+			expectedErr: `[{"message":"unauthorized: missing required privilege(s) VEHICLE_NON_LOCATION_DATA","path":["signalsLatest","speed"]}]`,
 		},
 		{
 			name:    "Non Location permissions",
@@ -120,7 +120,7 @@ func TestPermission(t *testing.T) {
 				}
 			}`,
 			permissions: []int{1},
-			expectedErr: `[{"message":"unauthorized: missing one of the required privileges [VEHICLE_APPROXIMATE_LOCATION VEHICLE_ALL_TIME_LOCATION]","path":["signalsLatest","currentLocationApproximateLatitude"]}]`,
+			expectedErr: `[{"message":"unauthorized: requires at least one of the following privileges [VEHICLE_APPROXIMATE_LOCATION VEHICLE_ALL_TIME_LOCATION]" ,"path":["signalsLatest","currentLocationApproximateLatitude"]}]`,
 		},
 	}
 
