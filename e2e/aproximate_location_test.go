@@ -9,39 +9,42 @@ import (
 	"github.com/DIMO-Network/telemetry-api/internal/service/ch"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/uber/h3-go/v4"
 )
 
 func TestApproximateLocation(t *testing.T) {
 	services := GetTestServices(t)
 	locationTime := time.Date(2024, 11, 20, 22, 28, 17, 0, time.UTC)
 	// Set up test data in Clickhouse
+	startLoc := h3.LatLng{Lat: 40.75005062700222, Lng: -74.0094415688571}
+	endLoc := h3.LatLng{Lat: 40.73899538333504, Lng: -73.99386110247163}
 	signals := []vss.Signal{
 		{
 			Source:      ch.SourceTranslations["smartcar"],
 			Timestamp:   locationTime.Add(-time.Hour * 24),
 			Name:        vss.FieldCurrentLocationLatitude,
-			ValueNumber: 40.73899538333504,
+			ValueNumber: startLoc.Lat,
 			TokenID:     39718,
 		},
 		{
 			Source:      ch.SourceTranslations["smartcar"],
 			Timestamp:   locationTime.Add(-time.Hour * 24),
 			Name:        vss.FieldCurrentLocationLongitude,
-			ValueNumber: 73.99386110247163,
+			ValueNumber: startLoc.Lng,
 			TokenID:     39718,
 		},
 		{
 			Source:      ch.SourceTranslations["smartcar"],
 			Timestamp:   locationTime,
 			Name:        vss.FieldCurrentLocationLatitude,
-			ValueNumber: 40.73899538333504,
+			ValueNumber: endLoc.Lat,
 			TokenID:     39718,
 		},
 		{
 			Source:      ch.SourceTranslations["smartcar"],
 			Timestamp:   locationTime,
 			Name:        vss.FieldCurrentLocationLongitude,
-			ValueNumber: 73.99386110247163,
+			ValueNumber: endLoc.Lng,
 			TokenID:     39718,
 		},
 	}
@@ -75,13 +78,14 @@ func TestApproximateLocation(t *testing.T) {
 	err := telemetryClient.Post(query, &result, WithToken(token))
 	require.NoError(t, err)
 
-	expectedLatLong := repositories.GetApproximateLoc(40.73899538333504, 73.99386110247163)
+	expectedStartLatLong := repositories.GetApproximateLoc(startLoc.Lat, startLoc.Lng)
+	expectedEndLatLong := repositories.GetApproximateLoc(endLoc.Lat, endLoc.Lng)
 	// Assert the results
 	assert.Equal(t, locationTime.Format(time.RFC3339), result.SignalLatest.LastSeen)
 	assert.Equal(t, locationTime.Format(time.RFC3339), result.SignalLatest.ApproxLat.Timestamp)
 	assert.Equal(t, locationTime.Format(time.RFC3339), result.SignalLatest.ApproxLong.Timestamp)
-	assert.Equal(t, expectedLatLong.Lat, result.SignalLatest.ApproxLat.Value)
-	assert.Equal(t, expectedLatLong.Lng, result.SignalLatest.ApproxLong.Value)
+	assert.Equal(t, expectedEndLatLong.Lat, result.SignalLatest.ApproxLat.Value)
+	assert.Equal(t, expectedEndLatLong.Lng, result.SignalLatest.ApproxLong.Value)
 
 	// verify we do not leak the exact location
 	query = `query {
@@ -119,8 +123,8 @@ func TestApproximateLocation(t *testing.T) {
 	assert.Equal(t, locationTime.Format(time.RFC3339), result.SignalLatest.LastSeen)
 	assert.Equal(t, locationTime.Format(time.RFC3339), result.SignalLatest.ApproxLat.Timestamp)
 	assert.Equal(t, locationTime.Format(time.RFC3339), result.SignalLatest.ApproxLong.Timestamp)
-	assert.Equal(t, expectedLatLong.Lat, result.SignalLatest.ApproxLat.Value)
-	assert.Equal(t, expectedLatLong.Lng, result.SignalLatest.ApproxLong.Value)
+	assert.Equal(t, expectedEndLatLong.Lat, result.SignalLatest.ApproxLat.Value)
+	assert.Equal(t, expectedEndLatLong.Lng, result.SignalLatest.ApproxLong.Value)
 	assert.Nil(t, result.SignalLatest.Lat)
 	assert.Nil(t, result.SignalLatest.Long)
 
@@ -139,12 +143,12 @@ func TestApproximateLocation(t *testing.T) {
 	require.Len(t, aggResult.Signals, 2)
 	// Assert the results
 	assert.Equal(t, locationTime.Add(-time.Hour*24).Truncate(time.Hour*24).Format(time.RFC3339), aggResult.Signals[0].Timestamp)
-	assert.Equal(t, expectedLatLong.Lat, *aggResult.Signals[0].ApproxLat)
-	assert.Equal(t, expectedLatLong.Lng, *aggResult.Signals[0].ApproxLong)
+	assert.Equal(t, expectedStartLatLong.Lat, *aggResult.Signals[0].ApproxLat)
+	assert.Equal(t, expectedStartLatLong.Lng, *aggResult.Signals[0].ApproxLong)
 
 	assert.Equal(t, locationTime.Truncate(time.Hour*24).Format(time.RFC3339), aggResult.Signals[1].Timestamp)
-	assert.Equal(t, expectedLatLong.Lat, *aggResult.Signals[1].ApproxLat)
-	assert.Equal(t, expectedLatLong.Lng, *aggResult.Signals[1].ApproxLong)
+	assert.Equal(t, expectedEndLatLong.Lat, *aggResult.Signals[1].ApproxLat)
+	assert.Equal(t, expectedEndLatLong.Lng, *aggResult.Signals[1].ApproxLong)
 
 	query = `query {
 		signals(tokenId:39718, from: "2020-04-15T09:21:19Z", to: "2025-04-27T09:21:19Z", interval:"24h"){
@@ -163,14 +167,14 @@ func TestApproximateLocation(t *testing.T) {
 	// Assert the results
 	require.Len(t, aggResult.Signals, 2)
 	assert.Equal(t, locationTime.Add(-time.Hour*24).Truncate(time.Hour*24).Format(time.RFC3339), aggResult.Signals[0].Timestamp)
-	assert.Equal(t, expectedLatLong.Lat, *aggResult.Signals[0].ApproxLat)
-	assert.Equal(t, expectedLatLong.Lng, *aggResult.Signals[0].ApproxLong)
+	assert.Equal(t, expectedStartLatLong.Lat, *aggResult.Signals[0].ApproxLat)
+	assert.Equal(t, expectedStartLatLong.Lng, *aggResult.Signals[0].ApproxLong)
 	assert.Nil(t, aggResult.Signals[0].Lat)
 	assert.Nil(t, aggResult.Signals[0].Long)
 
 	assert.Equal(t, locationTime.Truncate(time.Hour*24).Format(time.RFC3339), aggResult.Signals[1].Timestamp)
-	assert.Equal(t, expectedLatLong.Lat, *aggResult.Signals[1].ApproxLat)
-	assert.Equal(t, expectedLatLong.Lng, *aggResult.Signals[1].ApproxLong)
+	assert.Equal(t, expectedEndLatLong.Lat, *aggResult.Signals[1].ApproxLat)
+	assert.Equal(t, expectedEndLatLong.Lng, *aggResult.Signals[1].ApproxLong)
 	assert.Nil(t, aggResult.Signals[1].Lat)
 	assert.Nil(t, aggResult.Signals[1].Long)
 
