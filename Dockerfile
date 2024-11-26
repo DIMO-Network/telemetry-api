@@ -8,7 +8,7 @@ COPY . ./
 RUN make tidy
 RUN make build
 
-FROM gcr.io/distroless/static AS final
+FROM gcr.io/distroless/base AS final
 
 LABEL maintainer="DIMO <hello@dimo.zone>"
 

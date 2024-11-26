@@ -193,6 +193,10 @@ GROUP BY
   name
 */
 func getLatestQuery(latestArgs *model.LatestSignalsArgs) (string, []any) {
+	signalNames := make([]string, 0, len(latestArgs.SignalNames))
+	for name := range latestArgs.SignalNames {
+		signalNames = append(signalNames, name)
+	}
 	mods := []qm.QueryMod{
 		qm.Select(vss.NameCol),
 		qm.Select(latestTimestamp),
@@ -200,7 +204,7 @@ func getLatestQuery(latestArgs *model.LatestSignalsArgs) (string, []any) {
 		qm.Select(latestString),
 		qm.From(vss.TableName),
 		qm.Where(tokenIDWhere, latestArgs.TokenID),
-		qm.WhereIn(nameIn, latestArgs.SignalNames),
+		qm.WhereIn(nameIn, signalNames),
 		qm.GroupBy(vss.NameCol),
 	}
 	mods = append(mods, getFilterMods(latestArgs.Filter)...)
@@ -298,15 +302,23 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 	if numAggs == 0 {
 		return "", nil, errors.New("no aggregations requested")
 	}
+	floatArgs := make([]model.FloatSignalArgs, 0, len(aggArgs.FloatArgs))
+	stringArgs := make([]model.StringSignalArgs, 0, len(aggArgs.StringArgs))
+	for agg := range aggArgs.FloatArgs {
+		floatArgs = append(floatArgs, agg)
+	}
+	for agg := range aggArgs.StringArgs {
+		stringArgs = append(stringArgs, agg)
+	}
 
 	// I can't find documentation for this VALUES syntax anywhere besides GitHub
 	// https://github.com/ClickHouse/ClickHouse/issues/5984#issuecomment-513411725
 	// You can see the alternatives in the issue and they are ugly.
 	valuesArgs := make([]string, 0, numAggs)
-	for _, agg := range aggArgs.FloatArgs {
+	for _, agg := range floatArgs {
 		valuesArgs = append(valuesArgs, fmt.Sprintf("('%s', '%s')", agg.Name, agg.Agg))
 	}
-	for _, agg := range aggArgs.StringArgs {
+	for _, agg := range stringArgs {
 		valuesArgs = append(valuesArgs, fmt.Sprintf("('%s', '%s')", agg.Name, agg.Agg))
 	}
 	valueTable := fmt.Sprintf("VALUES('%s', %s) as %s ON %s.%s = %s.%s", valueTableDef, strings.Join(valuesArgs, ", "), aggTableName, vss.TableName, vss.NameCol, aggTableName, vss.NameCol)
@@ -315,8 +327,8 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 		qm.Select(vss.NameCol),
 		qm.Select(AggCol),
 		selectInterval(aggArgs.Interval),
-		selectNumberAggs(aggArgs.FloatArgs),
-		selectStringAggs(aggArgs.StringArgs),
+		selectNumberAggs(floatArgs),
+		selectStringAggs(stringArgs),
 		qm.Where(tokenIDWhere, aggArgs.TokenID),
 		qm.Where(timestampFrom, aggArgs.FromTS),
 		qm.Where(timestampTo, aggArgs.ToTS),

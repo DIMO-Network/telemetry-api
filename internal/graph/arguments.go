@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/99designs/gqlgen/graphql"
+	"github.com/DIMO-Network/model-garage/pkg/vss"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 )
 
@@ -21,9 +22,11 @@ func aggregationArgsFromContext(ctx context.Context, tokenID int, interval strin
 			TokenID: uint32(tokenID),
 			Filter:  filter,
 		},
-		FromTS:   from,
-		ToTS:     to,
-		Interval: intervalInt,
+		FromTS:     from,
+		ToTS:       to,
+		Interval:   intervalInt,
+		FloatArgs:  map[model.FloatSignalArgs]struct{}{},
+		StringArgs: map[model.StringSignalArgs]struct{}{},
 	}
 
 	fields := graphql.CollectFieldsCtx(ctx, nil)
@@ -36,7 +39,19 @@ func aggregationArgsFromContext(ctx context.Context, tokenID int, interval strin
 		if err != nil {
 			return nil, fmt.Errorf("failed to get child field: %w", err)
 		}
-		if err := addSignalAggregation(&aggArgs, child); err != nil {
+
+		// check for approximate location fields and force pull the latitude and longitude
+		if field.Name == model.ApproximateLatField || field.Name == model.ApproximateLongField {
+			if err := addSignalAggregation(&aggArgs, child, vss.FieldCurrentLocationLatitude); err != nil {
+				return nil, err
+			}
+			if err := addSignalAggregation(&aggArgs, child, vss.FieldCurrentLocationLongitude); err != nil {
+				return nil, err
+			}
+			continue
+		}
+
+		if err := addSignalAggregation(&aggArgs, child, child.Field.Name); err != nil {
 			return nil, err
 		}
 	}
@@ -44,19 +59,19 @@ func aggregationArgsFromContext(ctx context.Context, tokenID int, interval strin
 }
 
 // addSignalAggregation gets the aggregation arguments from the child field and adds them to the aggregated signal arguments as eiter a float or string aggregation.
-func addSignalAggregation(aggArgs *model.AggregatedSignalArgs, child *graphql.FieldContext) error {
+func addSignalAggregation(aggArgs *model.AggregatedSignalArgs, child *graphql.FieldContext, name string) error {
 	agg := child.Args["agg"]
 	switch typedAgg := agg.(type) {
 	case model.FloatAggregation:
-		aggArgs.FloatArgs = append(aggArgs.FloatArgs, model.FloatSignalArgs{
-			Name: child.Field.Name,
+		aggArgs.FloatArgs[model.FloatSignalArgs{
+			Name: name,
 			Agg:  typedAgg,
-		})
+		}] = struct{}{}
 	case model.StringAggregation:
-		aggArgs.StringArgs = append(aggArgs.StringArgs, model.StringSignalArgs{
-			Name: child.Field.Name,
+		aggArgs.StringArgs[model.StringSignalArgs{
+			Name: name,
 			Agg:  typedAgg,
-		})
+		}] = struct{}{}
 	default:
 		return fmt.Errorf("unknown aggregation type: %T", agg)
 	}
@@ -65,13 +80,14 @@ func addSignalAggregation(aggArgs *model.AggregatedSignalArgs, child *graphql.Fi
 
 // latestArgsFromContext creates a latest signals arguments from the context and the provided arguments.
 func latestArgsFromContext(ctx context.Context, tokenID int, filter *model.SignalFilter) (*model.LatestSignalsArgs, error) {
+	fields := graphql.CollectFieldsCtx(ctx, nil)
 	latestArgs := model.LatestSignalsArgs{
 		SignalArgs: model.SignalArgs{
 			TokenID: uint32(tokenID),
 			Filter:  filter,
 		},
+		SignalNames: make(map[string]struct{}, len(fields)),
 	}
-	fields := graphql.CollectFieldsCtx(ctx, nil)
 	for _, field := range fields {
 		if !isSignal(field) {
 			if field.Name == model.LastSeenField {
@@ -79,8 +95,12 @@ func latestArgsFromContext(ctx context.Context, tokenID int, filter *model.Signa
 			}
 			continue
 		}
-
-		latestArgs.SignalNames = append(latestArgs.SignalNames, field.Name)
+		if field.Name == model.ApproximateLatField || field.Name == model.ApproximateLongField {
+			latestArgs.SignalNames[vss.FieldCurrentLocationLatitude] = struct{}{}
+			latestArgs.SignalNames[vss.FieldCurrentLocationLongitude] = struct{}{}
+			continue
+		}
+		latestArgs.SignalNames[field.Name] = struct{}{}
 	}
 	return &latestArgs, nil
 }

@@ -1,10 +1,8 @@
 package e2e_test
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
-	"net/http"
 	"testing"
 
 	"github.com/DIMO-Network/clickhouse-infra/pkg/connect"
@@ -19,8 +17,7 @@ func TestVINVCLatest(t *testing.T) {
 	services := GetTestServices(t)
 
 	// Create and set up GraphQL server
-	server := NewGraphQLServer(t, services.Settings)
-	defer server.Close()
+	telemetryClient := NewGraphQLServer(t, services.Settings)
 
 	cfg := services.CH.Config()
 	cfg.Database = services.Settings.ClickhouseFileIndexDatabase
@@ -49,45 +46,27 @@ func TestVINVCLatest(t *testing.T) {
 		}
 	}`
 
-	body, err := json.Marshal(map[string]interface{}{
-		"query": query,
-	})
-	require.NoError(t, err)
-
-	req, err := http.NewRequest("POST", server.URL+"/query", bytes.NewBuffer(body))
-	require.NoError(t, err)
-	req.Header.Set("Authorization", "Bearer "+token)
-	req.Header.Set("Content-Type", "application/json")
-
-	resp, err := http.DefaultClient.Do(req)
-	require.NoError(t, err)
-	defer resp.Body.Close()
-
-	require.Equal(t, http.StatusOK, resp.StatusCode)
-
 	var result struct {
-		Data struct {
-			VINVC struct {
-				VehicleTokenID         int    `json:"vehicleTokenId"`
-				VIN                    string `json:"vin"`
-				RecordedBy             string `json:"recordedBy"`
-				RecordedAt             string `json:"recordedAt"`
-				CountryCode            string `json:"countryCode"`
-				VehicleContractAddress string `json:"vehicleContractAddress"`
-				ValidFrom              string `json:"validFrom"`
-				ValidTo                string `json:"validTo"`
-				RawVC                  string `json:"rawVC"`
-			} `json:"vinVCLatest"`
-		} `json:"data"`
+		VINVC struct {
+			VehicleTokenID         int    `json:"vehicleTokenId"`
+			VIN                    string `json:"vin"`
+			RecordedBy             string `json:"recordedBy"`
+			RecordedAt             string `json:"recordedAt"`
+			CountryCode            string `json:"countryCode"`
+			VehicleContractAddress string `json:"vehicleContractAddress"`
+			ValidFrom              string `json:"validFrom"`
+			ValidTo                string `json:"validTo"`
+			RawVC                  string `json:"rawVC"`
+		} `json:"vinVCLatest"`
 	}
 
-	err = json.NewDecoder(resp.Body).Decode(&result)
+	err = telemetryClient.Post(query, &result, WithToken(token))
 	require.NoError(t, err)
 
-	actual := result.Data.VINVC
+	actual := result.VINVC
 	expectedJSON, err := json.Marshal(testVC)
 	require.NoError(t, err)
-	actualJSON, err := json.Marshal(result.Data.VINVC.RawVC)
+	actualJSON, err := json.Marshal(result.VINVC.RawVC)
 	require.NoError(t, err)
 
 	assert.JSONEq(t, string(expectedJSON), string(actualJSON))

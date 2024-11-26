@@ -56,7 +56,8 @@ func New(settings config.Settings, logger *zerolog.Logger) (*App, error) {
 	cfg := graph.Config{Resolvers: resolver}
 	cfg.Directives.RequiresVehicleToken = auth.NewVehicleTokenCheck(settings.VehicleNFTAddress)
 	cfg.Directives.RequiresManufacturerToken = auth.NewManufacturerTokenCheck(settings.ManufacturerNFTAddress, idService)
-	cfg.Directives.RequiresPrivileges = auth.PrivilegeCheck
+	cfg.Directives.RequiresAllOfPrivileges = auth.AllOfPrivilegeCheck
+	cfg.Directives.RequiresOneOfPrivilege = auth.OneOfPrivilegeCheck
 	cfg.Directives.IsSignal = noOp
 	cfg.Directives.HasAggregation = noOp
 	cfg.Directives.OneOf = noOp

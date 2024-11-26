@@ -34,6 +34,24 @@ func (r *queryResolver) AvailableSignals(ctx context.Context, tokenID int, filte
 	return r.Repository.GetAvailableSignals(ctx, uint32(tokenID), filter)
 }
 
+// CurrentLocationApproximateLatitude is the resolver for the CurrentLocationApproximateLatitude
+func (r *signalAggregationsResolver) CurrentLocationApproximateLatitude(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
+	latLng, ok := approximateLocationSignalAggregations(obj, agg)
+	if !ok {
+		return nil, nil
+	}
+	return &latLng.Lat, nil
+}
+
+// CurrentLocationApproximateLongitude is the resolver for the CurrentLocationApproximateLongitude
+func (r *signalAggregationsResolver) CurrentLocationApproximateLongitude(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
+	latLng, ok := approximateLocationSignalAggregations(obj, agg)
+	if !ok {
+		return nil, nil
+	}
+	return &latLng.Lng, nil
+}
+
 // Query returns QueryResolver implementation.
 func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 

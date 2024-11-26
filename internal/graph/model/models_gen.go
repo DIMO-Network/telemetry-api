@@ -43,6 +43,18 @@ type Query struct {
 type SignalCollection struct {
 	// The last time any signal was seen matching the filter.
 	LastSeen *time.Time `json:"lastSeen,omitempty"`
+	// Approximate Latitude of vehicle in WGS 84 geodetic coordinates.
+	// This returned location is the center of the h3 cell with resolution 6 that the location is in.
+	// More Info on H3: https://h3geo.org/
+	// Unit: 'degrees' Min: '-90' Max: '90'
+	// Required Privileges: [VEHICLE_APPROXIMATE_LOCATION OR VEHICLE_ALL_TIME_LOCATION]
+	CurrentLocationApproximateLatitude *SignalFloat `json:"currentLocationApproximateLatitude,omitempty"`
+	// Approximate Longitude of vehicle in WGS 84 geodetic coordinates.
+	// This returned location is the center of the h3 cell with resolution 6 that the location is in.
+	// More Info on H3: https://h3geo.org/
+	// Unit: 'degrees' Min: '-180' Max: '180'
+	// Required Privileges: [VEHICLE_APPROXIMATE_LOCATION OR VEHICLE_ALL_TIME_LOCATION]
+	CurrentLocationApproximateLongitude *SignalFloat `json:"currentLocationApproximateLongitude,omitempty"`
 	// Vehicle rotation rate along Z (vertical).
 	// Unit: 'degrees/s'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
@@ -375,6 +387,7 @@ const (
 	PrivilegeVehicleCurrentLocation     Privilege = "VEHICLE_CURRENT_LOCATION"
 	PrivilegeVehicleAllTimeLocation     Privilege = "VEHICLE_ALL_TIME_LOCATION"
 	PrivilegeVehicleVinCredential       Privilege = "VEHICLE_VIN_CREDENTIAL"
+	PrivilegeVehicleApproximateLocation Privilege = "VEHICLE_APPROXIMATE_LOCATION"
 	PrivilegeManufacturerDeviceLastSeen Privilege = "MANUFACTURER_DEVICE_LAST_SEEN"
 )
 
@@ -384,12 +397,13 @@ var AllPrivilege = []Privilege{
 	PrivilegeVehicleCurrentLocation,
 	PrivilegeVehicleAllTimeLocation,
 	PrivilegeVehicleVinCredential,
+	PrivilegeVehicleApproximateLocation,
 	PrivilegeManufacturerDeviceLastSeen,
 }
 
 func (e Privilege) IsValid() bool {
 	switch e {
-	case PrivilegeVehicleNonLocationData, PrivilegeVehicleCommands, PrivilegeVehicleCurrentLocation, PrivilegeVehicleAllTimeLocation, PrivilegeVehicleVinCredential, PrivilegeManufacturerDeviceLastSeen:
+	case PrivilegeVehicleNonLocationData, PrivilegeVehicleCommands, PrivilegeVehicleCurrentLocation, PrivilegeVehicleAllTimeLocation, PrivilegeVehicleVinCredential, PrivilegeVehicleApproximateLocation, PrivilegeManufacturerDeviceLastSeen:
 		return true
 	}
 	return false

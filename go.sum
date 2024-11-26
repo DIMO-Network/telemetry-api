@@ -82,8 +82,8 @@ github.com/DIMO-Network/model-garage v0.4.2 h1:TF+RNC1n1Y58QSdzmKaf5REixdariAP4t
 github.com/DIMO-Network/model-garage v0.4.2/go.mod h1:SXaBHFFARooOEoaV1wFaOC1K0LMt0bovkILsFXoUQTg=
 github.com/DIMO-Network/nameindexer v0.0.11 h1:VmonlyW98BSIX7c4hwlRqpzIBLlyMby4x5WvzvANbCA=
 github.com/DIMO-Network/nameindexer v0.0.11/go.mod h1:Hd+vs7PCqSIdAdkcHprdqQjsMED5fuiHP6TNKdqUajs=
-github.com/DIMO-Network/shared v0.12.1 h1:vYnXZSZKR3tzixXreTAuDx9OFe37m7Xzoacx9C5+UAM=
-github.com/DIMO-Network/shared v0.12.1/go.mod h1:UbxVeHgaEeTo7QrzB0t1oVDh+5y79lIPqr8gv65e6Pk=
+github.com/DIMO-Network/shared v0.12.6 h1:vAnhmYnk21hBjFaSY1bA+oGJZENCsK7OmtSwF4O1Zqg=
+github.com/DIMO-Network/shared v0.12.6/go.mod h1:dtoa/pN19FFR/ghTsUWJynQClwvc+cIlf2mPDaUBDsE=
 github.com/DIMO-Network/yaml v0.1.0 h1:KQ3oKHUZETchR6Pxbmmol3e4ewrPv/q8cEwqxfwyZbU=
 github.com/DIMO-Network/yaml v0.1.0/go.mod h1:KkiehcbkVzH8Pf8f9dja8B2aW81gYYZSqfwzSj9yN68=
 github.com/DataDog/datadog-go v3.2.0+incompatible/go.mod h1:LButxg5PwREeZtORoXG3tL4fMGNddJ+vMq1mwgfaqoQ=
@@ -772,6 +772,8 @@ github.com/tklauser/numcpus v0.6.1/go.mod h1:1XfjsgE2zo8GVw7POkMbHENHzVg3GzmoZ9f
 github.com/tklauser/numcpus v0.7.0 h1:yjuerZP127QG9m5Zh/mSO4wqurYil27tHrqwRoRjpr4=
 github.com/tklauser/numcpus v0.7.0/go.mod h1:bb6dMVcj8A42tSE7i32fsIUCbQNllK5iDguyOZRUzAY=
 github.com/tv42/httpunix v0.0.0-20150427012821-b75d8614f926/go.mod h1:9ESjWnEqriFuLhtthL60Sar/7RFoluCcXsuvEwTV5KM=
+github.com/uber/h3-go/v4 v4.1.2 h1:QHGEcldBZArx51UyTkQprFMUXaIlEkLV88zWUt8u2LY=
+github.com/uber/h3-go/v4 v4.1.2/go.mod h1:VDpXVn4NLetBoISLEbiTVNstwW00bhHolV8I+jx9G+4=
 github.com/valyala/bytebufferpool v1.0.0 h1:GqA5TC/0021Y/b9FG4Oi9Mr3q7XYx6KllzawFIhcdPw=
 github.com/valyala/bytebufferpool v1.0.0/go.mod h1:6bBcMArwyJ5K/AmCkWv1jt77kVWyCJ6HpOuEn7z0Csc=
 github.com/valyala/fasthttp v1.55.0 h1:Zkefzgt6a7+bVKHnu/YaYSOPfNYNisSVBo/unVCf8k8=

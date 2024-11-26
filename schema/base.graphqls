@@ -46,6 +46,31 @@ type SignalAggregations {
   Timestamp of the aggregated data.
   """
   timestamp: Time!
+  """
+  Approximate Latitude of vehicle in WGS 84 geodetic coordinates, as measured at the position of GNSS receiver antenna.
+  Unit: 'degrees' Min: '-90' Max: '90'
+  Required Privileges: [VEHICLE_APPROXIMATE_LOCATION OR VEHICLE_ALL_TIME_LOCATION]
+  """
+  currentLocationApproximateLatitude(agg: FloatAggregation!): Float
+    @requiresOneOfPrivilege(
+      privileges: [VEHICLE_APPROXIMATE_LOCATION, VEHICLE_ALL_TIME_LOCATION]
+    )
+    @goField(name: "CurrentLocationApproximateLatitude", forceResolver: true)
+    @isSignal
+    @hasAggregation
+
+  """
+  Approximate Longitude of vehicle in WGS 84 geodetic coordinates, as measured at the position of GNSS receiver antenna.
+  Unit: 'degrees' Min: '-180' Max: '180'
+  Required Privileges: [VEHICLE_APPROXIMATE_LOCATION OR VEHICLE_ALL_TIME_LOCATION]
+  """
+  currentLocationApproximateLongitude(agg: FloatAggregation!): Float
+    @requiresOneOfPrivilege(
+      privileges: [VEHICLE_APPROXIMATE_LOCATION, VEHICLE_ALL_TIME_LOCATION]
+    )
+    @goField(name: "CurrentLocationApproximateLongitude", forceResolver: true)
+    @isSignal
+    @hasAggregation
 }
 
 type SignalCollection {
@@ -53,6 +78,33 @@ type SignalCollection {
   The last time any signal was seen matching the filter.
   """
   lastSeen: Time
+  """
+  Approximate Latitude of vehicle in WGS 84 geodetic coordinates.
+  This returned location is the center of the h3 cell with resolution 6 that the location is in.
+  More Info on H3: https://h3geo.org/
+  Unit: 'degrees' Min: '-90' Max: '90'
+  Required Privileges: [VEHICLE_APPROXIMATE_LOCATION OR VEHICLE_ALL_TIME_LOCATION]
+  """
+  currentLocationApproximateLatitude: SignalFloat
+    @requiresOneOfPrivilege(
+      privileges: [VEHICLE_APPROXIMATE_LOCATION, VEHICLE_ALL_TIME_LOCATION]
+    )
+    @goField(name: "CurrentLocationApproximateLatitude")
+    @isSignal
+
+  """
+  Approximate Longitude of vehicle in WGS 84 geodetic coordinates.
+  This returned location is the center of the h3 cell with resolution 6 that the location is in.
+  More Info on H3: https://h3geo.org/
+  Unit: 'degrees' Min: '-180' Max: '180'
+  Required Privileges: [VEHICLE_APPROXIMATE_LOCATION OR VEHICLE_ALL_TIME_LOCATION]
+  """
+  currentLocationApproximateLongitude: SignalFloat
+    @requiresOneOfPrivilege(
+      privileges: [VEHICLE_APPROXIMATE_LOCATION, VEHICLE_ALL_TIME_LOCATION]
+    )
+    @goField(name: "CurrentLocationApproximateLongitude")
+    @isSignal
 }
 
 enum FloatAggregation {

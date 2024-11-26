@@ -29,7 +29,7 @@ help:
 	@echo ""
 
 build: ## Build the binary
-	@CGO_ENABLED=0 GOOS=$(GOOS) GOARCH=$(ARCH) \
+	@CGO_ENABLED=1 GOOS=$(GOOS) GOARCH=$(ARCH) \
 		go build -o $(PATHINSTBIN)/$(BIN_NAME) ./cmd/$(BIN_NAME)
 
 run: build ## Run the binary

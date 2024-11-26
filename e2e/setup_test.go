@@ -4,11 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"net/http/httptest"
 	"os"
 	"sync"
 	"testing"
 
+	"github.com/99designs/gqlgen/client"
 	"github.com/DIMO-Network/clickhouse-infra/pkg/container"
 	"github.com/DIMO-Network/model-garage/pkg/cloudevent"
 	"github.com/DIMO-Network/nameindexer"
@@ -114,7 +114,7 @@ func StoreSampleVC(ctx context.Context, idxSrv *indexrepo.Service, bucket string
 	return nil
 }
 
-func NewGraphQLServer(t *testing.T, settings config.Settings) *httptest.Server {
+func NewGraphQLServer(t *testing.T, settings config.Settings) *client.Client {
 	t.Helper()
 
 	logger := zerolog.New(os.Stdout).With().Timestamp().Logger()
@@ -126,5 +126,9 @@ func NewGraphQLServer(t *testing.T, settings config.Settings) *httptest.Server {
 
 	t.Cleanup(application.Cleanup)
 
-	return httptest.NewServer(application.Handler)
+	return client.New(application.Handler)
+}
+
+func WithToken(token string) client.Option {
+	return client.AddHeader("Authorization", "Bearer "+token)
 }

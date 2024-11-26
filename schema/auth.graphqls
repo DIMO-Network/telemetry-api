@@ -1,6 +1,12 @@
 scalar Map
 
-directive @requiresPrivileges(privileges: [Privilege!]!) on FIELD_DEFINITION | OBJECT | INTERFACE | SCALAR | ENUM
+directive @requiresAllOfPrivileges(
+  privileges: [Privilege!]!
+) on FIELD_DEFINITION | OBJECT | INTERFACE | SCALAR | ENUM
+
+directive @requiresOneOfPrivilege(
+  privileges: [Privilege!]!
+) on FIELD_DEFINITION | OBJECT | INTERFACE | SCALAR | ENUM
 
 enum Privilege {
   VEHICLE_NON_LOCATION_DATA
@@ -8,6 +14,7 @@ enum Privilege {
   VEHICLE_CURRENT_LOCATION
   VEHICLE_ALL_TIME_LOCATION
   VEHICLE_VIN_CREDENTIAL
+  VEHICLE_APPROXIMATE_LOCATION
   MANUFACTURER_DEVICE_LAST_SEEN
 }
 

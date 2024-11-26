@@ -11,7 +11,7 @@ extend type Query {
     tokenId: Int!
   ): VINVC
     @requiresVehicleToken
-    @requiresPrivileges(privileges: [VEHICLE_VIN_CREDENTIAL])
+    @requiresAllOfPrivileges(privileges: [VEHICLE_VIN_CREDENTIAL])
 
   """
   pomVCLatest returns the latest POMVC data for a given token.
@@ -25,7 +25,7 @@ extend type Query {
     tokenId: Int!
   ): POMVC
     @requiresVehicleToken
-    @requiresPrivileges(privileges: [VEHICLE_ALL_TIME_LOCATION])
+    @requiresAllOfPrivileges(privileges: [VEHICLE_ALL_TIME_LOCATION])
 }
 
 type VINVC {
