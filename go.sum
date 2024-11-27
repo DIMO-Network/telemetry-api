@@ -82,6 +82,10 @@ github.com/DIMO-Network/model-garage v0.4.2 h1:TF+RNC1n1Y58QSdzmKaf5REixdariAP4t
 github.com/DIMO-Network/model-garage v0.4.2/go.mod h1:SXaBHFFARooOEoaV1wFaOC1K0LMt0bovkILsFXoUQTg=
 github.com/DIMO-Network/nameindexer v0.0.11 h1:VmonlyW98BSIX7c4hwlRqpzIBLlyMby4x5WvzvANbCA=
 github.com/DIMO-Network/nameindexer v0.0.11/go.mod h1:Hd+vs7PCqSIdAdkcHprdqQjsMED5fuiHP6TNKdqUajs=
+github.com/DIMO-Network/nameindexer v0.0.12-0.20241127134918-6fa9ca3c083f h1:X2KHzvFlgTr0t9SBE6lKsg7PZ4BADUqYX1wpKWmKzGY=
+github.com/DIMO-Network/nameindexer v0.0.12-0.20241127134918-6fa9ca3c083f/go.mod h1:Hd+vs7PCqSIdAdkcHprdqQjsMED5fuiHP6TNKdqUajs=
+github.com/DIMO-Network/nameindexer v0.0.12-0.20241127145606-0297cf40149c h1:ebCezS1Dp2a+CFdJDQqJ6Zjv5GJUDHhD+l6yEwOWLyg=
+github.com/DIMO-Network/nameindexer v0.0.12-0.20241127145606-0297cf40149c/go.mod h1:Hd+vs7PCqSIdAdkcHprdqQjsMED5fuiHP6TNKdqUajs=
 github.com/DIMO-Network/shared v0.12.6 h1:vAnhmYnk21hBjFaSY1bA+oGJZENCsK7OmtSwF4O1Zqg=
 github.com/DIMO-Network/shared v0.12.6/go.mod h1:dtoa/pN19FFR/ghTsUWJynQClwvc+cIlf2mPDaUBDsE=
 github.com/DIMO-Network/yaml v0.1.0 h1:KQ3oKHUZETchR6Pxbmmol3e4ewrPv/q8cEwqxfwyZbU=

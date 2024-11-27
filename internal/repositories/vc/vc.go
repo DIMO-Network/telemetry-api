@@ -10,12 +10,13 @@ import (
 	"github.com/ClickHouse/clickhouse-go/v2"
 	"github.com/DIMO-Network/attestation-api/pkg/verifiable"
 	"github.com/DIMO-Network/model-garage/pkg/cloudevent"
-	"github.com/DIMO-Network/nameindexer"
 	"github.com/DIMO-Network/nameindexer/pkg/clickhouse/indexrepo"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/rs/zerolog"
 )
+
+var vcType = cloudevent.TypeVerifableCredential
 
 type Repository struct {
 	logger         *zerolog.Logger
@@ -42,16 +43,15 @@ func New(chConn clickhouse.Conn, objGetter indexrepo.ObjectGetter, vcBucketName,
 
 // GetLatestVINVC fetches the latest VIN VC for the given vehicle.
 func (r *Repository) GetLatestVINVC(ctx context.Context, vehicleTokenID uint32) (*model.Vinvc, error) {
-	filler := nameindexer.FillerVerifiableCredential
 	vehicleDID := cloudevent.NFTDID{
 		ChainID:         r.chainID,
 		ContractAddress: r.vehicleAddress,
 		TokenID:         vehicleTokenID,
 	}
-	opts := indexrepo.CloudEventSearchOptions{
-		DataType:      &r.vinVCDataType,
-		PrimaryFiller: &filler,
-		Subject:       &vehicleDID,
+	opts := indexrepo.SearchOptions{
+		DataVersion: &r.vinVCDataType,
+		Type:        &vcType,
+		Subject:     &vehicleDID,
 	}
 	dataObj, err := r.indexService.GetLatestCloudEventData(ctx, r.vcBucket, opts)
 	if err != nil {
@@ -117,16 +117,15 @@ func (r *Repository) GetLatestVINVC(ctx context.Context, vehicleTokenID uint32) 
 
 // GetLatestPOMVC fetches the latest POM VC for the given vehicle.
 func (r *Repository) GetLatestPOMVC(ctx context.Context, vehicleTokenID uint32) (*model.Pomvc, error) {
-	filler := nameindexer.FillerVerifiableCredential
 	vehicleDID := cloudevent.NFTDID{
 		ChainID:         r.chainID,
 		ContractAddress: r.vehicleAddress,
 		TokenID:         vehicleTokenID,
 	}
-	opts := indexrepo.CloudEventSearchOptions{
-		DataType:      &r.pomVCDataType,
-		PrimaryFiller: &filler,
-		Subject:       &vehicleDID,
+	opts := indexrepo.SearchOptions{
+		DataVersion: &r.pomVCDataType,
+		Type:        &vcType,
+		Subject:     &vehicleDID,
 	}
 	dataObj, err := r.indexService.GetLatestCloudEventData(ctx, r.vcBucket, opts)
 	if err != nil {
