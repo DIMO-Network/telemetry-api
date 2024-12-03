@@ -101,11 +101,15 @@ func (r *Repository) GetLatestVINVC(ctx context.Context, vehicleTokenID uint32) 
 		vehicleContractAddress = &credSubject.VehicleContractAddress
 	}
 	tokenIDInt := int(credSubject.VehicleTokenID)
-
+	rawVC, err := json.Marshal(dataObj)
+	if err != nil {
+		r.logger.Error().Err(err).Msg("failed to marshal Raw VIN VC")
+		return nil, errors.New("internal error")
+	}
 	return &model.Vinvc{
 		ValidFrom:              createdAt,
 		ValidTo:                expiresAt,
-		RawVc:                  string(dataObj.Data),
+		RawVc:                  string(rawVC),
 		Vin:                    vin,
 		RecordedBy:             recordedBy,
 		RecordedAt:             recordedAt,
