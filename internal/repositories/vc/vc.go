@@ -10,12 +10,13 @@ import (
 	"github.com/ClickHouse/clickhouse-go/v2"
 	"github.com/DIMO-Network/attestation-api/pkg/verifiable"
 	"github.com/DIMO-Network/model-garage/pkg/cloudevent"
-	"github.com/DIMO-Network/nameindexer"
 	"github.com/DIMO-Network/nameindexer/pkg/clickhouse/indexrepo"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/rs/zerolog"
 )
+
+var vcType = cloudevent.TypeVerifableCredential
 
 type Repository struct {
 	logger         *zerolog.Logger
@@ -42,18 +43,17 @@ func New(chConn clickhouse.Conn, objGetter indexrepo.ObjectGetter, vcBucketName,
 
 // GetLatestVINVC fetches the latest VIN VC for the given vehicle.
 func (r *Repository) GetLatestVINVC(ctx context.Context, vehicleTokenID uint32) (*model.Vinvc, error) {
-	filler := nameindexer.FillerVerifiableCredential
 	vehicleDID := cloudevent.NFTDID{
 		ChainID:         r.chainID,
 		ContractAddress: r.vehicleAddress,
 		TokenID:         vehicleTokenID,
 	}
-	opts := indexrepo.CloudEventSearchOptions{
-		DataType:      &r.vinVCDataType,
-		PrimaryFiller: &filler,
-		Subject:       &vehicleDID,
+	opts := &indexrepo.SearchOptions{
+		DataVersion: &r.vinVCDataType,
+		Type:        &vcType,
+		Subject:     &vehicleDID,
 	}
-	dataObj, err := r.indexService.GetLatestCloudEventData(ctx, r.vcBucket, opts)
+	dataObj, err := r.indexService.GetLatestCloudEvent(ctx, r.vcBucket, opts)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, nil
@@ -61,22 +61,22 @@ func (r *Repository) GetLatestVINVC(ctx context.Context, vehicleTokenID uint32) 
 		r.logger.Error().Err(err).Msg("failed to get latest VIN VC data")
 		return nil, errors.New("internal error")
 	}
-	msg := cloudevent.CloudEvent[verifiable.Credential]{}
-	if err := json.Unmarshal(dataObj.Data, &msg); err != nil {
+	cred := verifiable.Credential{}
+	if err := json.Unmarshal(dataObj.Data, &cred); err != nil {
 		r.logger.Error().Err(err).Msg("failed to unmarshal VIN VC")
 		return nil, errors.New("internal error")
 	}
 
 	var expiresAt *time.Time
-	if expirationDate, err := time.Parse(time.RFC3339, msg.Data.ValidTo); err == nil {
+	if expirationDate, err := time.Parse(time.RFC3339, cred.ValidTo); err == nil {
 		expiresAt = &expirationDate
 	}
 	var createdAt *time.Time
-	if issuanceDate, err := time.Parse(time.RFC3339, msg.Data.ValidFrom); err == nil {
+	if issuanceDate, err := time.Parse(time.RFC3339, cred.ValidFrom); err == nil {
 		createdAt = &issuanceDate
 	}
 	credSubject := verifiable.VINSubject{}
-	if err := json.Unmarshal(msg.Data.CredentialSubject, &credSubject); err != nil {
+	if err := json.Unmarshal(cred.CredentialSubject, &credSubject); err != nil {
 		r.logger.Error().Err(err).Msg("failed to unmarshal VIN credential subject")
 		return nil, errors.New("internal error")
 	}
@@ -101,11 +101,15 @@ func (r *Repository) GetLatestVINVC(ctx context.Context, vehicleTokenID uint32) 
 		vehicleContractAddress = &credSubject.VehicleContractAddress
 	}
 	tokenIDInt := int(credSubject.VehicleTokenID)
-
+	rawVC, err := json.Marshal(dataObj)
+	if err != nil {
+		r.logger.Error().Err(err).Msg("failed to marshal Raw VIN VC")
+		return nil, errors.New("internal error")
+	}
 	return &model.Vinvc{
 		ValidFrom:              createdAt,
 		ValidTo:                expiresAt,
-		RawVc:                  string(dataObj.Data),
+		RawVc:                  string(rawVC),
 		Vin:                    vin,
 		RecordedBy:             recordedBy,
 		RecordedAt:             recordedAt,
@@ -117,18 +121,17 @@ func (r *Repository) GetLatestVINVC(ctx context.Context, vehicleTokenID uint32) 
 
 // GetLatestPOMVC fetches the latest POM VC for the given vehicle.
 func (r *Repository) GetLatestPOMVC(ctx context.Context, vehicleTokenID uint32) (*model.Pomvc, error) {
-	filler := nameindexer.FillerVerifiableCredential
 	vehicleDID := cloudevent.NFTDID{
 		ChainID:         r.chainID,
 		ContractAddress: r.vehicleAddress,
 		TokenID:         vehicleTokenID,
 	}
-	opts := indexrepo.CloudEventSearchOptions{
-		DataType:      &r.pomVCDataType,
-		PrimaryFiller: &filler,
-		Subject:       &vehicleDID,
+	opts := &indexrepo.SearchOptions{
+		DataVersion: &r.pomVCDataType,
+		Type:        &vcType,
+		Subject:     &vehicleDID,
 	}
-	dataObj, err := r.indexService.GetLatestCloudEventData(ctx, r.vcBucket, opts)
+	dataObj, err := r.indexService.GetLatestCloudEvent(ctx, r.vcBucket, opts)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, nil
@@ -136,18 +139,18 @@ func (r *Repository) GetLatestPOMVC(ctx context.Context, vehicleTokenID uint32) 
 		r.logger.Error().Err(err).Msg("failed to get latest POM VC data")
 		return nil, errors.New("internal error")
 	}
-	msg := cloudevent.CloudEvent[verifiable.Credential]{}
-	if err := json.Unmarshal(dataObj.Data, &msg); err != nil {
+	cred := verifiable.Credential{}
+	if err := json.Unmarshal(dataObj.Data, &cred); err != nil {
 		r.logger.Error().Err(err).Msg("failed to unmarshal POM VC")
 		return nil, errors.New("internal error")
 	}
 
 	var createdAt *time.Time
-	if issuanceDate, err := time.Parse(time.RFC3339, msg.Data.ValidFrom); err == nil {
+	if issuanceDate, err := time.Parse(time.RFC3339, cred.ValidFrom); err == nil {
 		createdAt = &issuanceDate
 	}
 	credSubject := verifiable.POMSubject{}
-	if err := json.Unmarshal(msg.Data.CredentialSubject, &credSubject); err != nil {
+	if err := json.Unmarshal(cred.CredentialSubject, &credSubject); err != nil {
 		r.logger.Error().Err(err).Msg("failed to unmarshal POM credential subject")
 		return nil, errors.New("internal error")
 	}

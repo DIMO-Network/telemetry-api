@@ -50,7 +50,6 @@ func (m *MockRow) ScanStruct(any) error {
 }
 
 func TestGetLatestVC(t *testing.T) {
-
 	// Initialize variables
 	logger := zerolog.New(nil)
 	ctx := context.Background()

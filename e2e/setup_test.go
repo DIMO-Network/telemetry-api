@@ -11,7 +11,6 @@ import (
 	"github.com/99designs/gqlgen/client"
 	"github.com/DIMO-Network/clickhouse-infra/pkg/container"
 	"github.com/DIMO-Network/model-garage/pkg/cloudevent"
-	"github.com/DIMO-Network/nameindexer"
 	"github.com/DIMO-Network/nameindexer/pkg/clickhouse/indexrepo"
 	"github.com/DIMO-Network/telemetry-api/internal/app"
 	"github.com/DIMO-Network/telemetry-api/internal/config"
@@ -97,17 +96,13 @@ func GetTestServices(t *testing.T) *TestServices {
 }
 
 func StoreSampleVC(ctx context.Context, idxSrv *indexrepo.Service, bucket string, testVC string) error {
-	hdr := cloudevent.CloudEventHeader{}
-	err := json.Unmarshal([]byte(testVC), &hdr)
+	event := cloudevent.CloudEvent[json.RawMessage]{}
+	err := json.Unmarshal([]byte(testVC), &event)
 	if err != nil {
 		return fmt.Errorf("failed to unmarshal VC: %w", err)
 	}
-	cloudIdx, err := nameindexer.CloudEventToCloudIndex(&hdr, nameindexer.DefaultSecondaryFiller)
-	if err != nil {
-		return fmt.Errorf("failed to convert VC to cloud index: %w", err)
-	}
 
-	err = idxSrv.StoreCloudEventObject(ctx, cloudIdx, bucket, []byte(testVC))
+	err = idxSrv.StoreCloudEvent(ctx, bucket, event)
 	if err != nil {
 		return fmt.Errorf("failed to store VC: %w", err)
 	}
