@@ -1,14 +1,11 @@
-//go:generate mockgen -destination=mock_service_test.go -package=vc_test github.com/DIMO-Network/nameindexer/pkg/clickhouse/indexrepo ObjectGetter
-//go:generate mockgen -destination=mock_clickhouse_test.go -package=vc_test github.com/ClickHouse/clickhouse-go/v2 Conn
+//go:generate mockgen -source=vc.go -destination=vc_mock_test.go -package=vc_test
 package vc_test
 
 import (
-	"bytes"
 	"context"
 	"database/sql"
 	"encoding/json"
 	"errors"
-	"io"
 	"testing"
 	"time"
 
@@ -16,7 +13,6 @@ import (
 	"github.com/DIMO-Network/model-garage/pkg/cloudevent"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	"github.com/DIMO-Network/telemetry-api/internal/repositories/vc"
-	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
@@ -62,12 +58,11 @@ func TestGetLatestVC(t *testing.T) {
 	defer ctrl.Finish()
 
 	// Create mock services
-	mockChConn := NewMockConn(ctrl)
-	mockObjGetter := NewMockObjectGetter(ctrl)
+	mockService := NewMockindexRepoService(ctrl)
 	vehicleAddress := common.HexToAddress("0x123")
 	chainID := uint64(3)
 	// Initialize the service with mock dependencies
-	svc := vc.New(mockChConn, mockObjGetter, bucketName, dataType, "", chainID, vehicleAddress, &logger)
+	svc := vc.New(mockService, bucketName, dataType, "", chainID, vehicleAddress, &logger)
 
 	defaultVC := verifiable.Credential{
 		ValidTo:   time.Now().Add(24 * time.Hour).Format(time.RFC3339),
@@ -81,6 +76,7 @@ func TestGetLatestVC(t *testing.T) {
 			"vehicleTokenID": 123
 		}`),
 	}
+	emptyEvent := cloudevent.CloudEvent[json.RawMessage]{}
 	event := cloudevent.CloudEvent[verifiable.Credential]{
 		Data: defaultVC,
 	}
@@ -98,8 +94,7 @@ func TestGetLatestVC(t *testing.T) {
 			name: "Success",
 			mockSetup: func() {
 				// Create a mock verifiable credential
-				mockChConn.EXPECT().QueryRow(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(&MockRow{data: "filename"})
-				mockObjGetter.EXPECT().GetObject(gomock.Any(), gomock.Any(), gomock.Any()).Return(&s3.GetObjectOutput{Body: io.NopCloser(bytes.NewReader(defaultData))}, nil)
+				mockService.EXPECT().GetLatestCloudEvent(gomock.Any(), gomock.Any(), gomock.Any()).Return(cloudevent.CloudEvent[json.RawMessage]{Data: defaultData}, nil)
 			},
 			expectedVC: &model.Vinvc{
 				Vin:                    ref("VIN123"),
@@ -114,14 +109,14 @@ func TestGetLatestVC(t *testing.T) {
 		{
 			name: "No data found",
 			mockSetup: func() {
-				mockChConn.EXPECT().QueryRow(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(&MockRow{err: sql.ErrNoRows})
+				mockService.EXPECT().GetLatestCloudEvent(gomock.Any(), gomock.Any(), gomock.Any()).Return(emptyEvent, sql.ErrNoRows)
 			},
 			expectedVC: nil,
 		},
 		{
 			name: "Internal error",
 			mockSetup: func() {
-				mockChConn.EXPECT().QueryRow(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(&MockRow{err: errors.New("internal error")})
+				mockService.EXPECT().GetLatestCloudEvent(gomock.Any(), gomock.Any(), gomock.Any()).Return(emptyEvent, errors.New("internal error"))
 			},
 			expectedVC:  nil,
 			expectedErr: true,
@@ -129,8 +124,7 @@ func TestGetLatestVC(t *testing.T) {
 		{
 			name: "Invalid data format",
 			mockSetup: func() {
-				mockChConn.EXPECT().QueryRow(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(&MockRow{data: "filename"})
-				mockObjGetter.EXPECT().GetObject(gomock.Any(), gomock.Any(), gomock.Any()).Return(&s3.GetObjectOutput{Body: io.NopCloser(bytes.NewReader([]byte("invalid data")))}, nil)
+				mockService.EXPECT().GetLatestCloudEvent(gomock.Any(), gomock.Any(), gomock.Any()).Return(cloudevent.CloudEvent[json.RawMessage]{Data: json.RawMessage("invalid data")}, nil)
 			},
 			expectedVC:  nil,
 			expectedErr: true,

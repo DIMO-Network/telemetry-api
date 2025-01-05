@@ -9,6 +9,7 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/DIMO-Network/clickhouse-infra/pkg/connect"
+	"github.com/DIMO-Network/nameindexer/pkg/clickhouse/indexrepo"
 	"github.com/DIMO-Network/telemetry-api/internal/auth"
 	"github.com/DIMO-Network/telemetry-api/internal/config"
 	"github.com/DIMO-Network/telemetry-api/internal/graph"
@@ -118,7 +119,8 @@ func newVinVCServiceFromSettings(settings config.Settings, parentLogger *zerolog
 		return nil, fmt.Errorf("invalid vehicle address: %s", settings.VehicleNFTAddress)
 	}
 	vehicleAddr := common.HexToAddress(settings.VehicleNFTAddress)
-	return vc.New(chConn, s3Client, settings.VCBucket, settings.VINVCDataType, settings.POMVCDataType, uint64(settings.ChainID), vehicleAddr, &vinvcLogger), nil
+	indexSrvc := indexrepo.New(chConn, s3Client)
+	return vc.New(indexSrvc, settings.VCBucket, settings.VINVCDataType, settings.POMVCDataType, uint64(settings.ChainID), vehicleAddr, &vinvcLogger), nil
 }
 
 // s3ClientFromSettings creates an S3 client from the given settings.
