@@ -1,8 +1,9 @@
 .PHONY: clean run build install dep test lint format docker gqlgen
 
+SHELL := /bin/sh
 PATHINSTBIN = $(abspath ./bin)
 export PATH := $(PATHINSTBIN):$(PATH)
-SHELL := env PATH=$(PATH) /bin/sh
+
 
 BIN_NAME					?= telemetry-api
 DEFAULT_INSTALL_DIR			:= $(go env GOPATH)/bin
