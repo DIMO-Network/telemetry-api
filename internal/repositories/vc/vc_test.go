@@ -76,13 +76,15 @@ func TestGetLatestVC(t *testing.T) {
 			"vehicleTokenID": 123
 		}`),
 	}
-	emptyEvent := cloudevent.CloudEvent[json.RawMessage]{}
-	event := cloudevent.CloudEvent[verifiable.Credential]{
-		Data: defaultVC,
+	credData, err := json.Marshal(defaultVC)
+	require.NoError(t, err, "failed to marshal defaultVC")
+	defaultEvent := cloudevent.CloudEvent[json.RawMessage]{
+		Data: credData,
 	}
-	defaultData, err := json.Marshal(event)
+	defaultData, err := json.Marshal(defaultEvent)
 	require.NoError(t, err, "failed to marshal defaultVC")
 
+	emptyEvent := cloudevent.CloudEvent[json.RawMessage]{}
 	// Test cases
 	tests := []struct {
 		name        string
@@ -94,7 +96,7 @@ func TestGetLatestVC(t *testing.T) {
 			name: "Success",
 			mockSetup: func() {
 				// Create a mock verifiable credential
-				mockService.EXPECT().GetLatestCloudEvent(gomock.Any(), gomock.Any(), gomock.Any()).Return(cloudevent.CloudEvent[json.RawMessage]{Data: defaultData}, nil)
+				mockService.EXPECT().GetLatestCloudEvent(gomock.Any(), gomock.Any(), gomock.Any()).Return(defaultEvent, nil)
 			},
 			expectedVC: &model.Vinvc{
 				Vin:                    ref("VIN123"),

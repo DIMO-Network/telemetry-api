@@ -63,12 +63,11 @@ func (r *Repository) GetLatestVINVC(ctx context.Context, vehicleTokenID uint32) 
 		r.logger.Error().Err(err).Msg("failed to get latest VIN VC data")
 		return nil, errors.New("internal error")
 	}
-	credEvent := cloudevent.CloudEvent[verifiable.Credential]{}
-	if err := json.Unmarshal(dataObj.Data, &credEvent); err != nil {
+	cred := verifiable.Credential{}
+	if err := json.Unmarshal(dataObj.Data, &cred); err != nil {
 		r.logger.Error().Err(err).Msg("failed to unmarshal VIN VC")
 		return nil, errors.New("internal error")
 	}
-	cred := credEvent.Data
 
 	var expiresAt *time.Time
 	if expirationDate, err := time.Parse(time.RFC3339, cred.ValidTo); err == nil {
@@ -103,11 +102,16 @@ func (r *Repository) GetLatestVINVC(ctx context.Context, vehicleTokenID uint32) 
 	if credSubject.VehicleContractAddress != "" {
 		vehicleContractAddress = &credSubject.VehicleContractAddress
 	}
+	rawVc, err := json.Marshal(dataObj)
+	if err != nil {
+		r.logger.Error().Err(err).Msg("failed to marshal VIN VC")
+		return nil, errors.New("internal error")
+	}
 	tokenIDInt := int(credSubject.VehicleTokenID)
 	return &model.Vinvc{
 		ValidFrom:              createdAt,
 		ValidTo:                expiresAt,
-		RawVc:                  string(dataObj.Data),
+		RawVc:                  string(rawVc),
 		Vin:                    vin,
 		RecordedBy:             recordedBy,
 		RecordedAt:             recordedAt,
