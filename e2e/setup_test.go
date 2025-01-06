@@ -96,13 +96,13 @@ func GetTestServices(t *testing.T) *TestServices {
 }
 
 func StoreSampleVC(ctx context.Context, idxSrv *indexrepo.Service, bucket string, testVC string) error {
-	event := cloudevent.CloudEvent[json.RawMessage]{}
-	err := json.Unmarshal([]byte(testVC), &event)
+	hdr := cloudevent.CloudEventHeader{}
+	err := json.Unmarshal([]byte(testVC), &hdr)
 	if err != nil {
 		return fmt.Errorf("failed to unmarshal VC: %w", err)
 	}
 
-	err = idxSrv.StoreCloudEvent(ctx, bucket, event)
+	err = idxSrv.StoreObject(ctx, bucket, &hdr, []byte(testVC))
 	if err != nil {
 		return fmt.Errorf("failed to store VC: %w", err)
 	}
