@@ -18,35 +18,35 @@ func TestSignalsLatest(t *testing.T) {
 	// Set up test data in Clickhouse
 	signals := []vss.Signal{
 		{
-			Source:      ch.SourceTranslations["smartcar"],
+			Source:      ch.SourceTranslations["smartcar"][0],
 			Timestamp:   smartCarTime,
 			Name:        vss.FieldSpeed,
 			ValueNumber: 65.5,
 			TokenID:     39718,
 		},
 		{
-			Source:      ch.SourceTranslations["smartcar"],
+			Source:      ch.SourceTranslations["smartcar"][0],
 			Timestamp:   smartCarTime,
 			Name:        vss.FieldCurrentLocationLatitude,
 			ValueNumber: 40.73899538333504,
 			TokenID:     39718,
 		},
 		{
-			Source:      ch.SourceTranslations["smartcar"],
+			Source:      ch.SourceTranslations["smartcar"][0],
 			Timestamp:   smartCarTime,
 			Name:        vss.FieldCurrentLocationLongitude,
 			ValueNumber: 73.99386110247163,
 			TokenID:     39718,
 		},
 		{
-			Source:      ch.SourceTranslations["autopi"],
+			Source:      ch.SourceTranslations["autopi"][0],
 			Timestamp:   autopiTime,
 			Name:        vss.FieldSpeed,
 			ValueNumber: 14,
 			TokenID:     39718,
 		},
 		{
-			Source:      ch.SourceTranslations["macaron"],
+			Source:      ch.SourceTranslations["macaron"][0],
 			Timestamp:   macaronTime,
 			Name:        vss.FieldSpeed,
 			ValueNumber: 3,

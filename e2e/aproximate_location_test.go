@@ -20,28 +20,28 @@ func TestApproximateLocation(t *testing.T) {
 	endLoc := h3.LatLng{Lat: 40.73899538333504, Lng: -73.99386110247163}
 	signals := []vss.Signal{
 		{
-			Source:      ch.SourceTranslations["smartcar"],
+			Source:      ch.SourceTranslations["smartcar"][0],
 			Timestamp:   locationTime.Add(-time.Hour * 24),
 			Name:        vss.FieldCurrentLocationLatitude,
 			ValueNumber: startLoc.Lat,
 			TokenID:     39718,
 		},
 		{
-			Source:      ch.SourceTranslations["smartcar"],
+			Source:      ch.SourceTranslations["smartcar"][0],
 			Timestamp:   locationTime.Add(-time.Hour * 24),
 			Name:        vss.FieldCurrentLocationLongitude,
 			ValueNumber: startLoc.Lng,
 			TokenID:     39718,
 		},
 		{
-			Source:      ch.SourceTranslations["smartcar"],
+			Source:      ch.SourceTranslations["smartcar"][0],
 			Timestamp:   locationTime,
 			Name:        vss.FieldCurrentLocationLatitude,
 			ValueNumber: endLoc.Lat,
 			TokenID:     39718,
 		},
 		{
-			Source:      ch.SourceTranslations["smartcar"],
+			Source:      ch.SourceTranslations["smartcar"][0],
 			Timestamp:   locationTime,
 			Name:        vss.FieldCurrentLocationLongitude,
 			ValueNumber: endLoc.Lng,
