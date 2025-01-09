@@ -56,7 +56,6 @@ func validateFilter(filter *model.SignalFilter) error {
 	if filter == nil {
 		return nil
 	}
-	// TODO: remove this check when we move to storing the device address as source
 	if filter.Source != nil {
 		if _, ok := ch.SourceTranslations[*filter.Source]; !ok {
 			return ValidationError(fmt.Sprintf("source '%s', is not a valid value", *filter.Source))
