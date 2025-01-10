@@ -1,6 +1,7 @@
 package e2e_test
 
 import (
+	"fmt"
 	"testing"
 	"time"
 
@@ -127,14 +128,15 @@ func TestApproximateLocation(t *testing.T) {
 	assert.Equal(t, expectedEndLatLong.Lng, result.SignalLatest.ApproxLong.Value)
 	assert.Nil(t, result.SignalLatest.Lat)
 	assert.Nil(t, result.SignalLatest.Long)
-
-	query = `query {
-		signals(tokenId:39718, from: "2020-04-15T09:21:19Z", to: "2025-04-27T09:21:19Z", interval:"24h"){
+	fromTime := "2024-11-19T09:21:19Z"
+	fromtTimePlus24 := "2024-11-20T09:21:19Z"
+	query = fmt.Sprintf(`query {
+		signals(tokenId:39718, from: "%s", to: "2025-04-27T09:21:19Z", interval:"24h"){
 			timestamp
 			currentLocationApproximateLatitude(agg: FIRST)
 			currentLocationApproximateLongitude(agg: FIRST)
 		}
-	}`
+	}`, fromTime)
 	// Execute request
 	aggResult := ApproxAgg{}
 	err = telemetryClient.Post(query, &aggResult, WithToken(token))
@@ -142,23 +144,23 @@ func TestApproximateLocation(t *testing.T) {
 
 	require.Len(t, aggResult.Signals, 2)
 	// Assert the results
-	assert.Equal(t, locationTime.Add(-time.Hour*24).Truncate(time.Hour*24).Format(time.RFC3339), aggResult.Signals[0].Timestamp)
+	assert.Equal(t, fromTime, aggResult.Signals[0].Timestamp)
 	assert.Equal(t, expectedStartLatLong.Lat, *aggResult.Signals[0].ApproxLat)
 	assert.Equal(t, expectedStartLatLong.Lng, *aggResult.Signals[0].ApproxLong)
 
-	assert.Equal(t, locationTime.Truncate(time.Hour*24).Format(time.RFC3339), aggResult.Signals[1].Timestamp)
+	assert.Equal(t, fromtTimePlus24, aggResult.Signals[1].Timestamp)
 	assert.Equal(t, expectedEndLatLong.Lat, *aggResult.Signals[1].ApproxLat)
 	assert.Equal(t, expectedEndLatLong.Lng, *aggResult.Signals[1].ApproxLong)
 
-	query = `query {
-		signals(tokenId:39718, from: "2020-04-15T09:21:19Z", to: "2025-04-27T09:21:19Z", interval:"24h"){
+	query = fmt.Sprintf(`query {
+		signals(tokenId:39718, from: "%s", to: "2025-04-27T09:21:19Z", interval:"24h"){
 			timestamp
 			currentLocationApproximateLatitude(agg: FIRST)
 			currentLocationApproximateLongitude(agg: FIRST)
 			currentLocationLatitude(agg: FIRST)
 			currentLocationLongitude(agg: FIRST)
 		}
-	}`
+	}`, fromTime)
 	// Execute request
 	aggResult = ApproxAgg{}
 	err = telemetryClient.Post(query, &aggResult, WithToken(token))
@@ -166,13 +168,13 @@ func TestApproximateLocation(t *testing.T) {
 
 	// Assert the results
 	require.Len(t, aggResult.Signals, 2)
-	assert.Equal(t, locationTime.Add(-time.Hour*24).Truncate(time.Hour*24).Format(time.RFC3339), aggResult.Signals[0].Timestamp)
+	assert.Equal(t, fromTime, aggResult.Signals[0].Timestamp)
 	assert.Equal(t, expectedStartLatLong.Lat, *aggResult.Signals[0].ApproxLat)
 	assert.Equal(t, expectedStartLatLong.Lng, *aggResult.Signals[0].ApproxLong)
 	assert.Nil(t, aggResult.Signals[0].Lat)
 	assert.Nil(t, aggResult.Signals[0].Long)
 
-	assert.Equal(t, locationTime.Truncate(time.Hour*24).Format(time.RFC3339), aggResult.Signals[1].Timestamp)
+	assert.Equal(t, fromtTimePlus24, aggResult.Signals[1].Timestamp)
 	assert.Equal(t, expectedEndLatLong.Lat, *aggResult.Signals[1].ApproxLat)
 	assert.Equal(t, expectedEndLatLong.Lng, *aggResult.Signals[1].ApproxLong)
 	assert.Nil(t, aggResult.Signals[1].Lat)

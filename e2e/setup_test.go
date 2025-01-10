@@ -30,6 +30,7 @@ var (
 	testServices *TestServices
 	once         sync.Once
 	cleanupOnce  sync.Once
+	srvcLock     sync.Mutex
 	cleanup      func()
 )
 
@@ -43,7 +44,7 @@ func TestMain(m *testing.M) {
 // GetTestServices returns singleton instances of all test services
 func GetTestServices(t *testing.T) *TestServices {
 	t.Helper()
-
+	srvcLock.Lock()
 	once.Do(func() {
 		settings := config.Settings{
 			Port:                         8080,
@@ -92,6 +93,7 @@ func GetTestServices(t *testing.T) *TestServices {
 			})
 		}
 	})
+	srvcLock.Unlock()
 	return testServices
 }
 

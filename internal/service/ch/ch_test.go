@@ -470,6 +470,71 @@ func (c *CHServiceTestSuite) TestExecutionTimeout() {
 	c.Require().True(errors.Is(err, context.DeadlineExceeded), "Expected error to be DeadlineExceeded, got %v", err)
 }
 
+func (c *CHServiceTestSuite) TestOrginGrouping() {
+	ctx := context.Background()
+	conn, err := c.container.GetClickHouseAsConn()
+	c.Require().NoError(err, "Failed to get clickhouse connection")
+
+	// Set up test data for February 2024
+	startTime := time.Date(2024, 2, 1, 0, 0, 0, 0, time.UTC)
+	endTime := time.Date(2024, 2, 28, 23, 59, 59, 0, time.UTC)
+
+	// Create test signals - one per day in February
+	var signals []vss.Signal
+	currentTime := startTime
+	for currentTime.Before(endTime) {
+		signal := vss.Signal{
+			Name:        vss.FieldSpeed,
+			Timestamp:   currentTime,
+			Source:      "test/origin",
+			TokenID:     100,
+			ValueNumber: 100.0,
+		}
+		signals = append(signals, signal)
+		currentTime = currentTime.Add(24 * time.Hour)
+	}
+
+	// Insert signals
+	batch, err := conn.PrepareBatch(ctx, fmt.Sprintf("INSERT INTO %s", vss.TableName))
+	c.Require().NoError(err, "Failed to prepare batch")
+
+	for _, sig := range signals {
+		err := batch.AppendStruct(&sig)
+		c.Require().NoError(err, "Failed to append struct")
+	}
+	err = batch.Send()
+	c.Require().NoError(err, "Failed to send batch")
+
+	// Create aggregation query args
+	aggArgs := &model.AggregatedSignalArgs{
+		SignalArgs: model.SignalArgs{
+			TokenID: 100,
+		},
+		FromTS:   startTime,
+		ToTS:     endTime,
+		Interval: 28 * day.Milliseconds(),
+		FloatArgs: map[model.FloatSignalArgs]struct{}{
+			{
+				Name: vss.FieldSpeed,
+				Agg:  model.FloatAggregationAvg,
+			}: {},
+		},
+	}
+
+	// Query signals
+	result, err := c.chService.GetAggregatedSignals(ctx, aggArgs)
+	c.Require().NoError(err, "Failed to get aggregated signals")
+
+	// We expect exactly one group since we're using a 30-day interval
+	c.Require().Len(result, 1, "Expected exactly one group")
+
+	// Verify the group's timestamp matches the start time
+	c.Require().Equal(startTime, result[0].Timestamp, "Group timestamp should match start time")
+
+	// Verify the average value (should be 100.0 since all values are 100.0)
+	c.Require().Equal(100.0, result[0].ValueNumber, "Unexpected average value")
+}
+
 // insertTestData inserts test data into the clickhouse database.
 // it loops for 10 iterations and inserts a 2 signals  with each iteration that have a value of i and a powertrain type of "value"+ n%3+1
 // The source is selected from a list of sources in a round robin fashion of sources[i%3].
