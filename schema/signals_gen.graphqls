@@ -176,6 +176,14 @@ extend type SignalAggregations {
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDCommandedEVAP", forceResolver: true) @isSignal @hasAggregation
   
   """
+  List of currently active DTCs formatted according OBD II (SAE-J2012DA_201812) standard ([P|C|B|U]XXXXX )
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  obdDTCList(
+    agg: StringAggregation!
+  ):  String @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDDTCList", forceResolver: true) @isSignal @hasAggregation
+  
+  """
   PID 31 - Distance traveled since codes cleared
   Unit: 'km'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
@@ -666,6 +674,12 @@ extend type SignalCollection {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   obdCommandedEVAP: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDCommandedEVAP") @isSignal
+  
+  """
+  List of currently active DTCs formatted according OBD II (SAE-J2012DA_201812) standard ([P|C|B|U]XXXXX )
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  obdDTCList: SignalString @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDDTCList") @isSignal
   
   """
   PID 31 - Distance traveled since codes cleared

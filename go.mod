@@ -7,7 +7,7 @@ require (
 	github.com/ClickHouse/clickhouse-go/v2 v2.30.0
 	github.com/DIMO-Network/attestation-api v0.0.11
 	github.com/DIMO-Network/clickhouse-infra v0.0.3
-	github.com/DIMO-Network/model-garage v0.4.5
+	github.com/DIMO-Network/model-garage v0.4.6
 	github.com/DIMO-Network/nameindexer v0.1.2
 	github.com/DIMO-Network/shared v0.12.6
 	github.com/Khan/genqlient v0.7.0

@@ -109,6 +109,11 @@ func SetCollectionField(collection *SignalCollection, signal *vss.Signal) {
 			Timestamp: signal.Timestamp,
 			Value:     signal.ValueNumber,
 		}
+	case "obdDTCList":
+		collection.OBDDTCList = &SignalString{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueString,
+		}
 	case "obdDistanceSinceDTCClear":
 		collection.OBDDistanceSinceDTCClear = &SignalFloat{
 			Timestamp: signal.Timestamp,
@@ -358,6 +363,8 @@ func SetAggregationField(aggregations *SignalAggregations, signal *AggSignal) {
 		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
 	case "obdCommandedEVAP":
 		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
+	case "obdDTCList":
+		aggregations.ValueStrings[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueString
 	case "obdDistanceSinceDTCClear":
 		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
 	case "obdDistanceWithMIL":

@@ -130,6 +130,9 @@ type SignalCollection struct {
 	// Unit: 'percent'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	OBDCommandedEVAP *SignalFloat `json:"obdCommandedEVAP,omitempty"`
+	// List of currently active DTCs formatted according OBD II (SAE-J2012DA_201812) standard ([P|C|B|U]XXXXX )
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	OBDDTCList *SignalString `json:"obdDTCList,omitempty"`
 	// PID 31 - Distance traveled since codes cleared
 	// Unit: 'km'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]

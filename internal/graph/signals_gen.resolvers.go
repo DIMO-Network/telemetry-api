@@ -190,6 +190,15 @@ func (r *signalAggregationsResolver) ObdCommandedEvap(ctx context.Context, obj *
 	return &vn, nil
 }
 
+// ObdDTCList is the resolver for the obdDTCList
+func (r *signalAggregationsResolver) ObdDTCList(ctx context.Context, obj *model.SignalAggregations, agg model.StringAggregation) (*string, error) {
+	vs, ok := obj.ValueStrings[model.AliasKey{Name: "obdDTCList", Agg: agg.String()}]
+	if !ok {
+		return nil, nil
+	}
+	return &vs, nil
+}
+
 // ObdDistanceSinceDTCClear is the resolver for the obdDistanceSinceDTCClear
 func (r *signalAggregationsResolver) ObdDistanceSinceDTCClear(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
 	vn, ok := obj.ValueNumbers[model.AliasKey{Name: "obdDistanceSinceDTCClear", Agg: agg.String()}]
