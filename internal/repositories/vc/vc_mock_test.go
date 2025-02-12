@@ -14,8 +14,8 @@ import (
 	json "encoding/json"
 	reflect "reflect"
 
+	grpc "github.com/DIMO-Network/fetch-api/pkg/grpc"
 	cloudevent "github.com/DIMO-Network/model-garage/pkg/cloudevent"
-	indexrepo "github.com/DIMO-Network/nameindexer/pkg/clickhouse/indexrepo"
 	gomock "go.uber.org/mock/gomock"
 )
 
@@ -44,16 +44,16 @@ func (m *MockindexRepoService) EXPECT() *MockindexRepoServiceMockRecorder {
 }
 
 // GetLatestCloudEvent mocks base method.
-func (m *MockindexRepoService) GetLatestCloudEvent(ctx context.Context, bucket string, opts *indexrepo.SearchOptions) (cloudevent.CloudEvent[json.RawMessage], error) {
+func (m *MockindexRepoService) GetLatestCloudEvent(ctx context.Context, filter *grpc.SearchOptions) (cloudevent.CloudEvent[json.RawMessage], error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetLatestCloudEvent", ctx, bucket, opts)
+	ret := m.ctrl.Call(m, "GetLatestCloudEvent", ctx, filter)
 	ret0, _ := ret[0].(cloudevent.CloudEvent[json.RawMessage])
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetLatestCloudEvent indicates an expected call of GetLatestCloudEvent.
-func (mr *MockindexRepoServiceMockRecorder) GetLatestCloudEvent(ctx, bucket, opts any) *gomock.Call {
+func (mr *MockindexRepoServiceMockRecorder) GetLatestCloudEvent(ctx, filter any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetLatestCloudEvent", reflect.TypeOf((*MockindexRepoService)(nil).GetLatestCloudEvent), ctx, bucket, opts)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetLatestCloudEvent", reflect.TypeOf((*MockindexRepoService)(nil).GetLatestCloudEvent), ctx, filter)
 }

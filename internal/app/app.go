@@ -3,13 +3,10 @@ package app
 import (
 	"context"
 	"errors"
-	"fmt"
 	"net/http"
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/handler"
-	"github.com/DIMO-Network/clickhouse-infra/pkg/connect"
-	"github.com/DIMO-Network/nameindexer/pkg/clickhouse/indexrepo"
 	"github.com/DIMO-Network/telemetry-api/internal/auth"
 	"github.com/DIMO-Network/telemetry-api/internal/config"
 	"github.com/DIMO-Network/telemetry-api/internal/graph"
@@ -17,10 +14,8 @@ import (
 	"github.com/DIMO-Network/telemetry-api/internal/repositories"
 	"github.com/DIMO-Network/telemetry-api/internal/repositories/vc"
 	"github.com/DIMO-Network/telemetry-api/internal/service/ch"
+	"github.com/DIMO-Network/telemetry-api/internal/service/fetchapi"
 	"github.com/DIMO-Network/telemetry-api/internal/service/identity"
-	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/credentials"
-	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/rs/zerolog"
 	"github.com/vektah/gqlparser/v2/gqlerror"
 )
@@ -103,35 +98,9 @@ func noOp(ctx context.Context, obj interface{}, next graphql.Resolver) (res inte
 }
 
 func newVinVCServiceFromSettings(settings config.Settings, parentLogger *zerolog.Logger) (*vc.Repository, error) {
-	chConfig := settings.CLickhouse
-	chConfig.Database = settings.ClickhouseFileIndexDatabase
-	chConn, err := connect.GetClickhouseConn(&chConfig)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get clickhouse connection: %w", err)
-	}
-	s3Client, err := s3ClientFromSettings(&settings)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create s3 client: %w", err)
-	}
+	fetchapiSvc := fetchapi.New(&settings)
 	vinvcLogger := parentLogger.With().Str("component", "vinvc").Logger()
-	indexSrvc := indexrepo.New(chConn, s3Client)
-	return vc.New(indexSrvc, settings.VCBucket, settings.VINVCDataType, settings.POMVCDataType, uint64(settings.ChainID), settings.VehicleNFTAddress, &vinvcLogger), nil
-}
-
-// s3ClientFromSettings creates an S3 client from the given settings.
-func s3ClientFromSettings(settings *config.Settings) (*s3.Client, error) {
-	// Create an AWS session
-	conf := aws.Config{
-		Region: settings.S3AWSRegion,
-		Credentials: credentials.NewStaticCredentialsProvider(
-			settings.S3AWSAccessKeyID,
-			settings.S3AWSSecretAccessKey,
-			"",
-		),
-	}
-	return s3.NewFromConfig(conf, func(o *s3.Options) {
-		o.BaseEndpoint = settings.S3BaseEndpoint
-	}), nil
+	return vc.New(fetchapiSvc, settings.VCBucket, settings.VINVCDataType, settings.POMVCDataType, uint64(settings.ChainID), settings.VehicleNFTAddress, &vinvcLogger), nil
 }
 
 func errorHandler(log zerolog.Logger) func(ctx context.Context, e error) *gqlerror.Error {
