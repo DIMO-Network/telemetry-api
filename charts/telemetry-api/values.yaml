@@ -37,8 +37,8 @@ env:
   VC_BUCKET: dimo-network-vc-dev
   VINVC_DATA_TYPE: VINVCv1.0
   POMVC_DATA_TYPE: POMVCv1.0
-  CLICKHOUSE_FILE_INDEX_DATABASE: file_index
-  IDENTITY_API_URL: https://identity-api.dev.dimo.zone/query
+  FETCH_API_GRPC_ENDPOINT: fetch-api-dev:8086
+  IDENTITY_API_URL: http://identity-api-dev:8080/query
   IDENTITY_API_REQUEST_TIMEOUT_SECONDS: 5
   DEVICE_LAST_SEEN_BIN_HOURS: 3
   DIMO_REGISTRY_CHAIN_ID: 80002
