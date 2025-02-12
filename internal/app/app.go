@@ -21,7 +21,6 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/rs/zerolog"
 	"github.com/vektah/gqlparser/v2/gqlerror"
 )
@@ -67,9 +66,9 @@ func New(settings config.Settings, logger *zerolog.Logger) (*App, error) {
 	errLogger := logger.With().Str("component", "gql").Logger()
 	server.SetErrorPresenter(errorHandler(errLogger))
 
-	logger.Info().Str("jwksUrl", settings.TokenExchangeJWTKeySetURL).Str("issuerURL", settings.TokenExchangeIssuer).Str("vehicleAddr", settings.VehicleNFTAddress).Msg("Privileges enabled.")
+	logger.Info().Str("jwksUrl", settings.TokenExchangeJWTKeySetURL).Str("issuerURL", settings.TokenExchangeIssuer).Str("vehicleAddr", settings.VehicleNFTAddress.Hex()).Msg("Privileges enabled.")
 
-	authMiddleware, err := auth.NewJWTMiddleware(settings.TokenExchangeIssuer, settings.TokenExchangeJWTKeySetURL, settings.VehicleNFTAddress, settings.ManufacturerNFTAddress, logger)
+	authMiddleware, err := auth.NewJWTMiddleware(settings.TokenExchangeIssuer, settings.TokenExchangeJWTKeySetURL, logger)
 	if err != nil {
 		logger.Fatal().Err(err).Msg("Couldn't create JWT middleware.")
 	}
@@ -115,12 +114,8 @@ func newVinVCServiceFromSettings(settings config.Settings, parentLogger *zerolog
 		return nil, fmt.Errorf("failed to create s3 client: %w", err)
 	}
 	vinvcLogger := parentLogger.With().Str("component", "vinvc").Logger()
-	if !common.IsHexAddress(settings.VehicleNFTAddress) {
-		return nil, fmt.Errorf("invalid vehicle address: %s", settings.VehicleNFTAddress)
-	}
-	vehicleAddr := common.HexToAddress(settings.VehicleNFTAddress)
 	indexSrvc := indexrepo.New(chConn, s3Client)
-	return vc.New(indexSrvc, settings.VCBucket, settings.VINVCDataType, settings.POMVCDataType, uint64(settings.ChainID), vehicleAddr, &vinvcLogger), nil
+	return vc.New(indexSrvc, settings.VCBucket, settings.VINVCDataType, settings.POMVCDataType, uint64(settings.ChainID), settings.VehicleNFTAddress, &vinvcLogger), nil
 }
 
 // s3ClientFromSettings creates an S3 client from the given settings.

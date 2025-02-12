@@ -14,6 +14,7 @@ import (
 	"github.com/DIMO-Network/nameindexer/pkg/clickhouse/indexrepo"
 	"github.com/DIMO-Network/telemetry-api/internal/app"
 	"github.com/DIMO-Network/telemetry-api/internal/config"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/rs/zerolog"
 )
 
@@ -51,8 +52,8 @@ func GetTestServices(t *testing.T) *TestServices {
 			MonPort:                      9090,
 			IdentityAPIReqTimeoutSeconds: 5,
 			TokenExchangeIssuer:          "http://127.0.0.1:3003",
-			VehicleNFTAddress:            "0xbA5738a18d83D41847dfFbDC6101d37C69c9B0cF",
-			ManufacturerNFTAddress:       "0x3b07e2A2ABdd0A9B8F7878bdE6487c502164B9dd",
+			VehicleNFTAddress:            common.HexToAddress("0xbA5738a18d83D41847dfFbDC6101d37C69c9B0cF"),
+			ManufacturerNFTAddress:       common.HexToAddress("0x3b07e2A2ABdd0A9B8F7878bdE6487c502164B9dd"),
 			MaxRequestDuration:           "1m",
 			S3AWSRegion:                  "us-east-1",
 			S3AWSAccessKeyID:             "minioadmin",

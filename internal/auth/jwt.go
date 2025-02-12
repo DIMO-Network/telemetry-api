@@ -18,7 +18,7 @@ import (
 
 // NewJWTMiddleware creates a new JWT middleware with the given issuer and contract address.
 // This middleware will validate the token and add the claim to the context.
-func NewJWTMiddleware(issuer, jwksURI, vehAddr, mfrAddr string, logger *zerolog.Logger) (*jwtmiddleware.JWTMiddleware, error) {
+func NewJWTMiddleware(issuer, jwksURI string, logger *zerolog.Logger) (*jwtmiddleware.JWTMiddleware, error) {
 	issuerURL, err := url.Parse(issuer)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse issuer URL: %w", err)
@@ -57,10 +57,10 @@ func NewJWTMiddleware(issuer, jwksURI, vehAddr, mfrAddr string, logger *zerolog.
 
 // AddClaimHandler is a middleware that fills in GraphQL-friendly privilege information on
 // the *TelemetryClaim object in the context.
-func AddClaimHandler(next http.Handler, logger *zerolog.Logger, vehicleAddr, mfrAddr string) http.Handler {
+func AddClaimHandler(next http.Handler, logger *zerolog.Logger, vehicleAddr, mfrAddr common.Address) http.Handler {
 	contractPrivMaps := map[common.Address]map[privileges.Privilege]model.Privilege{
-		common.HexToAddress(vehicleAddr): vehiclePrivToAPI,
-		common.HexToAddress(mfrAddr):     manufacturerPrivToAPI,
+		vehicleAddr: vehiclePrivToAPI,
+		mfrAddr:     manufacturerPrivToAPI,
 	}
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
