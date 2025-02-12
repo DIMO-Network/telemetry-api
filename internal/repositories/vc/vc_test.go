@@ -96,7 +96,7 @@ func TestGetLatestVC(t *testing.T) {
 			name: "Success",
 			mockSetup: func() {
 				// Create a mock verifiable credential
-				mockService.EXPECT().GetLatestCloudEvent(gomock.Any(), gomock.Any(), gomock.Any()).Return(defaultEvent, nil)
+				mockService.EXPECT().GetLatestCloudEvent(gomock.Any(), gomock.Any()).Return(defaultEvent, nil)
 			},
 			expectedVC: &model.Vinvc{
 				Vin:                    ref("VIN123"),
@@ -111,14 +111,14 @@ func TestGetLatestVC(t *testing.T) {
 		{
 			name: "No data found",
 			mockSetup: func() {
-				mockService.EXPECT().GetLatestCloudEvent(gomock.Any(), gomock.Any(), gomock.Any()).Return(emptyEvent, sql.ErrNoRows)
+				mockService.EXPECT().GetLatestCloudEvent(gomock.Any(), gomock.Any()).Return(emptyEvent, sql.ErrNoRows)
 			},
 			expectedVC: nil,
 		},
 		{
 			name: "Internal error",
 			mockSetup: func() {
-				mockService.EXPECT().GetLatestCloudEvent(gomock.Any(), gomock.Any(), gomock.Any()).Return(emptyEvent, errors.New("internal error"))
+				mockService.EXPECT().GetLatestCloudEvent(gomock.Any(), gomock.Any()).Return(emptyEvent, errors.New("internal error"))
 			},
 			expectedVC:  nil,
 			expectedErr: true,
@@ -126,7 +126,7 @@ func TestGetLatestVC(t *testing.T) {
 		{
 			name: "Invalid data format",
 			mockSetup: func() {
-				mockService.EXPECT().GetLatestCloudEvent(gomock.Any(), gomock.Any(), gomock.Any()).Return(cloudevent.CloudEvent[json.RawMessage]{Data: json.RawMessage("invalid data")}, nil)
+				mockService.EXPECT().GetLatestCloudEvent(gomock.Any(), gomock.Any()).Return(cloudevent.CloudEvent[json.RawMessage]{Data: json.RawMessage("invalid data")}, nil)
 			},
 			expectedVC:  nil,
 			expectedErr: true,

@@ -68,8 +68,7 @@ func newError(msg string, args ...any) error {
 	return UnauthorizedError{message: fmt.Sprintf(msg, args...)}
 }
 
-func NewVehicleTokenCheck(contractAddr string) func(context.Context, any, graphql.Resolver) (any, error) {
-	requiredAddr := common.HexToAddress(contractAddr)
+func NewVehicleTokenCheck(requiredAddr common.Address) func(context.Context, any, graphql.Resolver) (any, error) {
 	return func(ctx context.Context, _ any, next graphql.Resolver) (any, error) {
 		vehicleTokenID, err := getArg[int](ctx, tokenIdArg)
 		if err != nil {
@@ -84,8 +83,7 @@ func NewVehicleTokenCheck(contractAddr string) func(context.Context, any, graphq
 	}
 }
 
-func NewManufacturerTokenCheck(contractAddr string, identitySvc IdentityService) func(context.Context, any, graphql.Resolver) (any, error) {
-	requiredAddr := common.HexToAddress(contractAddr)
+func NewManufacturerTokenCheck(requiredAddr common.Address, identitySvc IdentityService) func(context.Context, any, graphql.Resolver) (any, error) {
 	return func(ctx context.Context, _ any, next graphql.Resolver) (any, error) {
 		adFilter, err := getArg[model.AftermarketDeviceBy](ctx, byArg)
 		if err != nil {

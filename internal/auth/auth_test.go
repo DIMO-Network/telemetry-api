@@ -25,8 +25,7 @@ func emptyResolver(_ context.Context) (any, error) {
 func TestRequiresVehicleTokenCheck(t *testing.T) {
 	t.Parallel()
 
-	vehicleNFTAddrRaw := "0x1"
-	vehicleNFTAddr := common.HexToAddress(vehicleNFTAddrRaw)
+	vehicleNFTAddr := common.HexToAddress("0x1")
 
 	testCases := []struct {
 		name           string
@@ -91,7 +90,7 @@ func TestRequiresVehicleTokenCheck(t *testing.T) {
 		},
 	}
 
-	vehicleCheck := NewVehicleTokenCheck(vehicleNFTAddrRaw)
+	vehicleCheck := NewVehicleTokenCheck(vehicleNFTAddr)
 	for _, tc := range testCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
@@ -113,8 +112,7 @@ func TestRequiresVehicleTokenCheck(t *testing.T) {
 
 func TestRequiresManufacturerTokenCheck(t *testing.T) {
 	t.Parallel()
-	mtrNFTAddrRaw := "0x1"
-	mtrNFTAddr := common.HexToAddress(mtrNFTAddrRaw)
+	mtrNFTAddr := common.HexToAddress("0x1")
 
 	autopiAddr := common.BigToAddress(big.NewInt(123))
 	autopiTknID := 123
@@ -219,7 +217,7 @@ func TestRequiresManufacturerTokenCheck(t *testing.T) {
 			id.EXPECT().GetAftermarketDevice(context.WithValue(testCtx, TelemetryClaimContextKey{}, tc.telmetryClaim), tc.args.Address, tc.args.TokenID, tc.args.Serial).Return(
 				tc.identityResponse, tc.identityError).AnyTimes()
 
-			mfrValidator := NewManufacturerTokenCheck(mtrNFTAddrRaw, id)
+			mfrValidator := NewManufacturerTokenCheck(mtrNFTAddr, id)
 
 			testCtx = context.WithValue(testCtx, TelemetryClaimContextKey{}, tc.telmetryClaim)
 			result, err := mfrValidator(testCtx, nil, graphql.Resolver(emptyResolver))

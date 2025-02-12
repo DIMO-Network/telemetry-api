@@ -8,17 +8,16 @@ import (
 	"time"
 
 	"github.com/DIMO-Network/attestation-api/pkg/verifiable"
+	"github.com/DIMO-Network/fetch-api/pkg/grpc"
 	"github.com/DIMO-Network/model-garage/pkg/cloudevent"
-	"github.com/DIMO-Network/nameindexer/pkg/clickhouse/indexrepo"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/rs/zerolog"
+	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
-var vcType = cloudevent.TypeVerifableCredential
-
 type indexRepoService interface {
-	GetLatestCloudEvent(ctx context.Context, bucket string, opts *indexrepo.SearchOptions) (cloudevent.CloudEvent[json.RawMessage], error)
+	GetLatestCloudEvent(ctx context.Context, filter *grpc.SearchOptions) (cloudevent.CloudEvent[json.RawMessage], error)
 }
 type Repository struct {
 	logger         *zerolog.Logger
@@ -50,12 +49,12 @@ func (r *Repository) GetLatestVINVC(ctx context.Context, vehicleTokenID uint32) 
 		ContractAddress: r.vehicleAddress,
 		TokenID:         vehicleTokenID,
 	}.String()
-	opts := &indexrepo.SearchOptions{
-		DataVersion: &r.vinVCDataType,
-		Type:        &vcType,
-		Subject:     &vehicleDID,
+	opts := &grpc.SearchOptions{
+		DataVersion: &wrapperspb.StringValue{Value: r.vinVCDataType},
+		Type:        &wrapperspb.StringValue{Value: cloudevent.TypeVerifableCredential},
+		Subject:     &wrapperspb.StringValue{Value: vehicleDID},
 	}
-	dataObj, err := r.indexService.GetLatestCloudEvent(ctx, r.vcBucket, opts)
+	dataObj, err := r.indexService.GetLatestCloudEvent(ctx, opts)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, nil
@@ -128,12 +127,12 @@ func (r *Repository) GetLatestPOMVC(ctx context.Context, vehicleTokenID uint32) 
 		ContractAddress: r.vehicleAddress,
 		TokenID:         vehicleTokenID,
 	}.String()
-	opts := &indexrepo.SearchOptions{
-		DataVersion: &r.pomVCDataType,
-		Type:        &vcType,
-		Subject:     &vehicleDID,
+	opts := &grpc.SearchOptions{
+		DataVersion: &wrapperspb.StringValue{Value: r.pomVCDataType},
+		Type:        &wrapperspb.StringValue{Value: cloudevent.TypeVerifableCredential},
+		Subject:     &wrapperspb.StringValue{Value: vehicleDID},
 	}
-	dataObj, err := r.indexService.GetLatestCloudEvent(ctx, r.vcBucket, opts)
+	dataObj, err := r.indexService.GetLatestCloudEvent(ctx, opts)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, nil

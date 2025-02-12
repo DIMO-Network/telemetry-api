@@ -10,6 +10,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/go-jose/go-jose/v4"
 )
 
@@ -22,7 +23,7 @@ type mockAuthServer struct {
 	ManufacturerContractAddress string
 }
 
-func setupAuthServer(t *testing.T, vehicleContractAddress, manufacturerContractAddress string) *mockAuthServer {
+func setupAuthServer(t *testing.T, vehicleContractAddress, manufacturerContractAddress common.Address) *mockAuthServer {
 	t.Helper()
 
 	// Generate RSA key
@@ -73,8 +74,8 @@ func setupAuthServer(t *testing.T, vehicleContractAddress, manufacturerContractA
 		signer:                      sig,
 		jwks:                        jwk,
 		defaultClaims:               defaultClaims,
-		VehicleContractAddress:      vehicleContractAddress,
-		ManufacturerContractAddress: manufacturerContractAddress,
+		VehicleContractAddress:      vehicleContractAddress.String(),
+		ManufacturerContractAddress: manufacturerContractAddress.String(),
 	}
 
 	// Create test server with only JWKS endpoint
