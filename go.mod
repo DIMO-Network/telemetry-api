@@ -3,27 +3,27 @@ module github.com/DIMO-Network/telemetry-api
 go 1.23
 
 require (
-	github.com/99designs/gqlgen v0.17.57
+	github.com/99designs/gqlgen v0.17.64
 	github.com/ClickHouse/clickhouse-go/v2 v2.30.0
 	github.com/DIMO-Network/attestation-api v0.0.11
 	github.com/DIMO-Network/clickhouse-infra v0.0.3
 	github.com/DIMO-Network/fetch-api v0.0.6
-	github.com/DIMO-Network/model-garage v0.4.6
+	github.com/DIMO-Network/model-garage v0.4.8
 	github.com/DIMO-Network/shared v0.12.7
 	github.com/Khan/genqlient v0.7.0
 	github.com/auth0/go-jwt-middleware/v2 v2.2.1
-	github.com/ethereum/go-ethereum v1.14.12
+	github.com/ethereum/go-ethereum v1.14.13
 	github.com/go-jose/go-jose/v4 v4.0.4
 	github.com/gofiber/fiber/v2 v2.52.6
 	github.com/prometheus/client_golang v1.20.5
 	github.com/rs/zerolog v1.33.0
 	github.com/stretchr/testify v1.10.0
 	github.com/uber/h3-go/v4 v4.1.2
-	github.com/vektah/gqlparser/v2 v2.5.19
+	github.com/vektah/gqlparser/v2 v2.5.22
 	github.com/volatiletech/sqlboiler/v4 v4.17.1
 	go.uber.org/mock v0.5.0
 	google.golang.org/grpc v1.67.1
-	google.golang.org/protobuf v1.36.1
+	google.golang.org/protobuf v1.36.4
 )
 
 require (
@@ -32,7 +32,7 @@ require (
 	github.com/ClickHouse/ch-go v0.61.5 // indirect
 	github.com/DIMO-Network/yaml v0.1.0 // indirect
 	github.com/Microsoft/go-winio v0.6.2 // indirect
-	github.com/agnivade/levenshtein v1.1.1 // indirect
+	github.com/agnivade/levenshtein v1.2.0 // indirect
 	github.com/andybalholm/brotli v1.1.1 // indirect
 	github.com/avast/retry-go/v4 v4.6.0 // indirect
 	github.com/aws/aws-sdk-go-v2 v1.32.7 // indirect
@@ -72,7 +72,7 @@ require (
 	github.com/klauspost/compress v1.17.9 // indirect
 	github.com/lufia/plan9stats v0.0.0-20231016141302-07b5767bb0ed // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
-	github.com/mattn/go-colorable v0.1.13 // indirect
+	github.com/mattn/go-colorable v0.1.14 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-runewidth v0.0.16 // indirect
 	github.com/mdelapenya/tlscert v0.1.0 // indirect
@@ -94,7 +94,7 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/power-devops/perfstat v0.0.0-20221212215047-62379fc7944b // indirect
 	github.com/pquerna/cachecontrol v0.2.0 // indirect
-	github.com/pressly/goose/v3 v3.24.0 // indirect
+	github.com/pressly/goose/v3 v3.24.1 // indirect
 	github.com/prometheus/client_model v0.6.1 // indirect
 	github.com/prometheus/common v0.55.0 // indirect
 	github.com/prometheus/procfs v0.15.1 // indirect
@@ -130,7 +130,7 @@ require (
 	golang.org/x/exp v0.0.0-20240719175910-8a7402abbf56 // indirect
 	golang.org/x/net v0.33.0 // indirect
 	golang.org/x/sync v0.10.0 // indirect
-	golang.org/x/sys v0.28.0 // indirect
+	golang.org/x/sys v0.29.0 // indirect
 	golang.org/x/text v0.21.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
 	golang.org/x/xerrors v0.0.0-20240716161551-93cc26a95ae9 // indirect
