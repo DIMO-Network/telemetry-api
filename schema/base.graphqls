@@ -4,6 +4,11 @@ just like the blockchain, and in UTC.
 """
 scalar Time
 
+"""
+A 20-byte Ethereum address, encoded as a checksummed hex string with 0x prefix.
+"""
+scalar Address
+
 directive @goField(
   forceResolver: Boolean
   name: String
@@ -169,7 +174,7 @@ SignalFilter holds the filter parameters for the signal querys.
 input SignalFilter {
   """
   Filter signals by source type.
-  available sources are: "autopi", "macaron", "ruptela", "smartcar", "tesla"
+  available sources are: "autopi", "macaron", "ruptela", "smartcar", "tesla","compass"
   """
   source: String
 }
