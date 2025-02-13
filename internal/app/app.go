@@ -55,7 +55,6 @@ func New(settings config.Settings, logger *zerolog.Logger) (*App, error) {
 	cfg.Directives.RequiresOneOfPrivilege = auth.OneOfPrivilegeCheck
 	cfg.Directives.IsSignal = noOp
 	cfg.Directives.HasAggregation = noOp
-	cfg.Directives.OneOf = noOp
 
 	server := handler.NewDefaultServer(graph.NewExecutableSchema(cfg))
 	errLogger := logger.With().Str("component", "gql").Logger()

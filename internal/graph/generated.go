@@ -1862,6 +1862,11 @@ just like the blockchain, and in UTC.
 """
 scalar Time
 
+"""
+A 20-byte Ethereum address, encoded as a checksummed hex string with 0x prefix.
+"""
+scalar Address
+
 directive @goField(
   forceResolver: Boolean
   name: String
@@ -2061,17 +2066,6 @@ input AftermarketDeviceBy @oneOf {
   address: Address
   serial: String
 }
-`, BuiltIn: false},
-	{Name: "../../schema/schema.graphqls", Input: `"""
-This directive on an input object indicates that a client must specify one of the
-fields of the object and no others. Typically used for lookups.
-"""
-directive @oneOf on INPUT_OBJECT
-
-"""
-A 20-byte Ethereum address, encoded as a checksummed hex string with 0x prefix.
-"""
-scalar Address
 `, BuiltIn: false},
 	{Name: "../../schema/signals_gen.graphqls", Input: `# Code generated  with ` + "`" + `make gql-model` + "`" + ` DO NOT EDIT.
 extend type SignalAggregations {
