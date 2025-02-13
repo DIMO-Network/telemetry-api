@@ -4,9 +4,13 @@ import (
 	"context"
 	"errors"
 	"net/http"
+	"time"
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/handler"
+	"github.com/99designs/gqlgen/graphql/handler/extension"
+	"github.com/99designs/gqlgen/graphql/handler/lru"
+	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/DIMO-Network/telemetry-api/internal/auth"
 	"github.com/DIMO-Network/telemetry-api/internal/config"
 	"github.com/DIMO-Network/telemetry-api/internal/graph"
@@ -17,6 +21,7 @@ import (
 	"github.com/DIMO-Network/telemetry-api/internal/service/fetchapi"
 	"github.com/DIMO-Network/telemetry-api/internal/service/identity"
 	"github.com/rs/zerolog"
+	"github.com/vektah/gqlparser/v2/ast"
 	"github.com/vektah/gqlparser/v2/gqlerror"
 )
 
@@ -56,7 +61,7 @@ func New(settings config.Settings, logger *zerolog.Logger) (*App, error) {
 	cfg.Directives.IsSignal = noOp
 	cfg.Directives.HasAggregation = noOp
 
-	server := handler.NewDefaultServer(graph.NewExecutableSchema(cfg))
+	server := newDefaultServer(graph.NewExecutableSchema(cfg))
 	errLogger := logger.With().Str("component", "gql").Logger()
 	server.SetErrorPresenter(errorHandler(errLogger))
 
@@ -111,4 +116,25 @@ func errorHandler(log zerolog.Logger) func(ctx context.Context, e error) *gqlerr
 		log.Error().Err(e).Msg("Internal server error")
 		return gqlerror.Errorf("internal server error")
 	}
+}
+
+func newDefaultServer(es graphql.ExecutableSchema) *handler.Server {
+	srv := handler.New(es)
+
+	srv.AddTransport(transport.Websocket{
+		KeepAlivePingInterval: 10 * time.Second,
+	})
+	srv.AddTransport(transport.Options{})
+	srv.AddTransport(transport.GET{})
+	srv.AddTransport(transport.POST{})
+	srv.AddTransport(transport.MultipartForm{})
+
+	srv.SetQueryCache(lru.New[*ast.QueryDocument](1000))
+
+	srv.Use(extension.Introspection{})
+	srv.Use(extension.AutomaticPersistedQuery{
+		Cache: lru.New[string](100),
+	})
+
+	return srv
 }
