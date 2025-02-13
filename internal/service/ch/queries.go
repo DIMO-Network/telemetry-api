@@ -69,7 +69,6 @@ var SourceTranslations = map[string][]string{
 	"autopi":   {"dimo/integration/27qftVRWQYpVDcO5DltO5Ojbjxk", "0x5e31bBc786D7bEd95216383787deA1ab0f1c1897"},
 	"smartcar": {"dimo/integration/22N2xaPOq2WW2gAHBHd0Ikn4Zob", "0xcd445F4c6bDAD32b68a2939b912150Fe3C88803E"},
 	"ruptela":  {"0xF26421509Efe92861a587482100c6d728aBf1CD0"},
-	"compass":  {"0x55BF1c27d468314Ea119CF74979E2b59F962295c"},
 }
 
 var dialect = drivers.Dialect{
