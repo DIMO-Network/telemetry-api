@@ -45,13 +45,12 @@ type ResolverRoot interface {
 }
 
 type DirectiveRoot struct {
-	HasAggregation            func(ctx context.Context, obj interface{}, next graphql.Resolver) (res interface{}, err error)
-	IsSignal                  func(ctx context.Context, obj interface{}, next graphql.Resolver) (res interface{}, err error)
-	OneOf                     func(ctx context.Context, obj interface{}, next graphql.Resolver) (res interface{}, err error)
-	RequiresAllOfPrivileges   func(ctx context.Context, obj interface{}, next graphql.Resolver, privileges []model.Privilege) (res interface{}, err error)
-	RequiresManufacturerToken func(ctx context.Context, obj interface{}, next graphql.Resolver) (res interface{}, err error)
-	RequiresOneOfPrivilege    func(ctx context.Context, obj interface{}, next graphql.Resolver, privileges []model.Privilege) (res interface{}, err error)
-	RequiresVehicleToken      func(ctx context.Context, obj interface{}, next graphql.Resolver) (res interface{}, err error)
+	HasAggregation            func(ctx context.Context, obj any, next graphql.Resolver) (res any, err error)
+	IsSignal                  func(ctx context.Context, obj any, next graphql.Resolver) (res any, err error)
+	RequiresAllOfPrivileges   func(ctx context.Context, obj any, next graphql.Resolver, privileges []model.Privilege) (res any, err error)
+	RequiresManufacturerToken func(ctx context.Context, obj any, next graphql.Resolver) (res any, err error)
+	RequiresOneOfPrivilege    func(ctx context.Context, obj any, next graphql.Resolver, privileges []model.Privilege) (res any, err error)
+	RequiresVehicleToken      func(ctx context.Context, obj any, next graphql.Resolver) (res any, err error)
 }
 
 type ComplexityRoot struct {
@@ -321,7 +320,7 @@ func (e *executableSchema) Schema() *ast.Schema {
 	return parsedSchema
 }
 
-func (e *executableSchema) Complexity(typeName, field string, childComplexity int, rawArgs map[string]interface{}) (int, bool) {
+func (e *executableSchema) Complexity(typeName, field string, childComplexity int, rawArgs map[string]any) (int, bool) {
 	ec := executionContext{nil, e, 0, 0, nil}
 	_ = ec
 	switch typeName + "." + field {
@@ -3144,9 +3143,9 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 
 // region    ***************************** args.gotpl *****************************
 
-func (ec *executionContext) dir_requiresAllOfPrivileges_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) dir_requiresAllOfPrivileges_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.dir_requiresAllOfPrivileges_argsPrivileges(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -3156,13 +3155,9 @@ func (ec *executionContext) dir_requiresAllOfPrivileges_args(ctx context.Context
 }
 func (ec *executionContext) dir_requiresAllOfPrivileges_argsPrivileges(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) ([]model.Privilege, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["privileges"]
-	if !ok {
+	if _, ok := rawArgs["privileges"]; !ok {
 		var zeroVal []model.Privilege
 		return zeroVal, nil
 	}
@@ -3176,9 +3171,9 @@ func (ec *executionContext) dir_requiresAllOfPrivileges_argsPrivileges(
 	return zeroVal, nil
 }
 
-func (ec *executionContext) dir_requiresOneOfPrivilege_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) dir_requiresOneOfPrivilege_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.dir_requiresOneOfPrivilege_argsPrivileges(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -3188,13 +3183,9 @@ func (ec *executionContext) dir_requiresOneOfPrivilege_args(ctx context.Context,
 }
 func (ec *executionContext) dir_requiresOneOfPrivilege_argsPrivileges(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) ([]model.Privilege, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["privileges"]
-	if !ok {
+	if _, ok := rawArgs["privileges"]; !ok {
 		var zeroVal []model.Privilege
 		return zeroVal, nil
 	}
@@ -3208,9 +3199,9 @@ func (ec *executionContext) dir_requiresOneOfPrivilege_argsPrivileges(
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_Query___type_argsName(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -3220,13 +3211,9 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 }
 func (ec *executionContext) field_Query___type_argsName(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (string, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["name"]
-	if !ok {
+	if _, ok := rawArgs["name"]; !ok {
 		var zeroVal string
 		return zeroVal, nil
 	}
@@ -3240,9 +3227,9 @@ func (ec *executionContext) field_Query___type_argsName(
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_Query_availableSignals_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Query_availableSignals_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_Query_availableSignals_argsTokenID(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -3257,13 +3244,9 @@ func (ec *executionContext) field_Query_availableSignals_args(ctx context.Contex
 }
 func (ec *executionContext) field_Query_availableSignals_argsTokenID(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (int, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["tokenId"]
-	if !ok {
+	if _, ok := rawArgs["tokenId"]; !ok {
 		var zeroVal int
 		return zeroVal, nil
 	}
@@ -3279,13 +3262,9 @@ func (ec *executionContext) field_Query_availableSignals_argsTokenID(
 
 func (ec *executionContext) field_Query_availableSignals_argsFilter(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (*model.SignalFilter, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["filter"]
-	if !ok {
+	if _, ok := rawArgs["filter"]; !ok {
 		var zeroVal *model.SignalFilter
 		return zeroVal, nil
 	}
@@ -3299,9 +3278,9 @@ func (ec *executionContext) field_Query_availableSignals_argsFilter(
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_Query_deviceActivity_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Query_deviceActivity_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_Query_deviceActivity_argsBy(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -3311,13 +3290,9 @@ func (ec *executionContext) field_Query_deviceActivity_args(ctx context.Context,
 }
 func (ec *executionContext) field_Query_deviceActivity_argsBy(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (model.AftermarketDeviceBy, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["by"]
-	if !ok {
+	if _, ok := rawArgs["by"]; !ok {
 		var zeroVal model.AftermarketDeviceBy
 		return zeroVal, nil
 	}
@@ -3331,9 +3306,9 @@ func (ec *executionContext) field_Query_deviceActivity_argsBy(
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_Query_pomVCLatest_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Query_pomVCLatest_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_Query_pomVCLatest_argsTokenID(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -3343,13 +3318,9 @@ func (ec *executionContext) field_Query_pomVCLatest_args(ctx context.Context, ra
 }
 func (ec *executionContext) field_Query_pomVCLatest_argsTokenID(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (int, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["tokenId"]
-	if !ok {
+	if _, ok := rawArgs["tokenId"]; !ok {
 		var zeroVal int
 		return zeroVal, nil
 	}
@@ -3363,9 +3334,9 @@ func (ec *executionContext) field_Query_pomVCLatest_argsTokenID(
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_Query_signalsLatest_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Query_signalsLatest_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_Query_signalsLatest_argsTokenID(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -3380,13 +3351,9 @@ func (ec *executionContext) field_Query_signalsLatest_args(ctx context.Context, 
 }
 func (ec *executionContext) field_Query_signalsLatest_argsTokenID(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (int, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["tokenId"]
-	if !ok {
+	if _, ok := rawArgs["tokenId"]; !ok {
 		var zeroVal int
 		return zeroVal, nil
 	}
@@ -3402,13 +3369,9 @@ func (ec *executionContext) field_Query_signalsLatest_argsTokenID(
 
 func (ec *executionContext) field_Query_signalsLatest_argsFilter(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (*model.SignalFilter, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["filter"]
-	if !ok {
+	if _, ok := rawArgs["filter"]; !ok {
 		var zeroVal *model.SignalFilter
 		return zeroVal, nil
 	}
@@ -3422,9 +3385,9 @@ func (ec *executionContext) field_Query_signalsLatest_argsFilter(
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_Query_signals_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Query_signals_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_Query_signals_argsTokenID(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -3454,13 +3417,9 @@ func (ec *executionContext) field_Query_signals_args(ctx context.Context, rawArg
 }
 func (ec *executionContext) field_Query_signals_argsTokenID(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (int, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["tokenId"]
-	if !ok {
+	if _, ok := rawArgs["tokenId"]; !ok {
 		var zeroVal int
 		return zeroVal, nil
 	}
@@ -3476,13 +3435,9 @@ func (ec *executionContext) field_Query_signals_argsTokenID(
 
 func (ec *executionContext) field_Query_signals_argsInterval(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (string, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["interval"]
-	if !ok {
+	if _, ok := rawArgs["interval"]; !ok {
 		var zeroVal string
 		return zeroVal, nil
 	}
@@ -3498,13 +3453,9 @@ func (ec *executionContext) field_Query_signals_argsInterval(
 
 func (ec *executionContext) field_Query_signals_argsFrom(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (time.Time, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["from"]
-	if !ok {
+	if _, ok := rawArgs["from"]; !ok {
 		var zeroVal time.Time
 		return zeroVal, nil
 	}
@@ -3520,13 +3471,9 @@ func (ec *executionContext) field_Query_signals_argsFrom(
 
 func (ec *executionContext) field_Query_signals_argsTo(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (time.Time, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["to"]
-	if !ok {
+	if _, ok := rawArgs["to"]; !ok {
 		var zeroVal time.Time
 		return zeroVal, nil
 	}
@@ -3542,13 +3489,9 @@ func (ec *executionContext) field_Query_signals_argsTo(
 
 func (ec *executionContext) field_Query_signals_argsFilter(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (*model.SignalFilter, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["filter"]
-	if !ok {
+	if _, ok := rawArgs["filter"]; !ok {
 		var zeroVal *model.SignalFilter
 		return zeroVal, nil
 	}
@@ -3562,9 +3505,9 @@ func (ec *executionContext) field_Query_signals_argsFilter(
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_Query_vinVCLatest_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Query_vinVCLatest_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_Query_vinVCLatest_argsTokenID(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -3574,13 +3517,9 @@ func (ec *executionContext) field_Query_vinVCLatest_args(ctx context.Context, ra
 }
 func (ec *executionContext) field_Query_vinVCLatest_argsTokenID(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (int, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["tokenId"]
-	if !ok {
+	if _, ok := rawArgs["tokenId"]; !ok {
 		var zeroVal int
 		return zeroVal, nil
 	}
@@ -3594,9 +3533,9 @@ func (ec *executionContext) field_Query_vinVCLatest_argsTokenID(
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_angularVelocityYaw_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_angularVelocityYaw_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_SignalAggregations_angularVelocityYaw_argsAgg(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -3606,13 +3545,9 @@ func (ec *executionContext) field_SignalAggregations_angularVelocityYaw_args(ctx
 }
 func (ec *executionContext) field_SignalAggregations_angularVelocityYaw_argsAgg(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (model.FloatAggregation, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["agg"]
-	if !ok {
+	if _, ok := rawArgs["agg"]; !ok {
 		var zeroVal model.FloatAggregation
 		return zeroVal, nil
 	}
@@ -3626,9 +3561,9 @@ func (ec *executionContext) field_SignalAggregations_angularVelocityYaw_argsAgg(
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_chassisAxleRow1WheelLeftSpeed_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_chassisAxleRow1WheelLeftSpeed_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_SignalAggregations_chassisAxleRow1WheelLeftSpeed_argsAgg(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -3638,13 +3573,9 @@ func (ec *executionContext) field_SignalAggregations_chassisAxleRow1WheelLeftSpe
 }
 func (ec *executionContext) field_SignalAggregations_chassisAxleRow1WheelLeftSpeed_argsAgg(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (model.FloatAggregation, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["agg"]
-	if !ok {
+	if _, ok := rawArgs["agg"]; !ok {
 		var zeroVal model.FloatAggregation
 		return zeroVal, nil
 	}
@@ -3658,9 +3589,9 @@ func (ec *executionContext) field_SignalAggregations_chassisAxleRow1WheelLeftSpe
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_chassisAxleRow1WheelLeftTirePressure_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_chassisAxleRow1WheelLeftTirePressure_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_SignalAggregations_chassisAxleRow1WheelLeftTirePressure_argsAgg(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -3670,13 +3601,9 @@ func (ec *executionContext) field_SignalAggregations_chassisAxleRow1WheelLeftTir
 }
 func (ec *executionContext) field_SignalAggregations_chassisAxleRow1WheelLeftTirePressure_argsAgg(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (model.FloatAggregation, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["agg"]
-	if !ok {
+	if _, ok := rawArgs["agg"]; !ok {
 		var zeroVal model.FloatAggregation
 		return zeroVal, nil
 	}
@@ -3690,9 +3617,9 @@ func (ec *executionContext) field_SignalAggregations_chassisAxleRow1WheelLeftTir
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_chassisAxleRow1WheelRightSpeed_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_chassisAxleRow1WheelRightSpeed_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_SignalAggregations_chassisAxleRow1WheelRightSpeed_argsAgg(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -3702,13 +3629,9 @@ func (ec *executionContext) field_SignalAggregations_chassisAxleRow1WheelRightSp
 }
 func (ec *executionContext) field_SignalAggregations_chassisAxleRow1WheelRightSpeed_argsAgg(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (model.FloatAggregation, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["agg"]
-	if !ok {
+	if _, ok := rawArgs["agg"]; !ok {
 		var zeroVal model.FloatAggregation
 		return zeroVal, nil
 	}
@@ -3722,9 +3645,9 @@ func (ec *executionContext) field_SignalAggregations_chassisAxleRow1WheelRightSp
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_chassisAxleRow1WheelRightTirePressure_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_chassisAxleRow1WheelRightTirePressure_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_SignalAggregations_chassisAxleRow1WheelRightTirePressure_argsAgg(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -3734,13 +3657,9 @@ func (ec *executionContext) field_SignalAggregations_chassisAxleRow1WheelRightTi
 }
 func (ec *executionContext) field_SignalAggregations_chassisAxleRow1WheelRightTirePressure_argsAgg(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (model.FloatAggregation, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["agg"]
-	if !ok {
+	if _, ok := rawArgs["agg"]; !ok {
 		var zeroVal model.FloatAggregation
 		return zeroVal, nil
 	}
@@ -3754,9 +3673,9 @@ func (ec *executionContext) field_SignalAggregations_chassisAxleRow1WheelRightTi
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_chassisAxleRow2WheelLeftTirePressure_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_chassisAxleRow2WheelLeftTirePressure_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_SignalAggregations_chassisAxleRow2WheelLeftTirePressure_argsAgg(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -3766,13 +3685,9 @@ func (ec *executionContext) field_SignalAggregations_chassisAxleRow2WheelLeftTir
 }
 func (ec *executionContext) field_SignalAggregations_chassisAxleRow2WheelLeftTirePressure_argsAgg(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (model.FloatAggregation, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["agg"]
-	if !ok {
+	if _, ok := rawArgs["agg"]; !ok {
 		var zeroVal model.FloatAggregation
 		return zeroVal, nil
 	}
@@ -3786,9 +3701,9 @@ func (ec *executionContext) field_SignalAggregations_chassisAxleRow2WheelLeftTir
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_chassisAxleRow2WheelRightTirePressure_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_chassisAxleRow2WheelRightTirePressure_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_SignalAggregations_chassisAxleRow2WheelRightTirePressure_argsAgg(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -3798,13 +3713,9 @@ func (ec *executionContext) field_SignalAggregations_chassisAxleRow2WheelRightTi
 }
 func (ec *executionContext) field_SignalAggregations_chassisAxleRow2WheelRightTirePressure_argsAgg(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (model.FloatAggregation, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["agg"]
-	if !ok {
+	if _, ok := rawArgs["agg"]; !ok {
 		var zeroVal model.FloatAggregation
 		return zeroVal, nil
 	}
@@ -3818,9 +3729,9 @@ func (ec *executionContext) field_SignalAggregations_chassisAxleRow2WheelRightTi
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_currentLocationAltitude_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_currentLocationAltitude_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_SignalAggregations_currentLocationAltitude_argsAgg(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -3830,13 +3741,9 @@ func (ec *executionContext) field_SignalAggregations_currentLocationAltitude_arg
 }
 func (ec *executionContext) field_SignalAggregations_currentLocationAltitude_argsAgg(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (model.FloatAggregation, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["agg"]
-	if !ok {
+	if _, ok := rawArgs["agg"]; !ok {
 		var zeroVal model.FloatAggregation
 		return zeroVal, nil
 	}
@@ -3850,9 +3757,9 @@ func (ec *executionContext) field_SignalAggregations_currentLocationAltitude_arg
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_currentLocationApproximateLatitude_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_currentLocationApproximateLatitude_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_SignalAggregations_currentLocationApproximateLatitude_argsAgg(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -3862,13 +3769,9 @@ func (ec *executionContext) field_SignalAggregations_currentLocationApproximateL
 }
 func (ec *executionContext) field_SignalAggregations_currentLocationApproximateLatitude_argsAgg(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (model.FloatAggregation, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["agg"]
-	if !ok {
+	if _, ok := rawArgs["agg"]; !ok {
 		var zeroVal model.FloatAggregation
 		return zeroVal, nil
 	}
@@ -3882,9 +3785,9 @@ func (ec *executionContext) field_SignalAggregations_currentLocationApproximateL
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_currentLocationApproximateLongitude_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_currentLocationApproximateLongitude_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_SignalAggregations_currentLocationApproximateLongitude_argsAgg(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -3894,13 +3797,9 @@ func (ec *executionContext) field_SignalAggregations_currentLocationApproximateL
 }
 func (ec *executionContext) field_SignalAggregations_currentLocationApproximateLongitude_argsAgg(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (model.FloatAggregation, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["agg"]
-	if !ok {
+	if _, ok := rawArgs["agg"]; !ok {
 		var zeroVal model.FloatAggregation
 		return zeroVal, nil
 	}
@@ -3914,9 +3813,9 @@ func (ec *executionContext) field_SignalAggregations_currentLocationApproximateL
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_currentLocationIsRedacted_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_currentLocationIsRedacted_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_SignalAggregations_currentLocationIsRedacted_argsAgg(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -3926,13 +3825,9 @@ func (ec *executionContext) field_SignalAggregations_currentLocationIsRedacted_a
 }
 func (ec *executionContext) field_SignalAggregations_currentLocationIsRedacted_argsAgg(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (model.FloatAggregation, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["agg"]
-	if !ok {
+	if _, ok := rawArgs["agg"]; !ok {
 		var zeroVal model.FloatAggregation
 		return zeroVal, nil
 	}
@@ -3946,9 +3841,9 @@ func (ec *executionContext) field_SignalAggregations_currentLocationIsRedacted_a
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_currentLocationLatitude_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_currentLocationLatitude_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_SignalAggregations_currentLocationLatitude_argsAgg(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -3958,13 +3853,9 @@ func (ec *executionContext) field_SignalAggregations_currentLocationLatitude_arg
 }
 func (ec *executionContext) field_SignalAggregations_currentLocationLatitude_argsAgg(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (model.FloatAggregation, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["agg"]
-	if !ok {
+	if _, ok := rawArgs["agg"]; !ok {
 		var zeroVal model.FloatAggregation
 		return zeroVal, nil
 	}
@@ -3978,9 +3869,9 @@ func (ec *executionContext) field_SignalAggregations_currentLocationLatitude_arg
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_currentLocationLongitude_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_currentLocationLongitude_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_SignalAggregations_currentLocationLongitude_argsAgg(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -3990,13 +3881,9 @@ func (ec *executionContext) field_SignalAggregations_currentLocationLongitude_ar
 }
 func (ec *executionContext) field_SignalAggregations_currentLocationLongitude_argsAgg(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (model.FloatAggregation, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["agg"]
-	if !ok {
+	if _, ok := rawArgs["agg"]; !ok {
 		var zeroVal model.FloatAggregation
 		return zeroVal, nil
 	}
@@ -4010,9 +3897,9 @@ func (ec *executionContext) field_SignalAggregations_currentLocationLongitude_ar
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_dimoAftermarketHDOP_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_dimoAftermarketHDOP_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_SignalAggregations_dimoAftermarketHDOP_argsAgg(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -4022,13 +3909,9 @@ func (ec *executionContext) field_SignalAggregations_dimoAftermarketHDOP_args(ct
 }
 func (ec *executionContext) field_SignalAggregations_dimoAftermarketHDOP_argsAgg(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (model.FloatAggregation, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["agg"]
-	if !ok {
+	if _, ok := rawArgs["agg"]; !ok {
 		var zeroVal model.FloatAggregation
 		return zeroVal, nil
 	}
@@ -4042,9 +3925,9 @@ func (ec *executionContext) field_SignalAggregations_dimoAftermarketHDOP_argsAgg
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_dimoAftermarketNSAT_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_dimoAftermarketNSAT_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_SignalAggregations_dimoAftermarketNSAT_argsAgg(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -4054,13 +3937,9 @@ func (ec *executionContext) field_SignalAggregations_dimoAftermarketNSAT_args(ct
 }
 func (ec *executionContext) field_SignalAggregations_dimoAftermarketNSAT_argsAgg(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (model.FloatAggregation, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["agg"]
-	if !ok {
+	if _, ok := rawArgs["agg"]; !ok {
 		var zeroVal model.FloatAggregation
 		return zeroVal, nil
 	}
@@ -4074,9 +3953,9 @@ func (ec *executionContext) field_SignalAggregations_dimoAftermarketNSAT_argsAgg
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_dimoAftermarketSSID_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_dimoAftermarketSSID_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_SignalAggregations_dimoAftermarketSSID_argsAgg(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -4086,13 +3965,9 @@ func (ec *executionContext) field_SignalAggregations_dimoAftermarketSSID_args(ct
 }
 func (ec *executionContext) field_SignalAggregations_dimoAftermarketSSID_argsAgg(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (model.StringAggregation, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["agg"]
-	if !ok {
+	if _, ok := rawArgs["agg"]; !ok {
 		var zeroVal model.StringAggregation
 		return zeroVal, nil
 	}
@@ -4106,9 +3981,9 @@ func (ec *executionContext) field_SignalAggregations_dimoAftermarketSSID_argsAgg
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_dimoAftermarketWPAState_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_dimoAftermarketWPAState_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_SignalAggregations_dimoAftermarketWPAState_argsAgg(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -4118,13 +3993,9 @@ func (ec *executionContext) field_SignalAggregations_dimoAftermarketWPAState_arg
 }
 func (ec *executionContext) field_SignalAggregations_dimoAftermarketWPAState_argsAgg(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (model.StringAggregation, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["agg"]
-	if !ok {
+	if _, ok := rawArgs["agg"]; !ok {
 		var zeroVal model.StringAggregation
 		return zeroVal, nil
 	}
@@ -4138,9 +4009,9 @@ func (ec *executionContext) field_SignalAggregations_dimoAftermarketWPAState_arg
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_exteriorAirTemperature_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_exteriorAirTemperature_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_SignalAggregations_exteriorAirTemperature_argsAgg(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -4150,13 +4021,9 @@ func (ec *executionContext) field_SignalAggregations_exteriorAirTemperature_args
 }
 func (ec *executionContext) field_SignalAggregations_exteriorAirTemperature_argsAgg(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (model.FloatAggregation, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["agg"]
-	if !ok {
+	if _, ok := rawArgs["agg"]; !ok {
 		var zeroVal model.FloatAggregation
 		return zeroVal, nil
 	}
@@ -4170,9 +4037,9 @@ func (ec *executionContext) field_SignalAggregations_exteriorAirTemperature_args
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_lowVoltageBatteryCurrentVoltage_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_lowVoltageBatteryCurrentVoltage_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_SignalAggregations_lowVoltageBatteryCurrentVoltage_argsAgg(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -4182,13 +4049,9 @@ func (ec *executionContext) field_SignalAggregations_lowVoltageBatteryCurrentVol
 }
 func (ec *executionContext) field_SignalAggregations_lowVoltageBatteryCurrentVoltage_argsAgg(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (model.FloatAggregation, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["agg"]
-	if !ok {
+	if _, ok := rawArgs["agg"]; !ok {
 		var zeroVal model.FloatAggregation
 		return zeroVal, nil
 	}
@@ -4202,9 +4065,9 @@ func (ec *executionContext) field_SignalAggregations_lowVoltageBatteryCurrentVol
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_obdBarometricPressure_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_obdBarometricPressure_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_SignalAggregations_obdBarometricPressure_argsAgg(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -4214,13 +4077,9 @@ func (ec *executionContext) field_SignalAggregations_obdBarometricPressure_args(
 }
 func (ec *executionContext) field_SignalAggregations_obdBarometricPressure_argsAgg(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (model.FloatAggregation, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["agg"]
-	if !ok {
+	if _, ok := rawArgs["agg"]; !ok {
 		var zeroVal model.FloatAggregation
 		return zeroVal, nil
 	}
@@ -4234,9 +4093,9 @@ func (ec *executionContext) field_SignalAggregations_obdBarometricPressure_argsA
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_obdCommandedEGR_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_obdCommandedEGR_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_SignalAggregations_obdCommandedEGR_argsAgg(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -4246,13 +4105,9 @@ func (ec *executionContext) field_SignalAggregations_obdCommandedEGR_args(ctx co
 }
 func (ec *executionContext) field_SignalAggregations_obdCommandedEGR_argsAgg(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (model.FloatAggregation, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["agg"]
-	if !ok {
+	if _, ok := rawArgs["agg"]; !ok {
 		var zeroVal model.FloatAggregation
 		return zeroVal, nil
 	}
@@ -4266,9 +4121,9 @@ func (ec *executionContext) field_SignalAggregations_obdCommandedEGR_argsAgg(
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_obdCommandedEVAP_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_obdCommandedEVAP_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_SignalAggregations_obdCommandedEVAP_argsAgg(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -4278,13 +4133,9 @@ func (ec *executionContext) field_SignalAggregations_obdCommandedEVAP_args(ctx c
 }
 func (ec *executionContext) field_SignalAggregations_obdCommandedEVAP_argsAgg(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (model.FloatAggregation, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["agg"]
-	if !ok {
+	if _, ok := rawArgs["agg"]; !ok {
 		var zeroVal model.FloatAggregation
 		return zeroVal, nil
 	}
@@ -4298,9 +4149,9 @@ func (ec *executionContext) field_SignalAggregations_obdCommandedEVAP_argsAgg(
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_obdDTCList_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_obdDTCList_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_SignalAggregations_obdDTCList_argsAgg(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -4310,13 +4161,9 @@ func (ec *executionContext) field_SignalAggregations_obdDTCList_args(ctx context
 }
 func (ec *executionContext) field_SignalAggregations_obdDTCList_argsAgg(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (model.StringAggregation, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["agg"]
-	if !ok {
+	if _, ok := rawArgs["agg"]; !ok {
 		var zeroVal model.StringAggregation
 		return zeroVal, nil
 	}
@@ -4330,9 +4177,9 @@ func (ec *executionContext) field_SignalAggregations_obdDTCList_argsAgg(
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_obdDistanceSinceDTCClear_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_obdDistanceSinceDTCClear_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_SignalAggregations_obdDistanceSinceDTCClear_argsAgg(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -4342,13 +4189,9 @@ func (ec *executionContext) field_SignalAggregations_obdDistanceSinceDTCClear_ar
 }
 func (ec *executionContext) field_SignalAggregations_obdDistanceSinceDTCClear_argsAgg(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (model.FloatAggregation, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["agg"]
-	if !ok {
+	if _, ok := rawArgs["agg"]; !ok {
 		var zeroVal model.FloatAggregation
 		return zeroVal, nil
 	}
@@ -4362,9 +4205,9 @@ func (ec *executionContext) field_SignalAggregations_obdDistanceSinceDTCClear_ar
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_obdDistanceWithMIL_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_obdDistanceWithMIL_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_SignalAggregations_obdDistanceWithMIL_argsAgg(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -4374,13 +4217,9 @@ func (ec *executionContext) field_SignalAggregations_obdDistanceWithMIL_args(ctx
 }
 func (ec *executionContext) field_SignalAggregations_obdDistanceWithMIL_argsAgg(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (model.FloatAggregation, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["agg"]
-	if !ok {
+	if _, ok := rawArgs["agg"]; !ok {
 		var zeroVal model.FloatAggregation
 		return zeroVal, nil
 	}
@@ -4394,9 +4233,9 @@ func (ec *executionContext) field_SignalAggregations_obdDistanceWithMIL_argsAgg(
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_obdEngineLoad_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_obdEngineLoad_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_SignalAggregations_obdEngineLoad_argsAgg(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -4406,13 +4245,9 @@ func (ec *executionContext) field_SignalAggregations_obdEngineLoad_args(ctx cont
 }
 func (ec *executionContext) field_SignalAggregations_obdEngineLoad_argsAgg(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (model.FloatAggregation, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["agg"]
-	if !ok {
+	if _, ok := rawArgs["agg"]; !ok {
 		var zeroVal model.FloatAggregation
 		return zeroVal, nil
 	}
@@ -4426,9 +4261,9 @@ func (ec *executionContext) field_SignalAggregations_obdEngineLoad_argsAgg(
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_obdFuelPressure_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_obdFuelPressure_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_SignalAggregations_obdFuelPressure_argsAgg(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -4438,13 +4273,9 @@ func (ec *executionContext) field_SignalAggregations_obdFuelPressure_args(ctx co
 }
 func (ec *executionContext) field_SignalAggregations_obdFuelPressure_argsAgg(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (model.FloatAggregation, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["agg"]
-	if !ok {
+	if _, ok := rawArgs["agg"]; !ok {
 		var zeroVal model.FloatAggregation
 		return zeroVal, nil
 	}
@@ -4458,9 +4289,9 @@ func (ec *executionContext) field_SignalAggregations_obdFuelPressure_argsAgg(
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_obdIntakeTemp_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_obdIntakeTemp_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_SignalAggregations_obdIntakeTemp_argsAgg(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -4470,13 +4301,9 @@ func (ec *executionContext) field_SignalAggregations_obdIntakeTemp_args(ctx cont
 }
 func (ec *executionContext) field_SignalAggregations_obdIntakeTemp_argsAgg(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (model.FloatAggregation, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["agg"]
-	if !ok {
+	if _, ok := rawArgs["agg"]; !ok {
 		var zeroVal model.FloatAggregation
 		return zeroVal, nil
 	}
@@ -4490,9 +4317,9 @@ func (ec *executionContext) field_SignalAggregations_obdIntakeTemp_argsAgg(
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_obdLongTermFuelTrim1_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_obdLongTermFuelTrim1_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_SignalAggregations_obdLongTermFuelTrim1_argsAgg(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -4502,13 +4329,9 @@ func (ec *executionContext) field_SignalAggregations_obdLongTermFuelTrim1_args(c
 }
 func (ec *executionContext) field_SignalAggregations_obdLongTermFuelTrim1_argsAgg(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (model.FloatAggregation, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["agg"]
-	if !ok {
+	if _, ok := rawArgs["agg"]; !ok {
 		var zeroVal model.FloatAggregation
 		return zeroVal, nil
 	}
@@ -4522,9 +4345,9 @@ func (ec *executionContext) field_SignalAggregations_obdLongTermFuelTrim1_argsAg
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_obdMAP_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_obdMAP_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_SignalAggregations_obdMAP_argsAgg(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -4534,13 +4357,9 @@ func (ec *executionContext) field_SignalAggregations_obdMAP_args(ctx context.Con
 }
 func (ec *executionContext) field_SignalAggregations_obdMAP_argsAgg(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (model.FloatAggregation, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["agg"]
-	if !ok {
+	if _, ok := rawArgs["agg"]; !ok {
 		var zeroVal model.FloatAggregation
 		return zeroVal, nil
 	}
@@ -4554,9 +4373,9 @@ func (ec *executionContext) field_SignalAggregations_obdMAP_argsAgg(
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_obdO2WRSensor1Voltage_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_obdO2WRSensor1Voltage_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_SignalAggregations_obdO2WRSensor1Voltage_argsAgg(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -4566,13 +4385,9 @@ func (ec *executionContext) field_SignalAggregations_obdO2WRSensor1Voltage_args(
 }
 func (ec *executionContext) field_SignalAggregations_obdO2WRSensor1Voltage_argsAgg(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (model.FloatAggregation, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["agg"]
-	if !ok {
+	if _, ok := rawArgs["agg"]; !ok {
 		var zeroVal model.FloatAggregation
 		return zeroVal, nil
 	}
@@ -4586,9 +4401,9 @@ func (ec *executionContext) field_SignalAggregations_obdO2WRSensor1Voltage_argsA
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_obdO2WRSensor2Voltage_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_obdO2WRSensor2Voltage_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_SignalAggregations_obdO2WRSensor2Voltage_argsAgg(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -4598,13 +4413,9 @@ func (ec *executionContext) field_SignalAggregations_obdO2WRSensor2Voltage_args(
 }
 func (ec *executionContext) field_SignalAggregations_obdO2WRSensor2Voltage_argsAgg(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (model.FloatAggregation, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["agg"]
-	if !ok {
+	if _, ok := rawArgs["agg"]; !ok {
 		var zeroVal model.FloatAggregation
 		return zeroVal, nil
 	}
@@ -4618,9 +4429,9 @@ func (ec *executionContext) field_SignalAggregations_obdO2WRSensor2Voltage_argsA
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_obdRunTime_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_obdRunTime_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_SignalAggregations_obdRunTime_argsAgg(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -4630,13 +4441,9 @@ func (ec *executionContext) field_SignalAggregations_obdRunTime_args(ctx context
 }
 func (ec *executionContext) field_SignalAggregations_obdRunTime_argsAgg(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (model.FloatAggregation, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["agg"]
-	if !ok {
+	if _, ok := rawArgs["agg"]; !ok {
 		var zeroVal model.FloatAggregation
 		return zeroVal, nil
 	}
@@ -4650,9 +4457,9 @@ func (ec *executionContext) field_SignalAggregations_obdRunTime_argsAgg(
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_obdShortTermFuelTrim1_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_obdShortTermFuelTrim1_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_SignalAggregations_obdShortTermFuelTrim1_argsAgg(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -4662,13 +4469,9 @@ func (ec *executionContext) field_SignalAggregations_obdShortTermFuelTrim1_args(
 }
 func (ec *executionContext) field_SignalAggregations_obdShortTermFuelTrim1_argsAgg(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (model.FloatAggregation, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["agg"]
-	if !ok {
+	if _, ok := rawArgs["agg"]; !ok {
 		var zeroVal model.FloatAggregation
 		return zeroVal, nil
 	}
@@ -4682,9 +4485,9 @@ func (ec *executionContext) field_SignalAggregations_obdShortTermFuelTrim1_argsA
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_obdWarmupsSinceDTCClear_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_obdWarmupsSinceDTCClear_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_SignalAggregations_obdWarmupsSinceDTCClear_argsAgg(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -4694,13 +4497,9 @@ func (ec *executionContext) field_SignalAggregations_obdWarmupsSinceDTCClear_arg
 }
 func (ec *executionContext) field_SignalAggregations_obdWarmupsSinceDTCClear_argsAgg(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (model.FloatAggregation, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["agg"]
-	if !ok {
+	if _, ok := rawArgs["agg"]; !ok {
 		var zeroVal model.FloatAggregation
 		return zeroVal, nil
 	}
@@ -4714,9 +4513,9 @@ func (ec *executionContext) field_SignalAggregations_obdWarmupsSinceDTCClear_arg
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineDieselExhaustFluidCapacity_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineDieselExhaustFluidCapacity_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_SignalAggregations_powertrainCombustionEngineDieselExhaustFluidCapacity_argsAgg(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -4726,13 +4525,9 @@ func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineD
 }
 func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineDieselExhaustFluidCapacity_argsAgg(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (model.FloatAggregation, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["agg"]
-	if !ok {
+	if _, ok := rawArgs["agg"]; !ok {
 		var zeroVal model.FloatAggregation
 		return zeroVal, nil
 	}
@@ -4746,9 +4541,9 @@ func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineD
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineDieselExhaustFluidLevel_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineDieselExhaustFluidLevel_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_SignalAggregations_powertrainCombustionEngineDieselExhaustFluidLevel_argsAgg(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -4758,13 +4553,9 @@ func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineD
 }
 func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineDieselExhaustFluidLevel_argsAgg(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (model.FloatAggregation, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["agg"]
-	if !ok {
+	if _, ok := rawArgs["agg"]; !ok {
 		var zeroVal model.FloatAggregation
 		return zeroVal, nil
 	}
@@ -4778,9 +4569,9 @@ func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineD
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineECT_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineECT_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_SignalAggregations_powertrainCombustionEngineECT_argsAgg(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -4790,13 +4581,9 @@ func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineE
 }
 func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineECT_argsAgg(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (model.FloatAggregation, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["agg"]
-	if !ok {
+	if _, ok := rawArgs["agg"]; !ok {
 		var zeroVal model.FloatAggregation
 		return zeroVal, nil
 	}
@@ -4810,9 +4597,9 @@ func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineE
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineEngineOilLevel_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineEngineOilLevel_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_SignalAggregations_powertrainCombustionEngineEngineOilLevel_argsAgg(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -4822,13 +4609,9 @@ func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineE
 }
 func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineEngineOilLevel_argsAgg(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (model.StringAggregation, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["agg"]
-	if !ok {
+	if _, ok := rawArgs["agg"]; !ok {
 		var zeroVal model.StringAggregation
 		return zeroVal, nil
 	}
@@ -4842,9 +4625,9 @@ func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineE
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineEngineOilRelativeLevel_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineEngineOilRelativeLevel_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_SignalAggregations_powertrainCombustionEngineEngineOilRelativeLevel_argsAgg(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -4854,13 +4637,9 @@ func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineE
 }
 func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineEngineOilRelativeLevel_argsAgg(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (model.FloatAggregation, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["agg"]
-	if !ok {
+	if _, ok := rawArgs["agg"]; !ok {
 		var zeroVal model.FloatAggregation
 		return zeroVal, nil
 	}
@@ -4874,9 +4653,9 @@ func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineE
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineMAF_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineMAF_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_SignalAggregations_powertrainCombustionEngineMAF_argsAgg(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -4886,13 +4665,9 @@ func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineM
 }
 func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineMAF_argsAgg(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (model.FloatAggregation, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["agg"]
-	if !ok {
+	if _, ok := rawArgs["agg"]; !ok {
 		var zeroVal model.FloatAggregation
 		return zeroVal, nil
 	}
@@ -4906,9 +4681,9 @@ func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineM
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineSpeed_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineSpeed_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_SignalAggregations_powertrainCombustionEngineSpeed_argsAgg(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -4918,13 +4693,9 @@ func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineS
 }
 func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineSpeed_argsAgg(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (model.FloatAggregation, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["agg"]
-	if !ok {
+	if _, ok := rawArgs["agg"]; !ok {
 		var zeroVal model.FloatAggregation
 		return zeroVal, nil
 	}
@@ -4938,9 +4709,9 @@ func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineS
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineTPS_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineTPS_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_SignalAggregations_powertrainCombustionEngineTPS_argsAgg(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -4950,13 +4721,9 @@ func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineT
 }
 func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineTPS_argsAgg(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (model.FloatAggregation, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["agg"]
-	if !ok {
+	if _, ok := rawArgs["agg"]; !ok {
 		var zeroVal model.FloatAggregation
 		return zeroVal, nil
 	}
@@ -4970,9 +4737,9 @@ func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineT
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineTorque_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineTorque_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_SignalAggregations_powertrainCombustionEngineTorque_argsAgg(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -4982,13 +4749,9 @@ func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineT
 }
 func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineTorque_argsAgg(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (model.FloatAggregation, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["agg"]
-	if !ok {
+	if _, ok := rawArgs["agg"]; !ok {
 		var zeroVal model.FloatAggregation
 		return zeroVal, nil
 	}
@@ -5002,9 +4765,9 @@ func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineT
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_powertrainFuelSystemAbsoluteLevel_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_powertrainFuelSystemAbsoluteLevel_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_SignalAggregations_powertrainFuelSystemAbsoluteLevel_argsAgg(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -5014,13 +4777,9 @@ func (ec *executionContext) field_SignalAggregations_powertrainFuelSystemAbsolut
 }
 func (ec *executionContext) field_SignalAggregations_powertrainFuelSystemAbsoluteLevel_argsAgg(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (model.FloatAggregation, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["agg"]
-	if !ok {
+	if _, ok := rawArgs["agg"]; !ok {
 		var zeroVal model.FloatAggregation
 		return zeroVal, nil
 	}
@@ -5034,9 +4793,9 @@ func (ec *executionContext) field_SignalAggregations_powertrainFuelSystemAbsolut
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_powertrainFuelSystemRelativeLevel_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_powertrainFuelSystemRelativeLevel_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_SignalAggregations_powertrainFuelSystemRelativeLevel_argsAgg(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -5046,13 +4805,9 @@ func (ec *executionContext) field_SignalAggregations_powertrainFuelSystemRelativ
 }
 func (ec *executionContext) field_SignalAggregations_powertrainFuelSystemRelativeLevel_argsAgg(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (model.FloatAggregation, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["agg"]
-	if !ok {
+	if _, ok := rawArgs["agg"]; !ok {
 		var zeroVal model.FloatAggregation
 		return zeroVal, nil
 	}
@@ -5066,9 +4821,9 @@ func (ec *executionContext) field_SignalAggregations_powertrainFuelSystemRelativ
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_powertrainFuelSystemSupportedFuelTypes_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_powertrainFuelSystemSupportedFuelTypes_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_SignalAggregations_powertrainFuelSystemSupportedFuelTypes_argsAgg(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -5078,13 +4833,9 @@ func (ec *executionContext) field_SignalAggregations_powertrainFuelSystemSupport
 }
 func (ec *executionContext) field_SignalAggregations_powertrainFuelSystemSupportedFuelTypes_argsAgg(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (model.StringAggregation, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["agg"]
-	if !ok {
+	if _, ok := rawArgs["agg"]; !ok {
 		var zeroVal model.StringAggregation
 		return zeroVal, nil
 	}
@@ -5098,9 +4849,9 @@ func (ec *executionContext) field_SignalAggregations_powertrainFuelSystemSupport
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_powertrainRange_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_powertrainRange_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_SignalAggregations_powertrainRange_argsAgg(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -5110,13 +4861,9 @@ func (ec *executionContext) field_SignalAggregations_powertrainRange_args(ctx co
 }
 func (ec *executionContext) field_SignalAggregations_powertrainRange_argsAgg(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (model.FloatAggregation, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["agg"]
-	if !ok {
+	if _, ok := rawArgs["agg"]; !ok {
 		var zeroVal model.FloatAggregation
 		return zeroVal, nil
 	}
@@ -5130,9 +4877,9 @@ func (ec *executionContext) field_SignalAggregations_powertrainRange_argsAgg(
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryChargingAddedEnergy_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryChargingAddedEnergy_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_SignalAggregations_powertrainTractionBatteryChargingAddedEnergy_argsAgg(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -5142,13 +4889,9 @@ func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryCh
 }
 func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryChargingAddedEnergy_argsAgg(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (model.FloatAggregation, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["agg"]
-	if !ok {
+	if _, ok := rawArgs["agg"]; !ok {
 		var zeroVal model.FloatAggregation
 		return zeroVal, nil
 	}
@@ -5162,9 +4905,9 @@ func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryCh
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryChargingChargeLimit_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryChargingChargeLimit_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_SignalAggregations_powertrainTractionBatteryChargingChargeLimit_argsAgg(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -5174,13 +4917,9 @@ func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryCh
 }
 func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryChargingChargeLimit_argsAgg(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (model.FloatAggregation, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["agg"]
-	if !ok {
+	if _, ok := rawArgs["agg"]; !ok {
 		var zeroVal model.FloatAggregation
 		return zeroVal, nil
 	}
@@ -5194,9 +4933,9 @@ func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryCh
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryChargingIsCharging_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryChargingIsCharging_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_SignalAggregations_powertrainTractionBatteryChargingIsCharging_argsAgg(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -5206,13 +4945,9 @@ func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryCh
 }
 func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryChargingIsCharging_argsAgg(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (model.FloatAggregation, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["agg"]
-	if !ok {
+	if _, ok := rawArgs["agg"]; !ok {
 		var zeroVal model.FloatAggregation
 		return zeroVal, nil
 	}
@@ -5226,9 +4961,9 @@ func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryCh
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryCurrentPower_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryCurrentPower_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_SignalAggregations_powertrainTractionBatteryCurrentPower_argsAgg(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -5238,13 +4973,9 @@ func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryCu
 }
 func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryCurrentPower_argsAgg(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (model.FloatAggregation, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["agg"]
-	if !ok {
+	if _, ok := rawArgs["agg"]; !ok {
 		var zeroVal model.FloatAggregation
 		return zeroVal, nil
 	}
@@ -5258,9 +4989,9 @@ func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryCu
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryCurrentVoltage_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryCurrentVoltage_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_SignalAggregations_powertrainTractionBatteryCurrentVoltage_argsAgg(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -5270,13 +5001,9 @@ func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryCu
 }
 func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryCurrentVoltage_argsAgg(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (model.FloatAggregation, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["agg"]
-	if !ok {
+	if _, ok := rawArgs["agg"]; !ok {
 		var zeroVal model.FloatAggregation
 		return zeroVal, nil
 	}
@@ -5290,9 +5017,9 @@ func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryCu
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryGrossCapacity_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryGrossCapacity_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_SignalAggregations_powertrainTractionBatteryGrossCapacity_argsAgg(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -5302,13 +5029,9 @@ func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryGr
 }
 func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryGrossCapacity_argsAgg(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (model.FloatAggregation, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["agg"]
-	if !ok {
+	if _, ok := rawArgs["agg"]; !ok {
 		var zeroVal model.FloatAggregation
 		return zeroVal, nil
 	}
@@ -5322,9 +5045,9 @@ func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryGr
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryRange_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryRange_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_SignalAggregations_powertrainTractionBatteryRange_argsAgg(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -5334,13 +5057,9 @@ func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryRa
 }
 func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryRange_argsAgg(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (model.FloatAggregation, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["agg"]
-	if !ok {
+	if _, ok := rawArgs["agg"]; !ok {
 		var zeroVal model.FloatAggregation
 		return zeroVal, nil
 	}
@@ -5354,9 +5073,9 @@ func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryRa
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryStateOfChargeCurrent_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryStateOfChargeCurrent_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_SignalAggregations_powertrainTractionBatteryStateOfChargeCurrent_argsAgg(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -5366,13 +5085,9 @@ func (ec *executionContext) field_SignalAggregations_powertrainTractionBatterySt
 }
 func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryStateOfChargeCurrent_argsAgg(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (model.FloatAggregation, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["agg"]
-	if !ok {
+	if _, ok := rawArgs["agg"]; !ok {
 		var zeroVal model.FloatAggregation
 		return zeroVal, nil
 	}
@@ -5386,9 +5101,9 @@ func (ec *executionContext) field_SignalAggregations_powertrainTractionBatterySt
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryTemperatureAverage_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryTemperatureAverage_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_SignalAggregations_powertrainTractionBatteryTemperatureAverage_argsAgg(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -5398,13 +5113,9 @@ func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryTe
 }
 func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryTemperatureAverage_argsAgg(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (model.FloatAggregation, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["agg"]
-	if !ok {
+	if _, ok := rawArgs["agg"]; !ok {
 		var zeroVal model.FloatAggregation
 		return zeroVal, nil
 	}
@@ -5418,9 +5129,9 @@ func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryTe
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_powertrainTransmissionCurrentGear_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_powertrainTransmissionCurrentGear_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_SignalAggregations_powertrainTransmissionCurrentGear_argsAgg(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -5430,13 +5141,9 @@ func (ec *executionContext) field_SignalAggregations_powertrainTransmissionCurre
 }
 func (ec *executionContext) field_SignalAggregations_powertrainTransmissionCurrentGear_argsAgg(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (model.FloatAggregation, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["agg"]
-	if !ok {
+	if _, ok := rawArgs["agg"]; !ok {
 		var zeroVal model.FloatAggregation
 		return zeroVal, nil
 	}
@@ -5450,9 +5157,9 @@ func (ec *executionContext) field_SignalAggregations_powertrainTransmissionCurre
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_powertrainTransmissionTemperature_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_powertrainTransmissionTemperature_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_SignalAggregations_powertrainTransmissionTemperature_argsAgg(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -5462,13 +5169,9 @@ func (ec *executionContext) field_SignalAggregations_powertrainTransmissionTempe
 }
 func (ec *executionContext) field_SignalAggregations_powertrainTransmissionTemperature_argsAgg(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (model.FloatAggregation, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["agg"]
-	if !ok {
+	if _, ok := rawArgs["agg"]; !ok {
 		var zeroVal model.FloatAggregation
 		return zeroVal, nil
 	}
@@ -5482,9 +5185,9 @@ func (ec *executionContext) field_SignalAggregations_powertrainTransmissionTempe
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_powertrainTransmissionTravelledDistance_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_powertrainTransmissionTravelledDistance_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_SignalAggregations_powertrainTransmissionTravelledDistance_argsAgg(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -5494,13 +5197,9 @@ func (ec *executionContext) field_SignalAggregations_powertrainTransmissionTrave
 }
 func (ec *executionContext) field_SignalAggregations_powertrainTransmissionTravelledDistance_argsAgg(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (model.FloatAggregation, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["agg"]
-	if !ok {
+	if _, ok := rawArgs["agg"]; !ok {
 		var zeroVal model.FloatAggregation
 		return zeroVal, nil
 	}
@@ -5514,9 +5213,9 @@ func (ec *executionContext) field_SignalAggregations_powertrainTransmissionTrave
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_powertrainType_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_powertrainType_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_SignalAggregations_powertrainType_argsAgg(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -5526,13 +5225,9 @@ func (ec *executionContext) field_SignalAggregations_powertrainType_args(ctx con
 }
 func (ec *executionContext) field_SignalAggregations_powertrainType_argsAgg(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (model.StringAggregation, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["agg"]
-	if !ok {
+	if _, ok := rawArgs["agg"]; !ok {
 		var zeroVal model.StringAggregation
 		return zeroVal, nil
 	}
@@ -5546,9 +5241,9 @@ func (ec *executionContext) field_SignalAggregations_powertrainType_argsAgg(
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_serviceDistanceToService_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_serviceDistanceToService_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_SignalAggregations_serviceDistanceToService_argsAgg(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -5558,13 +5253,9 @@ func (ec *executionContext) field_SignalAggregations_serviceDistanceToService_ar
 }
 func (ec *executionContext) field_SignalAggregations_serviceDistanceToService_argsAgg(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (model.FloatAggregation, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["agg"]
-	if !ok {
+	if _, ok := rawArgs["agg"]; !ok {
 		var zeroVal model.FloatAggregation
 		return zeroVal, nil
 	}
@@ -5578,9 +5269,9 @@ func (ec *executionContext) field_SignalAggregations_serviceDistanceToService_ar
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_speed_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_SignalAggregations_speed_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_SignalAggregations_speed_argsAgg(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -5590,13 +5281,9 @@ func (ec *executionContext) field_SignalAggregations_speed_args(ctx context.Cont
 }
 func (ec *executionContext) field_SignalAggregations_speed_argsAgg(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (model.FloatAggregation, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["agg"]
-	if !ok {
+	if _, ok := rawArgs["agg"]; !ok {
 		var zeroVal model.FloatAggregation
 		return zeroVal, nil
 	}
@@ -5610,9 +5297,65 @@ func (ec *executionContext) field_SignalAggregations_speed_argsAgg(
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field___Type_enumValues_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field___Directive_args_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
+	arg0, err := ec.field___Directive_args_argsIncludeDeprecated(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["includeDeprecated"] = arg0
+	return args, nil
+}
+func (ec *executionContext) field___Directive_args_argsIncludeDeprecated(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*bool, error) {
+	if _, ok := rawArgs["includeDeprecated"]; !ok {
+		var zeroVal *bool
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("includeDeprecated"))
+	if tmp, ok := rawArgs["includeDeprecated"]; ok {
+		return ec.unmarshalOBoolean2ᚖbool(ctx, tmp)
+	}
+
+	var zeroVal *bool
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field___Field_args_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field___Field_args_argsIncludeDeprecated(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["includeDeprecated"] = arg0
+	return args, nil
+}
+func (ec *executionContext) field___Field_args_argsIncludeDeprecated(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*bool, error) {
+	if _, ok := rawArgs["includeDeprecated"]; !ok {
+		var zeroVal *bool
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("includeDeprecated"))
+	if tmp, ok := rawArgs["includeDeprecated"]; ok {
+		return ec.unmarshalOBoolean2ᚖbool(ctx, tmp)
+	}
+
+	var zeroVal *bool
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field___Type_enumValues_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
 	arg0, err := ec.field___Type_enumValues_argsIncludeDeprecated(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -5622,13 +5365,9 @@ func (ec *executionContext) field___Type_enumValues_args(ctx context.Context, ra
 }
 func (ec *executionContext) field___Type_enumValues_argsIncludeDeprecated(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (bool, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["includeDeprecated"]
-	if !ok {
+	if _, ok := rawArgs["includeDeprecated"]; !ok {
 		var zeroVal bool
 		return zeroVal, nil
 	}
@@ -5642,9 +5381,9 @@ func (ec *executionContext) field___Type_enumValues_argsIncludeDeprecated(
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field___Type_fields_argsIncludeDeprecated(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -5654,13 +5393,9 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 }
 func (ec *executionContext) field___Type_fields_argsIncludeDeprecated(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (bool, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["includeDeprecated"]
-	if !ok {
+	if _, ok := rawArgs["includeDeprecated"]; !ok {
 		var zeroVal bool
 		return zeroVal, nil
 	}
@@ -5694,7 +5429,7 @@ func (ec *executionContext) _DeviceActivity_lastActive(ctx context.Context, fiel
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.LastActive, nil
 	})
@@ -5735,7 +5470,7 @@ func (ec *executionContext) _POMVC_vehicleTokenId(ctx context.Context, field gra
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.VehicleTokenID, nil
 	})
@@ -5776,7 +5511,7 @@ func (ec *executionContext) _POMVC_recordedBy(ctx context.Context, field graphql
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.RecordedBy, nil
 	})
@@ -5817,7 +5552,7 @@ func (ec *executionContext) _POMVC_vehicleContractAddress(ctx context.Context, f
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.VehicleContractAddress, nil
 	})
@@ -5858,7 +5593,7 @@ func (ec *executionContext) _POMVC_validFrom(ctx context.Context, field graphql.
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.ValidFrom, nil
 	})
@@ -5899,7 +5634,7 @@ func (ec *executionContext) _POMVC_rawVC(ctx context.Context, field graphql.Coll
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.RawVc, nil
 	})
@@ -5943,13 +5678,13 @@ func (ec *executionContext) _Query_signals(ctx context.Context, field graphql.Co
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.Query().Signals(rctx, fc.Args["tokenId"].(int), fc.Args["interval"].(string), fc.Args["from"].(time.Time), fc.Args["to"].(time.Time), fc.Args["filter"].(*model.SignalFilter))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
+		directive1 := func(ctx context.Context) (any, error) {
 			if ec.directives.RequiresVehicleToken == nil {
 				var zeroVal []*model.SignalAggregations
 				return zeroVal, errors.New("directive requiresVehicleToken is not implemented")
@@ -6147,13 +5882,13 @@ func (ec *executionContext) _Query_signalsLatest(ctx context.Context, field grap
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.Query().SignalsLatest(rctx, fc.Args["tokenId"].(int), fc.Args["filter"].(*model.SignalFilter))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
+		directive1 := func(ctx context.Context) (any, error) {
 			if ec.directives.RequiresVehicleToken == nil {
 				var zeroVal *model.SignalCollection
 				return zeroVal, errors.New("directive requiresVehicleToken is not implemented")
@@ -6351,13 +6086,13 @@ func (ec *executionContext) _Query_availableSignals(ctx context.Context, field g
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.Query().AvailableSignals(rctx, fc.Args["tokenId"].(int), fc.Args["filter"].(*model.SignalFilter))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
+		directive1 := func(ctx context.Context) (any, error) {
 			if ec.directives.RequiresVehicleToken == nil {
 				var zeroVal []string
 				return zeroVal, errors.New("directive requiresVehicleToken is not implemented")
@@ -6425,21 +6160,21 @@ func (ec *executionContext) _Query_deviceActivity(ctx context.Context, field gra
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.Query().DeviceActivity(rctx, fc.Args["by"].(model.AftermarketDeviceBy))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
+		directive1 := func(ctx context.Context) (any, error) {
 			if ec.directives.RequiresManufacturerToken == nil {
 				var zeroVal *model.DeviceActivity
 				return zeroVal, errors.New("directive requiresManufacturerToken is not implemented")
 			}
 			return ec.directives.RequiresManufacturerToken(ctx, nil, directive0)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"MANUFACTURER_DEVICE_LAST_SEEN"})
+		directive2 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"MANUFACTURER_DEVICE_LAST_SEEN"})
 			if err != nil {
 				var zeroVal *model.DeviceActivity
 				return zeroVal, err
@@ -6515,21 +6250,21 @@ func (ec *executionContext) _Query_vinVCLatest(ctx context.Context, field graphq
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.Query().VinVCLatest(rctx, fc.Args["tokenId"].(int))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
+		directive1 := func(ctx context.Context) (any, error) {
 			if ec.directives.RequiresVehicleToken == nil {
 				var zeroVal *model.Vinvc
 				return zeroVal, errors.New("directive requiresVehicleToken is not implemented")
 			}
 			return ec.directives.RequiresVehicleToken(ctx, nil, directive0)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_VIN_CREDENTIAL"})
+		directive2 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_VIN_CREDENTIAL"})
 			if err != nil {
 				var zeroVal *model.Vinvc
 				return zeroVal, err
@@ -6621,21 +6356,21 @@ func (ec *executionContext) _Query_pomVCLatest(ctx context.Context, field graphq
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.Query().PomVCLatest(rctx, fc.Args["tokenId"].(int))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
+		directive1 := func(ctx context.Context) (any, error) {
 			if ec.directives.RequiresVehicleToken == nil {
 				var zeroVal *model.Pomvc
 				return zeroVal, errors.New("directive requiresVehicleToken is not implemented")
 			}
 			return ec.directives.RequiresVehicleToken(ctx, nil, directive0)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_ALL_TIME_LOCATION"})
+		directive2 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_ALL_TIME_LOCATION"})
 			if err != nil {
 				var zeroVal *model.Pomvc
 				return zeroVal, err
@@ -6719,7 +6454,7 @@ func (ec *executionContext) _Query___type(ctx context.Context, field graphql.Col
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.introspectType(fc.Args["name"].(string))
 	})
@@ -6763,6 +6498,8 @@ func (ec *executionContext) fieldContext_Query___type(ctx context.Context, field
 				return ec.fieldContext___Type_ofType(ctx, field)
 			case "specifiedByURL":
 				return ec.fieldContext___Type_specifiedByURL(ctx, field)
+			case "isOneOf":
+				return ec.fieldContext___Type_isOneOf(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type __Type", field.Name)
 		},
@@ -6793,7 +6530,7 @@ func (ec *executionContext) _Query___schema(ctx context.Context, field graphql.C
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.introspectSchema()
 	})
@@ -6848,7 +6585,7 @@ func (ec *executionContext) _SignalAggregations_timestamp(ctx context.Context, f
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Timestamp, nil
 	})
@@ -6892,14 +6629,14 @@ func (ec *executionContext) _SignalAggregations_currentLocationApproximateLatitu
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.SignalAggregations().CurrentLocationApproximateLatitude(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_APPROXIMATE_LOCATION", "VEHICLE_ALL_TIME_LOCATION"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_APPROXIMATE_LOCATION", "VEHICLE_ALL_TIME_LOCATION"})
 			if err != nil {
 				var zeroVal *float64
 				return zeroVal, err
@@ -6910,14 +6647,14 @@ func (ec *executionContext) _SignalAggregations_currentLocationApproximateLatitu
 			}
 			return ec.directives.RequiresOneOfPrivilege(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive isSignal is not implemented")
 			}
 			return ec.directives.IsSignal(ctx, obj, directive1)
 		}
-		directive3 := func(ctx context.Context) (interface{}, error) {
+		directive3 := func(ctx context.Context) (any, error) {
 			if ec.directives.HasAggregation == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive hasAggregation is not implemented")
@@ -6985,14 +6722,14 @@ func (ec *executionContext) _SignalAggregations_currentLocationApproximateLongit
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.SignalAggregations().CurrentLocationApproximateLongitude(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_APPROXIMATE_LOCATION", "VEHICLE_ALL_TIME_LOCATION"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_APPROXIMATE_LOCATION", "VEHICLE_ALL_TIME_LOCATION"})
 			if err != nil {
 				var zeroVal *float64
 				return zeroVal, err
@@ -7003,14 +6740,14 @@ func (ec *executionContext) _SignalAggregations_currentLocationApproximateLongit
 			}
 			return ec.directives.RequiresOneOfPrivilege(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive isSignal is not implemented")
 			}
 			return ec.directives.IsSignal(ctx, obj, directive1)
 		}
-		directive3 := func(ctx context.Context) (interface{}, error) {
+		directive3 := func(ctx context.Context) (any, error) {
 			if ec.directives.HasAggregation == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive hasAggregation is not implemented")
@@ -7078,14 +6815,14 @@ func (ec *executionContext) _SignalAggregations_angularVelocityYaw(ctx context.C
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.SignalAggregations().AngularVelocityYaw(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *float64
 				return zeroVal, err
@@ -7096,14 +6833,14 @@ func (ec *executionContext) _SignalAggregations_angularVelocityYaw(ctx context.C
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive isSignal is not implemented")
 			}
 			return ec.directives.IsSignal(ctx, obj, directive1)
 		}
-		directive3 := func(ctx context.Context) (interface{}, error) {
+		directive3 := func(ctx context.Context) (any, error) {
 			if ec.directives.HasAggregation == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive hasAggregation is not implemented")
@@ -7171,14 +6908,14 @@ func (ec *executionContext) _SignalAggregations_chassisAxleRow1WheelLeftSpeed(ct
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.SignalAggregations().ChassisAxleRow1WheelLeftSpeed(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *float64
 				return zeroVal, err
@@ -7189,14 +6926,14 @@ func (ec *executionContext) _SignalAggregations_chassisAxleRow1WheelLeftSpeed(ct
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive isSignal is not implemented")
 			}
 			return ec.directives.IsSignal(ctx, obj, directive1)
 		}
-		directive3 := func(ctx context.Context) (interface{}, error) {
+		directive3 := func(ctx context.Context) (any, error) {
 			if ec.directives.HasAggregation == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive hasAggregation is not implemented")
@@ -7264,14 +7001,14 @@ func (ec *executionContext) _SignalAggregations_chassisAxleRow1WheelLeftTirePres
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.SignalAggregations().ChassisAxleRow1WheelLeftTirePressure(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *float64
 				return zeroVal, err
@@ -7282,14 +7019,14 @@ func (ec *executionContext) _SignalAggregations_chassisAxleRow1WheelLeftTirePres
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive isSignal is not implemented")
 			}
 			return ec.directives.IsSignal(ctx, obj, directive1)
 		}
-		directive3 := func(ctx context.Context) (interface{}, error) {
+		directive3 := func(ctx context.Context) (any, error) {
 			if ec.directives.HasAggregation == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive hasAggregation is not implemented")
@@ -7357,14 +7094,14 @@ func (ec *executionContext) _SignalAggregations_chassisAxleRow1WheelRightSpeed(c
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.SignalAggregations().ChassisAxleRow1WheelRightSpeed(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *float64
 				return zeroVal, err
@@ -7375,14 +7112,14 @@ func (ec *executionContext) _SignalAggregations_chassisAxleRow1WheelRightSpeed(c
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive isSignal is not implemented")
 			}
 			return ec.directives.IsSignal(ctx, obj, directive1)
 		}
-		directive3 := func(ctx context.Context) (interface{}, error) {
+		directive3 := func(ctx context.Context) (any, error) {
 			if ec.directives.HasAggregation == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive hasAggregation is not implemented")
@@ -7450,14 +7187,14 @@ func (ec *executionContext) _SignalAggregations_chassisAxleRow1WheelRightTirePre
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.SignalAggregations().ChassisAxleRow1WheelRightTirePressure(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *float64
 				return zeroVal, err
@@ -7468,14 +7205,14 @@ func (ec *executionContext) _SignalAggregations_chassisAxleRow1WheelRightTirePre
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive isSignal is not implemented")
 			}
 			return ec.directives.IsSignal(ctx, obj, directive1)
 		}
-		directive3 := func(ctx context.Context) (interface{}, error) {
+		directive3 := func(ctx context.Context) (any, error) {
 			if ec.directives.HasAggregation == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive hasAggregation is not implemented")
@@ -7543,14 +7280,14 @@ func (ec *executionContext) _SignalAggregations_chassisAxleRow2WheelLeftTirePres
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.SignalAggregations().ChassisAxleRow2WheelLeftTirePressure(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *float64
 				return zeroVal, err
@@ -7561,14 +7298,14 @@ func (ec *executionContext) _SignalAggregations_chassisAxleRow2WheelLeftTirePres
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive isSignal is not implemented")
 			}
 			return ec.directives.IsSignal(ctx, obj, directive1)
 		}
-		directive3 := func(ctx context.Context) (interface{}, error) {
+		directive3 := func(ctx context.Context) (any, error) {
 			if ec.directives.HasAggregation == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive hasAggregation is not implemented")
@@ -7636,14 +7373,14 @@ func (ec *executionContext) _SignalAggregations_chassisAxleRow2WheelRightTirePre
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.SignalAggregations().ChassisAxleRow2WheelRightTirePressure(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *float64
 				return zeroVal, err
@@ -7654,14 +7391,14 @@ func (ec *executionContext) _SignalAggregations_chassisAxleRow2WheelRightTirePre
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive isSignal is not implemented")
 			}
 			return ec.directives.IsSignal(ctx, obj, directive1)
 		}
-		directive3 := func(ctx context.Context) (interface{}, error) {
+		directive3 := func(ctx context.Context) (any, error) {
 			if ec.directives.HasAggregation == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive hasAggregation is not implemented")
@@ -7729,14 +7466,14 @@ func (ec *executionContext) _SignalAggregations_currentLocationAltitude(ctx cont
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.SignalAggregations().CurrentLocationAltitude(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_ALL_TIME_LOCATION"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_ALL_TIME_LOCATION"})
 			if err != nil {
 				var zeroVal *float64
 				return zeroVal, err
@@ -7747,14 +7484,14 @@ func (ec *executionContext) _SignalAggregations_currentLocationAltitude(ctx cont
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive isSignal is not implemented")
 			}
 			return ec.directives.IsSignal(ctx, obj, directive1)
 		}
-		directive3 := func(ctx context.Context) (interface{}, error) {
+		directive3 := func(ctx context.Context) (any, error) {
 			if ec.directives.HasAggregation == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive hasAggregation is not implemented")
@@ -7822,14 +7559,14 @@ func (ec *executionContext) _SignalAggregations_currentLocationIsRedacted(ctx co
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.SignalAggregations().CurrentLocationIsRedacted(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_ALL_TIME_LOCATION"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_ALL_TIME_LOCATION"})
 			if err != nil {
 				var zeroVal *float64
 				return zeroVal, err
@@ -7840,14 +7577,14 @@ func (ec *executionContext) _SignalAggregations_currentLocationIsRedacted(ctx co
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive isSignal is not implemented")
 			}
 			return ec.directives.IsSignal(ctx, obj, directive1)
 		}
-		directive3 := func(ctx context.Context) (interface{}, error) {
+		directive3 := func(ctx context.Context) (any, error) {
 			if ec.directives.HasAggregation == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive hasAggregation is not implemented")
@@ -7915,14 +7652,14 @@ func (ec *executionContext) _SignalAggregations_currentLocationLatitude(ctx cont
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.SignalAggregations().CurrentLocationLatitude(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_ALL_TIME_LOCATION"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_ALL_TIME_LOCATION"})
 			if err != nil {
 				var zeroVal *float64
 				return zeroVal, err
@@ -7933,14 +7670,14 @@ func (ec *executionContext) _SignalAggregations_currentLocationLatitude(ctx cont
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive isSignal is not implemented")
 			}
 			return ec.directives.IsSignal(ctx, obj, directive1)
 		}
-		directive3 := func(ctx context.Context) (interface{}, error) {
+		directive3 := func(ctx context.Context) (any, error) {
 			if ec.directives.HasAggregation == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive hasAggregation is not implemented")
@@ -8008,14 +7745,14 @@ func (ec *executionContext) _SignalAggregations_currentLocationLongitude(ctx con
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.SignalAggregations().CurrentLocationLongitude(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_ALL_TIME_LOCATION"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_ALL_TIME_LOCATION"})
 			if err != nil {
 				var zeroVal *float64
 				return zeroVal, err
@@ -8026,14 +7763,14 @@ func (ec *executionContext) _SignalAggregations_currentLocationLongitude(ctx con
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive isSignal is not implemented")
 			}
 			return ec.directives.IsSignal(ctx, obj, directive1)
 		}
-		directive3 := func(ctx context.Context) (interface{}, error) {
+		directive3 := func(ctx context.Context) (any, error) {
 			if ec.directives.HasAggregation == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive hasAggregation is not implemented")
@@ -8101,14 +7838,14 @@ func (ec *executionContext) _SignalAggregations_dimoAftermarketHDOP(ctx context.
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.SignalAggregations().DimoAftermarketHdop(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *float64
 				return zeroVal, err
@@ -8119,14 +7856,14 @@ func (ec *executionContext) _SignalAggregations_dimoAftermarketHDOP(ctx context.
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive isSignal is not implemented")
 			}
 			return ec.directives.IsSignal(ctx, obj, directive1)
 		}
-		directive3 := func(ctx context.Context) (interface{}, error) {
+		directive3 := func(ctx context.Context) (any, error) {
 			if ec.directives.HasAggregation == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive hasAggregation is not implemented")
@@ -8194,14 +7931,14 @@ func (ec *executionContext) _SignalAggregations_dimoAftermarketNSAT(ctx context.
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.SignalAggregations().DimoAftermarketNsat(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *float64
 				return zeroVal, err
@@ -8212,14 +7949,14 @@ func (ec *executionContext) _SignalAggregations_dimoAftermarketNSAT(ctx context.
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive isSignal is not implemented")
 			}
 			return ec.directives.IsSignal(ctx, obj, directive1)
 		}
-		directive3 := func(ctx context.Context) (interface{}, error) {
+		directive3 := func(ctx context.Context) (any, error) {
 			if ec.directives.HasAggregation == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive hasAggregation is not implemented")
@@ -8287,14 +8024,14 @@ func (ec *executionContext) _SignalAggregations_dimoAftermarketSSID(ctx context.
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.SignalAggregations().DimoAftermarketSsid(rctx, obj, fc.Args["agg"].(model.StringAggregation))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *string
 				return zeroVal, err
@@ -8305,14 +8042,14 @@ func (ec *executionContext) _SignalAggregations_dimoAftermarketSSID(ctx context.
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *string
 				return zeroVal, errors.New("directive isSignal is not implemented")
 			}
 			return ec.directives.IsSignal(ctx, obj, directive1)
 		}
-		directive3 := func(ctx context.Context) (interface{}, error) {
+		directive3 := func(ctx context.Context) (any, error) {
 			if ec.directives.HasAggregation == nil {
 				var zeroVal *string
 				return zeroVal, errors.New("directive hasAggregation is not implemented")
@@ -8380,14 +8117,14 @@ func (ec *executionContext) _SignalAggregations_dimoAftermarketWPAState(ctx cont
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.SignalAggregations().DimoAftermarketWPAState(rctx, obj, fc.Args["agg"].(model.StringAggregation))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *string
 				return zeroVal, err
@@ -8398,14 +8135,14 @@ func (ec *executionContext) _SignalAggregations_dimoAftermarketWPAState(ctx cont
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *string
 				return zeroVal, errors.New("directive isSignal is not implemented")
 			}
 			return ec.directives.IsSignal(ctx, obj, directive1)
 		}
-		directive3 := func(ctx context.Context) (interface{}, error) {
+		directive3 := func(ctx context.Context) (any, error) {
 			if ec.directives.HasAggregation == nil {
 				var zeroVal *string
 				return zeroVal, errors.New("directive hasAggregation is not implemented")
@@ -8473,14 +8210,14 @@ func (ec *executionContext) _SignalAggregations_exteriorAirTemperature(ctx conte
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.SignalAggregations().ExteriorAirTemperature(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *float64
 				return zeroVal, err
@@ -8491,14 +8228,14 @@ func (ec *executionContext) _SignalAggregations_exteriorAirTemperature(ctx conte
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive isSignal is not implemented")
 			}
 			return ec.directives.IsSignal(ctx, obj, directive1)
 		}
-		directive3 := func(ctx context.Context) (interface{}, error) {
+		directive3 := func(ctx context.Context) (any, error) {
 			if ec.directives.HasAggregation == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive hasAggregation is not implemented")
@@ -8566,14 +8303,14 @@ func (ec *executionContext) _SignalAggregations_lowVoltageBatteryCurrentVoltage(
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.SignalAggregations().LowVoltageBatteryCurrentVoltage(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *float64
 				return zeroVal, err
@@ -8584,14 +8321,14 @@ func (ec *executionContext) _SignalAggregations_lowVoltageBatteryCurrentVoltage(
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive isSignal is not implemented")
 			}
 			return ec.directives.IsSignal(ctx, obj, directive1)
 		}
-		directive3 := func(ctx context.Context) (interface{}, error) {
+		directive3 := func(ctx context.Context) (any, error) {
 			if ec.directives.HasAggregation == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive hasAggregation is not implemented")
@@ -8659,14 +8396,14 @@ func (ec *executionContext) _SignalAggregations_obdBarometricPressure(ctx contex
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.SignalAggregations().ObdBarometricPressure(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *float64
 				return zeroVal, err
@@ -8677,14 +8414,14 @@ func (ec *executionContext) _SignalAggregations_obdBarometricPressure(ctx contex
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive isSignal is not implemented")
 			}
 			return ec.directives.IsSignal(ctx, obj, directive1)
 		}
-		directive3 := func(ctx context.Context) (interface{}, error) {
+		directive3 := func(ctx context.Context) (any, error) {
 			if ec.directives.HasAggregation == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive hasAggregation is not implemented")
@@ -8752,14 +8489,14 @@ func (ec *executionContext) _SignalAggregations_obdCommandedEGR(ctx context.Cont
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.SignalAggregations().ObdCommandedEgr(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *float64
 				return zeroVal, err
@@ -8770,14 +8507,14 @@ func (ec *executionContext) _SignalAggregations_obdCommandedEGR(ctx context.Cont
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive isSignal is not implemented")
 			}
 			return ec.directives.IsSignal(ctx, obj, directive1)
 		}
-		directive3 := func(ctx context.Context) (interface{}, error) {
+		directive3 := func(ctx context.Context) (any, error) {
 			if ec.directives.HasAggregation == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive hasAggregation is not implemented")
@@ -8845,14 +8582,14 @@ func (ec *executionContext) _SignalAggregations_obdCommandedEVAP(ctx context.Con
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.SignalAggregations().ObdCommandedEvap(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *float64
 				return zeroVal, err
@@ -8863,14 +8600,14 @@ func (ec *executionContext) _SignalAggregations_obdCommandedEVAP(ctx context.Con
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive isSignal is not implemented")
 			}
 			return ec.directives.IsSignal(ctx, obj, directive1)
 		}
-		directive3 := func(ctx context.Context) (interface{}, error) {
+		directive3 := func(ctx context.Context) (any, error) {
 			if ec.directives.HasAggregation == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive hasAggregation is not implemented")
@@ -8938,14 +8675,14 @@ func (ec *executionContext) _SignalAggregations_obdDTCList(ctx context.Context, 
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.SignalAggregations().ObdDTCList(rctx, obj, fc.Args["agg"].(model.StringAggregation))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *string
 				return zeroVal, err
@@ -8956,14 +8693,14 @@ func (ec *executionContext) _SignalAggregations_obdDTCList(ctx context.Context, 
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *string
 				return zeroVal, errors.New("directive isSignal is not implemented")
 			}
 			return ec.directives.IsSignal(ctx, obj, directive1)
 		}
-		directive3 := func(ctx context.Context) (interface{}, error) {
+		directive3 := func(ctx context.Context) (any, error) {
 			if ec.directives.HasAggregation == nil {
 				var zeroVal *string
 				return zeroVal, errors.New("directive hasAggregation is not implemented")
@@ -9031,14 +8768,14 @@ func (ec *executionContext) _SignalAggregations_obdDistanceSinceDTCClear(ctx con
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.SignalAggregations().ObdDistanceSinceDTCClear(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *float64
 				return zeroVal, err
@@ -9049,14 +8786,14 @@ func (ec *executionContext) _SignalAggregations_obdDistanceSinceDTCClear(ctx con
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive isSignal is not implemented")
 			}
 			return ec.directives.IsSignal(ctx, obj, directive1)
 		}
-		directive3 := func(ctx context.Context) (interface{}, error) {
+		directive3 := func(ctx context.Context) (any, error) {
 			if ec.directives.HasAggregation == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive hasAggregation is not implemented")
@@ -9124,14 +8861,14 @@ func (ec *executionContext) _SignalAggregations_obdDistanceWithMIL(ctx context.C
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.SignalAggregations().ObdDistanceWithMil(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *float64
 				return zeroVal, err
@@ -9142,14 +8879,14 @@ func (ec *executionContext) _SignalAggregations_obdDistanceWithMIL(ctx context.C
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive isSignal is not implemented")
 			}
 			return ec.directives.IsSignal(ctx, obj, directive1)
 		}
-		directive3 := func(ctx context.Context) (interface{}, error) {
+		directive3 := func(ctx context.Context) (any, error) {
 			if ec.directives.HasAggregation == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive hasAggregation is not implemented")
@@ -9217,14 +8954,14 @@ func (ec *executionContext) _SignalAggregations_obdEngineLoad(ctx context.Contex
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.SignalAggregations().ObdEngineLoad(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *float64
 				return zeroVal, err
@@ -9235,14 +8972,14 @@ func (ec *executionContext) _SignalAggregations_obdEngineLoad(ctx context.Contex
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive isSignal is not implemented")
 			}
 			return ec.directives.IsSignal(ctx, obj, directive1)
 		}
-		directive3 := func(ctx context.Context) (interface{}, error) {
+		directive3 := func(ctx context.Context) (any, error) {
 			if ec.directives.HasAggregation == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive hasAggregation is not implemented")
@@ -9310,14 +9047,14 @@ func (ec *executionContext) _SignalAggregations_obdFuelPressure(ctx context.Cont
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.SignalAggregations().ObdFuelPressure(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *float64
 				return zeroVal, err
@@ -9328,14 +9065,14 @@ func (ec *executionContext) _SignalAggregations_obdFuelPressure(ctx context.Cont
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive isSignal is not implemented")
 			}
 			return ec.directives.IsSignal(ctx, obj, directive1)
 		}
-		directive3 := func(ctx context.Context) (interface{}, error) {
+		directive3 := func(ctx context.Context) (any, error) {
 			if ec.directives.HasAggregation == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive hasAggregation is not implemented")
@@ -9403,14 +9140,14 @@ func (ec *executionContext) _SignalAggregations_obdIntakeTemp(ctx context.Contex
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.SignalAggregations().ObdIntakeTemp(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *float64
 				return zeroVal, err
@@ -9421,14 +9158,14 @@ func (ec *executionContext) _SignalAggregations_obdIntakeTemp(ctx context.Contex
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive isSignal is not implemented")
 			}
 			return ec.directives.IsSignal(ctx, obj, directive1)
 		}
-		directive3 := func(ctx context.Context) (interface{}, error) {
+		directive3 := func(ctx context.Context) (any, error) {
 			if ec.directives.HasAggregation == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive hasAggregation is not implemented")
@@ -9496,14 +9233,14 @@ func (ec *executionContext) _SignalAggregations_obdLongTermFuelTrim1(ctx context
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.SignalAggregations().ObdLongTermFuelTrim1(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *float64
 				return zeroVal, err
@@ -9514,14 +9251,14 @@ func (ec *executionContext) _SignalAggregations_obdLongTermFuelTrim1(ctx context
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive isSignal is not implemented")
 			}
 			return ec.directives.IsSignal(ctx, obj, directive1)
 		}
-		directive3 := func(ctx context.Context) (interface{}, error) {
+		directive3 := func(ctx context.Context) (any, error) {
 			if ec.directives.HasAggregation == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive hasAggregation is not implemented")
@@ -9589,14 +9326,14 @@ func (ec *executionContext) _SignalAggregations_obdMAP(ctx context.Context, fiel
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.SignalAggregations().ObdMap(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *float64
 				return zeroVal, err
@@ -9607,14 +9344,14 @@ func (ec *executionContext) _SignalAggregations_obdMAP(ctx context.Context, fiel
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive isSignal is not implemented")
 			}
 			return ec.directives.IsSignal(ctx, obj, directive1)
 		}
-		directive3 := func(ctx context.Context) (interface{}, error) {
+		directive3 := func(ctx context.Context) (any, error) {
 			if ec.directives.HasAggregation == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive hasAggregation is not implemented")
@@ -9682,14 +9419,14 @@ func (ec *executionContext) _SignalAggregations_obdO2WRSensor1Voltage(ctx contex
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.SignalAggregations().ObdO2WRSensor1Voltage(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *float64
 				return zeroVal, err
@@ -9700,14 +9437,14 @@ func (ec *executionContext) _SignalAggregations_obdO2WRSensor1Voltage(ctx contex
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive isSignal is not implemented")
 			}
 			return ec.directives.IsSignal(ctx, obj, directive1)
 		}
-		directive3 := func(ctx context.Context) (interface{}, error) {
+		directive3 := func(ctx context.Context) (any, error) {
 			if ec.directives.HasAggregation == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive hasAggregation is not implemented")
@@ -9775,14 +9512,14 @@ func (ec *executionContext) _SignalAggregations_obdO2WRSensor2Voltage(ctx contex
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.SignalAggregations().ObdO2WRSensor2Voltage(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *float64
 				return zeroVal, err
@@ -9793,14 +9530,14 @@ func (ec *executionContext) _SignalAggregations_obdO2WRSensor2Voltage(ctx contex
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive isSignal is not implemented")
 			}
 			return ec.directives.IsSignal(ctx, obj, directive1)
 		}
-		directive3 := func(ctx context.Context) (interface{}, error) {
+		directive3 := func(ctx context.Context) (any, error) {
 			if ec.directives.HasAggregation == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive hasAggregation is not implemented")
@@ -9868,14 +9605,14 @@ func (ec *executionContext) _SignalAggregations_obdRunTime(ctx context.Context, 
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.SignalAggregations().ObdRunTime(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *float64
 				return zeroVal, err
@@ -9886,14 +9623,14 @@ func (ec *executionContext) _SignalAggregations_obdRunTime(ctx context.Context, 
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive isSignal is not implemented")
 			}
 			return ec.directives.IsSignal(ctx, obj, directive1)
 		}
-		directive3 := func(ctx context.Context) (interface{}, error) {
+		directive3 := func(ctx context.Context) (any, error) {
 			if ec.directives.HasAggregation == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive hasAggregation is not implemented")
@@ -9961,14 +9698,14 @@ func (ec *executionContext) _SignalAggregations_obdShortTermFuelTrim1(ctx contex
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.SignalAggregations().ObdShortTermFuelTrim1(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *float64
 				return zeroVal, err
@@ -9979,14 +9716,14 @@ func (ec *executionContext) _SignalAggregations_obdShortTermFuelTrim1(ctx contex
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive isSignal is not implemented")
 			}
 			return ec.directives.IsSignal(ctx, obj, directive1)
 		}
-		directive3 := func(ctx context.Context) (interface{}, error) {
+		directive3 := func(ctx context.Context) (any, error) {
 			if ec.directives.HasAggregation == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive hasAggregation is not implemented")
@@ -10054,14 +9791,14 @@ func (ec *executionContext) _SignalAggregations_obdWarmupsSinceDTCClear(ctx cont
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.SignalAggregations().ObdWarmupsSinceDTCClear(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *float64
 				return zeroVal, err
@@ -10072,14 +9809,14 @@ func (ec *executionContext) _SignalAggregations_obdWarmupsSinceDTCClear(ctx cont
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive isSignal is not implemented")
 			}
 			return ec.directives.IsSignal(ctx, obj, directive1)
 		}
-		directive3 := func(ctx context.Context) (interface{}, error) {
+		directive3 := func(ctx context.Context) (any, error) {
 			if ec.directives.HasAggregation == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive hasAggregation is not implemented")
@@ -10147,14 +9884,14 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineDiesel
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.SignalAggregations().PowertrainCombustionEngineDieselExhaustFluidCapacity(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *float64
 				return zeroVal, err
@@ -10165,14 +9902,14 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineDiesel
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive isSignal is not implemented")
 			}
 			return ec.directives.IsSignal(ctx, obj, directive1)
 		}
-		directive3 := func(ctx context.Context) (interface{}, error) {
+		directive3 := func(ctx context.Context) (any, error) {
 			if ec.directives.HasAggregation == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive hasAggregation is not implemented")
@@ -10240,14 +9977,14 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineDiesel
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.SignalAggregations().PowertrainCombustionEngineDieselExhaustFluidLevel(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *float64
 				return zeroVal, err
@@ -10258,14 +9995,14 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineDiesel
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive isSignal is not implemented")
 			}
 			return ec.directives.IsSignal(ctx, obj, directive1)
 		}
-		directive3 := func(ctx context.Context) (interface{}, error) {
+		directive3 := func(ctx context.Context) (any, error) {
 			if ec.directives.HasAggregation == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive hasAggregation is not implemented")
@@ -10333,14 +10070,14 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineECT(ct
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.SignalAggregations().PowertrainCombustionEngineEct(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *float64
 				return zeroVal, err
@@ -10351,14 +10088,14 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineECT(ct
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive isSignal is not implemented")
 			}
 			return ec.directives.IsSignal(ctx, obj, directive1)
 		}
-		directive3 := func(ctx context.Context) (interface{}, error) {
+		directive3 := func(ctx context.Context) (any, error) {
 			if ec.directives.HasAggregation == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive hasAggregation is not implemented")
@@ -10426,14 +10163,14 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineEngine
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.SignalAggregations().PowertrainCombustionEngineEngineOilLevel(rctx, obj, fc.Args["agg"].(model.StringAggregation))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *string
 				return zeroVal, err
@@ -10444,14 +10181,14 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineEngine
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *string
 				return zeroVal, errors.New("directive isSignal is not implemented")
 			}
 			return ec.directives.IsSignal(ctx, obj, directive1)
 		}
-		directive3 := func(ctx context.Context) (interface{}, error) {
+		directive3 := func(ctx context.Context) (any, error) {
 			if ec.directives.HasAggregation == nil {
 				var zeroVal *string
 				return zeroVal, errors.New("directive hasAggregation is not implemented")
@@ -10519,14 +10256,14 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineEngine
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.SignalAggregations().PowertrainCombustionEngineEngineOilRelativeLevel(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *float64
 				return zeroVal, err
@@ -10537,14 +10274,14 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineEngine
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive isSignal is not implemented")
 			}
 			return ec.directives.IsSignal(ctx, obj, directive1)
 		}
-		directive3 := func(ctx context.Context) (interface{}, error) {
+		directive3 := func(ctx context.Context) (any, error) {
 			if ec.directives.HasAggregation == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive hasAggregation is not implemented")
@@ -10612,14 +10349,14 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineMAF(ct
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.SignalAggregations().PowertrainCombustionEngineMaf(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *float64
 				return zeroVal, err
@@ -10630,14 +10367,14 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineMAF(ct
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive isSignal is not implemented")
 			}
 			return ec.directives.IsSignal(ctx, obj, directive1)
 		}
-		directive3 := func(ctx context.Context) (interface{}, error) {
+		directive3 := func(ctx context.Context) (any, error) {
 			if ec.directives.HasAggregation == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive hasAggregation is not implemented")
@@ -10705,14 +10442,14 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineSpeed(
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.SignalAggregations().PowertrainCombustionEngineSpeed(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *float64
 				return zeroVal, err
@@ -10723,14 +10460,14 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineSpeed(
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive isSignal is not implemented")
 			}
 			return ec.directives.IsSignal(ctx, obj, directive1)
 		}
-		directive3 := func(ctx context.Context) (interface{}, error) {
+		directive3 := func(ctx context.Context) (any, error) {
 			if ec.directives.HasAggregation == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive hasAggregation is not implemented")
@@ -10798,14 +10535,14 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineTPS(ct
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.SignalAggregations().PowertrainCombustionEngineTps(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *float64
 				return zeroVal, err
@@ -10816,14 +10553,14 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineTPS(ct
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive isSignal is not implemented")
 			}
 			return ec.directives.IsSignal(ctx, obj, directive1)
 		}
-		directive3 := func(ctx context.Context) (interface{}, error) {
+		directive3 := func(ctx context.Context) (any, error) {
 			if ec.directives.HasAggregation == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive hasAggregation is not implemented")
@@ -10891,14 +10628,14 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineTorque
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.SignalAggregations().PowertrainCombustionEngineTorque(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *float64
 				return zeroVal, err
@@ -10909,14 +10646,14 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineTorque
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive isSignal is not implemented")
 			}
 			return ec.directives.IsSignal(ctx, obj, directive1)
 		}
-		directive3 := func(ctx context.Context) (interface{}, error) {
+		directive3 := func(ctx context.Context) (any, error) {
 			if ec.directives.HasAggregation == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive hasAggregation is not implemented")
@@ -10984,14 +10721,14 @@ func (ec *executionContext) _SignalAggregations_powertrainFuelSystemAbsoluteLeve
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.SignalAggregations().PowertrainFuelSystemAbsoluteLevel(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *float64
 				return zeroVal, err
@@ -11002,14 +10739,14 @@ func (ec *executionContext) _SignalAggregations_powertrainFuelSystemAbsoluteLeve
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive isSignal is not implemented")
 			}
 			return ec.directives.IsSignal(ctx, obj, directive1)
 		}
-		directive3 := func(ctx context.Context) (interface{}, error) {
+		directive3 := func(ctx context.Context) (any, error) {
 			if ec.directives.HasAggregation == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive hasAggregation is not implemented")
@@ -11077,14 +10814,14 @@ func (ec *executionContext) _SignalAggregations_powertrainFuelSystemRelativeLeve
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.SignalAggregations().PowertrainFuelSystemRelativeLevel(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *float64
 				return zeroVal, err
@@ -11095,14 +10832,14 @@ func (ec *executionContext) _SignalAggregations_powertrainFuelSystemRelativeLeve
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive isSignal is not implemented")
 			}
 			return ec.directives.IsSignal(ctx, obj, directive1)
 		}
-		directive3 := func(ctx context.Context) (interface{}, error) {
+		directive3 := func(ctx context.Context) (any, error) {
 			if ec.directives.HasAggregation == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive hasAggregation is not implemented")
@@ -11170,14 +10907,14 @@ func (ec *executionContext) _SignalAggregations_powertrainFuelSystemSupportedFue
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.SignalAggregations().PowertrainFuelSystemSupportedFuelTypes(rctx, obj, fc.Args["agg"].(model.StringAggregation))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *string
 				return zeroVal, err
@@ -11188,14 +10925,14 @@ func (ec *executionContext) _SignalAggregations_powertrainFuelSystemSupportedFue
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *string
 				return zeroVal, errors.New("directive isSignal is not implemented")
 			}
 			return ec.directives.IsSignal(ctx, obj, directive1)
 		}
-		directive3 := func(ctx context.Context) (interface{}, error) {
+		directive3 := func(ctx context.Context) (any, error) {
 			if ec.directives.HasAggregation == nil {
 				var zeroVal *string
 				return zeroVal, errors.New("directive hasAggregation is not implemented")
@@ -11263,14 +11000,14 @@ func (ec *executionContext) _SignalAggregations_powertrainRange(ctx context.Cont
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.SignalAggregations().PowertrainRange(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *float64
 				return zeroVal, err
@@ -11281,14 +11018,14 @@ func (ec *executionContext) _SignalAggregations_powertrainRange(ctx context.Cont
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive isSignal is not implemented")
 			}
 			return ec.directives.IsSignal(ctx, obj, directive1)
 		}
-		directive3 := func(ctx context.Context) (interface{}, error) {
+		directive3 := func(ctx context.Context) (any, error) {
 			if ec.directives.HasAggregation == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive hasAggregation is not implemented")
@@ -11356,14 +11093,14 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryChargin
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryChargingAddedEnergy(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *float64
 				return zeroVal, err
@@ -11374,14 +11111,14 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryChargin
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive isSignal is not implemented")
 			}
 			return ec.directives.IsSignal(ctx, obj, directive1)
 		}
-		directive3 := func(ctx context.Context) (interface{}, error) {
+		directive3 := func(ctx context.Context) (any, error) {
 			if ec.directives.HasAggregation == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive hasAggregation is not implemented")
@@ -11449,14 +11186,14 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryChargin
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryChargingChargeLimit(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *float64
 				return zeroVal, err
@@ -11467,14 +11204,14 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryChargin
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive isSignal is not implemented")
 			}
 			return ec.directives.IsSignal(ctx, obj, directive1)
 		}
-		directive3 := func(ctx context.Context) (interface{}, error) {
+		directive3 := func(ctx context.Context) (any, error) {
 			if ec.directives.HasAggregation == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive hasAggregation is not implemented")
@@ -11542,14 +11279,14 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryChargin
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryChargingIsCharging(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *float64
 				return zeroVal, err
@@ -11560,14 +11297,14 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryChargin
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive isSignal is not implemented")
 			}
 			return ec.directives.IsSignal(ctx, obj, directive1)
 		}
-		directive3 := func(ctx context.Context) (interface{}, error) {
+		directive3 := func(ctx context.Context) (any, error) {
 			if ec.directives.HasAggregation == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive hasAggregation is not implemented")
@@ -11635,14 +11372,14 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryCurrent
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryCurrentPower(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *float64
 				return zeroVal, err
@@ -11653,14 +11390,14 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryCurrent
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive isSignal is not implemented")
 			}
 			return ec.directives.IsSignal(ctx, obj, directive1)
 		}
-		directive3 := func(ctx context.Context) (interface{}, error) {
+		directive3 := func(ctx context.Context) (any, error) {
 			if ec.directives.HasAggregation == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive hasAggregation is not implemented")
@@ -11728,14 +11465,14 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryCurrent
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryCurrentVoltage(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *float64
 				return zeroVal, err
@@ -11746,14 +11483,14 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryCurrent
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive isSignal is not implemented")
 			}
 			return ec.directives.IsSignal(ctx, obj, directive1)
 		}
-		directive3 := func(ctx context.Context) (interface{}, error) {
+		directive3 := func(ctx context.Context) (any, error) {
 			if ec.directives.HasAggregation == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive hasAggregation is not implemented")
@@ -11821,14 +11558,14 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryGrossCa
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryGrossCapacity(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *float64
 				return zeroVal, err
@@ -11839,14 +11576,14 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryGrossCa
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive isSignal is not implemented")
 			}
 			return ec.directives.IsSignal(ctx, obj, directive1)
 		}
-		directive3 := func(ctx context.Context) (interface{}, error) {
+		directive3 := func(ctx context.Context) (any, error) {
 			if ec.directives.HasAggregation == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive hasAggregation is not implemented")
@@ -11914,14 +11651,14 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryRange(c
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryRange(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *float64
 				return zeroVal, err
@@ -11932,14 +11669,14 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryRange(c
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive isSignal is not implemented")
 			}
 			return ec.directives.IsSignal(ctx, obj, directive1)
 		}
-		directive3 := func(ctx context.Context) (interface{}, error) {
+		directive3 := func(ctx context.Context) (any, error) {
 			if ec.directives.HasAggregation == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive hasAggregation is not implemented")
@@ -12007,14 +11744,14 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryStateOf
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryStateOfChargeCurrent(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *float64
 				return zeroVal, err
@@ -12025,14 +11762,14 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryStateOf
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive isSignal is not implemented")
 			}
 			return ec.directives.IsSignal(ctx, obj, directive1)
 		}
-		directive3 := func(ctx context.Context) (interface{}, error) {
+		directive3 := func(ctx context.Context) (any, error) {
 			if ec.directives.HasAggregation == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive hasAggregation is not implemented")
@@ -12100,14 +11837,14 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryTempera
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryTemperatureAverage(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *float64
 				return zeroVal, err
@@ -12118,14 +11855,14 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryTempera
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive isSignal is not implemented")
 			}
 			return ec.directives.IsSignal(ctx, obj, directive1)
 		}
-		directive3 := func(ctx context.Context) (interface{}, error) {
+		directive3 := func(ctx context.Context) (any, error) {
 			if ec.directives.HasAggregation == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive hasAggregation is not implemented")
@@ -12193,14 +11930,14 @@ func (ec *executionContext) _SignalAggregations_powertrainTransmissionCurrentGea
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.SignalAggregations().PowertrainTransmissionCurrentGear(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *float64
 				return zeroVal, err
@@ -12211,14 +11948,14 @@ func (ec *executionContext) _SignalAggregations_powertrainTransmissionCurrentGea
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive isSignal is not implemented")
 			}
 			return ec.directives.IsSignal(ctx, obj, directive1)
 		}
-		directive3 := func(ctx context.Context) (interface{}, error) {
+		directive3 := func(ctx context.Context) (any, error) {
 			if ec.directives.HasAggregation == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive hasAggregation is not implemented")
@@ -12286,14 +12023,14 @@ func (ec *executionContext) _SignalAggregations_powertrainTransmissionTemperatur
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.SignalAggregations().PowertrainTransmissionTemperature(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *float64
 				return zeroVal, err
@@ -12304,14 +12041,14 @@ func (ec *executionContext) _SignalAggregations_powertrainTransmissionTemperatur
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive isSignal is not implemented")
 			}
 			return ec.directives.IsSignal(ctx, obj, directive1)
 		}
-		directive3 := func(ctx context.Context) (interface{}, error) {
+		directive3 := func(ctx context.Context) (any, error) {
 			if ec.directives.HasAggregation == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive hasAggregation is not implemented")
@@ -12379,14 +12116,14 @@ func (ec *executionContext) _SignalAggregations_powertrainTransmissionTravelledD
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.SignalAggregations().PowertrainTransmissionTravelledDistance(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *float64
 				return zeroVal, err
@@ -12397,14 +12134,14 @@ func (ec *executionContext) _SignalAggregations_powertrainTransmissionTravelledD
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive isSignal is not implemented")
 			}
 			return ec.directives.IsSignal(ctx, obj, directive1)
 		}
-		directive3 := func(ctx context.Context) (interface{}, error) {
+		directive3 := func(ctx context.Context) (any, error) {
 			if ec.directives.HasAggregation == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive hasAggregation is not implemented")
@@ -12472,14 +12209,14 @@ func (ec *executionContext) _SignalAggregations_powertrainType(ctx context.Conte
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.SignalAggregations().PowertrainType(rctx, obj, fc.Args["agg"].(model.StringAggregation))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *string
 				return zeroVal, err
@@ -12490,14 +12227,14 @@ func (ec *executionContext) _SignalAggregations_powertrainType(ctx context.Conte
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *string
 				return zeroVal, errors.New("directive isSignal is not implemented")
 			}
 			return ec.directives.IsSignal(ctx, obj, directive1)
 		}
-		directive3 := func(ctx context.Context) (interface{}, error) {
+		directive3 := func(ctx context.Context) (any, error) {
 			if ec.directives.HasAggregation == nil {
 				var zeroVal *string
 				return zeroVal, errors.New("directive hasAggregation is not implemented")
@@ -12565,14 +12302,14 @@ func (ec *executionContext) _SignalAggregations_serviceDistanceToService(ctx con
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.SignalAggregations().ServiceDistanceToService(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *float64
 				return zeroVal, err
@@ -12583,14 +12320,14 @@ func (ec *executionContext) _SignalAggregations_serviceDistanceToService(ctx con
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive isSignal is not implemented")
 			}
 			return ec.directives.IsSignal(ctx, obj, directive1)
 		}
-		directive3 := func(ctx context.Context) (interface{}, error) {
+		directive3 := func(ctx context.Context) (any, error) {
 			if ec.directives.HasAggregation == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive hasAggregation is not implemented")
@@ -12658,14 +12395,14 @@ func (ec *executionContext) _SignalAggregations_speed(ctx context.Context, field
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.SignalAggregations().Speed(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *float64
 				return zeroVal, err
@@ -12676,14 +12413,14 @@ func (ec *executionContext) _SignalAggregations_speed(ctx context.Context, field
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive isSignal is not implemented")
 			}
 			return ec.directives.IsSignal(ctx, obj, directive1)
 		}
-		directive3 := func(ctx context.Context) (interface{}, error) {
+		directive3 := func(ctx context.Context) (any, error) {
 			if ec.directives.HasAggregation == nil {
 				var zeroVal *float64
 				return zeroVal, errors.New("directive hasAggregation is not implemented")
@@ -12751,7 +12488,7 @@ func (ec *executionContext) _SignalCollection_lastSeen(ctx context.Context, fiel
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.LastSeen, nil
 	})
@@ -12792,14 +12529,14 @@ func (ec *executionContext) _SignalCollection_currentLocationApproximateLatitude
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return obj.CurrentLocationApproximateLatitude, nil
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_APPROXIMATE_LOCATION", "VEHICLE_ALL_TIME_LOCATION"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_APPROXIMATE_LOCATION", "VEHICLE_ALL_TIME_LOCATION"})
 			if err != nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, err
@@ -12810,7 +12547,7 @@ func (ec *executionContext) _SignalCollection_currentLocationApproximateLatitude
 			}
 			return ec.directives.RequiresOneOfPrivilege(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, errors.New("directive isSignal is not implemented")
@@ -12873,14 +12610,14 @@ func (ec *executionContext) _SignalCollection_currentLocationApproximateLongitud
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return obj.CurrentLocationApproximateLongitude, nil
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_APPROXIMATE_LOCATION", "VEHICLE_ALL_TIME_LOCATION"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_APPROXIMATE_LOCATION", "VEHICLE_ALL_TIME_LOCATION"})
 			if err != nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, err
@@ -12891,7 +12628,7 @@ func (ec *executionContext) _SignalCollection_currentLocationApproximateLongitud
 			}
 			return ec.directives.RequiresOneOfPrivilege(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, errors.New("directive isSignal is not implemented")
@@ -12954,14 +12691,14 @@ func (ec *executionContext) _SignalCollection_angularVelocityYaw(ctx context.Con
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return obj.AngularVelocityYaw, nil
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, err
@@ -12972,7 +12709,7 @@ func (ec *executionContext) _SignalCollection_angularVelocityYaw(ctx context.Con
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, errors.New("directive isSignal is not implemented")
@@ -13035,14 +12772,14 @@ func (ec *executionContext) _SignalCollection_chassisAxleRow1WheelLeftSpeed(ctx 
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return obj.ChassisAxleRow1WheelLeftSpeed, nil
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, err
@@ -13053,7 +12790,7 @@ func (ec *executionContext) _SignalCollection_chassisAxleRow1WheelLeftSpeed(ctx 
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, errors.New("directive isSignal is not implemented")
@@ -13116,14 +12853,14 @@ func (ec *executionContext) _SignalCollection_chassisAxleRow1WheelLeftTirePressu
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return obj.ChassisAxleRow1WheelLeftTirePressure, nil
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, err
@@ -13134,7 +12871,7 @@ func (ec *executionContext) _SignalCollection_chassisAxleRow1WheelLeftTirePressu
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, errors.New("directive isSignal is not implemented")
@@ -13197,14 +12934,14 @@ func (ec *executionContext) _SignalCollection_chassisAxleRow1WheelRightSpeed(ctx
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return obj.ChassisAxleRow1WheelRightSpeed, nil
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, err
@@ -13215,7 +12952,7 @@ func (ec *executionContext) _SignalCollection_chassisAxleRow1WheelRightSpeed(ctx
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, errors.New("directive isSignal is not implemented")
@@ -13278,14 +13015,14 @@ func (ec *executionContext) _SignalCollection_chassisAxleRow1WheelRightTirePress
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return obj.ChassisAxleRow1WheelRightTirePressure, nil
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, err
@@ -13296,7 +13033,7 @@ func (ec *executionContext) _SignalCollection_chassisAxleRow1WheelRightTirePress
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, errors.New("directive isSignal is not implemented")
@@ -13359,14 +13096,14 @@ func (ec *executionContext) _SignalCollection_chassisAxleRow2WheelLeftTirePressu
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return obj.ChassisAxleRow2WheelLeftTirePressure, nil
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, err
@@ -13377,7 +13114,7 @@ func (ec *executionContext) _SignalCollection_chassisAxleRow2WheelLeftTirePressu
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, errors.New("directive isSignal is not implemented")
@@ -13440,14 +13177,14 @@ func (ec *executionContext) _SignalCollection_chassisAxleRow2WheelRightTirePress
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return obj.ChassisAxleRow2WheelRightTirePressure, nil
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, err
@@ -13458,7 +13195,7 @@ func (ec *executionContext) _SignalCollection_chassisAxleRow2WheelRightTirePress
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, errors.New("directive isSignal is not implemented")
@@ -13521,14 +13258,14 @@ func (ec *executionContext) _SignalCollection_currentLocationAltitude(ctx contex
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return obj.CurrentLocationAltitude, nil
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_ALL_TIME_LOCATION"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_ALL_TIME_LOCATION"})
 			if err != nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, err
@@ -13539,7 +13276,7 @@ func (ec *executionContext) _SignalCollection_currentLocationAltitude(ctx contex
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, errors.New("directive isSignal is not implemented")
@@ -13602,14 +13339,14 @@ func (ec *executionContext) _SignalCollection_currentLocationIsRedacted(ctx cont
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return obj.CurrentLocationIsRedacted, nil
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_ALL_TIME_LOCATION"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_ALL_TIME_LOCATION"})
 			if err != nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, err
@@ -13620,7 +13357,7 @@ func (ec *executionContext) _SignalCollection_currentLocationIsRedacted(ctx cont
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, errors.New("directive isSignal is not implemented")
@@ -13683,14 +13420,14 @@ func (ec *executionContext) _SignalCollection_currentLocationLatitude(ctx contex
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return obj.CurrentLocationLatitude, nil
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_ALL_TIME_LOCATION"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_ALL_TIME_LOCATION"})
 			if err != nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, err
@@ -13701,7 +13438,7 @@ func (ec *executionContext) _SignalCollection_currentLocationLatitude(ctx contex
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, errors.New("directive isSignal is not implemented")
@@ -13764,14 +13501,14 @@ func (ec *executionContext) _SignalCollection_currentLocationLongitude(ctx conte
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return obj.CurrentLocationLongitude, nil
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_ALL_TIME_LOCATION"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_ALL_TIME_LOCATION"})
 			if err != nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, err
@@ -13782,7 +13519,7 @@ func (ec *executionContext) _SignalCollection_currentLocationLongitude(ctx conte
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, errors.New("directive isSignal is not implemented")
@@ -13845,14 +13582,14 @@ func (ec *executionContext) _SignalCollection_dimoAftermarketHDOP(ctx context.Co
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return obj.DIMOAftermarketHDOP, nil
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, err
@@ -13863,7 +13600,7 @@ func (ec *executionContext) _SignalCollection_dimoAftermarketHDOP(ctx context.Co
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, errors.New("directive isSignal is not implemented")
@@ -13926,14 +13663,14 @@ func (ec *executionContext) _SignalCollection_dimoAftermarketNSAT(ctx context.Co
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return obj.DIMOAftermarketNSAT, nil
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, err
@@ -13944,7 +13681,7 @@ func (ec *executionContext) _SignalCollection_dimoAftermarketNSAT(ctx context.Co
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, errors.New("directive isSignal is not implemented")
@@ -14007,14 +13744,14 @@ func (ec *executionContext) _SignalCollection_dimoAftermarketSSID(ctx context.Co
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return obj.DIMOAftermarketSSID, nil
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *model.SignalString
 				return zeroVal, err
@@ -14025,7 +13762,7 @@ func (ec *executionContext) _SignalCollection_dimoAftermarketSSID(ctx context.Co
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *model.SignalString
 				return zeroVal, errors.New("directive isSignal is not implemented")
@@ -14088,14 +13825,14 @@ func (ec *executionContext) _SignalCollection_dimoAftermarketWPAState(ctx contex
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return obj.DIMOAftermarketWPAState, nil
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *model.SignalString
 				return zeroVal, err
@@ -14106,7 +13843,7 @@ func (ec *executionContext) _SignalCollection_dimoAftermarketWPAState(ctx contex
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *model.SignalString
 				return zeroVal, errors.New("directive isSignal is not implemented")
@@ -14169,14 +13906,14 @@ func (ec *executionContext) _SignalCollection_exteriorAirTemperature(ctx context
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return obj.ExteriorAirTemperature, nil
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, err
@@ -14187,7 +13924,7 @@ func (ec *executionContext) _SignalCollection_exteriorAirTemperature(ctx context
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, errors.New("directive isSignal is not implemented")
@@ -14250,14 +13987,14 @@ func (ec *executionContext) _SignalCollection_lowVoltageBatteryCurrentVoltage(ct
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return obj.LowVoltageBatteryCurrentVoltage, nil
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, err
@@ -14268,7 +14005,7 @@ func (ec *executionContext) _SignalCollection_lowVoltageBatteryCurrentVoltage(ct
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, errors.New("directive isSignal is not implemented")
@@ -14331,14 +14068,14 @@ func (ec *executionContext) _SignalCollection_obdBarometricPressure(ctx context.
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return obj.OBDBarometricPressure, nil
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, err
@@ -14349,7 +14086,7 @@ func (ec *executionContext) _SignalCollection_obdBarometricPressure(ctx context.
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, errors.New("directive isSignal is not implemented")
@@ -14412,14 +14149,14 @@ func (ec *executionContext) _SignalCollection_obdCommandedEGR(ctx context.Contex
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return obj.OBDCommandedEGR, nil
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, err
@@ -14430,7 +14167,7 @@ func (ec *executionContext) _SignalCollection_obdCommandedEGR(ctx context.Contex
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, errors.New("directive isSignal is not implemented")
@@ -14493,14 +14230,14 @@ func (ec *executionContext) _SignalCollection_obdCommandedEVAP(ctx context.Conte
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return obj.OBDCommandedEVAP, nil
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, err
@@ -14511,7 +14248,7 @@ func (ec *executionContext) _SignalCollection_obdCommandedEVAP(ctx context.Conte
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, errors.New("directive isSignal is not implemented")
@@ -14574,14 +14311,14 @@ func (ec *executionContext) _SignalCollection_obdDTCList(ctx context.Context, fi
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return obj.OBDDTCList, nil
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *model.SignalString
 				return zeroVal, err
@@ -14592,7 +14329,7 @@ func (ec *executionContext) _SignalCollection_obdDTCList(ctx context.Context, fi
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *model.SignalString
 				return zeroVal, errors.New("directive isSignal is not implemented")
@@ -14655,14 +14392,14 @@ func (ec *executionContext) _SignalCollection_obdDistanceSinceDTCClear(ctx conte
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return obj.OBDDistanceSinceDTCClear, nil
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, err
@@ -14673,7 +14410,7 @@ func (ec *executionContext) _SignalCollection_obdDistanceSinceDTCClear(ctx conte
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, errors.New("directive isSignal is not implemented")
@@ -14736,14 +14473,14 @@ func (ec *executionContext) _SignalCollection_obdDistanceWithMIL(ctx context.Con
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return obj.OBDDistanceWithMIL, nil
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, err
@@ -14754,7 +14491,7 @@ func (ec *executionContext) _SignalCollection_obdDistanceWithMIL(ctx context.Con
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, errors.New("directive isSignal is not implemented")
@@ -14817,14 +14554,14 @@ func (ec *executionContext) _SignalCollection_obdEngineLoad(ctx context.Context,
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return obj.OBDEngineLoad, nil
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, err
@@ -14835,7 +14572,7 @@ func (ec *executionContext) _SignalCollection_obdEngineLoad(ctx context.Context,
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, errors.New("directive isSignal is not implemented")
@@ -14898,14 +14635,14 @@ func (ec *executionContext) _SignalCollection_obdFuelPressure(ctx context.Contex
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return obj.OBDFuelPressure, nil
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, err
@@ -14916,7 +14653,7 @@ func (ec *executionContext) _SignalCollection_obdFuelPressure(ctx context.Contex
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, errors.New("directive isSignal is not implemented")
@@ -14979,14 +14716,14 @@ func (ec *executionContext) _SignalCollection_obdIntakeTemp(ctx context.Context,
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return obj.OBDIntakeTemp, nil
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, err
@@ -14997,7 +14734,7 @@ func (ec *executionContext) _SignalCollection_obdIntakeTemp(ctx context.Context,
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, errors.New("directive isSignal is not implemented")
@@ -15060,14 +14797,14 @@ func (ec *executionContext) _SignalCollection_obdLongTermFuelTrim1(ctx context.C
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return obj.OBDLongTermFuelTrim1, nil
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, err
@@ -15078,7 +14815,7 @@ func (ec *executionContext) _SignalCollection_obdLongTermFuelTrim1(ctx context.C
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, errors.New("directive isSignal is not implemented")
@@ -15141,14 +14878,14 @@ func (ec *executionContext) _SignalCollection_obdMAP(ctx context.Context, field 
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return obj.OBDMAP, nil
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, err
@@ -15159,7 +14896,7 @@ func (ec *executionContext) _SignalCollection_obdMAP(ctx context.Context, field 
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, errors.New("directive isSignal is not implemented")
@@ -15222,14 +14959,14 @@ func (ec *executionContext) _SignalCollection_obdO2WRSensor1Voltage(ctx context.
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return obj.OBDO2WRSensor1Voltage, nil
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, err
@@ -15240,7 +14977,7 @@ func (ec *executionContext) _SignalCollection_obdO2WRSensor1Voltage(ctx context.
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, errors.New("directive isSignal is not implemented")
@@ -15303,14 +15040,14 @@ func (ec *executionContext) _SignalCollection_obdO2WRSensor2Voltage(ctx context.
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return obj.OBDO2WRSensor2Voltage, nil
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, err
@@ -15321,7 +15058,7 @@ func (ec *executionContext) _SignalCollection_obdO2WRSensor2Voltage(ctx context.
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, errors.New("directive isSignal is not implemented")
@@ -15384,14 +15121,14 @@ func (ec *executionContext) _SignalCollection_obdRunTime(ctx context.Context, fi
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return obj.OBDRunTime, nil
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, err
@@ -15402,7 +15139,7 @@ func (ec *executionContext) _SignalCollection_obdRunTime(ctx context.Context, fi
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, errors.New("directive isSignal is not implemented")
@@ -15465,14 +15202,14 @@ func (ec *executionContext) _SignalCollection_obdShortTermFuelTrim1(ctx context.
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return obj.OBDShortTermFuelTrim1, nil
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, err
@@ -15483,7 +15220,7 @@ func (ec *executionContext) _SignalCollection_obdShortTermFuelTrim1(ctx context.
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, errors.New("directive isSignal is not implemented")
@@ -15546,14 +15283,14 @@ func (ec *executionContext) _SignalCollection_obdWarmupsSinceDTCClear(ctx contex
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return obj.OBDWarmupsSinceDTCClear, nil
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, err
@@ -15564,7 +15301,7 @@ func (ec *executionContext) _SignalCollection_obdWarmupsSinceDTCClear(ctx contex
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, errors.New("directive isSignal is not implemented")
@@ -15627,14 +15364,14 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineDieselEx
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return obj.PowertrainCombustionEngineDieselExhaustFluidCapacity, nil
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, err
@@ -15645,7 +15382,7 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineDieselEx
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, errors.New("directive isSignal is not implemented")
@@ -15708,14 +15445,14 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineDieselEx
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return obj.PowertrainCombustionEngineDieselExhaustFluidLevel, nil
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, err
@@ -15726,7 +15463,7 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineDieselEx
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, errors.New("directive isSignal is not implemented")
@@ -15789,14 +15526,14 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineECT(ctx 
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return obj.PowertrainCombustionEngineECT, nil
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, err
@@ -15807,7 +15544,7 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineECT(ctx 
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, errors.New("directive isSignal is not implemented")
@@ -15870,14 +15607,14 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineEngineOi
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return obj.PowertrainCombustionEngineEngineOilLevel, nil
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *model.SignalString
 				return zeroVal, err
@@ -15888,7 +15625,7 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineEngineOi
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *model.SignalString
 				return zeroVal, errors.New("directive isSignal is not implemented")
@@ -15951,14 +15688,14 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineEngineOi
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return obj.PowertrainCombustionEngineEngineOilRelativeLevel, nil
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, err
@@ -15969,7 +15706,7 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineEngineOi
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, errors.New("directive isSignal is not implemented")
@@ -16032,14 +15769,14 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineMAF(ctx 
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return obj.PowertrainCombustionEngineMAF, nil
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, err
@@ -16050,7 +15787,7 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineMAF(ctx 
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, errors.New("directive isSignal is not implemented")
@@ -16113,14 +15850,14 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineSpeed(ct
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return obj.PowertrainCombustionEngineSpeed, nil
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, err
@@ -16131,7 +15868,7 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineSpeed(ct
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, errors.New("directive isSignal is not implemented")
@@ -16194,14 +15931,14 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineTPS(ctx 
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return obj.PowertrainCombustionEngineTPS, nil
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, err
@@ -16212,7 +15949,7 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineTPS(ctx 
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, errors.New("directive isSignal is not implemented")
@@ -16275,14 +16012,14 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineTorque(c
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return obj.PowertrainCombustionEngineTorque, nil
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, err
@@ -16293,7 +16030,7 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineTorque(c
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, errors.New("directive isSignal is not implemented")
@@ -16356,14 +16093,14 @@ func (ec *executionContext) _SignalCollection_powertrainFuelSystemAbsoluteLevel(
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return obj.PowertrainFuelSystemAbsoluteLevel, nil
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, err
@@ -16374,7 +16111,7 @@ func (ec *executionContext) _SignalCollection_powertrainFuelSystemAbsoluteLevel(
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, errors.New("directive isSignal is not implemented")
@@ -16437,14 +16174,14 @@ func (ec *executionContext) _SignalCollection_powertrainFuelSystemRelativeLevel(
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return obj.PowertrainFuelSystemRelativeLevel, nil
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, err
@@ -16455,7 +16192,7 @@ func (ec *executionContext) _SignalCollection_powertrainFuelSystemRelativeLevel(
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, errors.New("directive isSignal is not implemented")
@@ -16518,14 +16255,14 @@ func (ec *executionContext) _SignalCollection_powertrainFuelSystemSupportedFuelT
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return obj.PowertrainFuelSystemSupportedFuelTypes, nil
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *model.SignalString
 				return zeroVal, err
@@ -16536,7 +16273,7 @@ func (ec *executionContext) _SignalCollection_powertrainFuelSystemSupportedFuelT
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *model.SignalString
 				return zeroVal, errors.New("directive isSignal is not implemented")
@@ -16599,14 +16336,14 @@ func (ec *executionContext) _SignalCollection_powertrainRange(ctx context.Contex
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return obj.PowertrainRange, nil
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, err
@@ -16617,7 +16354,7 @@ func (ec *executionContext) _SignalCollection_powertrainRange(ctx context.Contex
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, errors.New("directive isSignal is not implemented")
@@ -16680,14 +16417,14 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryChargingA
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return obj.PowertrainTractionBatteryChargingAddedEnergy, nil
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, err
@@ -16698,7 +16435,7 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryChargingA
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, errors.New("directive isSignal is not implemented")
@@ -16761,14 +16498,14 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryChargingC
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return obj.PowertrainTractionBatteryChargingChargeLimit, nil
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, err
@@ -16779,7 +16516,7 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryChargingC
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, errors.New("directive isSignal is not implemented")
@@ -16842,14 +16579,14 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryChargingI
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return obj.PowertrainTractionBatteryChargingIsCharging, nil
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, err
@@ -16860,7 +16597,7 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryChargingI
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, errors.New("directive isSignal is not implemented")
@@ -16923,14 +16660,14 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryCurrentPo
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return obj.PowertrainTractionBatteryCurrentPower, nil
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, err
@@ -16941,7 +16678,7 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryCurrentPo
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, errors.New("directive isSignal is not implemented")
@@ -17004,14 +16741,14 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryCurrentVo
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return obj.PowertrainTractionBatteryCurrentVoltage, nil
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, err
@@ -17022,7 +16759,7 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryCurrentVo
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, errors.New("directive isSignal is not implemented")
@@ -17085,14 +16822,14 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryGrossCapa
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return obj.PowertrainTractionBatteryGrossCapacity, nil
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, err
@@ -17103,7 +16840,7 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryGrossCapa
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, errors.New("directive isSignal is not implemented")
@@ -17166,14 +16903,14 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryRange(ctx
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return obj.PowertrainTractionBatteryRange, nil
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, err
@@ -17184,7 +16921,7 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryRange(ctx
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, errors.New("directive isSignal is not implemented")
@@ -17247,14 +16984,14 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryStateOfCh
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return obj.PowertrainTractionBatteryStateOfChargeCurrent, nil
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, err
@@ -17265,7 +17002,7 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryStateOfCh
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, errors.New("directive isSignal is not implemented")
@@ -17328,14 +17065,14 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryTemperatu
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return obj.PowertrainTractionBatteryTemperatureAverage, nil
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, err
@@ -17346,7 +17083,7 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryTemperatu
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, errors.New("directive isSignal is not implemented")
@@ -17409,14 +17146,14 @@ func (ec *executionContext) _SignalCollection_powertrainTransmissionCurrentGear(
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return obj.PowertrainTransmissionCurrentGear, nil
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, err
@@ -17427,7 +17164,7 @@ func (ec *executionContext) _SignalCollection_powertrainTransmissionCurrentGear(
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, errors.New("directive isSignal is not implemented")
@@ -17490,14 +17227,14 @@ func (ec *executionContext) _SignalCollection_powertrainTransmissionTemperature(
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return obj.PowertrainTransmissionTemperature, nil
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, err
@@ -17508,7 +17245,7 @@ func (ec *executionContext) _SignalCollection_powertrainTransmissionTemperature(
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, errors.New("directive isSignal is not implemented")
@@ -17571,14 +17308,14 @@ func (ec *executionContext) _SignalCollection_powertrainTransmissionTravelledDis
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return obj.PowertrainTransmissionTravelledDistance, nil
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, err
@@ -17589,7 +17326,7 @@ func (ec *executionContext) _SignalCollection_powertrainTransmissionTravelledDis
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, errors.New("directive isSignal is not implemented")
@@ -17652,14 +17389,14 @@ func (ec *executionContext) _SignalCollection_powertrainType(ctx context.Context
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return obj.PowertrainType, nil
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *model.SignalString
 				return zeroVal, err
@@ -17670,7 +17407,7 @@ func (ec *executionContext) _SignalCollection_powertrainType(ctx context.Context
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *model.SignalString
 				return zeroVal, errors.New("directive isSignal is not implemented")
@@ -17733,14 +17470,14 @@ func (ec *executionContext) _SignalCollection_serviceDistanceToService(ctx conte
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return obj.ServiceDistanceToService, nil
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, err
@@ -17751,7 +17488,7 @@ func (ec *executionContext) _SignalCollection_serviceDistanceToService(ctx conte
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, errors.New("directive isSignal is not implemented")
@@ -17814,14 +17551,14 @@ func (ec *executionContext) _SignalCollection_speed(ctx context.Context, field g
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
 			return obj.Speed, nil
 		}
 
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []interface{}{"VEHICLE_NON_LOCATION_DATA"})
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 			if err != nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, err
@@ -17832,7 +17569,7 @@ func (ec *executionContext) _SignalCollection_speed(ctx context.Context, field g
 			}
 			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 		}
-		directive2 := func(ctx context.Context) (interface{}, error) {
+		directive2 := func(ctx context.Context) (any, error) {
 			if ec.directives.IsSignal == nil {
 				var zeroVal *model.SignalFloat
 				return zeroVal, errors.New("directive isSignal is not implemented")
@@ -17895,7 +17632,7 @@ func (ec *executionContext) _SignalFloat_timestamp(ctx context.Context, field gr
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Timestamp, nil
 	})
@@ -17939,7 +17676,7 @@ func (ec *executionContext) _SignalFloat_value(ctx context.Context, field graphq
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Value, nil
 	})
@@ -17983,7 +17720,7 @@ func (ec *executionContext) _SignalString_timestamp(ctx context.Context, field g
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Timestamp, nil
 	})
@@ -18027,7 +17764,7 @@ func (ec *executionContext) _SignalString_value(ctx context.Context, field graph
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Value, nil
 	})
@@ -18071,7 +17808,7 @@ func (ec *executionContext) _VINVC_vehicleTokenId(ctx context.Context, field gra
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.VehicleTokenID, nil
 	})
@@ -18112,7 +17849,7 @@ func (ec *executionContext) _VINVC_vin(ctx context.Context, field graphql.Collec
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Vin, nil
 	})
@@ -18153,7 +17890,7 @@ func (ec *executionContext) _VINVC_recordedBy(ctx context.Context, field graphql
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.RecordedBy, nil
 	})
@@ -18194,7 +17931,7 @@ func (ec *executionContext) _VINVC_recordedAt(ctx context.Context, field graphql
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.RecordedAt, nil
 	})
@@ -18235,7 +17972,7 @@ func (ec *executionContext) _VINVC_countryCode(ctx context.Context, field graphq
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.CountryCode, nil
 	})
@@ -18276,7 +18013,7 @@ func (ec *executionContext) _VINVC_vehicleContractAddress(ctx context.Context, f
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.VehicleContractAddress, nil
 	})
@@ -18317,7 +18054,7 @@ func (ec *executionContext) _VINVC_validFrom(ctx context.Context, field graphql.
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.ValidFrom, nil
 	})
@@ -18358,7 +18095,7 @@ func (ec *executionContext) _VINVC_validTo(ctx context.Context, field graphql.Co
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.ValidTo, nil
 	})
@@ -18399,7 +18136,7 @@ func (ec *executionContext) _VINVC_rawVC(ctx context.Context, field graphql.Coll
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.RawVc, nil
 	})
@@ -18443,7 +18180,7 @@ func (ec *executionContext) ___Directive_name(ctx context.Context, field graphql
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Name, nil
 	})
@@ -18487,7 +18224,7 @@ func (ec *executionContext) ___Directive_description(ctx context.Context, field 
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Description(), nil
 	})
@@ -18528,7 +18265,7 @@ func (ec *executionContext) ___Directive_locations(ctx context.Context, field gr
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Locations, nil
 	})
@@ -18572,7 +18309,7 @@ func (ec *executionContext) ___Directive_args(ctx context.Context, field graphql
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Args, nil
 	})
@@ -18591,7 +18328,7 @@ func (ec *executionContext) ___Directive_args(ctx context.Context, field graphql
 	return ec.marshalN__InputValue2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐInputValueᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Directive_args(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Directive_args(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Directive",
 		Field:      field,
@@ -18607,9 +18344,24 @@ func (ec *executionContext) fieldContext___Directive_args(_ context.Context, fie
 				return ec.fieldContext___InputValue_type(ctx, field)
 			case "defaultValue":
 				return ec.fieldContext___InputValue_defaultValue(ctx, field)
+			case "isDeprecated":
+				return ec.fieldContext___InputValue_isDeprecated(ctx, field)
+			case "deprecationReason":
+				return ec.fieldContext___InputValue_deprecationReason(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type __InputValue", field.Name)
 		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field___Directive_args_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
 	}
 	return fc, nil
 }
@@ -18626,7 +18378,7 @@ func (ec *executionContext) ___Directive_isRepeatable(ctx context.Context, field
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.IsRepeatable, nil
 	})
@@ -18670,7 +18422,7 @@ func (ec *executionContext) ___EnumValue_name(ctx context.Context, field graphql
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Name, nil
 	})
@@ -18714,7 +18466,7 @@ func (ec *executionContext) ___EnumValue_description(ctx context.Context, field 
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Description(), nil
 	})
@@ -18755,7 +18507,7 @@ func (ec *executionContext) ___EnumValue_isDeprecated(ctx context.Context, field
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.IsDeprecated(), nil
 	})
@@ -18799,7 +18551,7 @@ func (ec *executionContext) ___EnumValue_deprecationReason(ctx context.Context, 
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.DeprecationReason(), nil
 	})
@@ -18840,7 +18592,7 @@ func (ec *executionContext) ___Field_name(ctx context.Context, field graphql.Col
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Name, nil
 	})
@@ -18884,7 +18636,7 @@ func (ec *executionContext) ___Field_description(ctx context.Context, field grap
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Description(), nil
 	})
@@ -18925,7 +18677,7 @@ func (ec *executionContext) ___Field_args(ctx context.Context, field graphql.Col
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Args, nil
 	})
@@ -18944,7 +18696,7 @@ func (ec *executionContext) ___Field_args(ctx context.Context, field graphql.Col
 	return ec.marshalN__InputValue2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐInputValueᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Field_args(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Field_args(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Field",
 		Field:      field,
@@ -18960,9 +18712,24 @@ func (ec *executionContext) fieldContext___Field_args(_ context.Context, field g
 				return ec.fieldContext___InputValue_type(ctx, field)
 			case "defaultValue":
 				return ec.fieldContext___InputValue_defaultValue(ctx, field)
+			case "isDeprecated":
+				return ec.fieldContext___InputValue_isDeprecated(ctx, field)
+			case "deprecationReason":
+				return ec.fieldContext___InputValue_deprecationReason(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type __InputValue", field.Name)
 		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field___Field_args_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
 	}
 	return fc, nil
 }
@@ -18979,7 +18746,7 @@ func (ec *executionContext) ___Field_type(ctx context.Context, field graphql.Col
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Type, nil
 	})
@@ -19026,6 +18793,8 @@ func (ec *executionContext) fieldContext___Field_type(_ context.Context, field g
 				return ec.fieldContext___Type_ofType(ctx, field)
 			case "specifiedByURL":
 				return ec.fieldContext___Type_specifiedByURL(ctx, field)
+			case "isOneOf":
+				return ec.fieldContext___Type_isOneOf(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type __Type", field.Name)
 		},
@@ -19045,7 +18814,7 @@ func (ec *executionContext) ___Field_isDeprecated(ctx context.Context, field gra
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.IsDeprecated(), nil
 	})
@@ -19089,7 +18858,7 @@ func (ec *executionContext) ___Field_deprecationReason(ctx context.Context, fiel
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.DeprecationReason(), nil
 	})
@@ -19130,7 +18899,7 @@ func (ec *executionContext) ___InputValue_name(ctx context.Context, field graphq
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Name, nil
 	})
@@ -19174,7 +18943,7 @@ func (ec *executionContext) ___InputValue_description(ctx context.Context, field
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Description(), nil
 	})
@@ -19215,7 +18984,7 @@ func (ec *executionContext) ___InputValue_type(ctx context.Context, field graphq
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Type, nil
 	})
@@ -19262,6 +19031,8 @@ func (ec *executionContext) fieldContext___InputValue_type(_ context.Context, fi
 				return ec.fieldContext___Type_ofType(ctx, field)
 			case "specifiedByURL":
 				return ec.fieldContext___Type_specifiedByURL(ctx, field)
+			case "isOneOf":
+				return ec.fieldContext___Type_isOneOf(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type __Type", field.Name)
 		},
@@ -19281,7 +19052,7 @@ func (ec *executionContext) ___InputValue_defaultValue(ctx context.Context, fiel
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.DefaultValue, nil
 	})
@@ -19310,6 +19081,91 @@ func (ec *executionContext) fieldContext___InputValue_defaultValue(_ context.Con
 	return fc, nil
 }
 
+func (ec *executionContext) ___InputValue_isDeprecated(ctx context.Context, field graphql.CollectedField, obj *introspection.InputValue) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext___InputValue_isDeprecated(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.IsDeprecated(), nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext___InputValue_isDeprecated(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "__InputValue",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) ___InputValue_deprecationReason(ctx context.Context, field graphql.CollectedField, obj *introspection.InputValue) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext___InputValue_deprecationReason(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DeprecationReason(), nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext___InputValue_deprecationReason(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "__InputValue",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) ___Schema_description(ctx context.Context, field graphql.CollectedField, obj *introspection.Schema) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext___Schema_description(ctx, field)
 	if err != nil {
@@ -19322,7 +19178,7 @@ func (ec *executionContext) ___Schema_description(ctx context.Context, field gra
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Description(), nil
 	})
@@ -19363,7 +19219,7 @@ func (ec *executionContext) ___Schema_types(ctx context.Context, field graphql.C
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Types(), nil
 	})
@@ -19410,6 +19266,8 @@ func (ec *executionContext) fieldContext___Schema_types(_ context.Context, field
 				return ec.fieldContext___Type_ofType(ctx, field)
 			case "specifiedByURL":
 				return ec.fieldContext___Type_specifiedByURL(ctx, field)
+			case "isOneOf":
+				return ec.fieldContext___Type_isOneOf(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type __Type", field.Name)
 		},
@@ -19429,7 +19287,7 @@ func (ec *executionContext) ___Schema_queryType(ctx context.Context, field graph
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.QueryType(), nil
 	})
@@ -19476,6 +19334,8 @@ func (ec *executionContext) fieldContext___Schema_queryType(_ context.Context, f
 				return ec.fieldContext___Type_ofType(ctx, field)
 			case "specifiedByURL":
 				return ec.fieldContext___Type_specifiedByURL(ctx, field)
+			case "isOneOf":
+				return ec.fieldContext___Type_isOneOf(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type __Type", field.Name)
 		},
@@ -19495,7 +19355,7 @@ func (ec *executionContext) ___Schema_mutationType(ctx context.Context, field gr
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.MutationType(), nil
 	})
@@ -19539,6 +19399,8 @@ func (ec *executionContext) fieldContext___Schema_mutationType(_ context.Context
 				return ec.fieldContext___Type_ofType(ctx, field)
 			case "specifiedByURL":
 				return ec.fieldContext___Type_specifiedByURL(ctx, field)
+			case "isOneOf":
+				return ec.fieldContext___Type_isOneOf(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type __Type", field.Name)
 		},
@@ -19558,7 +19420,7 @@ func (ec *executionContext) ___Schema_subscriptionType(ctx context.Context, fiel
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.SubscriptionType(), nil
 	})
@@ -19602,6 +19464,8 @@ func (ec *executionContext) fieldContext___Schema_subscriptionType(_ context.Con
 				return ec.fieldContext___Type_ofType(ctx, field)
 			case "specifiedByURL":
 				return ec.fieldContext___Type_specifiedByURL(ctx, field)
+			case "isOneOf":
+				return ec.fieldContext___Type_isOneOf(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type __Type", field.Name)
 		},
@@ -19621,7 +19485,7 @@ func (ec *executionContext) ___Schema_directives(ctx context.Context, field grap
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Directives(), nil
 	})
@@ -19677,7 +19541,7 @@ func (ec *executionContext) ___Type_kind(ctx context.Context, field graphql.Coll
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Kind(), nil
 	})
@@ -19721,7 +19585,7 @@ func (ec *executionContext) ___Type_name(ctx context.Context, field graphql.Coll
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Name(), nil
 	})
@@ -19762,7 +19626,7 @@ func (ec *executionContext) ___Type_description(ctx context.Context, field graph
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Description(), nil
 	})
@@ -19803,7 +19667,7 @@ func (ec *executionContext) ___Type_fields(ctx context.Context, field graphql.Co
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Fields(fc.Args["includeDeprecated"].(bool)), nil
 	})
@@ -19869,7 +19733,7 @@ func (ec *executionContext) ___Type_interfaces(ctx context.Context, field graphq
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Interfaces(), nil
 	})
@@ -19913,6 +19777,8 @@ func (ec *executionContext) fieldContext___Type_interfaces(_ context.Context, fi
 				return ec.fieldContext___Type_ofType(ctx, field)
 			case "specifiedByURL":
 				return ec.fieldContext___Type_specifiedByURL(ctx, field)
+			case "isOneOf":
+				return ec.fieldContext___Type_isOneOf(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type __Type", field.Name)
 		},
@@ -19932,7 +19798,7 @@ func (ec *executionContext) ___Type_possibleTypes(ctx context.Context, field gra
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.PossibleTypes(), nil
 	})
@@ -19976,6 +19842,8 @@ func (ec *executionContext) fieldContext___Type_possibleTypes(_ context.Context,
 				return ec.fieldContext___Type_ofType(ctx, field)
 			case "specifiedByURL":
 				return ec.fieldContext___Type_specifiedByURL(ctx, field)
+			case "isOneOf":
+				return ec.fieldContext___Type_isOneOf(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type __Type", field.Name)
 		},
@@ -19995,7 +19863,7 @@ func (ec *executionContext) ___Type_enumValues(ctx context.Context, field graphq
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.EnumValues(fc.Args["includeDeprecated"].(bool)), nil
 	})
@@ -20057,7 +19925,7 @@ func (ec *executionContext) ___Type_inputFields(ctx context.Context, field graph
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.InputFields(), nil
 	})
@@ -20089,6 +19957,10 @@ func (ec *executionContext) fieldContext___Type_inputFields(_ context.Context, f
 				return ec.fieldContext___InputValue_type(ctx, field)
 			case "defaultValue":
 				return ec.fieldContext___InputValue_defaultValue(ctx, field)
+			case "isDeprecated":
+				return ec.fieldContext___InputValue_isDeprecated(ctx, field)
+			case "deprecationReason":
+				return ec.fieldContext___InputValue_deprecationReason(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type __InputValue", field.Name)
 		},
@@ -20108,7 +19980,7 @@ func (ec *executionContext) ___Type_ofType(ctx context.Context, field graphql.Co
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.OfType(), nil
 	})
@@ -20152,6 +20024,8 @@ func (ec *executionContext) fieldContext___Type_ofType(_ context.Context, field 
 				return ec.fieldContext___Type_ofType(ctx, field)
 			case "specifiedByURL":
 				return ec.fieldContext___Type_specifiedByURL(ctx, field)
+			case "isOneOf":
+				return ec.fieldContext___Type_isOneOf(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type __Type", field.Name)
 		},
@@ -20171,7 +20045,7 @@ func (ec *executionContext) ___Type_specifiedByURL(ctx context.Context, field gr
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.SpecifiedByURL(), nil
 	})
@@ -20200,14 +20074,55 @@ func (ec *executionContext) fieldContext___Type_specifiedByURL(_ context.Context
 	return fc, nil
 }
 
+func (ec *executionContext) ___Type_isOneOf(ctx context.Context, field graphql.CollectedField, obj *introspection.Type) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext___Type_isOneOf(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.IsOneOf(), nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalOBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext___Type_isOneOf(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "__Type",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 // endregion **************************** field.gotpl *****************************
 
 // region    **************************** input.gotpl *****************************
 
-func (ec *executionContext) unmarshalInputAftermarketDeviceBy(ctx context.Context, obj interface{}) (model.AftermarketDeviceBy, error) {
+func (ec *executionContext) unmarshalInputAftermarketDeviceBy(ctx context.Context, obj any) (model.AftermarketDeviceBy, error) {
 	var it model.AftermarketDeviceBy
-	asMap := map[string]interface{}{}
-	for k, v := range obj.(map[string]interface{}) {
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
 		asMap[k] = v
 	}
 
@@ -20220,88 +20135,35 @@ func (ec *executionContext) unmarshalInputAftermarketDeviceBy(ctx context.Contex
 		switch k {
 		case "tokenId":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tokenId"))
-			directive0 := func(ctx context.Context) (interface{}, error) { return ec.unmarshalOInt2ᚖint(ctx, v) }
-
-			directive1 := func(ctx context.Context) (interface{}, error) {
-				if ec.directives.OneOf == nil {
-					var zeroVal *int
-					return zeroVal, errors.New("directive oneOf is not implemented")
-				}
-				return ec.directives.OneOf(ctx, obj, directive0)
-			}
-
-			tmp, err := directive1(ctx)
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
 			if err != nil {
-				return it, graphql.ErrorOnPath(ctx, err)
+				return it, err
 			}
-			if data, ok := tmp.(*int); ok {
-				it.TokenID = data
-			} else if tmp == nil {
-				it.TokenID = nil
-			} else {
-				err := fmt.Errorf(`unexpected type %T from directive, should be *int`, tmp)
-				return it, graphql.ErrorOnPath(ctx, err)
-			}
+			it.TokenID = data
 		case "address":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("address"))
-			directive0 := func(ctx context.Context) (interface{}, error) {
-				return ec.unmarshalOAddress2ᚖgithubᚗcomᚋethereumᚋgoᚑethereumᚋcommonᚐAddress(ctx, v)
-			}
-
-			directive1 := func(ctx context.Context) (interface{}, error) {
-				if ec.directives.OneOf == nil {
-					var zeroVal *common.Address
-					return zeroVal, errors.New("directive oneOf is not implemented")
-				}
-				return ec.directives.OneOf(ctx, obj, directive0)
-			}
-
-			tmp, err := directive1(ctx)
+			data, err := ec.unmarshalOAddress2ᚖgithubᚗcomᚋethereumᚋgoᚑethereumᚋcommonᚐAddress(ctx, v)
 			if err != nil {
-				return it, graphql.ErrorOnPath(ctx, err)
+				return it, err
 			}
-			if data, ok := tmp.(*common.Address); ok {
-				it.Address = data
-			} else if tmp == nil {
-				it.Address = nil
-			} else {
-				err := fmt.Errorf(`unexpected type %T from directive, should be *github.com/ethereum/go-ethereum/common.Address`, tmp)
-				return it, graphql.ErrorOnPath(ctx, err)
-			}
+			it.Address = data
 		case "serial":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("serial"))
-			directive0 := func(ctx context.Context) (interface{}, error) { return ec.unmarshalOString2ᚖstring(ctx, v) }
-
-			directive1 := func(ctx context.Context) (interface{}, error) {
-				if ec.directives.OneOf == nil {
-					var zeroVal *string
-					return zeroVal, errors.New("directive oneOf is not implemented")
-				}
-				return ec.directives.OneOf(ctx, obj, directive0)
-			}
-
-			tmp, err := directive1(ctx)
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
-				return it, graphql.ErrorOnPath(ctx, err)
+				return it, err
 			}
-			if data, ok := tmp.(*string); ok {
-				it.Serial = data
-			} else if tmp == nil {
-				it.Serial = nil
-			} else {
-				err := fmt.Errorf(`unexpected type %T from directive, should be *string`, tmp)
-				return it, graphql.ErrorOnPath(ctx, err)
-			}
+			it.Serial = data
 		}
 	}
 
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputSignalFilter(ctx context.Context, obj interface{}) (model.SignalFilter, error) {
+func (ec *executionContext) unmarshalInputSignalFilter(ctx context.Context, obj any) (model.SignalFilter, error) {
 	var it model.SignalFilter
-	asMap := map[string]interface{}{}
-	for k, v := range obj.(map[string]interface{}) {
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
 		asMap[k] = v
 	}
 
@@ -23190,6 +23052,13 @@ func (ec *executionContext) ___InputValue(ctx context.Context, sel ast.Selection
 			}
 		case "defaultValue":
 			out.Values[i] = ec.___InputValue_defaultValue(ctx, field, obj)
+		case "isDeprecated":
+			out.Values[i] = ec.___InputValue_isDeprecated(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "deprecationReason":
+			out.Values[i] = ec.___InputValue_deprecationReason(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -23302,6 +23171,8 @@ func (ec *executionContext) ___Type(ctx context.Context, sel ast.SelectionSet, o
 			out.Values[i] = ec.___Type_ofType(ctx, field, obj)
 		case "specifiedByURL":
 			out.Values[i] = ec.___Type_specifiedByURL(ctx, field, obj)
+		case "isOneOf":
+			out.Values[i] = ec.___Type_isOneOf(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -23329,12 +23200,12 @@ func (ec *executionContext) ___Type(ctx context.Context, sel ast.SelectionSet, o
 
 // region    ***************************** type.gotpl *****************************
 
-func (ec *executionContext) unmarshalNAftermarketDeviceBy2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐAftermarketDeviceBy(ctx context.Context, v interface{}) (model.AftermarketDeviceBy, error) {
+func (ec *executionContext) unmarshalNAftermarketDeviceBy2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐAftermarketDeviceBy(ctx context.Context, v any) (model.AftermarketDeviceBy, error) {
 	res, err := ec.unmarshalInputAftermarketDeviceBy(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNBoolean2bool(ctx context.Context, v interface{}) (bool, error) {
+func (ec *executionContext) unmarshalNBoolean2bool(ctx context.Context, v any) (bool, error) {
 	res, err := graphql.UnmarshalBoolean(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
@@ -23349,7 +23220,7 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
-func (ec *executionContext) unmarshalNFloat2float64(ctx context.Context, v interface{}) (float64, error) {
+func (ec *executionContext) unmarshalNFloat2float64(ctx context.Context, v any) (float64, error) {
 	res, err := graphql.UnmarshalFloatContext(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
@@ -23364,7 +23235,7 @@ func (ec *executionContext) marshalNFloat2float64(ctx context.Context, sel ast.S
 	return graphql.WrapContextMarshaler(ctx, res)
 }
 
-func (ec *executionContext) unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx context.Context, v interface{}) (model.FloatAggregation, error) {
+func (ec *executionContext) unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx context.Context, v any) (model.FloatAggregation, error) {
 	var res model.FloatAggregation
 	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -23374,7 +23245,7 @@ func (ec *executionContext) marshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetwo
 	return v
 }
 
-func (ec *executionContext) unmarshalNInt2int(ctx context.Context, v interface{}) (int, error) {
+func (ec *executionContext) unmarshalNInt2int(ctx context.Context, v any) (int, error) {
 	res, err := graphql.UnmarshalInt(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
@@ -23389,7 +23260,7 @@ func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.Selecti
 	return res
 }
 
-func (ec *executionContext) unmarshalNPrivilege2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilege(ctx context.Context, v interface{}) (model.Privilege, error) {
+func (ec *executionContext) unmarshalNPrivilege2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilege(ctx context.Context, v any) (model.Privilege, error) {
 	var res model.Privilege
 	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -23399,8 +23270,8 @@ func (ec *executionContext) marshalNPrivilege2githubᚗcomᚋDIMOᚑNetworkᚋte
 	return v
 }
 
-func (ec *executionContext) unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx context.Context, v interface{}) ([]model.Privilege, error) {
-	var vSlice []interface{}
+func (ec *executionContext) unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx context.Context, v any) ([]model.Privilege, error) {
+	var vSlice []any
 	if v != nil {
 		vSlice = graphql.CoerceList(v)
 	}
@@ -23470,7 +23341,7 @@ func (ec *executionContext) marshalNSignalAggregations2ᚖgithubᚗcomᚋDIMOᚑ
 	return ec._SignalAggregations(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNString2string(ctx context.Context, v interface{}) (string, error) {
+func (ec *executionContext) unmarshalNString2string(ctx context.Context, v any) (string, error) {
 	res, err := graphql.UnmarshalString(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
@@ -23485,7 +23356,7 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 	return res
 }
 
-func (ec *executionContext) unmarshalNStringAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐStringAggregation(ctx context.Context, v interface{}) (model.StringAggregation, error) {
+func (ec *executionContext) unmarshalNStringAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐStringAggregation(ctx context.Context, v any) (model.StringAggregation, error) {
 	var res model.StringAggregation
 	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -23495,7 +23366,7 @@ func (ec *executionContext) marshalNStringAggregation2githubᚗcomᚋDIMOᚑNetw
 	return v
 }
 
-func (ec *executionContext) unmarshalNTime2timeᚐTime(ctx context.Context, v interface{}) (time.Time, error) {
+func (ec *executionContext) unmarshalNTime2timeᚐTime(ctx context.Context, v any) (time.Time, error) {
 	res, err := graphql.UnmarshalTime(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
@@ -23558,7 +23429,7 @@ func (ec *executionContext) marshalN__Directive2ᚕgithubᚗcomᚋ99designsᚋgq
 	return ret
 }
 
-func (ec *executionContext) unmarshalN__DirectiveLocation2string(ctx context.Context, v interface{}) (string, error) {
+func (ec *executionContext) unmarshalN__DirectiveLocation2string(ctx context.Context, v any) (string, error) {
 	res, err := graphql.UnmarshalString(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
@@ -23573,8 +23444,8 @@ func (ec *executionContext) marshalN__DirectiveLocation2string(ctx context.Conte
 	return res
 }
 
-func (ec *executionContext) unmarshalN__DirectiveLocation2ᚕstringᚄ(ctx context.Context, v interface{}) ([]string, error) {
-	var vSlice []interface{}
+func (ec *executionContext) unmarshalN__DirectiveLocation2ᚕstringᚄ(ctx context.Context, v any) ([]string, error) {
+	var vSlice []any
 	if v != nil {
 		vSlice = graphql.CoerceList(v)
 	}
@@ -23748,7 +23619,7 @@ func (ec *executionContext) marshalN__Type2ᚖgithubᚗcomᚋ99designsᚋgqlgen�
 	return ec.___Type(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalN__TypeKind2string(ctx context.Context, v interface{}) (string, error) {
+func (ec *executionContext) unmarshalN__TypeKind2string(ctx context.Context, v any) (string, error) {
 	res, err := graphql.UnmarshalString(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
@@ -23763,7 +23634,7 @@ func (ec *executionContext) marshalN__TypeKind2string(ctx context.Context, sel a
 	return res
 }
 
-func (ec *executionContext) unmarshalOAddress2ᚖgithubᚗcomᚋethereumᚋgoᚑethereumᚋcommonᚐAddress(ctx context.Context, v interface{}) (*common.Address, error) {
+func (ec *executionContext) unmarshalOAddress2ᚖgithubᚗcomᚋethereumᚋgoᚑethereumᚋcommonᚐAddress(ctx context.Context, v any) (*common.Address, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -23779,7 +23650,7 @@ func (ec *executionContext) marshalOAddress2ᚖgithubᚗcomᚋethereumᚋgoᚑet
 	return res
 }
 
-func (ec *executionContext) unmarshalOBoolean2bool(ctx context.Context, v interface{}) (bool, error) {
+func (ec *executionContext) unmarshalOBoolean2bool(ctx context.Context, v any) (bool, error) {
 	res, err := graphql.UnmarshalBoolean(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
@@ -23789,7 +23660,7 @@ func (ec *executionContext) marshalOBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
-func (ec *executionContext) unmarshalOBoolean2ᚖbool(ctx context.Context, v interface{}) (*bool, error) {
+func (ec *executionContext) unmarshalOBoolean2ᚖbool(ctx context.Context, v any) (*bool, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -23812,7 +23683,7 @@ func (ec *executionContext) marshalODeviceActivity2ᚖgithubᚗcomᚋDIMOᚑNetw
 	return ec._DeviceActivity(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalOFloat2ᚖfloat64(ctx context.Context, v interface{}) (*float64, error) {
+func (ec *executionContext) unmarshalOFloat2ᚖfloat64(ctx context.Context, v any) (*float64, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -23828,7 +23699,7 @@ func (ec *executionContext) marshalOFloat2ᚖfloat64(ctx context.Context, sel as
 	return graphql.WrapContextMarshaler(ctx, res)
 }
 
-func (ec *executionContext) unmarshalOInt2ᚖint(ctx context.Context, v interface{}) (*int, error) {
+func (ec *executionContext) unmarshalOInt2ᚖint(ctx context.Context, v any) (*int, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -23905,7 +23776,7 @@ func (ec *executionContext) marshalOSignalCollection2ᚖgithubᚗcomᚋDIMOᚑNe
 	return ec._SignalCollection(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalOSignalFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFilter(ctx context.Context, v interface{}) (*model.SignalFilter, error) {
+func (ec *executionContext) unmarshalOSignalFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFilter(ctx context.Context, v any) (*model.SignalFilter, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -23927,11 +23798,11 @@ func (ec *executionContext) marshalOSignalString2ᚖgithubᚗcomᚋDIMOᚑNetwor
 	return ec._SignalString(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalOString2ᚕstringᚄ(ctx context.Context, v interface{}) ([]string, error) {
+func (ec *executionContext) unmarshalOString2ᚕstringᚄ(ctx context.Context, v any) ([]string, error) {
 	if v == nil {
 		return nil, nil
 	}
-	var vSlice []interface{}
+	var vSlice []any
 	if v != nil {
 		vSlice = graphql.CoerceList(v)
 	}
@@ -23965,7 +23836,7 @@ func (ec *executionContext) marshalOString2ᚕstringᚄ(ctx context.Context, sel
 	return ret
 }
 
-func (ec *executionContext) unmarshalOString2ᚖstring(ctx context.Context, v interface{}) (*string, error) {
+func (ec *executionContext) unmarshalOString2ᚖstring(ctx context.Context, v any) (*string, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -23981,7 +23852,7 @@ func (ec *executionContext) marshalOString2ᚖstring(ctx context.Context, sel as
 	return res
 }
 
-func (ec *executionContext) unmarshalOTime2ᚖtimeᚐTime(ctx context.Context, v interface{}) (*time.Time, error) {
+func (ec *executionContext) unmarshalOTime2ᚖtimeᚐTime(ctx context.Context, v any) (*time.Time, error) {
 	if v == nil {
 		return nil, nil
 	}

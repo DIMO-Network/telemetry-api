@@ -365,7 +365,7 @@ func (e FloatAggregation) String() string {
 	return string(e)
 }
 
-func (e *FloatAggregation) UnmarshalGQL(v interface{}) error {
+func (e *FloatAggregation) UnmarshalGQL(v any) error {
 	str, ok := v.(string)
 	if !ok {
 		return fmt.Errorf("enums must be strings")
@@ -416,7 +416,7 @@ func (e Privilege) String() string {
 	return string(e)
 }
 
-func (e *Privilege) UnmarshalGQL(v interface{}) error {
+func (e *Privilege) UnmarshalGQL(v any) error {
 	str, ok := v.(string)
 	if !ok {
 		return fmt.Errorf("enums must be strings")
@@ -468,7 +468,7 @@ func (e StringAggregation) String() string {
 	return string(e)
 }
 
-func (e *StringAggregation) UnmarshalGQL(v interface{}) error {
+func (e *StringAggregation) UnmarshalGQL(v any) error {
 	str, ok := v.(string)
 	if !ok {
 		return fmt.Errorf("enums must be strings")
