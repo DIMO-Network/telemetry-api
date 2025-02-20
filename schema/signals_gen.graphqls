@@ -318,6 +318,24 @@ extend type SignalAggregations {
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineECT", forceResolver: true) @isSignal @hasAggregation
   
   """
+  Engine oil pressure.
+  Unit: 'kPa'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  powertrainCombustionEngineEOP(
+    agg: FloatAggregation!
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineEOP", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  Engine oil temperature.
+  Unit: 'celsius'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  powertrainCombustionEngineEOT(
+    agg: FloatAggregation!
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineEOT", forceResolver: true) @isSignal @hasAggregation
+  
+  """
   Engine oil level.
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
@@ -784,6 +802,20 @@ extend type SignalCollection {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainCombustionEngineECT: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineECT") @isSignal
+  
+  """
+  Engine oil pressure.
+  Unit: 'kPa'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  powertrainCombustionEngineEOP: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineEOP") @isSignal
+  
+  """
+  Engine oil temperature.
+  Unit: 'celsius'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  powertrainCombustionEngineEOT: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineEOT") @isSignal
   
   """
   Engine oil level.
