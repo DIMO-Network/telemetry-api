@@ -33,7 +33,7 @@ var ManufacturerSourceTranslations = map[string]string{
 
 // CHService is the interface for the ClickHouse service.
 //
-//go:generate mockgen -source=./repositories.go -destination=repositories_mocks_test.go -package=repositories_test
+//go:generate go tool mockgen -source=./repositories.go -destination=repositories_mocks_test.go -package=repositories_test
 type CHService interface {
 	GetAggregatedSignals(ctx context.Context, aggArgs *model.AggregatedSignalArgs) ([]*model.AggSignal, error)
 	GetLatestSignals(ctx context.Context, latestArgs *model.LatestSignalsArgs) ([]*vss.Signal, error)

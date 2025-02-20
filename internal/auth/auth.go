@@ -33,7 +33,7 @@ var (
 	}
 )
 
-//go:generate mockgen -source=./auth.go -destination=auth_mocks.go -package=auth
+//go:generate go tool mockgen -source=./auth.go -destination=auth_mocks.go -package=auth
 type IdentityService interface {
 	GetAftermarketDevice(ctx context.Context, address *common.Address, tokenID *int, serial *string) (*identity.DeviceInfos, error)
 }
