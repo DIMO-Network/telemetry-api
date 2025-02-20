@@ -189,6 +189,16 @@ func SetCollectionField(collection *SignalCollection, signal *vss.Signal) {
 			Timestamp: signal.Timestamp,
 			Value:     signal.ValueNumber,
 		}
+	case "powertrainCombustionEngineEOP":
+		collection.PowertrainCombustionEngineEOP = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
+	case "powertrainCombustionEngineEOT":
+		collection.PowertrainCombustionEngineEOT = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
 	case "powertrainCombustionEngineEngineOilLevel":
 		collection.PowertrainCombustionEngineEngineOilLevel = &SignalString{
 			Timestamp: signal.Timestamp,
@@ -394,6 +404,10 @@ func SetAggregationField(aggregations *SignalAggregations, signal *AggSignal) {
 	case "powertrainCombustionEngineDieselExhaustFluidLevel":
 		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
 	case "powertrainCombustionEngineECT":
+		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
+	case "powertrainCombustionEngineEOP":
+		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
+	case "powertrainCombustionEngineEOT":
 		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
 	case "powertrainCombustionEngineEngineOilLevel":
 		aggregations.ValueStrings[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueString
