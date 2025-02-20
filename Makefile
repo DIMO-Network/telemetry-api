@@ -71,9 +71,10 @@ gql: gql-model gqlgen ## Generate all gql code.
 generate: gql ## Runs all code generators for the repository.
 	@go generate ./...
 
+
 tools-golangci-lint: ## install golangci-lint tool
 	@mkdir -p $(PATHINSTBIN)
 	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(PATHINSTBIN) $(GOLANGCI_VERSION)
 
 
-tools: tools-golangci-lint tools-gqlgen tools-model-garage tools-mockgen ## Install all tools required for development.
+tools: tools-golangci-lint ## Install all tools required for development.
