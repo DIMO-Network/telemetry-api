@@ -1,4 +1,4 @@
-//go:generate mockgen -source=vc.go -destination=vc_mock_test.go -package=vc_test
+//go:generate go tool mockgen -source=vc.go -destination=vc_mock_test.go -package=vc_test
 package vc_test
 
 import (
