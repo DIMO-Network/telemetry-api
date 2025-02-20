@@ -116,6 +116,8 @@ type ComplexityRoot struct {
 		PowertrainCombustionEngineEct                        func(childComplexity int, agg model.FloatAggregation) int
 		PowertrainCombustionEngineEngineOilLevel             func(childComplexity int, agg model.StringAggregation) int
 		PowertrainCombustionEngineEngineOilRelativeLevel     func(childComplexity int, agg model.FloatAggregation) int
+		PowertrainCombustionEngineEop                        func(childComplexity int, agg model.FloatAggregation) int
+		PowertrainCombustionEngineEot                        func(childComplexity int, agg model.FloatAggregation) int
 		PowertrainCombustionEngineMaf                        func(childComplexity int, agg model.FloatAggregation) int
 		PowertrainCombustionEngineSpeed                      func(childComplexity int, agg model.FloatAggregation) int
 		PowertrainCombustionEngineTorque                     func(childComplexity int, agg model.FloatAggregation) int
@@ -182,6 +184,8 @@ type ComplexityRoot struct {
 		PowertrainCombustionEngineDieselExhaustFluidCapacity func(childComplexity int) int
 		PowertrainCombustionEngineDieselExhaustFluidLevel    func(childComplexity int) int
 		PowertrainCombustionEngineECT                        func(childComplexity int) int
+		PowertrainCombustionEngineEOP                        func(childComplexity int) int
+		PowertrainCombustionEngineEOT                        func(childComplexity int) int
 		PowertrainCombustionEngineEngineOilLevel             func(childComplexity int) int
 		PowertrainCombustionEngineEngineOilRelativeLevel     func(childComplexity int) int
 		PowertrainCombustionEngineMAF                        func(childComplexity int) int
@@ -279,6 +283,8 @@ type SignalAggregationsResolver interface {
 	PowertrainCombustionEngineDieselExhaustFluidCapacity(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
 	PowertrainCombustionEngineDieselExhaustFluidLevel(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
 	PowertrainCombustionEngineEct(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
+	PowertrainCombustionEngineEop(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
+	PowertrainCombustionEngineEot(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
 	PowertrainCombustionEngineEngineOilLevel(ctx context.Context, obj *model.SignalAggregations, agg model.StringAggregation) (*string, error)
 	PowertrainCombustionEngineEngineOilRelativeLevel(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
 	PowertrainCombustionEngineMaf(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
@@ -919,6 +925,30 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.SignalAggregations.PowertrainCombustionEngineEngineOilRelativeLevel(childComplexity, args["agg"].(model.FloatAggregation)), true
 
+	case "SignalAggregations.powertrainCombustionEngineEOP":
+		if e.complexity.SignalAggregations.PowertrainCombustionEngineEop == nil {
+			break
+		}
+
+		args, err := ec.field_SignalAggregations_powertrainCombustionEngineEOP_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.SignalAggregations.PowertrainCombustionEngineEop(childComplexity, args["agg"].(model.FloatAggregation)), true
+
+	case "SignalAggregations.powertrainCombustionEngineEOT":
+		if e.complexity.SignalAggregations.PowertrainCombustionEngineEot == nil {
+			break
+		}
+
+		args, err := ec.field_SignalAggregations_powertrainCombustionEngineEOT_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.SignalAggregations.PowertrainCombustionEngineEot(childComplexity, args["agg"].(model.FloatAggregation)), true
+
 	case "SignalAggregations.powertrainCombustionEngineMAF":
 		if e.complexity.SignalAggregations.PowertrainCombustionEngineMaf == nil {
 			break
@@ -1474,6 +1504,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.SignalCollection.PowertrainCombustionEngineECT(childComplexity), true
+
+	case "SignalCollection.powertrainCombustionEngineEOP":
+		if e.complexity.SignalCollection.PowertrainCombustionEngineEOP == nil {
+			break
+		}
+
+		return e.complexity.SignalCollection.PowertrainCombustionEngineEOP(childComplexity), true
+
+	case "SignalCollection.powertrainCombustionEngineEOT":
+		if e.complexity.SignalCollection.PowertrainCombustionEngineEOT == nil {
+			break
+		}
+
+		return e.complexity.SignalCollection.PowertrainCombustionEngineEOT(childComplexity), true
 
 	case "SignalCollection.powertrainCombustionEngineEngineOilLevel":
 		if e.complexity.SignalCollection.PowertrainCombustionEngineEngineOilLevel == nil {
@@ -2387,6 +2431,24 @@ extend type SignalAggregations {
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineECT", forceResolver: true) @isSignal @hasAggregation
   
   """
+  Engine oil pressure.
+  Unit: 'kPa'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  powertrainCombustionEngineEOP(
+    agg: FloatAggregation!
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineEOP", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  Engine oil temperature.
+  Unit: 'celsius'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  powertrainCombustionEngineEOT(
+    agg: FloatAggregation!
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineEOT", forceResolver: true) @isSignal @hasAggregation
+  
+  """
   Engine oil level.
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
@@ -2853,6 +2915,20 @@ extend type SignalCollection {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainCombustionEngineECT: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineECT") @isSignal
+  
+  """
+  Engine oil pressure.
+  Unit: 'kPa'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  powertrainCombustionEngineEOP: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineEOP") @isSignal
+  
+  """
+  Engine oil temperature.
+  Unit: 'celsius'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  powertrainCombustionEngineEOT: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineEOT") @isSignal
   
   """
   Engine oil level.
@@ -4591,6 +4667,62 @@ func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineE
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineEOP_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field_SignalAggregations_powertrainCombustionEngineEOP_argsAgg(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["agg"] = arg0
+	return args, nil
+}
+func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineEOP_argsAgg(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (model.FloatAggregation, error) {
+	if _, ok := rawArgs["agg"]; !ok {
+		var zeroVal model.FloatAggregation
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
+	if tmp, ok := rawArgs["agg"]; ok {
+		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
+	}
+
+	var zeroVal model.FloatAggregation
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineEOT_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field_SignalAggregations_powertrainCombustionEngineEOT_argsAgg(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["agg"] = arg0
+	return args, nil
+}
+func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineEOT_argsAgg(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (model.FloatAggregation, error) {
+	if _, ok := rawArgs["agg"]; !ok {
+		var zeroVal model.FloatAggregation
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
+	if tmp, ok := rawArgs["agg"]; ok {
+		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
+	}
+
+	var zeroVal model.FloatAggregation
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineEngineOilLevel_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -5796,6 +5928,10 @@ func (ec *executionContext) fieldContext_Query_signals(ctx context.Context, fiel
 				return ec.fieldContext_SignalAggregations_powertrainCombustionEngineDieselExhaustFluidLevel(ctx, field)
 			case "powertrainCombustionEngineECT":
 				return ec.fieldContext_SignalAggregations_powertrainCombustionEngineECT(ctx, field)
+			case "powertrainCombustionEngineEOP":
+				return ec.fieldContext_SignalAggregations_powertrainCombustionEngineEOP(ctx, field)
+			case "powertrainCombustionEngineEOT":
+				return ec.fieldContext_SignalAggregations_powertrainCombustionEngineEOT(ctx, field)
 			case "powertrainCombustionEngineEngineOilLevel":
 				return ec.fieldContext_SignalAggregations_powertrainCombustionEngineEngineOilLevel(ctx, field)
 			case "powertrainCombustionEngineEngineOilRelativeLevel":
@@ -6000,6 +6136,10 @@ func (ec *executionContext) fieldContext_Query_signalsLatest(ctx context.Context
 				return ec.fieldContext_SignalCollection_powertrainCombustionEngineDieselExhaustFluidLevel(ctx, field)
 			case "powertrainCombustionEngineECT":
 				return ec.fieldContext_SignalCollection_powertrainCombustionEngineECT(ctx, field)
+			case "powertrainCombustionEngineEOP":
+				return ec.fieldContext_SignalCollection_powertrainCombustionEngineEOP(ctx, field)
+			case "powertrainCombustionEngineEOT":
+				return ec.fieldContext_SignalCollection_powertrainCombustionEngineEOT(ctx, field)
 			case "powertrainCombustionEngineEngineOilLevel":
 				return ec.fieldContext_SignalCollection_powertrainCombustionEngineEngineOilLevel(ctx, field)
 			case "powertrainCombustionEngineEngineOilRelativeLevel":
@@ -10139,6 +10279,192 @@ func (ec *executionContext) fieldContext_SignalAggregations_powertrainCombustion
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_SignalAggregations_powertrainCombustionEngineECT_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineEOP(ctx context.Context, field graphql.CollectedField, obj *model.SignalAggregations) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignalAggregations_powertrainCombustionEngineEOP(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.SignalAggregations().PowertrainCombustionEngineEop(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+		}
+
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+			if err != nil {
+				var zeroVal *float64
+				return zeroVal, err
+			}
+			if ec.directives.RequiresAllOfPrivileges == nil {
+				var zeroVal *float64
+				return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
+			}
+			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+		}
+		directive2 := func(ctx context.Context) (any, error) {
+			if ec.directives.IsSignal == nil {
+				var zeroVal *float64
+				return zeroVal, errors.New("directive isSignal is not implemented")
+			}
+			return ec.directives.IsSignal(ctx, obj, directive1)
+		}
+		directive3 := func(ctx context.Context) (any, error) {
+			if ec.directives.HasAggregation == nil {
+				var zeroVal *float64
+				return zeroVal, errors.New("directive hasAggregation is not implemented")
+			}
+			return ec.directives.HasAggregation(ctx, obj, directive2)
+		}
+
+		tmp, err := directive3(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*float64); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*float64)
+	fc.Result = res
+	return ec.marshalOFloat2ᚖfloat64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SignalAggregations_powertrainCombustionEngineEOP(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignalAggregations",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_SignalAggregations_powertrainCombustionEngineEOP_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineEOT(ctx context.Context, field graphql.CollectedField, obj *model.SignalAggregations) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignalAggregations_powertrainCombustionEngineEOT(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.SignalAggregations().PowertrainCombustionEngineEot(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+		}
+
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+			if err != nil {
+				var zeroVal *float64
+				return zeroVal, err
+			}
+			if ec.directives.RequiresAllOfPrivileges == nil {
+				var zeroVal *float64
+				return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
+			}
+			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+		}
+		directive2 := func(ctx context.Context) (any, error) {
+			if ec.directives.IsSignal == nil {
+				var zeroVal *float64
+				return zeroVal, errors.New("directive isSignal is not implemented")
+			}
+			return ec.directives.IsSignal(ctx, obj, directive1)
+		}
+		directive3 := func(ctx context.Context) (any, error) {
+			if ec.directives.HasAggregation == nil {
+				var zeroVal *float64
+				return zeroVal, errors.New("directive hasAggregation is not implemented")
+			}
+			return ec.directives.HasAggregation(ctx, obj, directive2)
+		}
+
+		tmp, err := directive3(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*float64); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*float64)
+	fc.Result = res
+	return ec.marshalOFloat2ᚖfloat64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SignalAggregations_powertrainCombustionEngineEOT(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignalAggregations",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_SignalAggregations_powertrainCombustionEngineEOT_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -15571,6 +15897,168 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineECT(ctx 
 }
 
 func (ec *executionContext) fieldContext_SignalCollection_powertrainCombustionEngineECT(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignalCollection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "timestamp":
+				return ec.fieldContext_SignalFloat_timestamp(ctx, field)
+			case "value":
+				return ec.fieldContext_SignalFloat_value(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SignalFloat", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SignalCollection_powertrainCombustionEngineEOP(ctx context.Context, field graphql.CollectedField, obj *model.SignalCollection) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignalCollection_powertrainCombustionEngineEOP(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
+			ctx = rctx // use context from middleware stack in children
+			return obj.PowertrainCombustionEngineEOP, nil
+		}
+
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+			if err != nil {
+				var zeroVal *model.SignalFloat
+				return zeroVal, err
+			}
+			if ec.directives.RequiresAllOfPrivileges == nil {
+				var zeroVal *model.SignalFloat
+				return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
+			}
+			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+		}
+		directive2 := func(ctx context.Context) (any, error) {
+			if ec.directives.IsSignal == nil {
+				var zeroVal *model.SignalFloat
+				return zeroVal, errors.New("directive isSignal is not implemented")
+			}
+			return ec.directives.IsSignal(ctx, obj, directive1)
+		}
+
+		tmp, err := directive2(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*model.SignalFloat); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.SignalFloat)
+	fc.Result = res
+	return ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SignalCollection_powertrainCombustionEngineEOP(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignalCollection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "timestamp":
+				return ec.fieldContext_SignalFloat_timestamp(ctx, field)
+			case "value":
+				return ec.fieldContext_SignalFloat_value(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SignalFloat", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SignalCollection_powertrainCombustionEngineEOT(ctx context.Context, field graphql.CollectedField, obj *model.SignalCollection) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignalCollection_powertrainCombustionEngineEOT(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
+			ctx = rctx // use context from middleware stack in children
+			return obj.PowertrainCombustionEngineEOT, nil
+		}
+
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+			if err != nil {
+				var zeroVal *model.SignalFloat
+				return zeroVal, err
+			}
+			if ec.directives.RequiresAllOfPrivileges == nil {
+				var zeroVal *model.SignalFloat
+				return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
+			}
+			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+		}
+		directive2 := func(ctx context.Context) (any, error) {
+			if ec.directives.IsSignal == nil {
+				var zeroVal *model.SignalFloat
+				return zeroVal, errors.New("directive isSignal is not implemented")
+			}
+			return ec.directives.IsSignal(ctx, obj, directive1)
+		}
+
+		tmp, err := directive2(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*model.SignalFloat); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.SignalFloat)
+	fc.Result = res
+	return ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SignalCollection_powertrainCombustionEngineEOT(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalCollection",
 		Field:      field,
@@ -21706,6 +22194,72 @@ func (ec *executionContext) _SignalAggregations(ctx context.Context, sel ast.Sel
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "powertrainCombustionEngineEOP":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._SignalAggregations_powertrainCombustionEngineEOP(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "powertrainCombustionEngineEOT":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._SignalAggregations_powertrainCombustionEngineEOT(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "powertrainCombustionEngineEngineOilLevel":
 			field := field
 
@@ -22643,6 +23197,10 @@ func (ec *executionContext) _SignalCollection(ctx context.Context, sel ast.Selec
 			out.Values[i] = ec._SignalCollection_powertrainCombustionEngineDieselExhaustFluidLevel(ctx, field, obj)
 		case "powertrainCombustionEngineECT":
 			out.Values[i] = ec._SignalCollection_powertrainCombustionEngineECT(ctx, field, obj)
+		case "powertrainCombustionEngineEOP":
+			out.Values[i] = ec._SignalCollection_powertrainCombustionEngineEOP(ctx, field, obj)
+		case "powertrainCombustionEngineEOT":
+			out.Values[i] = ec._SignalCollection_powertrainCombustionEngineEOT(ctx, field, obj)
 		case "powertrainCombustionEngineEngineOilLevel":
 			out.Values[i] = ec._SignalCollection_powertrainCombustionEngineEngineOilLevel(ctx, field, obj)
 		case "powertrainCombustionEngineEngineOilRelativeLevel":

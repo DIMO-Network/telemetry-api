@@ -334,6 +334,24 @@ func (r *signalAggregationsResolver) PowertrainCombustionEngineEct(ctx context.C
 	return &vn, nil
 }
 
+// PowertrainCombustionEngineEop is the resolver for the powertrainCombustionEngineEOP
+func (r *signalAggregationsResolver) PowertrainCombustionEngineEop(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
+	vn, ok := obj.ValueNumbers[model.AliasKey{Name: "powertrainCombustionEngineEOP", Agg: agg.String()}]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
+// PowertrainCombustionEngineEot is the resolver for the powertrainCombustionEngineEOT
+func (r *signalAggregationsResolver) PowertrainCombustionEngineEot(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
+	vn, ok := obj.ValueNumbers[model.AliasKey{Name: "powertrainCombustionEngineEOT", Agg: agg.String()}]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
 // PowertrainCombustionEngineEngineOilLevel is the resolver for the powertrainCombustionEngineEngineOilLevel
 func (r *signalAggregationsResolver) PowertrainCombustionEngineEngineOilLevel(ctx context.Context, obj *model.SignalAggregations, agg model.StringAggregation) (*string, error) {
 	vs, ok := obj.ValueStrings[model.AliasKey{Name: "powertrainCombustionEngineEngineOilLevel", Agg: agg.String()}]

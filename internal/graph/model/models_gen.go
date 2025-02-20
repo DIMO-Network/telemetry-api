@@ -192,6 +192,14 @@ type SignalCollection struct {
 	// Unit: 'celsius'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainCombustionEngineECT *SignalFloat `json:"powertrainCombustionEngineECT,omitempty"`
+	// Engine oil pressure.
+	// Unit: 'kPa'
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	PowertrainCombustionEngineEOP *SignalFloat `json:"powertrainCombustionEngineEOP,omitempty"`
+	// Engine oil temperature.
+	// Unit: 'celsius'
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	PowertrainCombustionEngineEOT *SignalFloat `json:"powertrainCombustionEngineEOT,omitempty"`
 	// Engine oil level.
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainCombustionEngineEngineOilLevel *SignalString `json:"powertrainCombustionEngineEngineOilLevel,omitempty"`
