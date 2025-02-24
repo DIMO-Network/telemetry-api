@@ -3,7 +3,6 @@ package vc_test
 
 import (
 	"context"
-	"database/sql"
 	"encoding/json"
 	"errors"
 	"testing"
@@ -17,6 +16,8 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 // MockRow implements sql.Row and returns a string when scanned.
@@ -111,7 +112,7 @@ func TestGetLatestVC(t *testing.T) {
 		{
 			name: "No data found",
 			mockSetup: func() {
-				mockService.EXPECT().GetLatestCloudEvent(gomock.Any(), gomock.Any()).Return(emptyEvent, sql.ErrNoRows)
+				mockService.EXPECT().GetLatestCloudEvent(gomock.Any(), gomock.Any()).Return(emptyEvent, status.Error(codes.NotFound, "no data found"))
 			},
 			expectedVC: nil,
 		},
