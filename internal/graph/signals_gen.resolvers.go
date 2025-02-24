@@ -82,6 +82,15 @@ func (r *signalAggregationsResolver) CurrentLocationAltitude(ctx context.Context
 	return &vn, nil
 }
 
+// CurrentLocationHeading is the resolver for the currentLocationHeading
+func (r *signalAggregationsResolver) CurrentLocationHeading(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
+	vn, ok := obj.ValueNumbers[model.AliasKey{Name: "currentLocationHeading", Agg: agg.String()}]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
 // CurrentLocationIsRedacted is the resolver for the currentLocationIsRedacted
 func (r *signalAggregationsResolver) CurrentLocationIsRedacted(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
 	vn, ok := obj.ValueNumbers[model.AliasKey{Name: "currentLocationIsRedacted", Agg: agg.String()}]
@@ -148,6 +157,15 @@ func (r *signalAggregationsResolver) DimoAftermarketWPAState(ctx context.Context
 // ExteriorAirTemperature is the resolver for the exteriorAirTemperature
 func (r *signalAggregationsResolver) ExteriorAirTemperature(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
 	vn, ok := obj.ValueNumbers[model.AliasKey{Name: "exteriorAirTemperature", Agg: agg.String()}]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
+// IsIgnitionOn is the resolver for the isIgnitionOn
+func (r *signalAggregationsResolver) IsIgnitionOn(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
+	vn, ok := obj.ValueNumbers[model.AliasKey{Name: "isIgnitionOn", Agg: agg.String()}]
 	if !ok {
 		return nil, nil
 	}

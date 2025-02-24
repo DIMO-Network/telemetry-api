@@ -86,6 +86,7 @@ type ComplexityRoot struct {
 		CurrentLocationAltitude                              func(childComplexity int, agg model.FloatAggregation) int
 		CurrentLocationApproximateLatitude                   func(childComplexity int, agg model.FloatAggregation) int
 		CurrentLocationApproximateLongitude                  func(childComplexity int, agg model.FloatAggregation) int
+		CurrentLocationHeading                               func(childComplexity int, agg model.FloatAggregation) int
 		CurrentLocationIsRedacted                            func(childComplexity int, agg model.FloatAggregation) int
 		CurrentLocationLatitude                              func(childComplexity int, agg model.FloatAggregation) int
 		CurrentLocationLongitude                             func(childComplexity int, agg model.FloatAggregation) int
@@ -94,6 +95,7 @@ type ComplexityRoot struct {
 		DimoAftermarketSsid                                  func(childComplexity int, agg model.StringAggregation) int
 		DimoAftermarketWPAState                              func(childComplexity int, agg model.StringAggregation) int
 		ExteriorAirTemperature                               func(childComplexity int, agg model.FloatAggregation) int
+		IsIgnitionOn                                         func(childComplexity int, agg model.FloatAggregation) int
 		LowVoltageBatteryCurrentVoltage                      func(childComplexity int, agg model.FloatAggregation) int
 		ObdBarometricPressure                                func(childComplexity int, agg model.FloatAggregation) int
 		ObdCommandedEgr                                      func(childComplexity int, agg model.FloatAggregation) int
@@ -155,6 +157,7 @@ type ComplexityRoot struct {
 		CurrentLocationAltitude                              func(childComplexity int) int
 		CurrentLocationApproximateLatitude                   func(childComplexity int) int
 		CurrentLocationApproximateLongitude                  func(childComplexity int) int
+		CurrentLocationHeading                               func(childComplexity int) int
 		CurrentLocationIsRedacted                            func(childComplexity int) int
 		CurrentLocationLatitude                              func(childComplexity int) int
 		CurrentLocationLongitude                             func(childComplexity int) int
@@ -163,6 +166,7 @@ type ComplexityRoot struct {
 		DIMOAftermarketSSID                                  func(childComplexity int) int
 		DIMOAftermarketWPAState                              func(childComplexity int) int
 		ExteriorAirTemperature                               func(childComplexity int) int
+		IsIgnitionOn                                         func(childComplexity int) int
 		LastSeen                                             func(childComplexity int) int
 		LowVoltageBatteryCurrentVoltage                      func(childComplexity int) int
 		OBDBarometricPressure                                func(childComplexity int) int
@@ -255,6 +259,7 @@ type SignalAggregationsResolver interface {
 	ChassisAxleRow2WheelLeftTirePressure(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
 	ChassisAxleRow2WheelRightTirePressure(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
 	CurrentLocationAltitude(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
+	CurrentLocationHeading(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
 	CurrentLocationIsRedacted(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
 	CurrentLocationLatitude(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
 	CurrentLocationLongitude(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
@@ -263,6 +268,7 @@ type SignalAggregationsResolver interface {
 	DimoAftermarketSsid(ctx context.Context, obj *model.SignalAggregations, agg model.StringAggregation) (*string, error)
 	DimoAftermarketWPAState(ctx context.Context, obj *model.SignalAggregations, agg model.StringAggregation) (*string, error)
 	ExteriorAirTemperature(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
+	IsIgnitionOn(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
 	LowVoltageBatteryCurrentVoltage(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
 	ObdBarometricPressure(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
 	ObdCommandedEgr(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
@@ -565,6 +571,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.SignalAggregations.CurrentLocationApproximateLongitude(childComplexity, args["agg"].(model.FloatAggregation)), true
 
+	case "SignalAggregations.currentLocationHeading":
+		if e.complexity.SignalAggregations.CurrentLocationHeading == nil {
+			break
+		}
+
+		args, err := ec.field_SignalAggregations_currentLocationHeading_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.SignalAggregations.CurrentLocationHeading(childComplexity, args["agg"].(model.FloatAggregation)), true
+
 	case "SignalAggregations.currentLocationIsRedacted":
 		if e.complexity.SignalAggregations.CurrentLocationIsRedacted == nil {
 			break
@@ -660,6 +678,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.SignalAggregations.ExteriorAirTemperature(childComplexity, args["agg"].(model.FloatAggregation)), true
+
+	case "SignalAggregations.isIgnitionOn":
+		if e.complexity.SignalAggregations.IsIgnitionOn == nil {
+			break
+		}
+
+		args, err := ec.field_SignalAggregations_isIgnitionOn_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.SignalAggregations.IsIgnitionOn(childComplexity, args["agg"].(model.FloatAggregation)), true
 
 	case "SignalAggregations.lowVoltageBatteryCurrentVoltage":
 		if e.complexity.SignalAggregations.LowVoltageBatteryCurrentVoltage == nil {
@@ -1302,6 +1332,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.SignalCollection.CurrentLocationApproximateLongitude(childComplexity), true
 
+	case "SignalCollection.currentLocationHeading":
+		if e.complexity.SignalCollection.CurrentLocationHeading == nil {
+			break
+		}
+
+		return e.complexity.SignalCollection.CurrentLocationHeading(childComplexity), true
+
 	case "SignalCollection.currentLocationIsRedacted":
 		if e.complexity.SignalCollection.CurrentLocationIsRedacted == nil {
 			break
@@ -1357,6 +1394,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.SignalCollection.ExteriorAirTemperature(childComplexity), true
+
+	case "SignalCollection.isIgnitionOn":
+		if e.complexity.SignalCollection.IsIgnitionOn == nil {
+			break
+		}
+
+		return e.complexity.SignalCollection.IsIgnitionOn(childComplexity), true
 
 	case "SignalCollection.lastSeen":
 		if e.complexity.SignalCollection.LastSeen == nil {
@@ -2186,6 +2230,15 @@ extend type SignalAggregations {
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationAltitude", forceResolver: true) @isSignal @hasAggregation
   
   """
+  Current heading relative to geographic north. 0 = North, 90 = East, 180 = South, 270 = West.
+  Unit: 'degrees' Min: '0' Max: '360'
+  Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
+  """
+  currentLocationHeading(
+    agg: FloatAggregation!
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationHeading", forceResolver: true) @isSignal @hasAggregation
+  
+  """
   Indicates if the latitude and longitude signals at the current timestamp have been redacted using a privacy zone.
   Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
   """
@@ -2236,7 +2289,7 @@ extend type SignalAggregations {
   ):  String @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketSSID", forceResolver: true) @isSignal @hasAggregation
   
   """
-  Indicate the current WPA state for the device's wifi
+  Indicate the current WPA state for the device's wifi, e.g. "CONNECTED", "SCANNING", "DISCONNECTED"
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   dimoAftermarketWPAState(
@@ -2251,6 +2304,14 @@ extend type SignalAggregations {
   exteriorAirTemperature(
     agg: FloatAggregation!
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ExteriorAirTemperature", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  Vehicle ignition status. False - off, True - on.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  isIgnitionOn(
+    agg: FloatAggregation!
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "IsIgnitionOn", forceResolver: true) @isSignal @hasAggregation
   
   """
   Current Voltage of the low voltage battery.
@@ -2728,6 +2789,13 @@ extend type SignalCollection {
   currentLocationAltitude: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationAltitude") @isSignal
   
   """
+  Current heading relative to geographic north. 0 = North, 90 = East, 180 = South, 270 = West.
+  Unit: 'degrees' Min: '0' Max: '360'
+  Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
+  """
+  currentLocationHeading: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationHeading") @isSignal
+  
+  """
   Indicates if the latitude and longitude signals at the current timestamp have been redacted using a privacy zone.
   Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
   """
@@ -2766,7 +2834,7 @@ extend type SignalCollection {
   dimoAftermarketSSID: SignalString @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketSSID") @isSignal
   
   """
-  Indicate the current WPA state for the device's wifi
+  Indicate the current WPA state for the device's wifi, e.g. "CONNECTED", "SCANNING", "DISCONNECTED"
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   dimoAftermarketWPAState: SignalString @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketWPAState") @isSignal
@@ -2777,6 +2845,12 @@ extend type SignalCollection {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   exteriorAirTemperature: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ExteriorAirTemperature") @isSignal
+  
+  """
+  Vehicle ignition status. False - off, True - on.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  isIgnitionOn: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "IsIgnitionOn") @isSignal
   
   """
   Current Voltage of the low voltage battery.
@@ -3883,6 +3957,34 @@ func (ec *executionContext) field_SignalAggregations_currentLocationApproximateL
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_currentLocationHeading_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field_SignalAggregations_currentLocationHeading_argsAgg(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["agg"] = arg0
+	return args, nil
+}
+func (ec *executionContext) field_SignalAggregations_currentLocationHeading_argsAgg(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (model.FloatAggregation, error) {
+	if _, ok := rawArgs["agg"]; !ok {
+		var zeroVal model.FloatAggregation
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
+	if tmp, ok := rawArgs["agg"]; ok {
+		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
+	}
+
+	var zeroVal model.FloatAggregation
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_currentLocationIsRedacted_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -4090,6 +4192,34 @@ func (ec *executionContext) field_SignalAggregations_exteriorAirTemperature_args
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_exteriorAirTemperature_argsAgg(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (model.FloatAggregation, error) {
+	if _, ok := rawArgs["agg"]; !ok {
+		var zeroVal model.FloatAggregation
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
+	if tmp, ok := rawArgs["agg"]; ok {
+		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
+	}
+
+	var zeroVal model.FloatAggregation
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_SignalAggregations_isIgnitionOn_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field_SignalAggregations_isIgnitionOn_argsAgg(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["agg"] = arg0
+	return args, nil
+}
+func (ec *executionContext) field_SignalAggregations_isIgnitionOn_argsAgg(
 	ctx context.Context,
 	rawArgs map[string]any,
 ) (model.FloatAggregation, error) {
@@ -5872,6 +6002,8 @@ func (ec *executionContext) fieldContext_Query_signals(ctx context.Context, fiel
 				return ec.fieldContext_SignalAggregations_chassisAxleRow2WheelRightTirePressure(ctx, field)
 			case "currentLocationAltitude":
 				return ec.fieldContext_SignalAggregations_currentLocationAltitude(ctx, field)
+			case "currentLocationHeading":
+				return ec.fieldContext_SignalAggregations_currentLocationHeading(ctx, field)
 			case "currentLocationIsRedacted":
 				return ec.fieldContext_SignalAggregations_currentLocationIsRedacted(ctx, field)
 			case "currentLocationLatitude":
@@ -5888,6 +6020,8 @@ func (ec *executionContext) fieldContext_Query_signals(ctx context.Context, fiel
 				return ec.fieldContext_SignalAggregations_dimoAftermarketWPAState(ctx, field)
 			case "exteriorAirTemperature":
 				return ec.fieldContext_SignalAggregations_exteriorAirTemperature(ctx, field)
+			case "isIgnitionOn":
+				return ec.fieldContext_SignalAggregations_isIgnitionOn(ctx, field)
 			case "lowVoltageBatteryCurrentVoltage":
 				return ec.fieldContext_SignalAggregations_lowVoltageBatteryCurrentVoltage(ctx, field)
 			case "obdBarometricPressure":
@@ -6080,6 +6214,8 @@ func (ec *executionContext) fieldContext_Query_signalsLatest(ctx context.Context
 				return ec.fieldContext_SignalCollection_chassisAxleRow2WheelRightTirePressure(ctx, field)
 			case "currentLocationAltitude":
 				return ec.fieldContext_SignalCollection_currentLocationAltitude(ctx, field)
+			case "currentLocationHeading":
+				return ec.fieldContext_SignalCollection_currentLocationHeading(ctx, field)
 			case "currentLocationIsRedacted":
 				return ec.fieldContext_SignalCollection_currentLocationIsRedacted(ctx, field)
 			case "currentLocationLatitude":
@@ -6096,6 +6232,8 @@ func (ec *executionContext) fieldContext_Query_signalsLatest(ctx context.Context
 				return ec.fieldContext_SignalCollection_dimoAftermarketWPAState(ctx, field)
 			case "exteriorAirTemperature":
 				return ec.fieldContext_SignalCollection_exteriorAirTemperature(ctx, field)
+			case "isIgnitionOn":
+				return ec.fieldContext_SignalCollection_isIgnitionOn(ctx, field)
 			case "lowVoltageBatteryCurrentVoltage":
 				return ec.fieldContext_SignalCollection_lowVoltageBatteryCurrentVoltage(ctx, field)
 			case "obdBarometricPressure":
@@ -7681,6 +7819,99 @@ func (ec *executionContext) fieldContext_SignalAggregations_currentLocationAltit
 	return fc, nil
 }
 
+func (ec *executionContext) _SignalAggregations_currentLocationHeading(ctx context.Context, field graphql.CollectedField, obj *model.SignalAggregations) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignalAggregations_currentLocationHeading(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.SignalAggregations().CurrentLocationHeading(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+		}
+
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_ALL_TIME_LOCATION"})
+			if err != nil {
+				var zeroVal *float64
+				return zeroVal, err
+			}
+			if ec.directives.RequiresAllOfPrivileges == nil {
+				var zeroVal *float64
+				return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
+			}
+			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+		}
+		directive2 := func(ctx context.Context) (any, error) {
+			if ec.directives.IsSignal == nil {
+				var zeroVal *float64
+				return zeroVal, errors.New("directive isSignal is not implemented")
+			}
+			return ec.directives.IsSignal(ctx, obj, directive1)
+		}
+		directive3 := func(ctx context.Context) (any, error) {
+			if ec.directives.HasAggregation == nil {
+				var zeroVal *float64
+				return zeroVal, errors.New("directive hasAggregation is not implemented")
+			}
+			return ec.directives.HasAggregation(ctx, obj, directive2)
+		}
+
+		tmp, err := directive3(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*float64); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*float64)
+	fc.Result = res
+	return ec.marshalOFloat2ᚖfloat64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SignalAggregations_currentLocationHeading(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignalAggregations",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_SignalAggregations_currentLocationHeading_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _SignalAggregations_currentLocationIsRedacted(ctx context.Context, field graphql.CollectedField, obj *model.SignalAggregations) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalAggregations_currentLocationIsRedacted(ctx, field)
 	if err != nil {
@@ -8419,6 +8650,99 @@ func (ec *executionContext) fieldContext_SignalAggregations_exteriorAirTemperatu
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_SignalAggregations_exteriorAirTemperature_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SignalAggregations_isIgnitionOn(ctx context.Context, field graphql.CollectedField, obj *model.SignalAggregations) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignalAggregations_isIgnitionOn(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.SignalAggregations().IsIgnitionOn(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+		}
+
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+			if err != nil {
+				var zeroVal *float64
+				return zeroVal, err
+			}
+			if ec.directives.RequiresAllOfPrivileges == nil {
+				var zeroVal *float64
+				return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
+			}
+			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+		}
+		directive2 := func(ctx context.Context) (any, error) {
+			if ec.directives.IsSignal == nil {
+				var zeroVal *float64
+				return zeroVal, errors.New("directive isSignal is not implemented")
+			}
+			return ec.directives.IsSignal(ctx, obj, directive1)
+		}
+		directive3 := func(ctx context.Context) (any, error) {
+			if ec.directives.HasAggregation == nil {
+				var zeroVal *float64
+				return zeroVal, errors.New("directive hasAggregation is not implemented")
+			}
+			return ec.directives.HasAggregation(ctx, obj, directive2)
+		}
+
+		tmp, err := directive3(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*float64); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*float64)
+	fc.Result = res
+	return ec.marshalOFloat2ᚖfloat64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SignalAggregations_isIgnitionOn(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignalAggregations",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_SignalAggregations_isIgnitionOn_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -13647,6 +13971,87 @@ func (ec *executionContext) fieldContext_SignalCollection_currentLocationAltitud
 	return fc, nil
 }
 
+func (ec *executionContext) _SignalCollection_currentLocationHeading(ctx context.Context, field graphql.CollectedField, obj *model.SignalCollection) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignalCollection_currentLocationHeading(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
+			ctx = rctx // use context from middleware stack in children
+			return obj.CurrentLocationHeading, nil
+		}
+
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_ALL_TIME_LOCATION"})
+			if err != nil {
+				var zeroVal *model.SignalFloat
+				return zeroVal, err
+			}
+			if ec.directives.RequiresAllOfPrivileges == nil {
+				var zeroVal *model.SignalFloat
+				return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
+			}
+			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+		}
+		directive2 := func(ctx context.Context) (any, error) {
+			if ec.directives.IsSignal == nil {
+				var zeroVal *model.SignalFloat
+				return zeroVal, errors.New("directive isSignal is not implemented")
+			}
+			return ec.directives.IsSignal(ctx, obj, directive1)
+		}
+
+		tmp, err := directive2(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*model.SignalFloat); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.SignalFloat)
+	fc.Result = res
+	return ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SignalCollection_currentLocationHeading(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignalCollection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "timestamp":
+				return ec.fieldContext_SignalFloat_timestamp(ctx, field)
+			case "value":
+				return ec.fieldContext_SignalFloat_value(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SignalFloat", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _SignalCollection_currentLocationIsRedacted(ctx context.Context, field graphql.CollectedField, obj *model.SignalCollection) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalCollection_currentLocationIsRedacted(ctx, field)
 	if err != nil {
@@ -14277,6 +14682,87 @@ func (ec *executionContext) _SignalCollection_exteriorAirTemperature(ctx context
 }
 
 func (ec *executionContext) fieldContext_SignalCollection_exteriorAirTemperature(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignalCollection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "timestamp":
+				return ec.fieldContext_SignalFloat_timestamp(ctx, field)
+			case "value":
+				return ec.fieldContext_SignalFloat_value(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SignalFloat", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SignalCollection_isIgnitionOn(ctx context.Context, field graphql.CollectedField, obj *model.SignalCollection) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignalCollection_isIgnitionOn(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
+			ctx = rctx // use context from middleware stack in children
+			return obj.IsIgnitionOn, nil
+		}
+
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+			if err != nil {
+				var zeroVal *model.SignalFloat
+				return zeroVal, err
+			}
+			if ec.directives.RequiresAllOfPrivileges == nil {
+				var zeroVal *model.SignalFloat
+				return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
+			}
+			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+		}
+		directive2 := func(ctx context.Context) (any, error) {
+			if ec.directives.IsSignal == nil {
+				var zeroVal *model.SignalFloat
+				return zeroVal, errors.New("directive isSignal is not implemented")
+			}
+			return ec.directives.IsSignal(ctx, obj, directive1)
+		}
+
+		tmp, err := directive2(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*model.SignalFloat); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.SignalFloat)
+	fc.Result = res
+	return ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SignalCollection_isIgnitionOn(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalCollection",
 		Field:      field,
@@ -21270,6 +21756,39 @@ func (ec *executionContext) _SignalAggregations(ctx context.Context, sel ast.Sel
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "currentLocationHeading":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._SignalAggregations_currentLocationHeading(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "currentLocationIsRedacted":
 			field := field
 
@@ -21511,6 +22030,39 @@ func (ec *executionContext) _SignalAggregations(ctx context.Context, sel ast.Sel
 					}
 				}()
 				res = ec._SignalAggregations_exteriorAirTemperature(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "isIgnitionOn":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._SignalAggregations_isIgnitionOn(ctx, field, obj)
 				return res
 			}
 
@@ -23141,6 +23693,8 @@ func (ec *executionContext) _SignalCollection(ctx context.Context, sel ast.Selec
 			out.Values[i] = ec._SignalCollection_chassisAxleRow2WheelRightTirePressure(ctx, field, obj)
 		case "currentLocationAltitude":
 			out.Values[i] = ec._SignalCollection_currentLocationAltitude(ctx, field, obj)
+		case "currentLocationHeading":
+			out.Values[i] = ec._SignalCollection_currentLocationHeading(ctx, field, obj)
 		case "currentLocationIsRedacted":
 			out.Values[i] = ec._SignalCollection_currentLocationIsRedacted(ctx, field, obj)
 		case "currentLocationLatitude":
@@ -23157,6 +23711,8 @@ func (ec *executionContext) _SignalCollection(ctx context.Context, sel ast.Selec
 			out.Values[i] = ec._SignalCollection_dimoAftermarketWPAState(ctx, field, obj)
 		case "exteriorAirTemperature":
 			out.Values[i] = ec._SignalCollection_exteriorAirTemperature(ctx, field, obj)
+		case "isIgnitionOn":
+			out.Values[i] = ec._SignalCollection_isIgnitionOn(ctx, field, obj)
 		case "lowVoltageBatteryCurrentVoltage":
 			out.Values[i] = ec._SignalCollection_lowVoltageBatteryCurrentVoltage(ctx, field, obj)
 		case "obdBarometricPressure":

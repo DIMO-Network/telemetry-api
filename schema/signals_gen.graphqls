@@ -73,6 +73,15 @@ extend type SignalAggregations {
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationAltitude", forceResolver: true) @isSignal @hasAggregation
   
   """
+  Current heading relative to geographic north. 0 = North, 90 = East, 180 = South, 270 = West.
+  Unit: 'degrees' Min: '0' Max: '360'
+  Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
+  """
+  currentLocationHeading(
+    agg: FloatAggregation!
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationHeading", forceResolver: true) @isSignal @hasAggregation
+  
+  """
   Indicates if the latitude and longitude signals at the current timestamp have been redacted using a privacy zone.
   Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
   """
@@ -123,7 +132,7 @@ extend type SignalAggregations {
   ):  String @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketSSID", forceResolver: true) @isSignal @hasAggregation
   
   """
-  Indicate the current WPA state for the device's wifi
+  Indicate the current WPA state for the device's wifi, e.g. "CONNECTED", "SCANNING", "DISCONNECTED"
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   dimoAftermarketWPAState(
@@ -138,6 +147,14 @@ extend type SignalAggregations {
   exteriorAirTemperature(
     agg: FloatAggregation!
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ExteriorAirTemperature", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  Vehicle ignition status. False - off, True - on.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  isIgnitionOn(
+    agg: FloatAggregation!
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "IsIgnitionOn", forceResolver: true) @isSignal @hasAggregation
   
   """
   Current Voltage of the low voltage battery.
@@ -615,6 +632,13 @@ extend type SignalCollection {
   currentLocationAltitude: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationAltitude") @isSignal
   
   """
+  Current heading relative to geographic north. 0 = North, 90 = East, 180 = South, 270 = West.
+  Unit: 'degrees' Min: '0' Max: '360'
+  Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
+  """
+  currentLocationHeading: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationHeading") @isSignal
+  
+  """
   Indicates if the latitude and longitude signals at the current timestamp have been redacted using a privacy zone.
   Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
   """
@@ -653,7 +677,7 @@ extend type SignalCollection {
   dimoAftermarketSSID: SignalString @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketSSID") @isSignal
   
   """
-  Indicate the current WPA state for the device's wifi
+  Indicate the current WPA state for the device's wifi, e.g. "CONNECTED", "SCANNING", "DISCONNECTED"
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   dimoAftermarketWPAState: SignalString @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketWPAState") @isSignal
@@ -664,6 +688,12 @@ extend type SignalCollection {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   exteriorAirTemperature: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ExteriorAirTemperature") @isSignal
+  
+  """
+  Vehicle ignition status. False - off, True - on.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  isIgnitionOn: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "IsIgnitionOn") @isSignal
   
   """
   Current Voltage of the low voltage battery.

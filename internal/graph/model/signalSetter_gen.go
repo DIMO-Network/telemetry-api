@@ -49,6 +49,11 @@ func SetCollectionField(collection *SignalCollection, signal *vss.Signal) {
 			Timestamp: signal.Timestamp,
 			Value:     signal.ValueNumber,
 		}
+	case "currentLocationHeading":
+		collection.CurrentLocationHeading = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
 	case "currentLocationIsRedacted":
 		collection.CurrentLocationIsRedacted = &SignalFloat{
 			Timestamp: signal.Timestamp,
@@ -86,6 +91,11 @@ func SetCollectionField(collection *SignalCollection, signal *vss.Signal) {
 		}
 	case "exteriorAirTemperature":
 		collection.ExteriorAirTemperature = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
+	case "isIgnitionOn":
+		collection.IsIgnitionOn = &SignalFloat{
 			Timestamp: signal.Timestamp,
 			Value:     signal.ValueNumber,
 		}
@@ -349,6 +359,8 @@ func SetAggregationField(aggregations *SignalAggregations, signal *AggSignal) {
 		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
 	case "currentLocationAltitude":
 		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
+	case "currentLocationHeading":
+		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
 	case "currentLocationIsRedacted":
 		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
 	case "currentLocationLatitude":
@@ -364,6 +376,8 @@ func SetAggregationField(aggregations *SignalAggregations, signal *AggSignal) {
 	case "dimoAftermarketWPAState":
 		aggregations.ValueStrings[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueString
 	case "exteriorAirTemperature":
+		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
+	case "isIgnitionOn":
 		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
 	case "lowVoltageBatteryCurrentVoltage":
 		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber

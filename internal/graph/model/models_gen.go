@@ -87,6 +87,10 @@ type SignalCollection struct {
 	// Unit: 'm'
 	// Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
 	CurrentLocationAltitude *SignalFloat `json:"currentLocationAltitude,omitempty"`
+	// Current heading relative to geographic north. 0 = North, 90 = East, 180 = South, 270 = West.
+	// Unit: 'degrees' Min: '0' Max: '360'
+	// Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
+	CurrentLocationHeading *SignalFloat `json:"currentLocationHeading,omitempty"`
 	// Indicates if the latitude and longitude signals at the current timestamp have been redacted using a privacy zone.
 	// Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
 	CurrentLocationIsRedacted *SignalFloat `json:"currentLocationIsRedacted,omitempty"`
@@ -107,13 +111,16 @@ type SignalCollection struct {
 	// Service Set Identifier for the wifi.
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	DIMOAftermarketSSID *SignalString `json:"dimoAftermarketSSID,omitempty"`
-	// Indicate the current WPA state for the device's wifi
+	// Indicate the current WPA state for the device's wifi, e.g. "CONNECTED", "SCANNING", "DISCONNECTED"
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	DIMOAftermarketWPAState *SignalString `json:"dimoAftermarketWPAState,omitempty"`
 	// Air temperature outside the vehicle.
 	// Unit: 'celsius'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	ExteriorAirTemperature *SignalFloat `json:"exteriorAirTemperature,omitempty"`
+	// Vehicle ignition status. False - off, True - on.
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	IsIgnitionOn *SignalFloat `json:"isIgnitionOn,omitempty"`
 	// Current Voltage of the low voltage battery.
 	// Unit: 'V'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]

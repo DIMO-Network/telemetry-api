@@ -80,8 +80,8 @@ github.com/DIMO-Network/clickhouse-infra v0.0.3 h1:B6/4IY9IxLcyydET14IjHUT+A5SDE
 github.com/DIMO-Network/clickhouse-infra v0.0.3/go.mod h1:NtpQ1btkPzebDvpYYygeqiiBmJ/q5oJb/T/JWzUVRlk=
 github.com/DIMO-Network/fetch-api v0.0.6 h1:kL5aYKKf+idUKWIgJNnnsurCol2C4n91gVPhiKDvEss=
 github.com/DIMO-Network/fetch-api v0.0.6/go.mod h1:W51V8G+5kjxGVJzsRK6e4Hzoh8kS/T2kQmsTUqaDyqE=
-github.com/DIMO-Network/model-garage v0.4.10 h1:oguiJP0m4aET9C5kbXkjj9MxbR+2WwfvWn2wUsleymU=
-github.com/DIMO-Network/model-garage v0.4.10/go.mod h1:qDCcVsJ//KfYNwElttRCJmwywZnWLp55RwSc0jFKAXI=
+github.com/DIMO-Network/model-garage v0.4.11 h1:y6J4zbx0bGZXPYOKsOaEGfzAebv7GJh+VPNXX7gYwHU=
+github.com/DIMO-Network/model-garage v0.4.11/go.mod h1:qDCcVsJ//KfYNwElttRCJmwywZnWLp55RwSc0jFKAXI=
 github.com/DIMO-Network/shared v0.12.7 h1:6H8Pngxn2zXxhh/y34UHxCXBI6JGWCBr1Bpuczz57UQ=
 github.com/DIMO-Network/shared v0.12.7/go.mod h1:lDHUKwwT2LW6Zvd42Nb33dXklRNTmfyOlbUNx2dQfGY=
 github.com/DIMO-Network/yaml v0.1.0 h1:KQ3oKHUZETchR6Pxbmmol3e4ewrPv/q8cEwqxfwyZbU=
