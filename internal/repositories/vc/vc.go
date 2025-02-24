@@ -2,7 +2,6 @@ package vc
 
 import (
 	"context"
-	"database/sql"
 	"encoding/json"
 	"errors"
 	"time"
@@ -13,6 +12,8 @@ import (
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/rs/zerolog"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
@@ -56,8 +57,8 @@ func (r *Repository) GetLatestVINVC(ctx context.Context, vehicleTokenID uint32) 
 	}
 	dataObj, err := r.indexService.GetLatestCloudEvent(ctx, opts)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, nil
+		if status.Code(err) == codes.NotFound {
+			return nil, nil //nolint // we nil is a valid response
 		}
 		r.logger.Error().Err(err).Msg("failed to get latest VIN VC data")
 		return nil, errors.New("internal error")
@@ -134,8 +135,8 @@ func (r *Repository) GetLatestPOMVC(ctx context.Context, vehicleTokenID uint32) 
 	}
 	dataObj, err := r.indexService.GetLatestCloudEvent(ctx, opts)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, nil
+		if status.Code(err) == codes.NotFound {
+			return nil, nil //nolint // we nil is a valid response
 		}
 		r.logger.Error().Err(err).Msg("failed to get latest POM VC data")
 		return nil, errors.New("internal error")
