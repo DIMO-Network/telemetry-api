@@ -49,10 +49,7 @@ test: ## Run tests
 	@go test -v ./...
 
 lint: ## Run linter
-	@golangci-lint run
-
-format:
-	@golangci-lint run --fix
+	@PATH=$$PATH golangci-lint run
 
 docker: dep
 	@docker build -f ./Dockerfile . -t dimozone/$(BIN_NAME):$(VER_CUT)
