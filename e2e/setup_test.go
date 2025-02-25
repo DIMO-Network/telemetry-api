@@ -51,9 +51,8 @@ func GetTestServices(t *testing.T) *TestServices {
 			VehicleNFTAddress:            common.HexToAddress("0xbA5738a18d83D41847dfFbDC6101d37C69c9B0cF"),
 			ManufacturerNFTAddress:       common.HexToAddress("0x3b07e2A2ABdd0A9B8F7878bdE6487c502164B9dd"),
 			MaxRequestDuration:           "1m",
-			VCBucket:                     "test.vc.bucket", // TLDR keep the dots; If we don't use a non DNS resolved bucket name then the bucket lookup will attempt to use BUCKET_NAME.baseEndpoint
-			VINVCDataType:                "VINVCv1.0",
-			POMVCDataType:                "POMVCv1.0",
+			VINVCDataVersion:             "VINVCv1.0",
+			POMVCDataVersion:             "POMVCv1.0",
 			ChainID:                      137,
 			DeviceLastSeenBinHrs:         3,
 		}

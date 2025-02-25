@@ -14,9 +14,8 @@ type Settings struct {
 	TokenExchangeIssuer          string          `yaml:"TOKEN_EXCHANGE_ISSUER_URL"`
 	VehicleNFTAddress            common.Address  `yaml:"VEHICLE_NFT_ADDRESS"`
 	MaxRequestDuration           string          `yaml:"MAX_REQUEST_DURATION"`
-	VCBucket                     string          `yaml:"VC_BUCKET"`
-	VINVCDataType                string          `yaml:"VINVC_DATA_TYPE"`
-	POMVCDataType                string          `yaml:"POMVC_DATA_TYPE"`
+	VINVCDataVersion             string          `yaml:"VINVC_DATA_VERSION"`
+	POMVCDataVersion             string          `yaml:"POMVC_DATA_VERSION"`
 	ManufacturerNFTAddress       common.Address  `yaml:"MANUFACTURER_NFT_ADDRESS"`
 	IdentityAPIURL               string          `yaml:"IDENTITY_API_URL"`
 	IdentityAPIReqTimeoutSeconds int             `yaml:"IDENTITY_API_REQUEST_TIMEOUT_SECONDS"`

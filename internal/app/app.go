@@ -104,7 +104,7 @@ func noOp(ctx context.Context, obj interface{}, next graphql.Resolver) (res inte
 func newVinVCServiceFromSettings(settings config.Settings, parentLogger *zerolog.Logger) (*vc.Repository, error) {
 	fetchapiSvc := fetchapi.New(&settings)
 	vinvcLogger := parentLogger.With().Str("component", "vinvc").Logger()
-	return vc.New(fetchapiSvc, settings.VCBucket, settings.VINVCDataType, settings.POMVCDataType, uint64(settings.ChainID), settings.VehicleNFTAddress, &vinvcLogger), nil
+	return vc.New(fetchapiSvc, settings.VINVCDataVersion, settings.POMVCDataVersion, uint64(settings.ChainID), settings.VehicleNFTAddress, &vinvcLogger), nil
 }
 
 func errorHandler(log zerolog.Logger) func(ctx context.Context, e error) *gqlerror.Error {

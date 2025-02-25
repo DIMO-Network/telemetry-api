@@ -21,25 +21,23 @@ type indexRepoService interface {
 	GetLatestCloudEvent(ctx context.Context, filter *grpc.SearchOptions) (cloudevent.CloudEvent[json.RawMessage], error)
 }
 type Repository struct {
-	logger         *zerolog.Logger
-	indexService   indexRepoService
-	vcBucket       string
-	vinVCDataType  string
-	pomVCDataType  string
-	chainID        uint64
-	vehicleAddress common.Address
+	logger           *zerolog.Logger
+	indexService     indexRepoService
+	vinVCDataVersion string
+	pomVCDataVersion string
+	chainID          uint64
+	vehicleAddress   common.Address
 }
 
 // New creates a new instance of Service.
-func New(indexService indexRepoService, vcBucketName, vinVCDataType, pomVCDataType string, chainID uint64, vehicleAddress common.Address, logger *zerolog.Logger) *Repository {
+func New(indexService indexRepoService, vinVCDataVersion, pomVCDataVersion string, chainID uint64, vehicleAddress common.Address, logger *zerolog.Logger) *Repository {
 	return &Repository{
-		indexService:   indexService,
-		vcBucket:       vcBucketName,
-		vinVCDataType:  vinVCDataType,
-		pomVCDataType:  pomVCDataType,
-		chainID:        chainID,
-		vehicleAddress: vehicleAddress,
-		logger:         logger,
+		indexService:     indexService,
+		vinVCDataVersion: vinVCDataVersion,
+		pomVCDataVersion: pomVCDataVersion,
+		chainID:          chainID,
+		vehicleAddress:   vehicleAddress,
+		logger:           logger,
 	}
 }
 
@@ -51,7 +49,7 @@ func (r *Repository) GetLatestVINVC(ctx context.Context, vehicleTokenID uint32) 
 		TokenID:         vehicleTokenID,
 	}.String()
 	opts := &grpc.SearchOptions{
-		DataVersion: &wrapperspb.StringValue{Value: r.vinVCDataType},
+		DataVersion: &wrapperspb.StringValue{Value: r.vinVCDataVersion},
 		Type:        &wrapperspb.StringValue{Value: cloudevent.TypeVerifableCredential},
 		Subject:     &wrapperspb.StringValue{Value: vehicleDID},
 	}
@@ -129,7 +127,7 @@ func (r *Repository) GetLatestPOMVC(ctx context.Context, vehicleTokenID uint32) 
 		TokenID:         vehicleTokenID,
 	}.String()
 	opts := &grpc.SearchOptions{
-		DataVersion: &wrapperspb.StringValue{Value: r.pomVCDataType},
+		DataVersion: &wrapperspb.StringValue{Value: r.pomVCDataVersion},
 		Type:        &wrapperspb.StringValue{Value: cloudevent.TypeVerifableCredential},
 		Subject:     &wrapperspb.StringValue{Value: vehicleDID},
 	}

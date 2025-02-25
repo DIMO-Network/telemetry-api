@@ -51,7 +51,7 @@ func TestGetLatestVC(t *testing.T) {
 	logger := zerolog.New(nil)
 	ctx := context.Background()
 	vehicleTokenID := uint32(123)
-	dataType := "vinvc"
+	dataVersion := "vinvc"
 	bucketName := "bucket-name"
 
 	// Create mock controller
@@ -63,7 +63,7 @@ func TestGetLatestVC(t *testing.T) {
 	vehicleAddress := common.HexToAddress("0x123")
 	chainID := uint64(3)
 	// Initialize the service with mock dependencies
-	svc := vc.New(mockService, bucketName, dataType, "", chainID, vehicleAddress, &logger)
+	svc := vc.New(mockService, bucketName, dataVersion, chainID, vehicleAddress, &logger)
 
 	defaultVC := verifiable.Credential{
 		ValidTo:   time.Now().Add(24 * time.Hour).Format(time.RFC3339),
