@@ -13,7 +13,7 @@ require (
 	github.com/Khan/genqlient v0.7.0
 	github.com/auth0/go-jwt-middleware/v2 v2.2.1
 	github.com/ethereum/go-ethereum v1.14.13
-	github.com/go-jose/go-jose/v4 v4.0.4
+	github.com/go-jose/go-jose/v4 v4.0.5
 	github.com/gofiber/fiber/v2 v2.52.6
 	github.com/prometheus/client_golang v1.20.5
 	github.com/rs/zerolog v1.33.0
