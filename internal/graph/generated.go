@@ -136,6 +136,7 @@ type ComplexityRoot struct {
 		PowertrainTractionBatteryGrossCapacity               func(childComplexity int, agg model.FloatAggregation) int
 		PowertrainTractionBatteryRange                       func(childComplexity int, agg model.FloatAggregation) int
 		PowertrainTractionBatteryStateOfChargeCurrent        func(childComplexity int, agg model.FloatAggregation) int
+		PowertrainTractionBatteryStateOfChargeCurrentEnergy  func(childComplexity int, agg model.FloatAggregation) int
 		PowertrainTractionBatteryTemperatureAverage          func(childComplexity int, agg model.FloatAggregation) int
 		PowertrainTransmissionCurrentGear                    func(childComplexity int, agg model.FloatAggregation) int
 		PowertrainTransmissionTemperature                    func(childComplexity int, agg model.FloatAggregation) int
@@ -208,6 +209,7 @@ type ComplexityRoot struct {
 		PowertrainTractionBatteryGrossCapacity               func(childComplexity int) int
 		PowertrainTractionBatteryRange                       func(childComplexity int) int
 		PowertrainTractionBatteryStateOfChargeCurrent        func(childComplexity int) int
+		PowertrainTractionBatteryStateOfChargeCurrentEnergy  func(childComplexity int) int
 		PowertrainTractionBatteryTemperatureAverage          func(childComplexity int) int
 		PowertrainTransmissionCurrentGear                    func(childComplexity int) int
 		PowertrainTransmissionTemperature                    func(childComplexity int) int
@@ -309,6 +311,7 @@ type SignalAggregationsResolver interface {
 	PowertrainTractionBatteryGrossCapacity(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
 	PowertrainTractionBatteryRange(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
 	PowertrainTractionBatteryStateOfChargeCurrent(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
+	PowertrainTractionBatteryStateOfChargeCurrentEnergy(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
 	PowertrainTractionBatteryTemperatureAverage(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
 	PowertrainTransmissionCurrentGear(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
 	PowertrainTransmissionTemperature(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
@@ -1171,6 +1174,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.SignalAggregations.PowertrainTractionBatteryStateOfChargeCurrent(childComplexity, args["agg"].(model.FloatAggregation)), true
 
+	case "SignalAggregations.powertrainTractionBatteryStateOfChargeCurrentEnergy":
+		if e.complexity.SignalAggregations.PowertrainTractionBatteryStateOfChargeCurrentEnergy == nil {
+			break
+		}
+
+		args, err := ec.field_SignalAggregations_powertrainTractionBatteryStateOfChargeCurrentEnergy_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.SignalAggregations.PowertrainTractionBatteryStateOfChargeCurrentEnergy(childComplexity, args["agg"].(model.FloatAggregation)), true
+
 	case "SignalAggregations.powertrainTractionBatteryTemperatureAverage":
 		if e.complexity.SignalAggregations.PowertrainTractionBatteryTemperatureAverage == nil {
 			break
@@ -1688,6 +1703,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.SignalCollection.PowertrainTractionBatteryStateOfChargeCurrent(childComplexity), true
+
+	case "SignalCollection.powertrainTractionBatteryStateOfChargeCurrentEnergy":
+		if e.complexity.SignalCollection.PowertrainTractionBatteryStateOfChargeCurrentEnergy == nil {
+			break
+		}
+
+		return e.complexity.SignalCollection.PowertrainTractionBatteryStateOfChargeCurrentEnergy(childComplexity), true
 
 	case "SignalCollection.powertrainTractionBatteryTemperatureAverage":
 		if e.complexity.SignalCollection.PowertrainTractionBatteryTemperatureAverage == nil {
@@ -2669,6 +2691,15 @@ extend type SignalAggregations {
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryStateOfChargeCurrent", forceResolver: true) @isSignal @hasAggregation
   
   """
+  Physical state of charge of high voltage battery expressed in kWh.
+  Unit: 'kWh'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  powertrainTractionBatteryStateOfChargeCurrentEnergy(
+    agg: FloatAggregation!
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryStateOfChargeCurrentEnergy", forceResolver: true) @isSignal @hasAggregation
+  
+  """
   Current average temperature of the battery cells.
   Unit: 'celsius'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
@@ -3126,6 +3157,13 @@ extend type SignalCollection {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainTractionBatteryStateOfChargeCurrent: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryStateOfChargeCurrent") @isSignal
+  
+  """
+  Physical state of charge of high voltage battery expressed in kWh.
+  Unit: 'kWh'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  powertrainTractionBatteryStateOfChargeCurrentEnergy: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryStateOfChargeCurrentEnergy") @isSignal
   
   """
   Current average temperature of the battery cells.
@@ -5329,6 +5367,34 @@ func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryRa
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryStateOfChargeCurrentEnergy_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field_SignalAggregations_powertrainTractionBatteryStateOfChargeCurrentEnergy_argsAgg(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["agg"] = arg0
+	return args, nil
+}
+func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryStateOfChargeCurrentEnergy_argsAgg(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (model.FloatAggregation, error) {
+	if _, ok := rawArgs["agg"]; !ok {
+		var zeroVal model.FloatAggregation
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
+	if tmp, ok := rawArgs["agg"]; ok {
+		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
+	}
+
+	var zeroVal model.FloatAggregation
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryStateOfChargeCurrent_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -6102,6 +6168,8 @@ func (ec *executionContext) fieldContext_Query_signals(ctx context.Context, fiel
 				return ec.fieldContext_SignalAggregations_powertrainTractionBatteryRange(ctx, field)
 			case "powertrainTractionBatteryStateOfChargeCurrent":
 				return ec.fieldContext_SignalAggregations_powertrainTractionBatteryStateOfChargeCurrent(ctx, field)
+			case "powertrainTractionBatteryStateOfChargeCurrentEnergy":
+				return ec.fieldContext_SignalAggregations_powertrainTractionBatteryStateOfChargeCurrentEnergy(ctx, field)
 			case "powertrainTractionBatteryTemperatureAverage":
 				return ec.fieldContext_SignalAggregations_powertrainTractionBatteryTemperatureAverage(ctx, field)
 			case "powertrainTransmissionCurrentGear":
@@ -6314,6 +6382,8 @@ func (ec *executionContext) fieldContext_Query_signalsLatest(ctx context.Context
 				return ec.fieldContext_SignalCollection_powertrainTractionBatteryRange(ctx, field)
 			case "powertrainTractionBatteryStateOfChargeCurrent":
 				return ec.fieldContext_SignalCollection_powertrainTractionBatteryStateOfChargeCurrent(ctx, field)
+			case "powertrainTractionBatteryStateOfChargeCurrentEnergy":
+				return ec.fieldContext_SignalCollection_powertrainTractionBatteryStateOfChargeCurrentEnergy(ctx, field)
 			case "powertrainTractionBatteryTemperatureAverage":
 				return ec.fieldContext_SignalCollection_powertrainTractionBatteryTemperatureAverage(ctx, field)
 			case "powertrainTransmissionCurrentGear":
@@ -12469,6 +12539,99 @@ func (ec *executionContext) fieldContext_SignalAggregations_powertrainTractionBa
 	return fc, nil
 }
 
+func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryStateOfChargeCurrentEnergy(ctx context.Context, field graphql.CollectedField, obj *model.SignalAggregations) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignalAggregations_powertrainTractionBatteryStateOfChargeCurrentEnergy(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryStateOfChargeCurrentEnergy(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+		}
+
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+			if err != nil {
+				var zeroVal *float64
+				return zeroVal, err
+			}
+			if ec.directives.RequiresAllOfPrivileges == nil {
+				var zeroVal *float64
+				return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
+			}
+			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+		}
+		directive2 := func(ctx context.Context) (any, error) {
+			if ec.directives.IsSignal == nil {
+				var zeroVal *float64
+				return zeroVal, errors.New("directive isSignal is not implemented")
+			}
+			return ec.directives.IsSignal(ctx, obj, directive1)
+		}
+		directive3 := func(ctx context.Context) (any, error) {
+			if ec.directives.HasAggregation == nil {
+				var zeroVal *float64
+				return zeroVal, errors.New("directive hasAggregation is not implemented")
+			}
+			return ec.directives.HasAggregation(ctx, obj, directive2)
+		}
+
+		tmp, err := directive3(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*float64); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*float64)
+	fc.Result = res
+	return ec.marshalOFloat2ᚖfloat64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SignalAggregations_powertrainTractionBatteryStateOfChargeCurrentEnergy(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignalAggregations",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_SignalAggregations_powertrainTractionBatteryStateOfChargeCurrentEnergy_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryTemperatureAverage(ctx context.Context, field graphql.CollectedField, obj *model.SignalAggregations) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalAggregations_powertrainTractionBatteryTemperatureAverage(ctx, field)
 	if err != nil {
@@ -18021,6 +18184,87 @@ func (ec *executionContext) fieldContext_SignalCollection_powertrainTractionBatt
 	return fc, nil
 }
 
+func (ec *executionContext) _SignalCollection_powertrainTractionBatteryStateOfChargeCurrentEnergy(ctx context.Context, field graphql.CollectedField, obj *model.SignalCollection) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignalCollection_powertrainTractionBatteryStateOfChargeCurrentEnergy(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
+			ctx = rctx // use context from middleware stack in children
+			return obj.PowertrainTractionBatteryStateOfChargeCurrentEnergy, nil
+		}
+
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+			if err != nil {
+				var zeroVal *model.SignalFloat
+				return zeroVal, err
+			}
+			if ec.directives.RequiresAllOfPrivileges == nil {
+				var zeroVal *model.SignalFloat
+				return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
+			}
+			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+		}
+		directive2 := func(ctx context.Context) (any, error) {
+			if ec.directives.IsSignal == nil {
+				var zeroVal *model.SignalFloat
+				return zeroVal, errors.New("directive isSignal is not implemented")
+			}
+			return ec.directives.IsSignal(ctx, obj, directive1)
+		}
+
+		tmp, err := directive2(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*model.SignalFloat); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.SignalFloat)
+	fc.Result = res
+	return ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SignalCollection_powertrainTractionBatteryStateOfChargeCurrentEnergy(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignalCollection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "timestamp":
+				return ec.fieldContext_SignalFloat_timestamp(ctx, field)
+			case "value":
+				return ec.fieldContext_SignalFloat_value(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SignalFloat", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _SignalCollection_powertrainTractionBatteryTemperatureAverage(ctx context.Context, field graphql.CollectedField, obj *model.SignalCollection) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalCollection_powertrainTractionBatteryTemperatureAverage(ctx, field)
 	if err != nil {
@@ -23406,6 +23650,39 @@ func (ec *executionContext) _SignalAggregations(ctx context.Context, sel ast.Sel
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "powertrainTractionBatteryStateOfChargeCurrentEnergy":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._SignalAggregations_powertrainTractionBatteryStateOfChargeCurrentEnergy(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "powertrainTractionBatteryTemperatureAverage":
 			field := field
 
@@ -23793,6 +24070,8 @@ func (ec *executionContext) _SignalCollection(ctx context.Context, sel ast.Selec
 			out.Values[i] = ec._SignalCollection_powertrainTractionBatteryRange(ctx, field, obj)
 		case "powertrainTractionBatteryStateOfChargeCurrent":
 			out.Values[i] = ec._SignalCollection_powertrainTractionBatteryStateOfChargeCurrent(ctx, field, obj)
+		case "powertrainTractionBatteryStateOfChargeCurrentEnergy":
+			out.Values[i] = ec._SignalCollection_powertrainTractionBatteryStateOfChargeCurrentEnergy(ctx, field, obj)
 		case "powertrainTractionBatteryTemperatureAverage":
 			out.Values[i] = ec._SignalCollection_powertrainTractionBatteryTemperatureAverage(ctx, field, obj)
 		case "powertrainTransmissionCurrentGear":

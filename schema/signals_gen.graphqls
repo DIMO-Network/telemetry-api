@@ -512,6 +512,15 @@ extend type SignalAggregations {
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryStateOfChargeCurrent", forceResolver: true) @isSignal @hasAggregation
   
   """
+  Physical state of charge of high voltage battery expressed in kWh.
+  Unit: 'kWh'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  powertrainTractionBatteryStateOfChargeCurrentEnergy(
+    agg: FloatAggregation!
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryStateOfChargeCurrentEnergy", forceResolver: true) @isSignal @hasAggregation
+  
+  """
   Current average temperature of the battery cells.
   Unit: 'celsius'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
@@ -969,6 +978,13 @@ extend type SignalCollection {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainTractionBatteryStateOfChargeCurrent: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryStateOfChargeCurrent") @isSignal
+  
+  """
+  Physical state of charge of high voltage battery expressed in kWh.
+  Unit: 'kWh'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  powertrainTractionBatteryStateOfChargeCurrentEnergy: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryStateOfChargeCurrentEnergy") @isSignal
   
   """
   Current average temperature of the battery cells.

@@ -532,6 +532,15 @@ func (r *signalAggregationsResolver) PowertrainTractionBatteryStateOfChargeCurre
 	return &vn, nil
 }
 
+// PowertrainTractionBatteryStateOfChargeCurrentEnergy is the resolver for the powertrainTractionBatteryStateOfChargeCurrentEnergy
+func (r *signalAggregationsResolver) PowertrainTractionBatteryStateOfChargeCurrentEnergy(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
+	vn, ok := obj.ValueNumbers[model.AliasKey{Name: "powertrainTractionBatteryStateOfChargeCurrentEnergy", Agg: agg.String()}]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
 // PowertrainTractionBatteryTemperatureAverage is the resolver for the powertrainTractionBatteryTemperatureAverage
 func (r *signalAggregationsResolver) PowertrainTractionBatteryTemperatureAverage(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
 	vn, ok := obj.ValueNumbers[model.AliasKey{Name: "powertrainTractionBatteryTemperatureAverage", Agg: agg.String()}]

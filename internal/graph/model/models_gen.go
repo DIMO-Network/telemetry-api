@@ -276,6 +276,10 @@ type SignalCollection struct {
 	// Unit: 'percent' Min: '0' Max: '100.0'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainTractionBatteryStateOfChargeCurrent *SignalFloat `json:"powertrainTractionBatteryStateOfChargeCurrent,omitempty"`
+	// Physical state of charge of high voltage battery expressed in kWh.
+	// Unit: 'kWh'
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	PowertrainTractionBatteryStateOfChargeCurrentEnergy *SignalFloat `json:"powertrainTractionBatteryStateOfChargeCurrentEnergy,omitempty"`
 	// Current average temperature of the battery cells.
 	// Unit: 'celsius'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]

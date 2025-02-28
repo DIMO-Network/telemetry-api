@@ -299,6 +299,11 @@ func SetCollectionField(collection *SignalCollection, signal *vss.Signal) {
 			Timestamp: signal.Timestamp,
 			Value:     signal.ValueNumber,
 		}
+	case "powertrainTractionBatteryStateOfChargeCurrentEnergy":
+		collection.PowertrainTractionBatteryStateOfChargeCurrentEnergy = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
 	case "powertrainTractionBatteryTemperatureAverage":
 		collection.PowertrainTractionBatteryTemperatureAverage = &SignalFloat{
 			Timestamp: signal.Timestamp,
@@ -458,6 +463,8 @@ func SetAggregationField(aggregations *SignalAggregations, signal *AggSignal) {
 	case "powertrainTractionBatteryRange":
 		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
 	case "powertrainTractionBatteryStateOfChargeCurrent":
+		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
+	case "powertrainTractionBatteryStateOfChargeCurrentEnergy":
 		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
 	case "powertrainTractionBatteryTemperatureAverage":
 		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
