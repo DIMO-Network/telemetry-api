@@ -14,6 +14,46 @@ func SetCollectionField(collection *SignalCollection, signal *vss.Signal) {
 			Timestamp: signal.Timestamp,
 			Value:     signal.ValueNumber,
 		}
+	case "cabinDoorRow1DriverSideIsOpen":
+		collection.CabinDoorRow1DriverSideIsOpen = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
+	case "cabinDoorRow1DriverSideWindowIsOpen":
+		collection.CabinDoorRow1DriverSideWindowIsOpen = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
+	case "cabinDoorRow1PassengerSideIsOpen":
+		collection.CabinDoorRow1PassengerSideIsOpen = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
+	case "cabinDoorRow1PassengerSideWindowIsOpen":
+		collection.CabinDoorRow1PassengerSideWindowIsOpen = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
+	case "cabinDoorRow2DriverSideIsOpen":
+		collection.CabinDoorRow2DriverSideIsOpen = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
+	case "cabinDoorRow2DriverSideWindowIsOpen":
+		collection.CabinDoorRow2DriverSideWindowIsOpen = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
+	case "cabinDoorRow2PassengerSideIsOpen":
+		collection.CabinDoorRow2PassengerSideIsOpen = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
+	case "cabinDoorRow2PassengerSideWindowIsOpen":
+		collection.CabinDoorRow2PassengerSideWindowIsOpen = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
 	case "chassisAxleRow1WheelLeftSpeed":
 		collection.ChassisAxleRow1WheelLeftSpeed = &SignalFloat{
 			Timestamp: signal.Timestamp,
@@ -264,8 +304,18 @@ func SetCollectionField(collection *SignalCollection, signal *vss.Signal) {
 			Timestamp: signal.Timestamp,
 			Value:     signal.ValueNumber,
 		}
+	case "powertrainTractionBatteryChargingChargeCurrentAC":
+		collection.PowertrainTractionBatteryChargingChargeCurrentAC = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
 	case "powertrainTractionBatteryChargingChargeLimit":
 		collection.PowertrainTractionBatteryChargingChargeLimit = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
+	case "powertrainTractionBatteryChargingChargeVoltageUnknownType":
+		collection.PowertrainTractionBatteryChargingChargeVoltageUnknownType = &SignalFloat{
 			Timestamp: signal.Timestamp,
 			Value:     signal.ValueNumber,
 		}
@@ -349,6 +399,22 @@ func SetAggregationField(aggregations *SignalAggregations, signal *AggSignal) {
 	}
 	switch signal.Name {
 	case "angularVelocityYaw":
+		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
+	case "cabinDoorRow1DriverSideIsOpen":
+		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
+	case "cabinDoorRow1DriverSideWindowIsOpen":
+		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
+	case "cabinDoorRow1PassengerSideIsOpen":
+		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
+	case "cabinDoorRow1PassengerSideWindowIsOpen":
+		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
+	case "cabinDoorRow2DriverSideIsOpen":
+		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
+	case "cabinDoorRow2DriverSideWindowIsOpen":
+		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
+	case "cabinDoorRow2PassengerSideIsOpen":
+		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
+	case "cabinDoorRow2PassengerSideWindowIsOpen":
 		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
 	case "chassisAxleRow1WheelLeftSpeed":
 		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
@@ -450,7 +516,11 @@ func SetAggregationField(aggregations *SignalAggregations, signal *AggSignal) {
 		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
 	case "powertrainTractionBatteryChargingAddedEnergy":
 		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
+	case "powertrainTractionBatteryChargingChargeCurrentAC":
+		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
 	case "powertrainTractionBatteryChargingChargeLimit":
+		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
+	case "powertrainTractionBatteryChargingChargeVoltageUnknownType":
 		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
 	case "powertrainTractionBatteryChargingIsCharging":
 		aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber

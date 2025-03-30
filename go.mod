@@ -8,7 +8,7 @@ require (
 	github.com/DIMO-Network/attestation-api v0.0.11
 	github.com/DIMO-Network/clickhouse-infra v0.0.3
 	github.com/DIMO-Network/fetch-api v0.0.6
-	github.com/DIMO-Network/model-garage v0.4.13
+	github.com/DIMO-Network/model-garage v0.5.4
 	github.com/DIMO-Network/shared v0.12.7
 	github.com/Khan/genqlient v0.7.0
 	github.com/auth0/go-jwt-middleware/v2 v2.2.1
@@ -30,6 +30,7 @@ require (
 	dario.cat/mergo v1.0.1 // indirect
 	github.com/Azure/go-ansiterm v0.0.0-20230124172434-306776ec8161 // indirect
 	github.com/ClickHouse/ch-go v0.61.5 // indirect
+	github.com/DIMO-Network/cloudevent v0.0.0-20250325154729-4842ad34efe5 // indirect
 	github.com/DIMO-Network/yaml v0.1.0 // indirect
 	github.com/Masterminds/goutils v1.1.1 // indirect
 	github.com/Masterminds/semver/v3 v3.3.0 // indirect
