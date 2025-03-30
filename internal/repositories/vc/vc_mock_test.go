@@ -14,8 +14,8 @@ import (
 	json "encoding/json"
 	reflect "reflect"
 
+	cloudevent "github.com/DIMO-Network/cloudevent"
 	grpc "github.com/DIMO-Network/fetch-api/pkg/grpc"
-	cloudevent "github.com/DIMO-Network/model-garage/pkg/cloudevent"
 	gomock "go.uber.org/mock/gomock"
 )
 

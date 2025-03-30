@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/DIMO-Network/cloudevent"
 	pb "github.com/DIMO-Network/fetch-api/pkg/grpc"
-	"github.com/DIMO-Network/model-garage/pkg/cloudevent"
 	"github.com/DIMO-Network/telemetry-api/internal/config"
 	"github.com/ethereum/go-ethereum/common"
 	"google.golang.org/grpc"
