@@ -10,6 +10,70 @@ extend type SignalAggregations {
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "AngularVelocityYaw", forceResolver: true) @isSignal @hasAggregation
   
   """
+  Is item open or closed? True = Fully or partially open. False = Fully closed.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  cabinDoorRow1DriverSideIsOpen(
+    agg: FloatAggregation!
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "CabinDoorRow1DriverSideIsOpen", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  Is item open or closed? True = Fully or partially open. False = Fully closed.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  cabinDoorRow1DriverSideWindowIsOpen(
+    agg: FloatAggregation!
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "CabinDoorRow1DriverSideWindowIsOpen", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  Is item open or closed? True = Fully or partially open. False = Fully closed.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  cabinDoorRow1PassengerSideIsOpen(
+    agg: FloatAggregation!
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "CabinDoorRow1PassengerSideIsOpen", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  Is item open or closed? True = Fully or partially open. False = Fully closed.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  cabinDoorRow1PassengerSideWindowIsOpen(
+    agg: FloatAggregation!
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "CabinDoorRow1PassengerSideWindowIsOpen", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  Is item open or closed? True = Fully or partially open. False = Fully closed.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  cabinDoorRow2DriverSideIsOpen(
+    agg: FloatAggregation!
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "CabinDoorRow2DriverSideIsOpen", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  Is item open or closed? True = Fully or partially open. False = Fully closed.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  cabinDoorRow2DriverSideWindowIsOpen(
+    agg: FloatAggregation!
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "CabinDoorRow2DriverSideWindowIsOpen", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  Is item open or closed? True = Fully or partially open. False = Fully closed.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  cabinDoorRow2PassengerSideIsOpen(
+    agg: FloatAggregation!
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "CabinDoorRow2PassengerSideIsOpen", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  Is item open or closed? True = Fully or partially open. False = Fully closed.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  cabinDoorRow2PassengerSideWindowIsOpen(
+    agg: FloatAggregation!
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "CabinDoorRow2PassengerSideWindowIsOpen", forceResolver: true) @isSignal @hasAggregation
+  
+  """
   Rotational speed of a vehicle's wheel.
   Unit: 'km/h'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
@@ -450,6 +514,15 @@ extend type SignalAggregations {
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryChargingAddedEnergy", forceResolver: true) @isSignal @hasAggregation
   
   """
+  Current AC charging current (rms) at inlet. Negative if returning energy to grid. Used when per-phase numbers are unavailable.
+  Unit: 'A'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  powertrainTractionBatteryChargingChargeCurrentAC(
+    agg: FloatAggregation!
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryChargingChargeCurrentAC", forceResolver: true) @isSignal @hasAggregation
+  
+  """
   Target charge limit (state of charge) for battery.
   Unit: 'percent' Min: '0' Max: '100'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
@@ -457,6 +530,15 @@ extend type SignalAggregations {
   powertrainTractionBatteryChargingChargeLimit(
     agg: FloatAggregation!
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryChargingChargeLimit", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  Current charging voltage at inlet. Used when the data source does not indicate the current type (AC or DC) in use.
+  Unit: 'V'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  powertrainTractionBatteryChargingChargeVoltageUnknownType(
+    agg: FloatAggregation!
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryChargingChargeVoltageUnknownType", forceResolver: true) @isSignal @hasAggregation
   
   """
   True if charging is ongoing. Charging is considered to be ongoing if energy is flowing from charger to vehicle.
@@ -590,6 +672,54 @@ extend type SignalCollection {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   angularVelocityYaw: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "AngularVelocityYaw") @isSignal
+  
+  """
+  Is item open or closed? True = Fully or partially open. False = Fully closed.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  cabinDoorRow1DriverSideIsOpen: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "CabinDoorRow1DriverSideIsOpen") @isSignal
+  
+  """
+  Is item open or closed? True = Fully or partially open. False = Fully closed.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  cabinDoorRow1DriverSideWindowIsOpen: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "CabinDoorRow1DriverSideWindowIsOpen") @isSignal
+  
+  """
+  Is item open or closed? True = Fully or partially open. False = Fully closed.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  cabinDoorRow1PassengerSideIsOpen: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "CabinDoorRow1PassengerSideIsOpen") @isSignal
+  
+  """
+  Is item open or closed? True = Fully or partially open. False = Fully closed.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  cabinDoorRow1PassengerSideWindowIsOpen: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "CabinDoorRow1PassengerSideWindowIsOpen") @isSignal
+  
+  """
+  Is item open or closed? True = Fully or partially open. False = Fully closed.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  cabinDoorRow2DriverSideIsOpen: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "CabinDoorRow2DriverSideIsOpen") @isSignal
+  
+  """
+  Is item open or closed? True = Fully or partially open. False = Fully closed.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  cabinDoorRow2DriverSideWindowIsOpen: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "CabinDoorRow2DriverSideWindowIsOpen") @isSignal
+  
+  """
+  Is item open or closed? True = Fully or partially open. False = Fully closed.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  cabinDoorRow2PassengerSideIsOpen: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "CabinDoorRow2PassengerSideIsOpen") @isSignal
+  
+  """
+  Is item open or closed? True = Fully or partially open. False = Fully closed.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  cabinDoorRow2PassengerSideWindowIsOpen: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "CabinDoorRow2PassengerSideWindowIsOpen") @isSignal
   
   """
   Rotational speed of a vehicle's wheel.
@@ -932,11 +1062,25 @@ extend type SignalCollection {
   powertrainTractionBatteryChargingAddedEnergy: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryChargingAddedEnergy") @isSignal
   
   """
+  Current AC charging current (rms) at inlet. Negative if returning energy to grid. Used when per-phase numbers are unavailable.
+  Unit: 'A'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  powertrainTractionBatteryChargingChargeCurrentAC: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryChargingChargeCurrentAC") @isSignal
+  
+  """
   Target charge limit (state of charge) for battery.
   Unit: 'percent' Min: '0' Max: '100'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainTractionBatteryChargingChargeLimit: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryChargingChargeLimit") @isSignal
+  
+  """
+  Current charging voltage at inlet. Used when the data source does not indicate the current type (AC or DC) in use.
+  Unit: 'V'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  powertrainTractionBatteryChargingChargeVoltageUnknownType: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryChargingChargeVoltageUnknownType") @isSignal
   
   """
   True if charging is ongoing. Charging is considered to be ongoing if energy is flowing from charger to vehicle.

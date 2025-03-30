@@ -59,6 +59,30 @@ type SignalCollection struct {
 	// Unit: 'degrees/s'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	AngularVelocityYaw *SignalFloat `json:"angularVelocityYaw,omitempty"`
+	// Is item open or closed? True = Fully or partially open. False = Fully closed.
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	CabinDoorRow1DriverSideIsOpen *SignalFloat `json:"cabinDoorRow1DriverSideIsOpen,omitempty"`
+	// Is item open or closed? True = Fully or partially open. False = Fully closed.
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	CabinDoorRow1DriverSideWindowIsOpen *SignalFloat `json:"cabinDoorRow1DriverSideWindowIsOpen,omitempty"`
+	// Is item open or closed? True = Fully or partially open. False = Fully closed.
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	CabinDoorRow1PassengerSideIsOpen *SignalFloat `json:"cabinDoorRow1PassengerSideIsOpen,omitempty"`
+	// Is item open or closed? True = Fully or partially open. False = Fully closed.
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	CabinDoorRow1PassengerSideWindowIsOpen *SignalFloat `json:"cabinDoorRow1PassengerSideWindowIsOpen,omitempty"`
+	// Is item open or closed? True = Fully or partially open. False = Fully closed.
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	CabinDoorRow2DriverSideIsOpen *SignalFloat `json:"cabinDoorRow2DriverSideIsOpen,omitempty"`
+	// Is item open or closed? True = Fully or partially open. False = Fully closed.
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	CabinDoorRow2DriverSideWindowIsOpen *SignalFloat `json:"cabinDoorRow2DriverSideWindowIsOpen,omitempty"`
+	// Is item open or closed? True = Fully or partially open. False = Fully closed.
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	CabinDoorRow2PassengerSideIsOpen *SignalFloat `json:"cabinDoorRow2PassengerSideIsOpen,omitempty"`
+	// Is item open or closed? True = Fully or partially open. False = Fully closed.
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	CabinDoorRow2PassengerSideWindowIsOpen *SignalFloat `json:"cabinDoorRow2PassengerSideWindowIsOpen,omitempty"`
 	// Rotational speed of a vehicle's wheel.
 	// Unit: 'km/h'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
@@ -249,10 +273,18 @@ type SignalCollection struct {
 	// Unit: 'kWh'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainTractionBatteryChargingAddedEnergy *SignalFloat `json:"powertrainTractionBatteryChargingAddedEnergy,omitempty"`
+	// Current AC charging current (rms) at inlet. Negative if returning energy to grid. Used when per-phase numbers are unavailable.
+	// Unit: 'A'
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	PowertrainTractionBatteryChargingChargeCurrentAC *SignalFloat `json:"powertrainTractionBatteryChargingChargeCurrentAC,omitempty"`
 	// Target charge limit (state of charge) for battery.
 	// Unit: 'percent' Min: '0' Max: '100'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainTractionBatteryChargingChargeLimit *SignalFloat `json:"powertrainTractionBatteryChargingChargeLimit,omitempty"`
+	// Current charging voltage at inlet. Used when the data source does not indicate the current type (AC or DC) in use.
+	// Unit: 'V'
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	PowertrainTractionBatteryChargingChargeVoltageUnknownType *SignalFloat `json:"powertrainTractionBatteryChargingChargeVoltageUnknownType,omitempty"`
 	// True if charging is ongoing. Charging is considered to be ongoing if energy is flowing from charger to vehicle.
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainTractionBatteryChargingIsCharging *SignalFloat `json:"powertrainTractionBatteryChargingIsCharging,omitempty"`

@@ -10,8 +10,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/DIMO-Network/cloudevent"
 	pb "github.com/DIMO-Network/fetch-api/pkg/grpc"
-	"github.com/DIMO-Network/model-garage/pkg/cloudevent"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/timestamppb"

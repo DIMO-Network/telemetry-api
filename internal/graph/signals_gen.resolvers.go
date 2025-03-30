@@ -19,6 +19,78 @@ func (r *signalAggregationsResolver) AngularVelocityYaw(ctx context.Context, obj
 	return &vn, nil
 }
 
+// CabinDoorRow1DriverSideIsOpen is the resolver for the cabinDoorRow1DriverSideIsOpen
+func (r *signalAggregationsResolver) CabinDoorRow1DriverSideIsOpen(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
+	vn, ok := obj.ValueNumbers[model.AliasKey{Name: "cabinDoorRow1DriverSideIsOpen", Agg: agg.String()}]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
+// CabinDoorRow1DriverSideWindowIsOpen is the resolver for the cabinDoorRow1DriverSideWindowIsOpen
+func (r *signalAggregationsResolver) CabinDoorRow1DriverSideWindowIsOpen(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
+	vn, ok := obj.ValueNumbers[model.AliasKey{Name: "cabinDoorRow1DriverSideWindowIsOpen", Agg: agg.String()}]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
+// CabinDoorRow1PassengerSideIsOpen is the resolver for the cabinDoorRow1PassengerSideIsOpen
+func (r *signalAggregationsResolver) CabinDoorRow1PassengerSideIsOpen(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
+	vn, ok := obj.ValueNumbers[model.AliasKey{Name: "cabinDoorRow1PassengerSideIsOpen", Agg: agg.String()}]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
+// CabinDoorRow1PassengerSideWindowIsOpen is the resolver for the cabinDoorRow1PassengerSideWindowIsOpen
+func (r *signalAggregationsResolver) CabinDoorRow1PassengerSideWindowIsOpen(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
+	vn, ok := obj.ValueNumbers[model.AliasKey{Name: "cabinDoorRow1PassengerSideWindowIsOpen", Agg: agg.String()}]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
+// CabinDoorRow2DriverSideIsOpen is the resolver for the cabinDoorRow2DriverSideIsOpen
+func (r *signalAggregationsResolver) CabinDoorRow2DriverSideIsOpen(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
+	vn, ok := obj.ValueNumbers[model.AliasKey{Name: "cabinDoorRow2DriverSideIsOpen", Agg: agg.String()}]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
+// CabinDoorRow2DriverSideWindowIsOpen is the resolver for the cabinDoorRow2DriverSideWindowIsOpen
+func (r *signalAggregationsResolver) CabinDoorRow2DriverSideWindowIsOpen(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
+	vn, ok := obj.ValueNumbers[model.AliasKey{Name: "cabinDoorRow2DriverSideWindowIsOpen", Agg: agg.String()}]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
+// CabinDoorRow2PassengerSideIsOpen is the resolver for the cabinDoorRow2PassengerSideIsOpen
+func (r *signalAggregationsResolver) CabinDoorRow2PassengerSideIsOpen(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
+	vn, ok := obj.ValueNumbers[model.AliasKey{Name: "cabinDoorRow2PassengerSideIsOpen", Agg: agg.String()}]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
+// CabinDoorRow2PassengerSideWindowIsOpen is the resolver for the cabinDoorRow2PassengerSideWindowIsOpen
+func (r *signalAggregationsResolver) CabinDoorRow2PassengerSideWindowIsOpen(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
+	vn, ok := obj.ValueNumbers[model.AliasKey{Name: "cabinDoorRow2PassengerSideWindowIsOpen", Agg: agg.String()}]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
 // ChassisAxleRow1WheelLeftSpeed is the resolver for the chassisAxleRow1WheelLeftSpeed
 func (r *signalAggregationsResolver) ChassisAxleRow1WheelLeftSpeed(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
 	vn, ok := obj.ValueNumbers[model.AliasKey{Name: "chassisAxleRow1WheelLeftSpeed", Agg: agg.String()}]
@@ -469,9 +541,27 @@ func (r *signalAggregationsResolver) PowertrainTractionBatteryChargingAddedEnerg
 	return &vn, nil
 }
 
+// PowertrainTractionBatteryChargingChargeCurrentAc is the resolver for the powertrainTractionBatteryChargingChargeCurrentAC
+func (r *signalAggregationsResolver) PowertrainTractionBatteryChargingChargeCurrentAc(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
+	vn, ok := obj.ValueNumbers[model.AliasKey{Name: "powertrainTractionBatteryChargingChargeCurrentAC", Agg: agg.String()}]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
 // PowertrainTractionBatteryChargingChargeLimit is the resolver for the powertrainTractionBatteryChargingChargeLimit
 func (r *signalAggregationsResolver) PowertrainTractionBatteryChargingChargeLimit(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
 	vn, ok := obj.ValueNumbers[model.AliasKey{Name: "powertrainTractionBatteryChargingChargeLimit", Agg: agg.String()}]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
+// PowertrainTractionBatteryChargingChargeVoltageUnknownType is the resolver for the powertrainTractionBatteryChargingChargeVoltageUnknownType
+func (r *signalAggregationsResolver) PowertrainTractionBatteryChargingChargeVoltageUnknownType(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
+	vn, ok := obj.ValueNumbers[model.AliasKey{Name: "powertrainTractionBatteryChargingChargeVoltageUnknownType", Agg: agg.String()}]
 	if !ok {
 		return nil, nil
 	}
