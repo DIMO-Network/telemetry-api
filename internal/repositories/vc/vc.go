@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/DIMO-Network/attestation-api/pkg/verifiable"
+	"github.com/DIMO-Network/cloudevent"
 	"github.com/DIMO-Network/fetch-api/pkg/grpc"
-	"github.com/DIMO-Network/model-garage/pkg/cloudevent"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/rs/zerolog"
