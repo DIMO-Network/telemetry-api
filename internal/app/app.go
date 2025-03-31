@@ -16,6 +16,7 @@ import (
 	"github.com/DIMO-Network/telemetry-api/internal/graph"
 	"github.com/DIMO-Network/telemetry-api/internal/limits"
 	"github.com/DIMO-Network/telemetry-api/internal/repositories"
+	"github.com/DIMO-Network/telemetry-api/internal/repositories/attestation"
 	"github.com/DIMO-Network/telemetry-api/internal/repositories/vc"
 	"github.com/DIMO-Network/telemetry-api/internal/service/ch"
 	"github.com/DIMO-Network/telemetry-api/internal/service/fetchapi"
@@ -47,10 +48,16 @@ func New(settings config.Settings, logger *zerolog.Logger) (*App, error) {
 	if err != nil {
 		logger.Fatal().Err(err).Msg("Couldn't create VINVC repository.")
 	}
+	attRepo, err := newAttestationServiceFromSettings(settings, logger)
+	if err != nil {
+		logger.Fatal().Err(err).Msg("failed to create attestation repository")
+	}
+
 	resolver := &graph.Resolver{
 		Repository:      baseRepo,
 		IdentityService: idService,
 		VCRepo:          vcRepo,
+		AttestationRepo: attRepo,
 	}
 
 	cfg := graph.Config{Resolvers: resolver}
@@ -99,6 +106,12 @@ func (a *App) Cleanup() {
 
 func noOp(ctx context.Context, obj interface{}, next graphql.Resolver) (res interface{}, err error) {
 	return next(ctx)
+}
+
+func newAttestationServiceFromSettings(settings config.Settings, parentLogger *zerolog.Logger) (*attestation.Repository, error) {
+	fetchapiSvc := fetchapi.New(&settings)
+	attestationLogger := parentLogger.With().Str("component", "attestation").Logger()
+	return attestation.New(fetchapiSvc, uint64(settings.ChainID), settings.VehicleNFTAddress, &attestationLogger), nil
 }
 
 func newVinVCServiceFromSettings(settings config.Settings, parentLogger *zerolog.Logger) (*vc.Repository, error) {

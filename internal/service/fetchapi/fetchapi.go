@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/DIMO-Network/cloudevent"
 	pb "github.com/DIMO-Network/fetch-api/pkg/grpc"
-	"github.com/DIMO-Network/model-garage/pkg/cloudevent"
 	"github.com/DIMO-Network/telemetry-api/internal/config"
 	"github.com/ethereum/go-ethereum/common"
 	"google.golang.org/grpc"
@@ -46,6 +46,27 @@ func (c *FetchAPIService) GetLatestCloudEvent(ctx context.Context, filter *pb.Se
 		return cloudevent.CloudEvent[json.RawMessage]{}, fmt.Errorf("failed to get latest file: %w", err)
 	}
 	return resp.GetCloudEvent().AsCloudEvent(), nil
+}
+
+// GetAllCloudEvents retrieves the most recent file content matching the provided search criteria
+func (c *FetchAPIService) GetAllCloudEvents(ctx context.Context, filter *pb.SearchOptions) ([]cloudevent.CloudEvent[json.RawMessage], error) {
+	client, err := c.getClient()
+	if err != nil {
+		return nil, err
+	}
+	resp, err := client.ListCloudEvents(ctx, &pb.ListCloudEventsRequest{
+		Options: filter,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to get latest file: %w", err)
+	}
+
+	cldEvts := []cloudevent.CloudEvent[json.RawMessage]{}
+	for _, ce := range resp.GetCloudEvents() {
+		cldEvts = append(cldEvts, ce.AsCloudEvent())
+	}
+
+	return cldEvts, nil
 }
 
 func (c *FetchAPIService) getClient() (pb.FetchServiceClient, error) {
