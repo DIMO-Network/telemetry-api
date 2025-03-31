@@ -9,7 +9,7 @@ require (
 	github.com/DIMO-Network/clickhouse-infra v0.0.3
 	github.com/DIMO-Network/cloudevent v0.0.4
 	github.com/DIMO-Network/fetch-api v0.0.10
-	github.com/DIMO-Network/model-garage v0.4.13
+	github.com/DIMO-Network/model-garage v0.5.4
 	github.com/DIMO-Network/shared v0.12.7
 	github.com/Khan/genqlient v0.7.0
 	github.com/auth0/go-jwt-middleware/v2 v2.2.1

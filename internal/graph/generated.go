@@ -83,147 +83,167 @@ type ComplexityRoot struct {
 	}
 
 	SignalAggregations struct {
-		AngularVelocityYaw                                   func(childComplexity int, agg model.FloatAggregation) int
-		ChassisAxleRow1WheelLeftSpeed                        func(childComplexity int, agg model.FloatAggregation) int
-		ChassisAxleRow1WheelLeftTirePressure                 func(childComplexity int, agg model.FloatAggregation) int
-		ChassisAxleRow1WheelRightSpeed                       func(childComplexity int, agg model.FloatAggregation) int
-		ChassisAxleRow1WheelRightTirePressure                func(childComplexity int, agg model.FloatAggregation) int
-		ChassisAxleRow2WheelLeftTirePressure                 func(childComplexity int, agg model.FloatAggregation) int
-		ChassisAxleRow2WheelRightTirePressure                func(childComplexity int, agg model.FloatAggregation) int
-		CurrentLocationAltitude                              func(childComplexity int, agg model.FloatAggregation) int
-		CurrentLocationApproximateLatitude                   func(childComplexity int, agg model.FloatAggregation) int
-		CurrentLocationApproximateLongitude                  func(childComplexity int, agg model.FloatAggregation) int
-		CurrentLocationHeading                               func(childComplexity int, agg model.FloatAggregation) int
-		CurrentLocationIsRedacted                            func(childComplexity int, agg model.FloatAggregation) int
-		CurrentLocationLatitude                              func(childComplexity int, agg model.FloatAggregation) int
-		CurrentLocationLongitude                             func(childComplexity int, agg model.FloatAggregation) int
-		DimoAftermarketHdop                                  func(childComplexity int, agg model.FloatAggregation) int
-		DimoAftermarketNsat                                  func(childComplexity int, agg model.FloatAggregation) int
-		DimoAftermarketSsid                                  func(childComplexity int, agg model.StringAggregation) int
-		DimoAftermarketWPAState                              func(childComplexity int, agg model.StringAggregation) int
-		ExteriorAirTemperature                               func(childComplexity int, agg model.FloatAggregation) int
-		IsIgnitionOn                                         func(childComplexity int, agg model.FloatAggregation) int
-		LowVoltageBatteryCurrentVoltage                      func(childComplexity int, agg model.FloatAggregation) int
-		ObdBarometricPressure                                func(childComplexity int, agg model.FloatAggregation) int
-		ObdCommandedEgr                                      func(childComplexity int, agg model.FloatAggregation) int
-		ObdCommandedEvap                                     func(childComplexity int, agg model.FloatAggregation) int
-		ObdDTCList                                           func(childComplexity int, agg model.StringAggregation) int
-		ObdDistanceSinceDTCClear                             func(childComplexity int, agg model.FloatAggregation) int
-		ObdDistanceWithMil                                   func(childComplexity int, agg model.FloatAggregation) int
-		ObdEngineLoad                                        func(childComplexity int, agg model.FloatAggregation) int
-		ObdFuelPressure                                      func(childComplexity int, agg model.FloatAggregation) int
-		ObdIntakeTemp                                        func(childComplexity int, agg model.FloatAggregation) int
-		ObdLongTermFuelTrim1                                 func(childComplexity int, agg model.FloatAggregation) int
-		ObdMap                                               func(childComplexity int, agg model.FloatAggregation) int
-		ObdO2WRSensor1Voltage                                func(childComplexity int, agg model.FloatAggregation) int
-		ObdO2WRSensor2Voltage                                func(childComplexity int, agg model.FloatAggregation) int
-		ObdRunTime                                           func(childComplexity int, agg model.FloatAggregation) int
-		ObdShortTermFuelTrim1                                func(childComplexity int, agg model.FloatAggregation) int
-		ObdWarmupsSinceDTCClear                              func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainCombustionEngineDieselExhaustFluidCapacity func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainCombustionEngineDieselExhaustFluidLevel    func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainCombustionEngineEct                        func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainCombustionEngineEngineOilLevel             func(childComplexity int, agg model.StringAggregation) int
-		PowertrainCombustionEngineEngineOilRelativeLevel     func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainCombustionEngineEop                        func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainCombustionEngineEot                        func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainCombustionEngineMaf                        func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainCombustionEngineSpeed                      func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainCombustionEngineTorque                     func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainCombustionEngineTps                        func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainFuelSystemAbsoluteLevel                    func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainFuelSystemRelativeLevel                    func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainFuelSystemSupportedFuelTypes               func(childComplexity int, agg model.StringAggregation) int
-		PowertrainRange                                      func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainTractionBatteryChargingAddedEnergy         func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainTractionBatteryChargingChargeLimit         func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainTractionBatteryChargingIsCharging          func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainTractionBatteryCurrentPower                func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainTractionBatteryCurrentVoltage              func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainTractionBatteryGrossCapacity               func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainTractionBatteryRange                       func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainTractionBatteryStateOfChargeCurrent        func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainTractionBatteryStateOfChargeCurrentEnergy  func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainTractionBatteryTemperatureAverage          func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainTransmissionCurrentGear                    func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainTransmissionTemperature                    func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainTransmissionTravelledDistance              func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainType                                       func(childComplexity int, agg model.StringAggregation) int
-		ServiceDistanceToService                             func(childComplexity int, agg model.FloatAggregation) int
-		Speed                                                func(childComplexity int, agg model.FloatAggregation) int
-		Timestamp                                            func(childComplexity int) int
+		AngularVelocityYaw                                        func(childComplexity int, agg model.FloatAggregation) int
+		CabinDoorRow1DriverSideIsOpen                             func(childComplexity int, agg model.FloatAggregation) int
+		CabinDoorRow1DriverSideWindowIsOpen                       func(childComplexity int, agg model.FloatAggregation) int
+		CabinDoorRow1PassengerSideIsOpen                          func(childComplexity int, agg model.FloatAggregation) int
+		CabinDoorRow1PassengerSideWindowIsOpen                    func(childComplexity int, agg model.FloatAggregation) int
+		CabinDoorRow2DriverSideIsOpen                             func(childComplexity int, agg model.FloatAggregation) int
+		CabinDoorRow2DriverSideWindowIsOpen                       func(childComplexity int, agg model.FloatAggregation) int
+		CabinDoorRow2PassengerSideIsOpen                          func(childComplexity int, agg model.FloatAggregation) int
+		CabinDoorRow2PassengerSideWindowIsOpen                    func(childComplexity int, agg model.FloatAggregation) int
+		ChassisAxleRow1WheelLeftSpeed                             func(childComplexity int, agg model.FloatAggregation) int
+		ChassisAxleRow1WheelLeftTirePressure                      func(childComplexity int, agg model.FloatAggregation) int
+		ChassisAxleRow1WheelRightSpeed                            func(childComplexity int, agg model.FloatAggregation) int
+		ChassisAxleRow1WheelRightTirePressure                     func(childComplexity int, agg model.FloatAggregation) int
+		ChassisAxleRow2WheelLeftTirePressure                      func(childComplexity int, agg model.FloatAggregation) int
+		ChassisAxleRow2WheelRightTirePressure                     func(childComplexity int, agg model.FloatAggregation) int
+		CurrentLocationAltitude                                   func(childComplexity int, agg model.FloatAggregation) int
+		CurrentLocationApproximateLatitude                        func(childComplexity int, agg model.FloatAggregation) int
+		CurrentLocationApproximateLongitude                       func(childComplexity int, agg model.FloatAggregation) int
+		CurrentLocationHeading                                    func(childComplexity int, agg model.FloatAggregation) int
+		CurrentLocationIsRedacted                                 func(childComplexity int, agg model.FloatAggregation) int
+		CurrentLocationLatitude                                   func(childComplexity int, agg model.FloatAggregation) int
+		CurrentLocationLongitude                                  func(childComplexity int, agg model.FloatAggregation) int
+		DimoAftermarketHdop                                       func(childComplexity int, agg model.FloatAggregation) int
+		DimoAftermarketNsat                                       func(childComplexity int, agg model.FloatAggregation) int
+		DimoAftermarketSsid                                       func(childComplexity int, agg model.StringAggregation) int
+		DimoAftermarketWPAState                                   func(childComplexity int, agg model.StringAggregation) int
+		ExteriorAirTemperature                                    func(childComplexity int, agg model.FloatAggregation) int
+		IsIgnitionOn                                              func(childComplexity int, agg model.FloatAggregation) int
+		LowVoltageBatteryCurrentVoltage                           func(childComplexity int, agg model.FloatAggregation) int
+		ObdBarometricPressure                                     func(childComplexity int, agg model.FloatAggregation) int
+		ObdCommandedEgr                                           func(childComplexity int, agg model.FloatAggregation) int
+		ObdCommandedEvap                                          func(childComplexity int, agg model.FloatAggregation) int
+		ObdDTCList                                                func(childComplexity int, agg model.StringAggregation) int
+		ObdDistanceSinceDTCClear                                  func(childComplexity int, agg model.FloatAggregation) int
+		ObdDistanceWithMil                                        func(childComplexity int, agg model.FloatAggregation) int
+		ObdEngineLoad                                             func(childComplexity int, agg model.FloatAggregation) int
+		ObdFuelPressure                                           func(childComplexity int, agg model.FloatAggregation) int
+		ObdIntakeTemp                                             func(childComplexity int, agg model.FloatAggregation) int
+		ObdLongTermFuelTrim1                                      func(childComplexity int, agg model.FloatAggregation) int
+		ObdMap                                                    func(childComplexity int, agg model.FloatAggregation) int
+		ObdO2WRSensor1Voltage                                     func(childComplexity int, agg model.FloatAggregation) int
+		ObdO2WRSensor2Voltage                                     func(childComplexity int, agg model.FloatAggregation) int
+		ObdRunTime                                                func(childComplexity int, agg model.FloatAggregation) int
+		ObdShortTermFuelTrim1                                     func(childComplexity int, agg model.FloatAggregation) int
+		ObdWarmupsSinceDTCClear                                   func(childComplexity int, agg model.FloatAggregation) int
+		PowertrainCombustionEngineDieselExhaustFluidCapacity      func(childComplexity int, agg model.FloatAggregation) int
+		PowertrainCombustionEngineDieselExhaustFluidLevel         func(childComplexity int, agg model.FloatAggregation) int
+		PowertrainCombustionEngineEct                             func(childComplexity int, agg model.FloatAggregation) int
+		PowertrainCombustionEngineEngineOilLevel                  func(childComplexity int, agg model.StringAggregation) int
+		PowertrainCombustionEngineEngineOilRelativeLevel          func(childComplexity int, agg model.FloatAggregation) int
+		PowertrainCombustionEngineEop                             func(childComplexity int, agg model.FloatAggregation) int
+		PowertrainCombustionEngineEot                             func(childComplexity int, agg model.FloatAggregation) int
+		PowertrainCombustionEngineMaf                             func(childComplexity int, agg model.FloatAggregation) int
+		PowertrainCombustionEngineSpeed                           func(childComplexity int, agg model.FloatAggregation) int
+		PowertrainCombustionEngineTorque                          func(childComplexity int, agg model.FloatAggregation) int
+		PowertrainCombustionEngineTps                             func(childComplexity int, agg model.FloatAggregation) int
+		PowertrainFuelSystemAbsoluteLevel                         func(childComplexity int, agg model.FloatAggregation) int
+		PowertrainFuelSystemRelativeLevel                         func(childComplexity int, agg model.FloatAggregation) int
+		PowertrainFuelSystemSupportedFuelTypes                    func(childComplexity int, agg model.StringAggregation) int
+		PowertrainRange                                           func(childComplexity int, agg model.FloatAggregation) int
+		PowertrainTractionBatteryChargingAddedEnergy              func(childComplexity int, agg model.FloatAggregation) int
+		PowertrainTractionBatteryChargingChargeCurrentAc          func(childComplexity int, agg model.FloatAggregation) int
+		PowertrainTractionBatteryChargingChargeLimit              func(childComplexity int, agg model.FloatAggregation) int
+		PowertrainTractionBatteryChargingChargeVoltageUnknownType func(childComplexity int, agg model.FloatAggregation) int
+		PowertrainTractionBatteryChargingIsCharging               func(childComplexity int, agg model.FloatAggregation) int
+		PowertrainTractionBatteryCurrentPower                     func(childComplexity int, agg model.FloatAggregation) int
+		PowertrainTractionBatteryCurrentVoltage                   func(childComplexity int, agg model.FloatAggregation) int
+		PowertrainTractionBatteryGrossCapacity                    func(childComplexity int, agg model.FloatAggregation) int
+		PowertrainTractionBatteryRange                            func(childComplexity int, agg model.FloatAggregation) int
+		PowertrainTractionBatteryStateOfChargeCurrent             func(childComplexity int, agg model.FloatAggregation) int
+		PowertrainTractionBatteryStateOfChargeCurrentEnergy       func(childComplexity int, agg model.FloatAggregation) int
+		PowertrainTractionBatteryTemperatureAverage               func(childComplexity int, agg model.FloatAggregation) int
+		PowertrainTransmissionCurrentGear                         func(childComplexity int, agg model.FloatAggregation) int
+		PowertrainTransmissionTemperature                         func(childComplexity int, agg model.FloatAggregation) int
+		PowertrainTransmissionTravelledDistance                   func(childComplexity int, agg model.FloatAggregation) int
+		PowertrainType                                            func(childComplexity int, agg model.StringAggregation) int
+		ServiceDistanceToService                                  func(childComplexity int, agg model.FloatAggregation) int
+		Speed                                                     func(childComplexity int, agg model.FloatAggregation) int
+		Timestamp                                                 func(childComplexity int) int
 	}
 
 	SignalCollection struct {
-		AngularVelocityYaw                                   func(childComplexity int) int
-		ChassisAxleRow1WheelLeftSpeed                        func(childComplexity int) int
-		ChassisAxleRow1WheelLeftTirePressure                 func(childComplexity int) int
-		ChassisAxleRow1WheelRightSpeed                       func(childComplexity int) int
-		ChassisAxleRow1WheelRightTirePressure                func(childComplexity int) int
-		ChassisAxleRow2WheelLeftTirePressure                 func(childComplexity int) int
-		ChassisAxleRow2WheelRightTirePressure                func(childComplexity int) int
-		CurrentLocationAltitude                              func(childComplexity int) int
-		CurrentLocationApproximateLatitude                   func(childComplexity int) int
-		CurrentLocationApproximateLongitude                  func(childComplexity int) int
-		CurrentLocationHeading                               func(childComplexity int) int
-		CurrentLocationIsRedacted                            func(childComplexity int) int
-		CurrentLocationLatitude                              func(childComplexity int) int
-		CurrentLocationLongitude                             func(childComplexity int) int
-		DIMOAftermarketHDOP                                  func(childComplexity int) int
-		DIMOAftermarketNSAT                                  func(childComplexity int) int
-		DIMOAftermarketSSID                                  func(childComplexity int) int
-		DIMOAftermarketWPAState                              func(childComplexity int) int
-		ExteriorAirTemperature                               func(childComplexity int) int
-		IsIgnitionOn                                         func(childComplexity int) int
-		LastSeen                                             func(childComplexity int) int
-		LowVoltageBatteryCurrentVoltage                      func(childComplexity int) int
-		OBDBarometricPressure                                func(childComplexity int) int
-		OBDCommandedEGR                                      func(childComplexity int) int
-		OBDCommandedEVAP                                     func(childComplexity int) int
-		OBDDTCList                                           func(childComplexity int) int
-		OBDDistanceSinceDTCClear                             func(childComplexity int) int
-		OBDDistanceWithMIL                                   func(childComplexity int) int
-		OBDEngineLoad                                        func(childComplexity int) int
-		OBDFuelPressure                                      func(childComplexity int) int
-		OBDIntakeTemp                                        func(childComplexity int) int
-		OBDLongTermFuelTrim1                                 func(childComplexity int) int
-		OBDMAP                                               func(childComplexity int) int
-		OBDO2WRSensor1Voltage                                func(childComplexity int) int
-		OBDO2WRSensor2Voltage                                func(childComplexity int) int
-		OBDRunTime                                           func(childComplexity int) int
-		OBDShortTermFuelTrim1                                func(childComplexity int) int
-		OBDWarmupsSinceDTCClear                              func(childComplexity int) int
-		PowertrainCombustionEngineDieselExhaustFluidCapacity func(childComplexity int) int
-		PowertrainCombustionEngineDieselExhaustFluidLevel    func(childComplexity int) int
-		PowertrainCombustionEngineECT                        func(childComplexity int) int
-		PowertrainCombustionEngineEOP                        func(childComplexity int) int
-		PowertrainCombustionEngineEOT                        func(childComplexity int) int
-		PowertrainCombustionEngineEngineOilLevel             func(childComplexity int) int
-		PowertrainCombustionEngineEngineOilRelativeLevel     func(childComplexity int) int
-		PowertrainCombustionEngineMAF                        func(childComplexity int) int
-		PowertrainCombustionEngineSpeed                      func(childComplexity int) int
-		PowertrainCombustionEngineTPS                        func(childComplexity int) int
-		PowertrainCombustionEngineTorque                     func(childComplexity int) int
-		PowertrainFuelSystemAbsoluteLevel                    func(childComplexity int) int
-		PowertrainFuelSystemRelativeLevel                    func(childComplexity int) int
-		PowertrainFuelSystemSupportedFuelTypes               func(childComplexity int) int
-		PowertrainRange                                      func(childComplexity int) int
-		PowertrainTractionBatteryChargingAddedEnergy         func(childComplexity int) int
-		PowertrainTractionBatteryChargingChargeLimit         func(childComplexity int) int
-		PowertrainTractionBatteryChargingIsCharging          func(childComplexity int) int
-		PowertrainTractionBatteryCurrentPower                func(childComplexity int) int
-		PowertrainTractionBatteryCurrentVoltage              func(childComplexity int) int
-		PowertrainTractionBatteryGrossCapacity               func(childComplexity int) int
-		PowertrainTractionBatteryRange                       func(childComplexity int) int
-		PowertrainTractionBatteryStateOfChargeCurrent        func(childComplexity int) int
-		PowertrainTractionBatteryStateOfChargeCurrentEnergy  func(childComplexity int) int
-		PowertrainTractionBatteryTemperatureAverage          func(childComplexity int) int
-		PowertrainTransmissionCurrentGear                    func(childComplexity int) int
-		PowertrainTransmissionTemperature                    func(childComplexity int) int
-		PowertrainTransmissionTravelledDistance              func(childComplexity int) int
-		PowertrainType                                       func(childComplexity int) int
-		ServiceDistanceToService                             func(childComplexity int) int
-		Speed                                                func(childComplexity int) int
+		AngularVelocityYaw                                        func(childComplexity int) int
+		CabinDoorRow1DriverSideIsOpen                             func(childComplexity int) int
+		CabinDoorRow1DriverSideWindowIsOpen                       func(childComplexity int) int
+		CabinDoorRow1PassengerSideIsOpen                          func(childComplexity int) int
+		CabinDoorRow1PassengerSideWindowIsOpen                    func(childComplexity int) int
+		CabinDoorRow2DriverSideIsOpen                             func(childComplexity int) int
+		CabinDoorRow2DriverSideWindowIsOpen                       func(childComplexity int) int
+		CabinDoorRow2PassengerSideIsOpen                          func(childComplexity int) int
+		CabinDoorRow2PassengerSideWindowIsOpen                    func(childComplexity int) int
+		ChassisAxleRow1WheelLeftSpeed                             func(childComplexity int) int
+		ChassisAxleRow1WheelLeftTirePressure                      func(childComplexity int) int
+		ChassisAxleRow1WheelRightSpeed                            func(childComplexity int) int
+		ChassisAxleRow1WheelRightTirePressure                     func(childComplexity int) int
+		ChassisAxleRow2WheelLeftTirePressure                      func(childComplexity int) int
+		ChassisAxleRow2WheelRightTirePressure                     func(childComplexity int) int
+		CurrentLocationAltitude                                   func(childComplexity int) int
+		CurrentLocationApproximateLatitude                        func(childComplexity int) int
+		CurrentLocationApproximateLongitude                       func(childComplexity int) int
+		CurrentLocationHeading                                    func(childComplexity int) int
+		CurrentLocationIsRedacted                                 func(childComplexity int) int
+		CurrentLocationLatitude                                   func(childComplexity int) int
+		CurrentLocationLongitude                                  func(childComplexity int) int
+		DIMOAftermarketHDOP                                       func(childComplexity int) int
+		DIMOAftermarketNSAT                                       func(childComplexity int) int
+		DIMOAftermarketSSID                                       func(childComplexity int) int
+		DIMOAftermarketWPAState                                   func(childComplexity int) int
+		ExteriorAirTemperature                                    func(childComplexity int) int
+		IsIgnitionOn                                              func(childComplexity int) int
+		LastSeen                                                  func(childComplexity int) int
+		LowVoltageBatteryCurrentVoltage                           func(childComplexity int) int
+		OBDBarometricPressure                                     func(childComplexity int) int
+		OBDCommandedEGR                                           func(childComplexity int) int
+		OBDCommandedEVAP                                          func(childComplexity int) int
+		OBDDTCList                                                func(childComplexity int) int
+		OBDDistanceSinceDTCClear                                  func(childComplexity int) int
+		OBDDistanceWithMIL                                        func(childComplexity int) int
+		OBDEngineLoad                                             func(childComplexity int) int
+		OBDFuelPressure                                           func(childComplexity int) int
+		OBDIntakeTemp                                             func(childComplexity int) int
+		OBDLongTermFuelTrim1                                      func(childComplexity int) int
+		OBDMAP                                                    func(childComplexity int) int
+		OBDO2WRSensor1Voltage                                     func(childComplexity int) int
+		OBDO2WRSensor2Voltage                                     func(childComplexity int) int
+		OBDRunTime                                                func(childComplexity int) int
+		OBDShortTermFuelTrim1                                     func(childComplexity int) int
+		OBDWarmupsSinceDTCClear                                   func(childComplexity int) int
+		PowertrainCombustionEngineDieselExhaustFluidCapacity      func(childComplexity int) int
+		PowertrainCombustionEngineDieselExhaustFluidLevel         func(childComplexity int) int
+		PowertrainCombustionEngineECT                             func(childComplexity int) int
+		PowertrainCombustionEngineEOP                             func(childComplexity int) int
+		PowertrainCombustionEngineEOT                             func(childComplexity int) int
+		PowertrainCombustionEngineEngineOilLevel                  func(childComplexity int) int
+		PowertrainCombustionEngineEngineOilRelativeLevel          func(childComplexity int) int
+		PowertrainCombustionEngineMAF                             func(childComplexity int) int
+		PowertrainCombustionEngineSpeed                           func(childComplexity int) int
+		PowertrainCombustionEngineTPS                             func(childComplexity int) int
+		PowertrainCombustionEngineTorque                          func(childComplexity int) int
+		PowertrainFuelSystemAbsoluteLevel                         func(childComplexity int) int
+		PowertrainFuelSystemRelativeLevel                         func(childComplexity int) int
+		PowertrainFuelSystemSupportedFuelTypes                    func(childComplexity int) int
+		PowertrainRange                                           func(childComplexity int) int
+		PowertrainTractionBatteryChargingAddedEnergy              func(childComplexity int) int
+		PowertrainTractionBatteryChargingChargeCurrentAC          func(childComplexity int) int
+		PowertrainTractionBatteryChargingChargeLimit              func(childComplexity int) int
+		PowertrainTractionBatteryChargingChargeVoltageUnknownType func(childComplexity int) int
+		PowertrainTractionBatteryChargingIsCharging               func(childComplexity int) int
+		PowertrainTractionBatteryCurrentPower                     func(childComplexity int) int
+		PowertrainTractionBatteryCurrentVoltage                   func(childComplexity int) int
+		PowertrainTractionBatteryGrossCapacity                    func(childComplexity int) int
+		PowertrainTractionBatteryRange                            func(childComplexity int) int
+		PowertrainTractionBatteryStateOfChargeCurrent             func(childComplexity int) int
+		PowertrainTractionBatteryStateOfChargeCurrentEnergy       func(childComplexity int) int
+		PowertrainTractionBatteryTemperatureAverage               func(childComplexity int) int
+		PowertrainTransmissionCurrentGear                         func(childComplexity int) int
+		PowertrainTransmissionTemperature                         func(childComplexity int) int
+		PowertrainTransmissionTravelledDistance                   func(childComplexity int) int
+		PowertrainType                                            func(childComplexity int) int
+		ServiceDistanceToService                                  func(childComplexity int) int
+		Speed                                                     func(childComplexity int) int
 	}
 
 	SignalFloat struct {
@@ -262,6 +282,14 @@ type SignalAggregationsResolver interface {
 	CurrentLocationApproximateLatitude(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
 	CurrentLocationApproximateLongitude(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
 	AngularVelocityYaw(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
+	CabinDoorRow1DriverSideIsOpen(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
+	CabinDoorRow1DriverSideWindowIsOpen(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
+	CabinDoorRow1PassengerSideIsOpen(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
+	CabinDoorRow1PassengerSideWindowIsOpen(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
+	CabinDoorRow2DriverSideIsOpen(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
+	CabinDoorRow2DriverSideWindowIsOpen(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
+	CabinDoorRow2PassengerSideIsOpen(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
+	CabinDoorRow2PassengerSideWindowIsOpen(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
 	ChassisAxleRow1WheelLeftSpeed(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
 	ChassisAxleRow1WheelLeftTirePressure(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
 	ChassisAxleRow1WheelRightSpeed(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
@@ -312,7 +340,9 @@ type SignalAggregationsResolver interface {
 	PowertrainFuelSystemSupportedFuelTypes(ctx context.Context, obj *model.SignalAggregations, agg model.StringAggregation) (*string, error)
 	PowertrainRange(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
 	PowertrainTractionBatteryChargingAddedEnergy(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
+	PowertrainTractionBatteryChargingChargeCurrentAc(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
 	PowertrainTractionBatteryChargingChargeLimit(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
+	PowertrainTractionBatteryChargingChargeVoltageUnknownType(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
 	PowertrainTractionBatteryChargingIsCharging(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
 	PowertrainTractionBatteryCurrentPower(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
 	PowertrainTractionBatteryCurrentVoltage(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
@@ -506,6 +536,102 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.SignalAggregations.AngularVelocityYaw(childComplexity, args["agg"].(model.FloatAggregation)), true
+
+	case "SignalAggregations.cabinDoorRow1DriverSideIsOpen":
+		if e.complexity.SignalAggregations.CabinDoorRow1DriverSideIsOpen == nil {
+			break
+		}
+
+		args, err := ec.field_SignalAggregations_cabinDoorRow1DriverSideIsOpen_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.SignalAggregations.CabinDoorRow1DriverSideIsOpen(childComplexity, args["agg"].(model.FloatAggregation)), true
+
+	case "SignalAggregations.cabinDoorRow1DriverSideWindowIsOpen":
+		if e.complexity.SignalAggregations.CabinDoorRow1DriverSideWindowIsOpen == nil {
+			break
+		}
+
+		args, err := ec.field_SignalAggregations_cabinDoorRow1DriverSideWindowIsOpen_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.SignalAggregations.CabinDoorRow1DriverSideWindowIsOpen(childComplexity, args["agg"].(model.FloatAggregation)), true
+
+	case "SignalAggregations.cabinDoorRow1PassengerSideIsOpen":
+		if e.complexity.SignalAggregations.CabinDoorRow1PassengerSideIsOpen == nil {
+			break
+		}
+
+		args, err := ec.field_SignalAggregations_cabinDoorRow1PassengerSideIsOpen_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.SignalAggregations.CabinDoorRow1PassengerSideIsOpen(childComplexity, args["agg"].(model.FloatAggregation)), true
+
+	case "SignalAggregations.cabinDoorRow1PassengerSideWindowIsOpen":
+		if e.complexity.SignalAggregations.CabinDoorRow1PassengerSideWindowIsOpen == nil {
+			break
+		}
+
+		args, err := ec.field_SignalAggregations_cabinDoorRow1PassengerSideWindowIsOpen_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.SignalAggregations.CabinDoorRow1PassengerSideWindowIsOpen(childComplexity, args["agg"].(model.FloatAggregation)), true
+
+	case "SignalAggregations.cabinDoorRow2DriverSideIsOpen":
+		if e.complexity.SignalAggregations.CabinDoorRow2DriverSideIsOpen == nil {
+			break
+		}
+
+		args, err := ec.field_SignalAggregations_cabinDoorRow2DriverSideIsOpen_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.SignalAggregations.CabinDoorRow2DriverSideIsOpen(childComplexity, args["agg"].(model.FloatAggregation)), true
+
+	case "SignalAggregations.cabinDoorRow2DriverSideWindowIsOpen":
+		if e.complexity.SignalAggregations.CabinDoorRow2DriverSideWindowIsOpen == nil {
+			break
+		}
+
+		args, err := ec.field_SignalAggregations_cabinDoorRow2DriverSideWindowIsOpen_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.SignalAggregations.CabinDoorRow2DriverSideWindowIsOpen(childComplexity, args["agg"].(model.FloatAggregation)), true
+
+	case "SignalAggregations.cabinDoorRow2PassengerSideIsOpen":
+		if e.complexity.SignalAggregations.CabinDoorRow2PassengerSideIsOpen == nil {
+			break
+		}
+
+		args, err := ec.field_SignalAggregations_cabinDoorRow2PassengerSideIsOpen_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.SignalAggregations.CabinDoorRow2PassengerSideIsOpen(childComplexity, args["agg"].(model.FloatAggregation)), true
+
+	case "SignalAggregations.cabinDoorRow2PassengerSideWindowIsOpen":
+		if e.complexity.SignalAggregations.CabinDoorRow2PassengerSideWindowIsOpen == nil {
+			break
+		}
+
+		args, err := ec.field_SignalAggregations_cabinDoorRow2PassengerSideWindowIsOpen_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.SignalAggregations.CabinDoorRow2PassengerSideWindowIsOpen(childComplexity, args["agg"].(model.FloatAggregation)), true
 
 	case "SignalAggregations.chassisAxleRow1WheelLeftSpeed":
 		if e.complexity.SignalAggregations.ChassisAxleRow1WheelLeftSpeed == nil {
@@ -1131,6 +1257,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.SignalAggregations.PowertrainTractionBatteryChargingAddedEnergy(childComplexity, args["agg"].(model.FloatAggregation)), true
 
+	case "SignalAggregations.powertrainTractionBatteryChargingChargeCurrentAC":
+		if e.complexity.SignalAggregations.PowertrainTractionBatteryChargingChargeCurrentAc == nil {
+			break
+		}
+
+		args, err := ec.field_SignalAggregations_powertrainTractionBatteryChargingChargeCurrentAC_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.SignalAggregations.PowertrainTractionBatteryChargingChargeCurrentAc(childComplexity, args["agg"].(model.FloatAggregation)), true
+
 	case "SignalAggregations.powertrainTractionBatteryChargingChargeLimit":
 		if e.complexity.SignalAggregations.PowertrainTractionBatteryChargingChargeLimit == nil {
 			break
@@ -1142,6 +1280,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.SignalAggregations.PowertrainTractionBatteryChargingChargeLimit(childComplexity, args["agg"].(model.FloatAggregation)), true
+
+	case "SignalAggregations.powertrainTractionBatteryChargingChargeVoltageUnknownType":
+		if e.complexity.SignalAggregations.PowertrainTractionBatteryChargingChargeVoltageUnknownType == nil {
+			break
+		}
+
+		args, err := ec.field_SignalAggregations_powertrainTractionBatteryChargingChargeVoltageUnknownType_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.SignalAggregations.PowertrainTractionBatteryChargingChargeVoltageUnknownType(childComplexity, args["agg"].(model.FloatAggregation)), true
 
 	case "SignalAggregations.powertrainTractionBatteryChargingIsCharging":
 		if e.complexity.SignalAggregations.PowertrainTractionBatteryChargingIsCharging == nil {
@@ -1324,6 +1474,62 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.SignalCollection.AngularVelocityYaw(childComplexity), true
+
+	case "SignalCollection.cabinDoorRow1DriverSideIsOpen":
+		if e.complexity.SignalCollection.CabinDoorRow1DriverSideIsOpen == nil {
+			break
+		}
+
+		return e.complexity.SignalCollection.CabinDoorRow1DriverSideIsOpen(childComplexity), true
+
+	case "SignalCollection.cabinDoorRow1DriverSideWindowIsOpen":
+		if e.complexity.SignalCollection.CabinDoorRow1DriverSideWindowIsOpen == nil {
+			break
+		}
+
+		return e.complexity.SignalCollection.CabinDoorRow1DriverSideWindowIsOpen(childComplexity), true
+
+	case "SignalCollection.cabinDoorRow1PassengerSideIsOpen":
+		if e.complexity.SignalCollection.CabinDoorRow1PassengerSideIsOpen == nil {
+			break
+		}
+
+		return e.complexity.SignalCollection.CabinDoorRow1PassengerSideIsOpen(childComplexity), true
+
+	case "SignalCollection.cabinDoorRow1PassengerSideWindowIsOpen":
+		if e.complexity.SignalCollection.CabinDoorRow1PassengerSideWindowIsOpen == nil {
+			break
+		}
+
+		return e.complexity.SignalCollection.CabinDoorRow1PassengerSideWindowIsOpen(childComplexity), true
+
+	case "SignalCollection.cabinDoorRow2DriverSideIsOpen":
+		if e.complexity.SignalCollection.CabinDoorRow2DriverSideIsOpen == nil {
+			break
+		}
+
+		return e.complexity.SignalCollection.CabinDoorRow2DriverSideIsOpen(childComplexity), true
+
+	case "SignalCollection.cabinDoorRow2DriverSideWindowIsOpen":
+		if e.complexity.SignalCollection.CabinDoorRow2DriverSideWindowIsOpen == nil {
+			break
+		}
+
+		return e.complexity.SignalCollection.CabinDoorRow2DriverSideWindowIsOpen(childComplexity), true
+
+	case "SignalCollection.cabinDoorRow2PassengerSideIsOpen":
+		if e.complexity.SignalCollection.CabinDoorRow2PassengerSideIsOpen == nil {
+			break
+		}
+
+		return e.complexity.SignalCollection.CabinDoorRow2PassengerSideIsOpen(childComplexity), true
+
+	case "SignalCollection.cabinDoorRow2PassengerSideWindowIsOpen":
+		if e.complexity.SignalCollection.CabinDoorRow2PassengerSideWindowIsOpen == nil {
+			break
+		}
+
+		return e.complexity.SignalCollection.CabinDoorRow2PassengerSideWindowIsOpen(childComplexity), true
 
 	case "SignalCollection.chassisAxleRow1WheelLeftSpeed":
 		if e.complexity.SignalCollection.ChassisAxleRow1WheelLeftSpeed == nil {
@@ -1696,12 +1902,26 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.SignalCollection.PowertrainTractionBatteryChargingAddedEnergy(childComplexity), true
 
+	case "SignalCollection.powertrainTractionBatteryChargingChargeCurrentAC":
+		if e.complexity.SignalCollection.PowertrainTractionBatteryChargingChargeCurrentAC == nil {
+			break
+		}
+
+		return e.complexity.SignalCollection.PowertrainTractionBatteryChargingChargeCurrentAC(childComplexity), true
+
 	case "SignalCollection.powertrainTractionBatteryChargingChargeLimit":
 		if e.complexity.SignalCollection.PowertrainTractionBatteryChargingChargeLimit == nil {
 			break
 		}
 
 		return e.complexity.SignalCollection.PowertrainTractionBatteryChargingChargeLimit(childComplexity), true
+
+	case "SignalCollection.powertrainTractionBatteryChargingChargeVoltageUnknownType":
+		if e.complexity.SignalCollection.PowertrainTractionBatteryChargingChargeVoltageUnknownType == nil {
+			break
+		}
+
+		return e.complexity.SignalCollection.PowertrainTractionBatteryChargingChargeVoltageUnknownType(childComplexity), true
 
 	case "SignalCollection.powertrainTractionBatteryChargingIsCharging":
 		if e.complexity.SignalCollection.PowertrainTractionBatteryChargingIsCharging == nil {
@@ -2271,6 +2491,70 @@ extend type SignalAggregations {
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "AngularVelocityYaw", forceResolver: true) @isSignal @hasAggregation
   
   """
+  Is item open or closed? True = Fully or partially open. False = Fully closed.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  cabinDoorRow1DriverSideIsOpen(
+    agg: FloatAggregation!
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "CabinDoorRow1DriverSideIsOpen", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  Is item open or closed? True = Fully or partially open. False = Fully closed.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  cabinDoorRow1DriverSideWindowIsOpen(
+    agg: FloatAggregation!
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "CabinDoorRow1DriverSideWindowIsOpen", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  Is item open or closed? True = Fully or partially open. False = Fully closed.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  cabinDoorRow1PassengerSideIsOpen(
+    agg: FloatAggregation!
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "CabinDoorRow1PassengerSideIsOpen", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  Is item open or closed? True = Fully or partially open. False = Fully closed.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  cabinDoorRow1PassengerSideWindowIsOpen(
+    agg: FloatAggregation!
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "CabinDoorRow1PassengerSideWindowIsOpen", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  Is item open or closed? True = Fully or partially open. False = Fully closed.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  cabinDoorRow2DriverSideIsOpen(
+    agg: FloatAggregation!
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "CabinDoorRow2DriverSideIsOpen", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  Is item open or closed? True = Fully or partially open. False = Fully closed.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  cabinDoorRow2DriverSideWindowIsOpen(
+    agg: FloatAggregation!
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "CabinDoorRow2DriverSideWindowIsOpen", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  Is item open or closed? True = Fully or partially open. False = Fully closed.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  cabinDoorRow2PassengerSideIsOpen(
+    agg: FloatAggregation!
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "CabinDoorRow2PassengerSideIsOpen", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  Is item open or closed? True = Fully or partially open. False = Fully closed.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  cabinDoorRow2PassengerSideWindowIsOpen(
+    agg: FloatAggregation!
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "CabinDoorRow2PassengerSideWindowIsOpen", forceResolver: true) @isSignal @hasAggregation
+  
+  """
   Rotational speed of a vehicle's wheel.
   Unit: 'km/h'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
@@ -2711,6 +2995,15 @@ extend type SignalAggregations {
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryChargingAddedEnergy", forceResolver: true) @isSignal @hasAggregation
   
   """
+  Current AC charging current (rms) at inlet. Negative if returning energy to grid. Used when per-phase numbers are unavailable.
+  Unit: 'A'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  powertrainTractionBatteryChargingChargeCurrentAC(
+    agg: FloatAggregation!
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryChargingChargeCurrentAC", forceResolver: true) @isSignal @hasAggregation
+  
+  """
   Target charge limit (state of charge) for battery.
   Unit: 'percent' Min: '0' Max: '100'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
@@ -2718,6 +3011,15 @@ extend type SignalAggregations {
   powertrainTractionBatteryChargingChargeLimit(
     agg: FloatAggregation!
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryChargingChargeLimit", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  Current charging voltage at inlet. Used when the data source does not indicate the current type (AC or DC) in use.
+  Unit: 'V'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  powertrainTractionBatteryChargingChargeVoltageUnknownType(
+    agg: FloatAggregation!
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryChargingChargeVoltageUnknownType", forceResolver: true) @isSignal @hasAggregation
   
   """
   True if charging is ongoing. Charging is considered to be ongoing if energy is flowing from charger to vehicle.
@@ -2851,6 +3153,54 @@ extend type SignalCollection {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   angularVelocityYaw: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "AngularVelocityYaw") @isSignal
+  
+  """
+  Is item open or closed? True = Fully or partially open. False = Fully closed.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  cabinDoorRow1DriverSideIsOpen: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "CabinDoorRow1DriverSideIsOpen") @isSignal
+  
+  """
+  Is item open or closed? True = Fully or partially open. False = Fully closed.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  cabinDoorRow1DriverSideWindowIsOpen: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "CabinDoorRow1DriverSideWindowIsOpen") @isSignal
+  
+  """
+  Is item open or closed? True = Fully or partially open. False = Fully closed.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  cabinDoorRow1PassengerSideIsOpen: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "CabinDoorRow1PassengerSideIsOpen") @isSignal
+  
+  """
+  Is item open or closed? True = Fully or partially open. False = Fully closed.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  cabinDoorRow1PassengerSideWindowIsOpen: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "CabinDoorRow1PassengerSideWindowIsOpen") @isSignal
+  
+  """
+  Is item open or closed? True = Fully or partially open. False = Fully closed.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  cabinDoorRow2DriverSideIsOpen: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "CabinDoorRow2DriverSideIsOpen") @isSignal
+  
+  """
+  Is item open or closed? True = Fully or partially open. False = Fully closed.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  cabinDoorRow2DriverSideWindowIsOpen: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "CabinDoorRow2DriverSideWindowIsOpen") @isSignal
+  
+  """
+  Is item open or closed? True = Fully or partially open. False = Fully closed.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  cabinDoorRow2PassengerSideIsOpen: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "CabinDoorRow2PassengerSideIsOpen") @isSignal
+  
+  """
+  Is item open or closed? True = Fully or partially open. False = Fully closed.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  cabinDoorRow2PassengerSideWindowIsOpen: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "CabinDoorRow2PassengerSideWindowIsOpen") @isSignal
   
   """
   Rotational speed of a vehicle's wheel.
@@ -3193,11 +3543,25 @@ extend type SignalCollection {
   powertrainTractionBatteryChargingAddedEnergy: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryChargingAddedEnergy") @isSignal
   
   """
+  Current AC charging current (rms) at inlet. Negative if returning energy to grid. Used when per-phase numbers are unavailable.
+  Unit: 'A'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  powertrainTractionBatteryChargingChargeCurrentAC: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryChargingChargeCurrentAC") @isSignal
+  
+  """
   Target charge limit (state of charge) for battery.
   Unit: 'percent' Min: '0' Max: '100'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainTractionBatteryChargingChargeLimit: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryChargingChargeLimit") @isSignal
+  
+  """
+  Current charging voltage at inlet. Used when the data source does not indicate the current type (AC or DC) in use.
+  Unit: 'V'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  powertrainTractionBatteryChargingChargeVoltageUnknownType: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryChargingChargeVoltageUnknownType") @isSignal
   
   """
   True if charging is ongoing. Charging is considered to be ongoing if energy is flowing from charger to vehicle.
@@ -3859,6 +4223,230 @@ func (ec *executionContext) field_SignalAggregations_angularVelocityYaw_args(ctx
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_angularVelocityYaw_argsAgg(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (model.FloatAggregation, error) {
+	if _, ok := rawArgs["agg"]; !ok {
+		var zeroVal model.FloatAggregation
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
+	if tmp, ok := rawArgs["agg"]; ok {
+		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
+	}
+
+	var zeroVal model.FloatAggregation
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_SignalAggregations_cabinDoorRow1DriverSideIsOpen_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field_SignalAggregations_cabinDoorRow1DriverSideIsOpen_argsAgg(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["agg"] = arg0
+	return args, nil
+}
+func (ec *executionContext) field_SignalAggregations_cabinDoorRow1DriverSideIsOpen_argsAgg(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (model.FloatAggregation, error) {
+	if _, ok := rawArgs["agg"]; !ok {
+		var zeroVal model.FloatAggregation
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
+	if tmp, ok := rawArgs["agg"]; ok {
+		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
+	}
+
+	var zeroVal model.FloatAggregation
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_SignalAggregations_cabinDoorRow1DriverSideWindowIsOpen_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field_SignalAggregations_cabinDoorRow1DriverSideWindowIsOpen_argsAgg(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["agg"] = arg0
+	return args, nil
+}
+func (ec *executionContext) field_SignalAggregations_cabinDoorRow1DriverSideWindowIsOpen_argsAgg(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (model.FloatAggregation, error) {
+	if _, ok := rawArgs["agg"]; !ok {
+		var zeroVal model.FloatAggregation
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
+	if tmp, ok := rawArgs["agg"]; ok {
+		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
+	}
+
+	var zeroVal model.FloatAggregation
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_SignalAggregations_cabinDoorRow1PassengerSideIsOpen_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field_SignalAggregations_cabinDoorRow1PassengerSideIsOpen_argsAgg(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["agg"] = arg0
+	return args, nil
+}
+func (ec *executionContext) field_SignalAggregations_cabinDoorRow1PassengerSideIsOpen_argsAgg(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (model.FloatAggregation, error) {
+	if _, ok := rawArgs["agg"]; !ok {
+		var zeroVal model.FloatAggregation
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
+	if tmp, ok := rawArgs["agg"]; ok {
+		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
+	}
+
+	var zeroVal model.FloatAggregation
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_SignalAggregations_cabinDoorRow1PassengerSideWindowIsOpen_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field_SignalAggregations_cabinDoorRow1PassengerSideWindowIsOpen_argsAgg(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["agg"] = arg0
+	return args, nil
+}
+func (ec *executionContext) field_SignalAggregations_cabinDoorRow1PassengerSideWindowIsOpen_argsAgg(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (model.FloatAggregation, error) {
+	if _, ok := rawArgs["agg"]; !ok {
+		var zeroVal model.FloatAggregation
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
+	if tmp, ok := rawArgs["agg"]; ok {
+		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
+	}
+
+	var zeroVal model.FloatAggregation
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_SignalAggregations_cabinDoorRow2DriverSideIsOpen_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field_SignalAggregations_cabinDoorRow2DriverSideIsOpen_argsAgg(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["agg"] = arg0
+	return args, nil
+}
+func (ec *executionContext) field_SignalAggregations_cabinDoorRow2DriverSideIsOpen_argsAgg(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (model.FloatAggregation, error) {
+	if _, ok := rawArgs["agg"]; !ok {
+		var zeroVal model.FloatAggregation
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
+	if tmp, ok := rawArgs["agg"]; ok {
+		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
+	}
+
+	var zeroVal model.FloatAggregation
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_SignalAggregations_cabinDoorRow2DriverSideWindowIsOpen_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field_SignalAggregations_cabinDoorRow2DriverSideWindowIsOpen_argsAgg(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["agg"] = arg0
+	return args, nil
+}
+func (ec *executionContext) field_SignalAggregations_cabinDoorRow2DriverSideWindowIsOpen_argsAgg(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (model.FloatAggregation, error) {
+	if _, ok := rawArgs["agg"]; !ok {
+		var zeroVal model.FloatAggregation
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
+	if tmp, ok := rawArgs["agg"]; ok {
+		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
+	}
+
+	var zeroVal model.FloatAggregation
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_SignalAggregations_cabinDoorRow2PassengerSideIsOpen_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field_SignalAggregations_cabinDoorRow2PassengerSideIsOpen_argsAgg(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["agg"] = arg0
+	return args, nil
+}
+func (ec *executionContext) field_SignalAggregations_cabinDoorRow2PassengerSideIsOpen_argsAgg(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (model.FloatAggregation, error) {
+	if _, ok := rawArgs["agg"]; !ok {
+		var zeroVal model.FloatAggregation
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
+	if tmp, ok := rawArgs["agg"]; ok {
+		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
+	}
+
+	var zeroVal model.FloatAggregation
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_SignalAggregations_cabinDoorRow2PassengerSideWindowIsOpen_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field_SignalAggregations_cabinDoorRow2PassengerSideWindowIsOpen_argsAgg(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["agg"] = arg0
+	return args, nil
+}
+func (ec *executionContext) field_SignalAggregations_cabinDoorRow2PassengerSideWindowIsOpen_argsAgg(
 	ctx context.Context,
 	rawArgs map[string]any,
 ) (model.FloatAggregation, error) {
@@ -5332,6 +5920,34 @@ func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryCh
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryChargingChargeCurrentAC_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field_SignalAggregations_powertrainTractionBatteryChargingChargeCurrentAC_argsAgg(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["agg"] = arg0
+	return args, nil
+}
+func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryChargingChargeCurrentAC_argsAgg(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (model.FloatAggregation, error) {
+	if _, ok := rawArgs["agg"]; !ok {
+		var zeroVal model.FloatAggregation
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
+	if tmp, ok := rawArgs["agg"]; ok {
+		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
+	}
+
+	var zeroVal model.FloatAggregation
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryChargingChargeLimit_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -5343,6 +5959,34 @@ func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryCh
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryChargingChargeLimit_argsAgg(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (model.FloatAggregation, error) {
+	if _, ok := rawArgs["agg"]; !ok {
+		var zeroVal model.FloatAggregation
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
+	if tmp, ok := rawArgs["agg"]; ok {
+		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
+	}
+
+	var zeroVal model.FloatAggregation
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryChargingChargeVoltageUnknownType_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field_SignalAggregations_powertrainTractionBatteryChargingChargeVoltageUnknownType_argsAgg(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["agg"] = arg0
+	return args, nil
+}
+func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryChargingChargeVoltageUnknownType_argsAgg(
 	ctx context.Context,
 	rawArgs map[string]any,
 ) (model.FloatAggregation, error) {
@@ -6313,6 +6957,22 @@ func (ec *executionContext) fieldContext_Query_signals(ctx context.Context, fiel
 				return ec.fieldContext_SignalAggregations_currentLocationApproximateLongitude(ctx, field)
 			case "angularVelocityYaw":
 				return ec.fieldContext_SignalAggregations_angularVelocityYaw(ctx, field)
+			case "cabinDoorRow1DriverSideIsOpen":
+				return ec.fieldContext_SignalAggregations_cabinDoorRow1DriverSideIsOpen(ctx, field)
+			case "cabinDoorRow1DriverSideWindowIsOpen":
+				return ec.fieldContext_SignalAggregations_cabinDoorRow1DriverSideWindowIsOpen(ctx, field)
+			case "cabinDoorRow1PassengerSideIsOpen":
+				return ec.fieldContext_SignalAggregations_cabinDoorRow1PassengerSideIsOpen(ctx, field)
+			case "cabinDoorRow1PassengerSideWindowIsOpen":
+				return ec.fieldContext_SignalAggregations_cabinDoorRow1PassengerSideWindowIsOpen(ctx, field)
+			case "cabinDoorRow2DriverSideIsOpen":
+				return ec.fieldContext_SignalAggregations_cabinDoorRow2DriverSideIsOpen(ctx, field)
+			case "cabinDoorRow2DriverSideWindowIsOpen":
+				return ec.fieldContext_SignalAggregations_cabinDoorRow2DriverSideWindowIsOpen(ctx, field)
+			case "cabinDoorRow2PassengerSideIsOpen":
+				return ec.fieldContext_SignalAggregations_cabinDoorRow2PassengerSideIsOpen(ctx, field)
+			case "cabinDoorRow2PassengerSideWindowIsOpen":
+				return ec.fieldContext_SignalAggregations_cabinDoorRow2PassengerSideWindowIsOpen(ctx, field)
 			case "chassisAxleRow1WheelLeftSpeed":
 				return ec.fieldContext_SignalAggregations_chassisAxleRow1WheelLeftSpeed(ctx, field)
 			case "chassisAxleRow1WheelLeftTirePressure":
@@ -6413,8 +7073,12 @@ func (ec *executionContext) fieldContext_Query_signals(ctx context.Context, fiel
 				return ec.fieldContext_SignalAggregations_powertrainRange(ctx, field)
 			case "powertrainTractionBatteryChargingAddedEnergy":
 				return ec.fieldContext_SignalAggregations_powertrainTractionBatteryChargingAddedEnergy(ctx, field)
+			case "powertrainTractionBatteryChargingChargeCurrentAC":
+				return ec.fieldContext_SignalAggregations_powertrainTractionBatteryChargingChargeCurrentAC(ctx, field)
 			case "powertrainTractionBatteryChargingChargeLimit":
 				return ec.fieldContext_SignalAggregations_powertrainTractionBatteryChargingChargeLimit(ctx, field)
+			case "powertrainTractionBatteryChargingChargeVoltageUnknownType":
+				return ec.fieldContext_SignalAggregations_powertrainTractionBatteryChargingChargeVoltageUnknownType(ctx, field)
 			case "powertrainTractionBatteryChargingIsCharging":
 				return ec.fieldContext_SignalAggregations_powertrainTractionBatteryChargingIsCharging(ctx, field)
 			case "powertrainTractionBatteryCurrentPower":
@@ -6527,6 +7191,22 @@ func (ec *executionContext) fieldContext_Query_signalsLatest(ctx context.Context
 				return ec.fieldContext_SignalCollection_currentLocationApproximateLongitude(ctx, field)
 			case "angularVelocityYaw":
 				return ec.fieldContext_SignalCollection_angularVelocityYaw(ctx, field)
+			case "cabinDoorRow1DriverSideIsOpen":
+				return ec.fieldContext_SignalCollection_cabinDoorRow1DriverSideIsOpen(ctx, field)
+			case "cabinDoorRow1DriverSideWindowIsOpen":
+				return ec.fieldContext_SignalCollection_cabinDoorRow1DriverSideWindowIsOpen(ctx, field)
+			case "cabinDoorRow1PassengerSideIsOpen":
+				return ec.fieldContext_SignalCollection_cabinDoorRow1PassengerSideIsOpen(ctx, field)
+			case "cabinDoorRow1PassengerSideWindowIsOpen":
+				return ec.fieldContext_SignalCollection_cabinDoorRow1PassengerSideWindowIsOpen(ctx, field)
+			case "cabinDoorRow2DriverSideIsOpen":
+				return ec.fieldContext_SignalCollection_cabinDoorRow2DriverSideIsOpen(ctx, field)
+			case "cabinDoorRow2DriverSideWindowIsOpen":
+				return ec.fieldContext_SignalCollection_cabinDoorRow2DriverSideWindowIsOpen(ctx, field)
+			case "cabinDoorRow2PassengerSideIsOpen":
+				return ec.fieldContext_SignalCollection_cabinDoorRow2PassengerSideIsOpen(ctx, field)
+			case "cabinDoorRow2PassengerSideWindowIsOpen":
+				return ec.fieldContext_SignalCollection_cabinDoorRow2PassengerSideWindowIsOpen(ctx, field)
 			case "chassisAxleRow1WheelLeftSpeed":
 				return ec.fieldContext_SignalCollection_chassisAxleRow1WheelLeftSpeed(ctx, field)
 			case "chassisAxleRow1WheelLeftTirePressure":
@@ -6627,8 +7307,12 @@ func (ec *executionContext) fieldContext_Query_signalsLatest(ctx context.Context
 				return ec.fieldContext_SignalCollection_powertrainRange(ctx, field)
 			case "powertrainTractionBatteryChargingAddedEnergy":
 				return ec.fieldContext_SignalCollection_powertrainTractionBatteryChargingAddedEnergy(ctx, field)
+			case "powertrainTractionBatteryChargingChargeCurrentAC":
+				return ec.fieldContext_SignalCollection_powertrainTractionBatteryChargingChargeCurrentAC(ctx, field)
 			case "powertrainTractionBatteryChargingChargeLimit":
 				return ec.fieldContext_SignalCollection_powertrainTractionBatteryChargingChargeLimit(ctx, field)
+			case "powertrainTractionBatteryChargingChargeVoltageUnknownType":
+				return ec.fieldContext_SignalCollection_powertrainTractionBatteryChargingChargeVoltageUnknownType(ctx, field)
 			case "powertrainTractionBatteryChargingIsCharging":
 				return ec.fieldContext_SignalCollection_powertrainTractionBatteryChargingIsCharging(ctx, field)
 			case "powertrainTractionBatteryCurrentPower":
@@ -7585,6 +8269,750 @@ func (ec *executionContext) fieldContext_SignalAggregations_angularVelocityYaw(c
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_SignalAggregations_angularVelocityYaw_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SignalAggregations_cabinDoorRow1DriverSideIsOpen(ctx context.Context, field graphql.CollectedField, obj *model.SignalAggregations) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignalAggregations_cabinDoorRow1DriverSideIsOpen(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.SignalAggregations().CabinDoorRow1DriverSideIsOpen(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+		}
+
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+			if err != nil {
+				var zeroVal *float64
+				return zeroVal, err
+			}
+			if ec.directives.RequiresAllOfPrivileges == nil {
+				var zeroVal *float64
+				return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
+			}
+			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+		}
+		directive2 := func(ctx context.Context) (any, error) {
+			if ec.directives.IsSignal == nil {
+				var zeroVal *float64
+				return zeroVal, errors.New("directive isSignal is not implemented")
+			}
+			return ec.directives.IsSignal(ctx, obj, directive1)
+		}
+		directive3 := func(ctx context.Context) (any, error) {
+			if ec.directives.HasAggregation == nil {
+				var zeroVal *float64
+				return zeroVal, errors.New("directive hasAggregation is not implemented")
+			}
+			return ec.directives.HasAggregation(ctx, obj, directive2)
+		}
+
+		tmp, err := directive3(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*float64); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*float64)
+	fc.Result = res
+	return ec.marshalOFloat2ᚖfloat64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SignalAggregations_cabinDoorRow1DriverSideIsOpen(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignalAggregations",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_SignalAggregations_cabinDoorRow1DriverSideIsOpen_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SignalAggregations_cabinDoorRow1DriverSideWindowIsOpen(ctx context.Context, field graphql.CollectedField, obj *model.SignalAggregations) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignalAggregations_cabinDoorRow1DriverSideWindowIsOpen(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.SignalAggregations().CabinDoorRow1DriverSideWindowIsOpen(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+		}
+
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+			if err != nil {
+				var zeroVal *float64
+				return zeroVal, err
+			}
+			if ec.directives.RequiresAllOfPrivileges == nil {
+				var zeroVal *float64
+				return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
+			}
+			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+		}
+		directive2 := func(ctx context.Context) (any, error) {
+			if ec.directives.IsSignal == nil {
+				var zeroVal *float64
+				return zeroVal, errors.New("directive isSignal is not implemented")
+			}
+			return ec.directives.IsSignal(ctx, obj, directive1)
+		}
+		directive3 := func(ctx context.Context) (any, error) {
+			if ec.directives.HasAggregation == nil {
+				var zeroVal *float64
+				return zeroVal, errors.New("directive hasAggregation is not implemented")
+			}
+			return ec.directives.HasAggregation(ctx, obj, directive2)
+		}
+
+		tmp, err := directive3(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*float64); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*float64)
+	fc.Result = res
+	return ec.marshalOFloat2ᚖfloat64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SignalAggregations_cabinDoorRow1DriverSideWindowIsOpen(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignalAggregations",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_SignalAggregations_cabinDoorRow1DriverSideWindowIsOpen_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SignalAggregations_cabinDoorRow1PassengerSideIsOpen(ctx context.Context, field graphql.CollectedField, obj *model.SignalAggregations) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignalAggregations_cabinDoorRow1PassengerSideIsOpen(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.SignalAggregations().CabinDoorRow1PassengerSideIsOpen(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+		}
+
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+			if err != nil {
+				var zeroVal *float64
+				return zeroVal, err
+			}
+			if ec.directives.RequiresAllOfPrivileges == nil {
+				var zeroVal *float64
+				return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
+			}
+			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+		}
+		directive2 := func(ctx context.Context) (any, error) {
+			if ec.directives.IsSignal == nil {
+				var zeroVal *float64
+				return zeroVal, errors.New("directive isSignal is not implemented")
+			}
+			return ec.directives.IsSignal(ctx, obj, directive1)
+		}
+		directive3 := func(ctx context.Context) (any, error) {
+			if ec.directives.HasAggregation == nil {
+				var zeroVal *float64
+				return zeroVal, errors.New("directive hasAggregation is not implemented")
+			}
+			return ec.directives.HasAggregation(ctx, obj, directive2)
+		}
+
+		tmp, err := directive3(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*float64); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*float64)
+	fc.Result = res
+	return ec.marshalOFloat2ᚖfloat64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SignalAggregations_cabinDoorRow1PassengerSideIsOpen(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignalAggregations",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_SignalAggregations_cabinDoorRow1PassengerSideIsOpen_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SignalAggregations_cabinDoorRow1PassengerSideWindowIsOpen(ctx context.Context, field graphql.CollectedField, obj *model.SignalAggregations) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignalAggregations_cabinDoorRow1PassengerSideWindowIsOpen(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.SignalAggregations().CabinDoorRow1PassengerSideWindowIsOpen(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+		}
+
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+			if err != nil {
+				var zeroVal *float64
+				return zeroVal, err
+			}
+			if ec.directives.RequiresAllOfPrivileges == nil {
+				var zeroVal *float64
+				return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
+			}
+			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+		}
+		directive2 := func(ctx context.Context) (any, error) {
+			if ec.directives.IsSignal == nil {
+				var zeroVal *float64
+				return zeroVal, errors.New("directive isSignal is not implemented")
+			}
+			return ec.directives.IsSignal(ctx, obj, directive1)
+		}
+		directive3 := func(ctx context.Context) (any, error) {
+			if ec.directives.HasAggregation == nil {
+				var zeroVal *float64
+				return zeroVal, errors.New("directive hasAggregation is not implemented")
+			}
+			return ec.directives.HasAggregation(ctx, obj, directive2)
+		}
+
+		tmp, err := directive3(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*float64); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*float64)
+	fc.Result = res
+	return ec.marshalOFloat2ᚖfloat64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SignalAggregations_cabinDoorRow1PassengerSideWindowIsOpen(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignalAggregations",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_SignalAggregations_cabinDoorRow1PassengerSideWindowIsOpen_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SignalAggregations_cabinDoorRow2DriverSideIsOpen(ctx context.Context, field graphql.CollectedField, obj *model.SignalAggregations) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignalAggregations_cabinDoorRow2DriverSideIsOpen(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.SignalAggregations().CabinDoorRow2DriverSideIsOpen(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+		}
+
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+			if err != nil {
+				var zeroVal *float64
+				return zeroVal, err
+			}
+			if ec.directives.RequiresAllOfPrivileges == nil {
+				var zeroVal *float64
+				return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
+			}
+			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+		}
+		directive2 := func(ctx context.Context) (any, error) {
+			if ec.directives.IsSignal == nil {
+				var zeroVal *float64
+				return zeroVal, errors.New("directive isSignal is not implemented")
+			}
+			return ec.directives.IsSignal(ctx, obj, directive1)
+		}
+		directive3 := func(ctx context.Context) (any, error) {
+			if ec.directives.HasAggregation == nil {
+				var zeroVal *float64
+				return zeroVal, errors.New("directive hasAggregation is not implemented")
+			}
+			return ec.directives.HasAggregation(ctx, obj, directive2)
+		}
+
+		tmp, err := directive3(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*float64); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*float64)
+	fc.Result = res
+	return ec.marshalOFloat2ᚖfloat64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SignalAggregations_cabinDoorRow2DriverSideIsOpen(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignalAggregations",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_SignalAggregations_cabinDoorRow2DriverSideIsOpen_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SignalAggregations_cabinDoorRow2DriverSideWindowIsOpen(ctx context.Context, field graphql.CollectedField, obj *model.SignalAggregations) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignalAggregations_cabinDoorRow2DriverSideWindowIsOpen(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.SignalAggregations().CabinDoorRow2DriverSideWindowIsOpen(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+		}
+
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+			if err != nil {
+				var zeroVal *float64
+				return zeroVal, err
+			}
+			if ec.directives.RequiresAllOfPrivileges == nil {
+				var zeroVal *float64
+				return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
+			}
+			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+		}
+		directive2 := func(ctx context.Context) (any, error) {
+			if ec.directives.IsSignal == nil {
+				var zeroVal *float64
+				return zeroVal, errors.New("directive isSignal is not implemented")
+			}
+			return ec.directives.IsSignal(ctx, obj, directive1)
+		}
+		directive3 := func(ctx context.Context) (any, error) {
+			if ec.directives.HasAggregation == nil {
+				var zeroVal *float64
+				return zeroVal, errors.New("directive hasAggregation is not implemented")
+			}
+			return ec.directives.HasAggregation(ctx, obj, directive2)
+		}
+
+		tmp, err := directive3(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*float64); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*float64)
+	fc.Result = res
+	return ec.marshalOFloat2ᚖfloat64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SignalAggregations_cabinDoorRow2DriverSideWindowIsOpen(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignalAggregations",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_SignalAggregations_cabinDoorRow2DriverSideWindowIsOpen_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SignalAggregations_cabinDoorRow2PassengerSideIsOpen(ctx context.Context, field graphql.CollectedField, obj *model.SignalAggregations) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignalAggregations_cabinDoorRow2PassengerSideIsOpen(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.SignalAggregations().CabinDoorRow2PassengerSideIsOpen(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+		}
+
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+			if err != nil {
+				var zeroVal *float64
+				return zeroVal, err
+			}
+			if ec.directives.RequiresAllOfPrivileges == nil {
+				var zeroVal *float64
+				return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
+			}
+			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+		}
+		directive2 := func(ctx context.Context) (any, error) {
+			if ec.directives.IsSignal == nil {
+				var zeroVal *float64
+				return zeroVal, errors.New("directive isSignal is not implemented")
+			}
+			return ec.directives.IsSignal(ctx, obj, directive1)
+		}
+		directive3 := func(ctx context.Context) (any, error) {
+			if ec.directives.HasAggregation == nil {
+				var zeroVal *float64
+				return zeroVal, errors.New("directive hasAggregation is not implemented")
+			}
+			return ec.directives.HasAggregation(ctx, obj, directive2)
+		}
+
+		tmp, err := directive3(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*float64); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*float64)
+	fc.Result = res
+	return ec.marshalOFloat2ᚖfloat64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SignalAggregations_cabinDoorRow2PassengerSideIsOpen(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignalAggregations",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_SignalAggregations_cabinDoorRow2PassengerSideIsOpen_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SignalAggregations_cabinDoorRow2PassengerSideWindowIsOpen(ctx context.Context, field graphql.CollectedField, obj *model.SignalAggregations) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignalAggregations_cabinDoorRow2PassengerSideWindowIsOpen(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.SignalAggregations().CabinDoorRow2PassengerSideWindowIsOpen(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+		}
+
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+			if err != nil {
+				var zeroVal *float64
+				return zeroVal, err
+			}
+			if ec.directives.RequiresAllOfPrivileges == nil {
+				var zeroVal *float64
+				return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
+			}
+			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+		}
+		directive2 := func(ctx context.Context) (any, error) {
+			if ec.directives.IsSignal == nil {
+				var zeroVal *float64
+				return zeroVal, errors.New("directive isSignal is not implemented")
+			}
+			return ec.directives.IsSignal(ctx, obj, directive1)
+		}
+		directive3 := func(ctx context.Context) (any, error) {
+			if ec.directives.HasAggregation == nil {
+				var zeroVal *float64
+				return zeroVal, errors.New("directive hasAggregation is not implemented")
+			}
+			return ec.directives.HasAggregation(ctx, obj, directive2)
+		}
+
+		tmp, err := directive3(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*float64); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*float64)
+	fc.Result = res
+	return ec.marshalOFloat2ᚖfloat64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SignalAggregations_cabinDoorRow2PassengerSideWindowIsOpen(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignalAggregations",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_SignalAggregations_cabinDoorRow2PassengerSideWindowIsOpen_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -12241,6 +13669,99 @@ func (ec *executionContext) fieldContext_SignalAggregations_powertrainTractionBa
 	return fc, nil
 }
 
+func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryChargingChargeCurrentAC(ctx context.Context, field graphql.CollectedField, obj *model.SignalAggregations) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignalAggregations_powertrainTractionBatteryChargingChargeCurrentAC(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryChargingChargeCurrentAc(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+		}
+
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+			if err != nil {
+				var zeroVal *float64
+				return zeroVal, err
+			}
+			if ec.directives.RequiresAllOfPrivileges == nil {
+				var zeroVal *float64
+				return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
+			}
+			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+		}
+		directive2 := func(ctx context.Context) (any, error) {
+			if ec.directives.IsSignal == nil {
+				var zeroVal *float64
+				return zeroVal, errors.New("directive isSignal is not implemented")
+			}
+			return ec.directives.IsSignal(ctx, obj, directive1)
+		}
+		directive3 := func(ctx context.Context) (any, error) {
+			if ec.directives.HasAggregation == nil {
+				var zeroVal *float64
+				return zeroVal, errors.New("directive hasAggregation is not implemented")
+			}
+			return ec.directives.HasAggregation(ctx, obj, directive2)
+		}
+
+		tmp, err := directive3(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*float64); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*float64)
+	fc.Result = res
+	return ec.marshalOFloat2ᚖfloat64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SignalAggregations_powertrainTractionBatteryChargingChargeCurrentAC(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignalAggregations",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_SignalAggregations_powertrainTractionBatteryChargingChargeCurrentAC_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryChargingChargeLimit(ctx context.Context, field graphql.CollectedField, obj *model.SignalAggregations) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalAggregations_powertrainTractionBatteryChargingChargeLimit(ctx, field)
 	if err != nil {
@@ -12328,6 +13849,99 @@ func (ec *executionContext) fieldContext_SignalAggregations_powertrainTractionBa
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_SignalAggregations_powertrainTractionBatteryChargingChargeLimit_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryChargingChargeVoltageUnknownType(ctx context.Context, field graphql.CollectedField, obj *model.SignalAggregations) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignalAggregations_powertrainTractionBatteryChargingChargeVoltageUnknownType(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryChargingChargeVoltageUnknownType(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+		}
+
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+			if err != nil {
+				var zeroVal *float64
+				return zeroVal, err
+			}
+			if ec.directives.RequiresAllOfPrivileges == nil {
+				var zeroVal *float64
+				return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
+			}
+			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+		}
+		directive2 := func(ctx context.Context) (any, error) {
+			if ec.directives.IsSignal == nil {
+				var zeroVal *float64
+				return zeroVal, errors.New("directive isSignal is not implemented")
+			}
+			return ec.directives.IsSignal(ctx, obj, directive1)
+		}
+		directive3 := func(ctx context.Context) (any, error) {
+			if ec.directives.HasAggregation == nil {
+				var zeroVal *float64
+				return zeroVal, errors.New("directive hasAggregation is not implemented")
+			}
+			return ec.directives.HasAggregation(ctx, obj, directive2)
+		}
+
+		tmp, err := directive3(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*float64); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*float64)
+	fc.Result = res
+	return ec.marshalOFloat2ᚖfloat64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SignalAggregations_powertrainTractionBatteryChargingChargeVoltageUnknownType(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignalAggregations",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_SignalAggregations_powertrainTractionBatteryChargingChargeVoltageUnknownType_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -13902,6 +15516,654 @@ func (ec *executionContext) _SignalCollection_angularVelocityYaw(ctx context.Con
 }
 
 func (ec *executionContext) fieldContext_SignalCollection_angularVelocityYaw(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignalCollection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "timestamp":
+				return ec.fieldContext_SignalFloat_timestamp(ctx, field)
+			case "value":
+				return ec.fieldContext_SignalFloat_value(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SignalFloat", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SignalCollection_cabinDoorRow1DriverSideIsOpen(ctx context.Context, field graphql.CollectedField, obj *model.SignalCollection) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignalCollection_cabinDoorRow1DriverSideIsOpen(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
+			ctx = rctx // use context from middleware stack in children
+			return obj.CabinDoorRow1DriverSideIsOpen, nil
+		}
+
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+			if err != nil {
+				var zeroVal *model.SignalFloat
+				return zeroVal, err
+			}
+			if ec.directives.RequiresAllOfPrivileges == nil {
+				var zeroVal *model.SignalFloat
+				return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
+			}
+			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+		}
+		directive2 := func(ctx context.Context) (any, error) {
+			if ec.directives.IsSignal == nil {
+				var zeroVal *model.SignalFloat
+				return zeroVal, errors.New("directive isSignal is not implemented")
+			}
+			return ec.directives.IsSignal(ctx, obj, directive1)
+		}
+
+		tmp, err := directive2(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*model.SignalFloat); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.SignalFloat)
+	fc.Result = res
+	return ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SignalCollection_cabinDoorRow1DriverSideIsOpen(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignalCollection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "timestamp":
+				return ec.fieldContext_SignalFloat_timestamp(ctx, field)
+			case "value":
+				return ec.fieldContext_SignalFloat_value(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SignalFloat", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SignalCollection_cabinDoorRow1DriverSideWindowIsOpen(ctx context.Context, field graphql.CollectedField, obj *model.SignalCollection) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignalCollection_cabinDoorRow1DriverSideWindowIsOpen(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
+			ctx = rctx // use context from middleware stack in children
+			return obj.CabinDoorRow1DriverSideWindowIsOpen, nil
+		}
+
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+			if err != nil {
+				var zeroVal *model.SignalFloat
+				return zeroVal, err
+			}
+			if ec.directives.RequiresAllOfPrivileges == nil {
+				var zeroVal *model.SignalFloat
+				return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
+			}
+			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+		}
+		directive2 := func(ctx context.Context) (any, error) {
+			if ec.directives.IsSignal == nil {
+				var zeroVal *model.SignalFloat
+				return zeroVal, errors.New("directive isSignal is not implemented")
+			}
+			return ec.directives.IsSignal(ctx, obj, directive1)
+		}
+
+		tmp, err := directive2(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*model.SignalFloat); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.SignalFloat)
+	fc.Result = res
+	return ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SignalCollection_cabinDoorRow1DriverSideWindowIsOpen(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignalCollection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "timestamp":
+				return ec.fieldContext_SignalFloat_timestamp(ctx, field)
+			case "value":
+				return ec.fieldContext_SignalFloat_value(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SignalFloat", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SignalCollection_cabinDoorRow1PassengerSideIsOpen(ctx context.Context, field graphql.CollectedField, obj *model.SignalCollection) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignalCollection_cabinDoorRow1PassengerSideIsOpen(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
+			ctx = rctx // use context from middleware stack in children
+			return obj.CabinDoorRow1PassengerSideIsOpen, nil
+		}
+
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+			if err != nil {
+				var zeroVal *model.SignalFloat
+				return zeroVal, err
+			}
+			if ec.directives.RequiresAllOfPrivileges == nil {
+				var zeroVal *model.SignalFloat
+				return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
+			}
+			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+		}
+		directive2 := func(ctx context.Context) (any, error) {
+			if ec.directives.IsSignal == nil {
+				var zeroVal *model.SignalFloat
+				return zeroVal, errors.New("directive isSignal is not implemented")
+			}
+			return ec.directives.IsSignal(ctx, obj, directive1)
+		}
+
+		tmp, err := directive2(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*model.SignalFloat); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.SignalFloat)
+	fc.Result = res
+	return ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SignalCollection_cabinDoorRow1PassengerSideIsOpen(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignalCollection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "timestamp":
+				return ec.fieldContext_SignalFloat_timestamp(ctx, field)
+			case "value":
+				return ec.fieldContext_SignalFloat_value(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SignalFloat", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SignalCollection_cabinDoorRow1PassengerSideWindowIsOpen(ctx context.Context, field graphql.CollectedField, obj *model.SignalCollection) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignalCollection_cabinDoorRow1PassengerSideWindowIsOpen(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
+			ctx = rctx // use context from middleware stack in children
+			return obj.CabinDoorRow1PassengerSideWindowIsOpen, nil
+		}
+
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+			if err != nil {
+				var zeroVal *model.SignalFloat
+				return zeroVal, err
+			}
+			if ec.directives.RequiresAllOfPrivileges == nil {
+				var zeroVal *model.SignalFloat
+				return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
+			}
+			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+		}
+		directive2 := func(ctx context.Context) (any, error) {
+			if ec.directives.IsSignal == nil {
+				var zeroVal *model.SignalFloat
+				return zeroVal, errors.New("directive isSignal is not implemented")
+			}
+			return ec.directives.IsSignal(ctx, obj, directive1)
+		}
+
+		tmp, err := directive2(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*model.SignalFloat); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.SignalFloat)
+	fc.Result = res
+	return ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SignalCollection_cabinDoorRow1PassengerSideWindowIsOpen(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignalCollection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "timestamp":
+				return ec.fieldContext_SignalFloat_timestamp(ctx, field)
+			case "value":
+				return ec.fieldContext_SignalFloat_value(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SignalFloat", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SignalCollection_cabinDoorRow2DriverSideIsOpen(ctx context.Context, field graphql.CollectedField, obj *model.SignalCollection) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignalCollection_cabinDoorRow2DriverSideIsOpen(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
+			ctx = rctx // use context from middleware stack in children
+			return obj.CabinDoorRow2DriverSideIsOpen, nil
+		}
+
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+			if err != nil {
+				var zeroVal *model.SignalFloat
+				return zeroVal, err
+			}
+			if ec.directives.RequiresAllOfPrivileges == nil {
+				var zeroVal *model.SignalFloat
+				return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
+			}
+			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+		}
+		directive2 := func(ctx context.Context) (any, error) {
+			if ec.directives.IsSignal == nil {
+				var zeroVal *model.SignalFloat
+				return zeroVal, errors.New("directive isSignal is not implemented")
+			}
+			return ec.directives.IsSignal(ctx, obj, directive1)
+		}
+
+		tmp, err := directive2(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*model.SignalFloat); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.SignalFloat)
+	fc.Result = res
+	return ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SignalCollection_cabinDoorRow2DriverSideIsOpen(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignalCollection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "timestamp":
+				return ec.fieldContext_SignalFloat_timestamp(ctx, field)
+			case "value":
+				return ec.fieldContext_SignalFloat_value(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SignalFloat", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SignalCollection_cabinDoorRow2DriverSideWindowIsOpen(ctx context.Context, field graphql.CollectedField, obj *model.SignalCollection) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignalCollection_cabinDoorRow2DriverSideWindowIsOpen(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
+			ctx = rctx // use context from middleware stack in children
+			return obj.CabinDoorRow2DriverSideWindowIsOpen, nil
+		}
+
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+			if err != nil {
+				var zeroVal *model.SignalFloat
+				return zeroVal, err
+			}
+			if ec.directives.RequiresAllOfPrivileges == nil {
+				var zeroVal *model.SignalFloat
+				return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
+			}
+			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+		}
+		directive2 := func(ctx context.Context) (any, error) {
+			if ec.directives.IsSignal == nil {
+				var zeroVal *model.SignalFloat
+				return zeroVal, errors.New("directive isSignal is not implemented")
+			}
+			return ec.directives.IsSignal(ctx, obj, directive1)
+		}
+
+		tmp, err := directive2(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*model.SignalFloat); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.SignalFloat)
+	fc.Result = res
+	return ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SignalCollection_cabinDoorRow2DriverSideWindowIsOpen(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignalCollection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "timestamp":
+				return ec.fieldContext_SignalFloat_timestamp(ctx, field)
+			case "value":
+				return ec.fieldContext_SignalFloat_value(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SignalFloat", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SignalCollection_cabinDoorRow2PassengerSideIsOpen(ctx context.Context, field graphql.CollectedField, obj *model.SignalCollection) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignalCollection_cabinDoorRow2PassengerSideIsOpen(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
+			ctx = rctx // use context from middleware stack in children
+			return obj.CabinDoorRow2PassengerSideIsOpen, nil
+		}
+
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+			if err != nil {
+				var zeroVal *model.SignalFloat
+				return zeroVal, err
+			}
+			if ec.directives.RequiresAllOfPrivileges == nil {
+				var zeroVal *model.SignalFloat
+				return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
+			}
+			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+		}
+		directive2 := func(ctx context.Context) (any, error) {
+			if ec.directives.IsSignal == nil {
+				var zeroVal *model.SignalFloat
+				return zeroVal, errors.New("directive isSignal is not implemented")
+			}
+			return ec.directives.IsSignal(ctx, obj, directive1)
+		}
+
+		tmp, err := directive2(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*model.SignalFloat); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.SignalFloat)
+	fc.Result = res
+	return ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SignalCollection_cabinDoorRow2PassengerSideIsOpen(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignalCollection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "timestamp":
+				return ec.fieldContext_SignalFloat_timestamp(ctx, field)
+			case "value":
+				return ec.fieldContext_SignalFloat_value(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SignalFloat", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SignalCollection_cabinDoorRow2PassengerSideWindowIsOpen(ctx context.Context, field graphql.CollectedField, obj *model.SignalCollection) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignalCollection_cabinDoorRow2PassengerSideWindowIsOpen(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
+			ctx = rctx // use context from middleware stack in children
+			return obj.CabinDoorRow2PassengerSideWindowIsOpen, nil
+		}
+
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+			if err != nil {
+				var zeroVal *model.SignalFloat
+				return zeroVal, err
+			}
+			if ec.directives.RequiresAllOfPrivileges == nil {
+				var zeroVal *model.SignalFloat
+				return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
+			}
+			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+		}
+		directive2 := func(ctx context.Context) (any, error) {
+			if ec.directives.IsSignal == nil {
+				var zeroVal *model.SignalFloat
+				return zeroVal, errors.New("directive isSignal is not implemented")
+			}
+			return ec.directives.IsSignal(ctx, obj, directive1)
+		}
+
+		tmp, err := directive2(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*model.SignalFloat); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.SignalFloat)
+	fc.Result = res
+	return ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SignalCollection_cabinDoorRow2PassengerSideWindowIsOpen(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalCollection",
 		Field:      field,
@@ -17970,6 +20232,87 @@ func (ec *executionContext) fieldContext_SignalCollection_powertrainTractionBatt
 	return fc, nil
 }
 
+func (ec *executionContext) _SignalCollection_powertrainTractionBatteryChargingChargeCurrentAC(ctx context.Context, field graphql.CollectedField, obj *model.SignalCollection) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignalCollection_powertrainTractionBatteryChargingChargeCurrentAC(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
+			ctx = rctx // use context from middleware stack in children
+			return obj.PowertrainTractionBatteryChargingChargeCurrentAC, nil
+		}
+
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+			if err != nil {
+				var zeroVal *model.SignalFloat
+				return zeroVal, err
+			}
+			if ec.directives.RequiresAllOfPrivileges == nil {
+				var zeroVal *model.SignalFloat
+				return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
+			}
+			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+		}
+		directive2 := func(ctx context.Context) (any, error) {
+			if ec.directives.IsSignal == nil {
+				var zeroVal *model.SignalFloat
+				return zeroVal, errors.New("directive isSignal is not implemented")
+			}
+			return ec.directives.IsSignal(ctx, obj, directive1)
+		}
+
+		tmp, err := directive2(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*model.SignalFloat); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.SignalFloat)
+	fc.Result = res
+	return ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SignalCollection_powertrainTractionBatteryChargingChargeCurrentAC(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignalCollection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "timestamp":
+				return ec.fieldContext_SignalFloat_timestamp(ctx, field)
+			case "value":
+				return ec.fieldContext_SignalFloat_value(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SignalFloat", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _SignalCollection_powertrainTractionBatteryChargingChargeLimit(ctx context.Context, field graphql.CollectedField, obj *model.SignalCollection) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalCollection_powertrainTractionBatteryChargingChargeLimit(ctx, field)
 	if err != nil {
@@ -18033,6 +20376,87 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryChargingC
 }
 
 func (ec *executionContext) fieldContext_SignalCollection_powertrainTractionBatteryChargingChargeLimit(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignalCollection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "timestamp":
+				return ec.fieldContext_SignalFloat_timestamp(ctx, field)
+			case "value":
+				return ec.fieldContext_SignalFloat_value(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SignalFloat", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SignalCollection_powertrainTractionBatteryChargingChargeVoltageUnknownType(ctx context.Context, field graphql.CollectedField, obj *model.SignalCollection) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignalCollection_powertrainTractionBatteryChargingChargeVoltageUnknownType(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
+			ctx = rctx // use context from middleware stack in children
+			return obj.PowertrainTractionBatteryChargingChargeVoltageUnknownType, nil
+		}
+
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+			if err != nil {
+				var zeroVal *model.SignalFloat
+				return zeroVal, err
+			}
+			if ec.directives.RequiresAllOfPrivileges == nil {
+				var zeroVal *model.SignalFloat
+				return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
+			}
+			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+		}
+		directive2 := func(ctx context.Context) (any, error) {
+			if ec.directives.IsSignal == nil {
+				var zeroVal *model.SignalFloat
+				return zeroVal, errors.New("directive isSignal is not implemented")
+			}
+			return ec.directives.IsSignal(ctx, obj, directive1)
+		}
+
+		tmp, err := directive2(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*model.SignalFloat); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.SignalFloat)
+	fc.Result = res
+	return ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SignalCollection_powertrainTractionBatteryChargingChargeVoltageUnknownType(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalCollection",
 		Field:      field,
@@ -22184,6 +24608,270 @@ func (ec *executionContext) _SignalAggregations(ctx context.Context, sel ast.Sel
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "cabinDoorRow1DriverSideIsOpen":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._SignalAggregations_cabinDoorRow1DriverSideIsOpen(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "cabinDoorRow1DriverSideWindowIsOpen":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._SignalAggregations_cabinDoorRow1DriverSideWindowIsOpen(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "cabinDoorRow1PassengerSideIsOpen":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._SignalAggregations_cabinDoorRow1PassengerSideIsOpen(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "cabinDoorRow1PassengerSideWindowIsOpen":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._SignalAggregations_cabinDoorRow1PassengerSideWindowIsOpen(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "cabinDoorRow2DriverSideIsOpen":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._SignalAggregations_cabinDoorRow2DriverSideIsOpen(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "cabinDoorRow2DriverSideWindowIsOpen":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._SignalAggregations_cabinDoorRow2DriverSideWindowIsOpen(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "cabinDoorRow2PassengerSideIsOpen":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._SignalAggregations_cabinDoorRow2PassengerSideIsOpen(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "cabinDoorRow2PassengerSideWindowIsOpen":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._SignalAggregations_cabinDoorRow2PassengerSideWindowIsOpen(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "chassisAxleRow1WheelLeftSpeed":
 			field := field
 
@@ -23834,6 +26522,39 @@ func (ec *executionContext) _SignalAggregations(ctx context.Context, sel ast.Sel
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "powertrainTractionBatteryChargingChargeCurrentAC":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._SignalAggregations_powertrainTractionBatteryChargingChargeCurrentAC(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "powertrainTractionBatteryChargingChargeLimit":
 			field := field
 
@@ -23844,6 +26565,39 @@ func (ec *executionContext) _SignalAggregations(ctx context.Context, sel ast.Sel
 					}
 				}()
 				res = ec._SignalAggregations_powertrainTractionBatteryChargingChargeLimit(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "powertrainTractionBatteryChargingChargeVoltageUnknownType":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._SignalAggregations_powertrainTractionBatteryChargingChargeVoltageUnknownType(ctx, field, obj)
 				return res
 			}
 
@@ -24371,6 +27125,22 @@ func (ec *executionContext) _SignalCollection(ctx context.Context, sel ast.Selec
 			out.Values[i] = ec._SignalCollection_currentLocationApproximateLongitude(ctx, field, obj)
 		case "angularVelocityYaw":
 			out.Values[i] = ec._SignalCollection_angularVelocityYaw(ctx, field, obj)
+		case "cabinDoorRow1DriverSideIsOpen":
+			out.Values[i] = ec._SignalCollection_cabinDoorRow1DriverSideIsOpen(ctx, field, obj)
+		case "cabinDoorRow1DriverSideWindowIsOpen":
+			out.Values[i] = ec._SignalCollection_cabinDoorRow1DriverSideWindowIsOpen(ctx, field, obj)
+		case "cabinDoorRow1PassengerSideIsOpen":
+			out.Values[i] = ec._SignalCollection_cabinDoorRow1PassengerSideIsOpen(ctx, field, obj)
+		case "cabinDoorRow1PassengerSideWindowIsOpen":
+			out.Values[i] = ec._SignalCollection_cabinDoorRow1PassengerSideWindowIsOpen(ctx, field, obj)
+		case "cabinDoorRow2DriverSideIsOpen":
+			out.Values[i] = ec._SignalCollection_cabinDoorRow2DriverSideIsOpen(ctx, field, obj)
+		case "cabinDoorRow2DriverSideWindowIsOpen":
+			out.Values[i] = ec._SignalCollection_cabinDoorRow2DriverSideWindowIsOpen(ctx, field, obj)
+		case "cabinDoorRow2PassengerSideIsOpen":
+			out.Values[i] = ec._SignalCollection_cabinDoorRow2PassengerSideIsOpen(ctx, field, obj)
+		case "cabinDoorRow2PassengerSideWindowIsOpen":
+			out.Values[i] = ec._SignalCollection_cabinDoorRow2PassengerSideWindowIsOpen(ctx, field, obj)
 		case "chassisAxleRow1WheelLeftSpeed":
 			out.Values[i] = ec._SignalCollection_chassisAxleRow1WheelLeftSpeed(ctx, field, obj)
 		case "chassisAxleRow1WheelLeftTirePressure":
@@ -24471,8 +27241,12 @@ func (ec *executionContext) _SignalCollection(ctx context.Context, sel ast.Selec
 			out.Values[i] = ec._SignalCollection_powertrainRange(ctx, field, obj)
 		case "powertrainTractionBatteryChargingAddedEnergy":
 			out.Values[i] = ec._SignalCollection_powertrainTractionBatteryChargingAddedEnergy(ctx, field, obj)
+		case "powertrainTractionBatteryChargingChargeCurrentAC":
+			out.Values[i] = ec._SignalCollection_powertrainTractionBatteryChargingChargeCurrentAC(ctx, field, obj)
 		case "powertrainTractionBatteryChargingChargeLimit":
 			out.Values[i] = ec._SignalCollection_powertrainTractionBatteryChargingChargeLimit(ctx, field, obj)
+		case "powertrainTractionBatteryChargingChargeVoltageUnknownType":
+			out.Values[i] = ec._SignalCollection_powertrainTractionBatteryChargingChargeVoltageUnknownType(ctx, field, obj)
 		case "powertrainTractionBatteryChargingIsCharging":
 			out.Values[i] = ec._SignalCollection_powertrainTractionBatteryChargingIsCharging(ctx, field, obj)
 		case "powertrainTractionBatteryCurrentPower":
