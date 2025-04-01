@@ -167,7 +167,3 @@ func TestGetLatestVC(t *testing.T) {
 		})
 	}
 }
-
-func ref[T any](v T) *T {
-	return &v
-}
