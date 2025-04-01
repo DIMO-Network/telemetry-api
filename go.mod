@@ -7,7 +7,7 @@ require (
 	github.com/ClickHouse/clickhouse-go/v2 v2.30.0
 	github.com/DIMO-Network/attestation-api v0.0.11
 	github.com/DIMO-Network/clickhouse-infra v0.0.3
-	github.com/DIMO-Network/cloudevent v0.0.3
+	github.com/DIMO-Network/cloudevent v0.0.4
 	github.com/DIMO-Network/fetch-api v0.0.10
 	github.com/DIMO-Network/model-garage v0.5.4
 	github.com/DIMO-Network/shared v0.12.7

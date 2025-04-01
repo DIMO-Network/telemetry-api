@@ -1,0 +1,39 @@
+scalar JSON
+
+extend type Query {
+  """
+  attestations returns all attestations for a given vehicle token.
+
+  Required Privileges: [ATTESTATION_CREDENTIAL]
+  """
+  attestations(
+    """
+    The token ID of the vehicle.
+    """
+    tokenId: Int!
+    """
+    The attesting party. 
+    """
+    signer: String
+  ): [Attestation]
+    @requiresVehicleToken
+    @requiresAllOfPrivileges(privileges: [ATTESTATION_CREDENTIAL])
+}
+
+type Attestation {
+  """
+  vehicleTokenId is the token ID of the vehicle.
+  """
+  vehicleTokenId: Int
+
+  """
+  The time the VIN was recorded.
+  """
+  recordedAt: Time
+
+  """
+  attestation is the data being attested to.
+  """
+  attestation: JSON!
+}
+

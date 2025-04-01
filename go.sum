@@ -78,8 +78,8 @@ github.com/DIMO-Network/attestation-api v0.0.11 h1:LWZmrQSsmAwSD6ew7t12ioBdC6h/x
 github.com/DIMO-Network/attestation-api v0.0.11/go.mod h1:sxb0ooOdbNXlv4wd6g/sPiflDyVKL4uODmc/uNq59bE=
 github.com/DIMO-Network/clickhouse-infra v0.0.3 h1:B6/4IY9IxLcyydET14IjHUT+A5SDEis7p//DoFzrMk4=
 github.com/DIMO-Network/clickhouse-infra v0.0.3/go.mod h1:NtpQ1btkPzebDvpYYygeqiiBmJ/q5oJb/T/JWzUVRlk=
-github.com/DIMO-Network/cloudevent v0.0.3 h1:pqQBIdSlCeFPvCYTV4XQGWjspAU8u04rBXqQs7xnFt4=
-github.com/DIMO-Network/cloudevent v0.0.3/go.mod h1:XIt86E9/CvJOA4YeP1Dxzu52hMtx95XAtC67hD/P7J0=
+github.com/DIMO-Network/cloudevent v0.0.4 h1:uAACCZtZhdNYomz+enc1c9CZRDNRpau7jJQEwmvd0LA=
+github.com/DIMO-Network/cloudevent v0.0.4/go.mod h1:uY68qV/p18qtbMzLpBCci3QrJzhDPlDt+QcMrh5XY2s=
 github.com/DIMO-Network/fetch-api v0.0.10 h1:TdB+cXEEdKYQejxgayx9YdEIOzEyp0++Si+w90DWF8g=
 github.com/DIMO-Network/fetch-api v0.0.10/go.mod h1:xxtQJ0dKkyxJpOzGCH4EiTKdVCikum+p6DJTXzgzqug=
 github.com/DIMO-Network/model-garage v0.5.4 h1:g6xgrMuAUQ9YLM9ok0F+e6ksc2HsCRzc6V2/p0gBx4w=
