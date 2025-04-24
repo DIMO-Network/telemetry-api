@@ -1,0 +1,37 @@
+extend type Query {
+  """
+  attestations returns all attestations for a given vehicle token.
+
+  Required Privileges: [VEHICLE_RAW_DATA]
+  """
+  attestations(
+    """
+    The token ID of the vehicle.
+    """
+    tokenId: Int!
+    """
+    The attesting party. 
+    """
+    signer: Address
+  ): [Attestation]
+    @requiresVehicleToken
+    @requiresAllOfPrivileges(privileges: [VEHICLE_RAW_DATA])
+}
+
+type Attestation {
+  """
+  vehicleTokenId is the token ID of the vehicle.
+  """
+  vehicleTokenId: Int!
+
+  """
+  recordedAt represents the time the attestation was recorded at.
+  """
+  recordedAt: Time!
+
+  """
+  attestation is the data being attested to.
+  """
+  attestation: String!
+}
+
