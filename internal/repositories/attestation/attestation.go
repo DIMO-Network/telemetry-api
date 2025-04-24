@@ -10,8 +10,6 @@ import (
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/rs/zerolog"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
@@ -46,17 +44,14 @@ func (r *Repository) GetAttestations(ctx context.Context, vehicleTokenID uint32,
 		Type:    &wrapperspb.StringValue{Value: cloudevent.TypeAttestation},
 		Subject: &wrapperspb.StringValue{Value: vehicleDID},
 	}
-
+	r.logger.Info().Msgf("fetching attestations: %s", vehicleDID)
 	if signer != nil {
 		opts.Source = &wrapperspb.StringValue{Value: signer.Hex()}
 	}
 
 	cloudEvents, err := r.indexService.GetAllCloudEvents(ctx, opts)
 	if err != nil {
-		if status.Code(err) == codes.NotFound {
-			return nil, nil //nolint // nil is a valid response
-		}
-		r.logger.Error().Err(err).Msg("failed to fetch vehicle attestations")
+		r.logger.Error().Err(err).Msg("failed to get cloud events")
 		return nil, errors.New("internal error")
 	}
 

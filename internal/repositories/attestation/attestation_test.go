@@ -136,13 +136,6 @@ func TestAttestation(t *testing.T) {
 			},
 			signer:   &invalidSigner,
 			vehTknID: uint32(invalidVehTknID),
-			expectedAtts: []*model.Attestation{
-				&model.Attestation{
-					VehicleTokenID: validVehTknID,
-					RecordedAt:     defaultEvent.Time,
-					Attestation:    dataStr,
-				},
-			},
 		},
 	}
 
@@ -164,6 +157,8 @@ func TestAttestation(t *testing.T) {
 				require.Nil(t, attestations)
 				return
 			}
+
+			require.EqualValues(t, len(tt.expectedAtts), len(attestations))
 
 			for idx, att := range attestations {
 				require.JSONEq(t, tt.expectedAtts[idx].Attestation, att.Attestation)
