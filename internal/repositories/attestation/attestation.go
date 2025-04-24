@@ -36,7 +36,7 @@ func New(indexService indexRepoService, chainID uint64, vehicleAddress common.Ad
 }
 
 // GetAttestations fetches attestations for the given vehicle.
-func (r *Repository) GetAttestations(ctx context.Context, vehicleTokenID uint32, signer *string) ([]*model.Attestation, error) {
+func (r *Repository) GetAttestations(ctx context.Context, vehicleTokenID uint32, signer *common.Address) ([]*model.Attestation, error) {
 	vehicleDID := cloudevent.NFTDID{
 		ChainID:         r.chainID,
 		ContractAddress: r.vehicleAddress,
@@ -48,11 +48,7 @@ func (r *Repository) GetAttestations(ctx context.Context, vehicleTokenID uint32,
 	}
 
 	if signer != nil {
-		if !common.IsHexAddress(*signer) {
-			r.logger.Info().Msgf("invalid attestation signer: %s", *signer)
-			return nil, errors.New("invalid attestation signer")
-		}
-		opts.Source = &wrapperspb.StringValue{Value: *signer}
+		opts.Source = &wrapperspb.StringValue{Value: signer.Hex()}
 	}
 
 	cloudEvents, err := r.indexService.GetAllCloudEvents(ctx, opts)
@@ -68,8 +64,8 @@ func (r *Repository) GetAttestations(ctx context.Context, vehicleTokenID uint32,
 	var attestations []*model.Attestation
 	for _, ce := range cloudEvents {
 		attestations = append(attestations, &model.Attestation{
-			VehicleTokenID: &tknID,
-			RecordedAt:     &ce.Time,
+			VehicleTokenID: tknID,
+			RecordedAt:     ce.Time,
 			Attestation:    string(ce.Data),
 		})
 

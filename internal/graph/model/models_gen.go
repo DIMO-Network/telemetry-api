@@ -20,9 +20,9 @@ type AftermarketDeviceBy struct {
 
 type Attestation struct {
 	// vehicleTokenId is the token ID of the vehicle.
-	VehicleTokenID *int `json:"vehicleTokenId,omitempty"`
-	// The time the VIN was recorded.
-	RecordedAt *time.Time `json:"recordedAt,omitempty"`
+	VehicleTokenID int `json:"vehicleTokenId"`
+	// recordedAt represents the time the attestation was recorded at.
+	RecordedAt time.Time `json:"recordedAt"`
 	// attestation is the data being attested to.
 	Attestation string `json:"attestation"`
 }
@@ -452,7 +452,7 @@ const (
 	PrivilegeVehicleVinCredential       Privilege = "VEHICLE_VIN_CREDENTIAL"
 	PrivilegeVehicleApproximateLocation Privilege = "VEHICLE_APPROXIMATE_LOCATION"
 	PrivilegeManufacturerDeviceLastSeen Privilege = "MANUFACTURER_DEVICE_LAST_SEEN"
-	PrivilegeAttestationCredential      Privilege = "ATTESTATION_CREDENTIAL"
+	PrivilegeVehicleRawData             Privilege = "VEHICLE_RAW_DATA"
 )
 
 var AllPrivilege = []Privilege{
@@ -463,12 +463,12 @@ var AllPrivilege = []Privilege{
 	PrivilegeVehicleVinCredential,
 	PrivilegeVehicleApproximateLocation,
 	PrivilegeManufacturerDeviceLastSeen,
-	PrivilegeAttestationCredential,
+	PrivilegeVehicleRawData,
 }
 
 func (e Privilege) IsValid() bool {
 	switch e {
-	case PrivilegeVehicleNonLocationData, PrivilegeVehicleCommands, PrivilegeVehicleCurrentLocation, PrivilegeVehicleAllTimeLocation, PrivilegeVehicleVinCredential, PrivilegeVehicleApproximateLocation, PrivilegeManufacturerDeviceLastSeen, PrivilegeAttestationCredential:
+	case PrivilegeVehicleNonLocationData, PrivilegeVehicleCommands, PrivilegeVehicleCurrentLocation, PrivilegeVehicleAllTimeLocation, PrivilegeVehicleVinCredential, PrivilegeVehicleApproximateLocation, PrivilegeManufacturerDeviceLastSeen, PrivilegeVehicleRawData:
 		return true
 	}
 	return false

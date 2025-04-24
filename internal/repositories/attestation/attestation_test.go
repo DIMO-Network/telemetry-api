@@ -4,7 +4,6 @@ package attestation_test
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"math/big"
 	"testing"
 	"time"
@@ -44,7 +43,7 @@ func (m *MockRow) ScanStruct(any) error {
 	return nil
 }
 
-func TestGetLatestVC(t *testing.T) {
+func TestAttestation(t *testing.T) {
 	// Initialize variables
 	logger := zerolog.New(nil)
 	ctx := context.Background()
@@ -52,7 +51,7 @@ func TestGetLatestVC(t *testing.T) {
 	invalidVehTknID := int(321)
 
 	validSigner := common.BigToAddress(big.NewInt(1))
-	invalidSigner := "invalidSigner"
+	invalidSigner := common.BigToAddress(big.NewInt(100))
 
 	// Create mock controller
 	ctrl := gomock.NewController(t)
@@ -85,7 +84,7 @@ func TestGetLatestVC(t *testing.T) {
 		name         string
 		mockSetup    func()
 		vehTknID     uint32
-		signer       *string
+		signer       *common.Address
 		expectedAtts []*model.Attestation
 		expectedErr  bool
 		err          error
@@ -98,11 +97,11 @@ func TestGetLatestVC(t *testing.T) {
 				}, nil)
 			},
 			vehTknID: uint32(validVehTknID),
-			signer:   &defaultEvent.Source,
+			signer:   &validSigner,
 			expectedAtts: []*model.Attestation{
 				&model.Attestation{
-					VehicleTokenID: &validVehTknID,
-					RecordedAt:     &defaultEvent.Time,
+					VehicleTokenID: validVehTknID,
+					RecordedAt:     defaultEvent.Time,
 					Attestation:    dataStr,
 				},
 			},
@@ -117,8 +116,8 @@ func TestGetLatestVC(t *testing.T) {
 			vehTknID: uint32(validVehTknID),
 			expectedAtts: []*model.Attestation{
 				&model.Attestation{
-					VehicleTokenID: &validVehTknID,
-					RecordedAt:     &defaultEvent.Time,
+					VehicleTokenID: validVehTknID,
+					RecordedAt:     defaultEvent.Time,
 					Attestation:    dataStr,
 				},
 			},
@@ -131,12 +130,19 @@ func TestGetLatestVC(t *testing.T) {
 			vehTknID: uint32(invalidVehTknID),
 		},
 		{
-			name:        "Invalid attestation signer",
-			mockSetup:   func() {},
-			signer:      &invalidSigner,
-			vehTknID:    uint32(invalidVehTknID),
-			expectedErr: true,
-			err:         errors.New("invalid attestation signer"),
+			name: "no attestations from signer",
+			mockSetup: func() {
+				mockService.EXPECT().GetAllCloudEvents(gomock.Any(), gomock.Any()).Return(nil, nil)
+			},
+			signer:   &invalidSigner,
+			vehTknID: uint32(invalidVehTknID),
+			expectedAtts: []*model.Attestation{
+				&model.Attestation{
+					VehicleTokenID: validVehTknID,
+					RecordedAt:     defaultEvent.Time,
+					Attestation:    dataStr,
+				},
+			},
 		},
 	}
 

@@ -58,7 +58,7 @@ func (c *FetchAPIService) GetAllCloudEvents(ctx context.Context, filter *pb.Sear
 		Options: filter,
 	})
 	if err != nil {
-		return nil, fmt.Errorf("failed to get latest file: %w", err)
+		return nil, fmt.Errorf("failed to get files: %w", err)
 	}
 
 	cldEvts := []cloudevent.CloudEvent[json.RawMessage]{}
