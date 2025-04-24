@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	"time"
 
 	"github.com/DIMO-Network/shared/middleware/privilegetoken"
 	"github.com/DIMO-Network/shared/privileges"
@@ -16,8 +17,17 @@ type TelemetryClaimContextKey struct{}
 
 // TelemetryClaim is a custom claim for the telemetry API.
 type TelemetryClaim struct {
-	privileges set.Set[model.Privilege]
+	privileges   set.Set[model.Privilege]
+	Attestations []AttestationClaim
 	privilegetoken.CustomClaims
+}
+
+type AttestationClaim struct {
+	TokenID        uint32    `json:"tokenID"`
+	EventType      string    `json:"eventType"`
+	Source         string    `json:"source"`
+	AttestationIDs []string  `json:"ids"`
+	ExpiresAt      time.Time `json:"expiresAt"`
 }
 
 // Validate function is required to implement the validator.CustomClaims interface.

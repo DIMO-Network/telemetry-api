@@ -4,14 +4,14 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"slices"
 
 	"github.com/DIMO-Network/cloudevent"
 	"github.com/DIMO-Network/fetch-api/pkg/grpc"
+	"github.com/DIMO-Network/telemetry-api/internal/auth"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/rs/zerolog"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
@@ -36,7 +36,25 @@ func New(indexService indexRepoService, chainID uint64, vehicleAddress common.Ad
 }
 
 // GetAttestations fetches attestations for the given vehicle.
-func (r *Repository) GetAttestations(ctx context.Context, vehicleTokenID uint32, signer *string) ([]*model.Attestation, error) {
+func (r *Repository) GetAttestations(ctx context.Context, vehicleTokenID uint32, signer *common.Address) ([]*model.Attestation, error) {
+	attClaims, ok := ctx.Value(auth.AttestationClaims).(auth.TelemetryClaim)
+	if !ok {
+		return nil, errors.New("failed to find attestation claims")
+	}
+
+	var sacdGrant bool
+	var restrictedIDs []string
+	for _, claim := range attClaims.Attestations {
+		if claim.TokenID == vehicleTokenID {
+			sacdGrant = true
+			restrictedIDs = claim.AttestationIDs
+		}
+	}
+
+	if !sacdGrant {
+		return nil, errors.New("invalid attestation cliam")
+	}
+
 	vehicleDID := cloudevent.NFTDID{
 		ChainID:         r.chainID,
 		ContractAddress: r.vehicleAddress,
@@ -48,18 +66,11 @@ func (r *Repository) GetAttestations(ctx context.Context, vehicleTokenID uint32,
 	}
 
 	if signer != nil {
-		if !common.IsHexAddress(*signer) {
-			r.logger.Info().Msgf("invalid attestation signer: %s", *signer)
-			return nil, errors.New("invalid attestation signer")
-		}
-		opts.Source = &wrapperspb.StringValue{Value: *signer}
+		opts.Source = &wrapperspb.StringValue{Value: signer.Hex()}
 	}
 
 	cloudEvents, err := r.indexService.GetAllCloudEvents(ctx, opts)
 	if err != nil {
-		if status.Code(err) == codes.NotFound {
-			return nil, nil //nolint // nil is a valid response
-		}
 		r.logger.Error().Err(err).Msg("failed to fetch vehicle attestations")
 		return nil, errors.New("internal error")
 	}
@@ -67,9 +78,14 @@ func (r *Repository) GetAttestations(ctx context.Context, vehicleTokenID uint32,
 	tknID := int(vehicleTokenID)
 	var attestations []*model.Attestation
 	for _, ce := range cloudEvents {
+		if len(restrictedIDs) >= 1 {
+			if !slices.Contains(restrictedIDs, ce.ID) {
+				continue
+			}
+		}
 		attestations = append(attestations, &model.Attestation{
-			VehicleTokenID: &tknID,
-			RecordedAt:     &ce.Time,
+			VehicleTokenID: tknID,
+			RecordedAt:     ce.Time,
 			Attestation:    string(ce.Data),
 		})
 

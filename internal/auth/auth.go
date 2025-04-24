@@ -26,6 +26,7 @@ var (
 		privileges.VehicleAllTimeLocation:     model.PrivilegeVehicleAllTimeLocation,
 		privileges.VehicleVinCredential:       model.PrivilegeVehicleVinCredential,
 		privileges.VehicleApproximateLocation: model.PrivilegeVehicleApproximateLocation,
+		privileges.VehicleRawData:             model.PrivilegeVehicleRawData,
 	}
 
 	manufacturerPrivToAPI = map[privileges.Privilege]model.Privilege{
@@ -150,6 +151,18 @@ func OneOfPrivilegeCheck(ctx context.Context, _ any, next graphql.Resolver, requ
 	}
 
 	return nil, newError("requires at least one of the following privileges %v", requiredPrivs)
+}
+
+var AttestationClaims = "attestationClaims"
+
+// ValidSACDGrant checks that the caller has been granted appropriate permissions via SACD.
+func ValidSACDGrant(ctx context.Context, _ any, next graphql.Resolver, requiredPrivs []model.Privilege) (any, error) {
+	claim, err := getTelemetryClaim(ctx)
+	if err != nil {
+		return nil, UnauthorizedError{err: err}
+	}
+
+	return next(context.WithValue(ctx, AttestationClaims, claim.Attestations))
 }
 
 func getArg[T any](ctx context.Context, name string) (T, error) {
