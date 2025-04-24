@@ -26,6 +26,7 @@ var (
 		privileges.VehicleAllTimeLocation:     model.PrivilegeVehicleAllTimeLocation,
 		privileges.VehicleVinCredential:       model.PrivilegeVehicleVinCredential,
 		privileges.VehicleApproximateLocation: model.PrivilegeVehicleApproximateLocation,
+		privileges.VehicleRawData:             model.PrivilegeVehicleRawData,
 	}
 
 	manufacturerPrivToAPI = map[privileges.Privilege]model.Privilege{
