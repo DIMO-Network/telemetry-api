@@ -3,28 +3,28 @@ module github.com/DIMO-Network/telemetry-api
 go 1.24
 
 require (
-	github.com/99designs/gqlgen v0.17.66
+	github.com/99designs/gqlgen v0.17.72
 	github.com/ClickHouse/clickhouse-go/v2 v2.34.0
-	github.com/DIMO-Network/attestation-api v0.0.11
+	github.com/DIMO-Network/attestation-api v0.0.21
 	github.com/DIMO-Network/clickhouse-infra v0.0.3
 	github.com/DIMO-Network/cloudevent v0.0.4
 	github.com/DIMO-Network/fetch-api v0.0.10
-	github.com/DIMO-Network/model-garage v0.5.4
-	github.com/DIMO-Network/shared v0.12.7
-	github.com/Khan/genqlient v0.7.0
-	github.com/auth0/go-jwt-middleware/v2 v2.2.1
-	github.com/ethereum/go-ethereum v1.15.6
-	github.com/go-jose/go-jose/v4 v4.0.5
+	github.com/DIMO-Network/model-garage v0.5.5
+	github.com/DIMO-Network/shared v0.12.9
+	github.com/Khan/genqlient v0.8.0
+	github.com/auth0/go-jwt-middleware/v2 v2.3.0
+	github.com/ethereum/go-ethereum v1.15.10
+	github.com/go-jose/go-jose/v4 v4.1.0
 	github.com/gofiber/fiber/v2 v2.52.6
-	github.com/prometheus/client_golang v1.20.5
-	github.com/rs/zerolog v1.33.0
+	github.com/prometheus/client_golang v1.21.1
+	github.com/rs/zerolog v1.34.0
 	github.com/stretchr/testify v1.10.0
-	github.com/uber/h3-go/v4 v4.1.2
-	github.com/vektah/gqlparser/v2 v2.5.22
-	github.com/volatiletech/sqlboiler/v4 v4.17.1
-	go.uber.org/mock v0.5.0
-	google.golang.org/grpc v1.67.1
-	google.golang.org/protobuf v1.36.5
+	github.com/uber/h3-go/v4 v4.2.1
+	github.com/vektah/gqlparser/v2 v2.5.25
+	github.com/volatiletech/sqlboiler/v4 v4.18.0
+	go.uber.org/mock v0.5.1
+	google.golang.org/grpc v1.71.0
+	google.golang.org/protobuf v1.36.6
 )
 
 require (
@@ -36,14 +36,14 @@ require (
 	github.com/Masterminds/semver/v3 v3.3.0 // indirect
 	github.com/Masterminds/sprig/v3 v3.3.0 // indirect
 	github.com/Microsoft/go-winio v0.6.2 // indirect
-	github.com/agnivade/levenshtein v1.2.0 // indirect
+	github.com/agnivade/levenshtein v1.2.1 // indirect
 	github.com/andybalholm/brotli v1.1.1 // indirect
 	github.com/avast/retry-go/v4 v4.6.0 // indirect
-	github.com/aws/aws-sdk-go-v2 v1.32.7 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/configsources v1.3.26 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.6.26 // indirect
+	github.com/aws/aws-sdk-go-v2 v1.36.3 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/configsources v1.3.34 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.6.34 // indirect
 	github.com/aws/aws-sdk-go-v2/service/kms v1.35.3 // indirect
-	github.com/aws/smithy-go v1.22.1 // indirect
+	github.com/aws/smithy-go v1.22.2 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/btcsuite/btcd/btcutil v1.1.6 // indirect
 	github.com/btcsuite/btcutil v1.0.2 // indirect
@@ -104,7 +104,7 @@ require (
 	github.com/pquerna/cachecontrol v0.2.0 // indirect
 	github.com/pressly/goose/v3 v3.24.1 // indirect
 	github.com/prometheus/client_model v0.6.1 // indirect
-	github.com/prometheus/common v0.55.0 // indirect
+	github.com/prometheus/common v0.62.0 // indirect
 	github.com/prometheus/procfs v0.15.1 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
@@ -124,7 +124,7 @@ require (
 	github.com/tidwall/sjson v1.2.5 // indirect
 	github.com/tklauser/go-sysconf v0.3.13 // indirect
 	github.com/tklauser/numcpus v0.7.0 // indirect
-	github.com/urfave/cli/v2 v2.27.5 // indirect
+	github.com/urfave/cli/v2 v2.27.6 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasthttp v1.55.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect
@@ -138,18 +138,18 @@ require (
 	go.opentelemetry.io/otel/metric v1.35.0 // indirect
 	go.opentelemetry.io/otel/trace v1.35.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
-	golang.org/x/crypto v0.35.0 // indirect
+	golang.org/x/crypto v0.37.0 // indirect
 	golang.org/x/exp v0.0.0-20240719175910-8a7402abbf56 // indirect
-	golang.org/x/mod v0.23.0 // indirect
-	golang.org/x/net v0.36.0 // indirect
-	golang.org/x/sync v0.11.0 // indirect
-	golang.org/x/sys v0.30.0 // indirect
-	golang.org/x/text v0.22.0 // indirect
+	golang.org/x/mod v0.24.0 // indirect
+	golang.org/x/net v0.39.0 // indirect
+	golang.org/x/sync v0.13.0 // indirect
+	golang.org/x/sys v0.32.0 // indirect
+	golang.org/x/text v0.24.0 // indirect
 	golang.org/x/time v0.9.0 // indirect
-	golang.org/x/tools v0.30.0 // indirect
+	golang.org/x/tools v0.32.0 // indirect
 	golang.org/x/xerrors v0.0.0-20240716161551-93cc26a95ae9 // indirect
-	google.golang.org/genproto/googleapis/api v0.0.0-20240814211410-ddb44dafa142 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240814211410-ddb44dafa142 // indirect
+	google.golang.org/genproto/googleapis/api v0.0.0-20250106144421-5f5ef82da422 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20250115164207-1a7da9e5054f // indirect
 	gopkg.in/go-jose/go-jose.v2 v2.6.3 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
