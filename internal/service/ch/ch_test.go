@@ -50,7 +50,7 @@ func (c *CHServiceTestSuite) SetupSuite() {
 	c.Require().NoError(err, "Failed to run migrations")
 
 	settings := config.Settings{
-		CLickhouse:           cfg,
+		Clickhouse:           cfg,
 		MaxRequestDuration:   "1s",
 		DeviceLastSeenBinHrs: 3,
 	}
@@ -449,7 +449,7 @@ func (c *CHServiceTestSuite) TestExecutionTimeout() {
 	cfg := c.container.Config()
 
 	settings := config.Settings{
-		CLickhouse:         cfg,
+		Clickhouse:         cfg,
 		MaxRequestDuration: "1s",
 	}
 	chService, err := NewService(settings)

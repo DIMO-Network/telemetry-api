@@ -32,16 +32,16 @@ func NewService(settings config.Settings) (*Service, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to get max execution time: %w", err)
 	}
-	addr := fmt.Sprintf("%s:%d", settings.CLickhouse.Host, settings.CLickhouse.Port)
+	addr := fmt.Sprintf("%s:%d", settings.Clickhouse.Host, settings.Clickhouse.Port)
 	conn, err := clickhouse.Open(&clickhouse.Options{
 		Addr: []string{addr},
 		Auth: clickhouse.Auth{
-			Username: settings.CLickhouse.User,
-			Password: settings.CLickhouse.Password,
-			Database: settings.CLickhouse.Database,
+			Username: settings.Clickhouse.User,
+			Password: settings.Clickhouse.Password,
+			Database: settings.Clickhouse.Database,
 		},
 		TLS: &tls.Config{
-			RootCAs: settings.CLickhouse.RootCAs,
+			RootCAs: settings.Clickhouse.RootCAs,
 		},
 		Settings: map[string]any{
 			// ClickHouse will interrupt a query if the projected execution time exceeds the specified max_execution_time.

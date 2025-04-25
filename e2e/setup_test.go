@@ -65,7 +65,7 @@ func GetTestServices(t *testing.T) *TestServices {
 		// Create test settings
 
 		settings.FetchAPIGRPCEndpoint = fetch.URL()
-		settings.CLickhouse = ch.Config()
+		settings.Clickhouse = ch.Config()
 		settings.IdentityAPIURL = identity.URL()
 		settings.TokenExchangeJWTKeySetURL = auth.URL() + "/keys"
 
