@@ -21,6 +21,7 @@ type FetchAPIService struct {
 	vehicleAddr   common.Address
 	chainID       uint64
 	once          sync.Once
+	limit         int32
 }
 
 // New creates a new instance of FetchAPIService with the specified server address,
@@ -30,6 +31,7 @@ func New(settings *config.Settings) *FetchAPIService {
 		fetchGRPCAddr: settings.FetchAPIGRPCEndpoint,
 		vehicleAddr:   settings.VehicleNFTAddress,
 		chainID:       uint64(settings.ChainID),
+		limit:         5, // TODO(ae): this is hardcoded for attestations until we add support for pagination
 	}
 }
 
@@ -56,6 +58,7 @@ func (c *FetchAPIService) GetAllCloudEvents(ctx context.Context, filter *pb.Sear
 	}
 	resp, err := client.ListCloudEvents(ctx, &pb.ListCloudEventsRequest{
 		Options: filter,
+		Limit:   c.limit,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to get files: %w", err)
