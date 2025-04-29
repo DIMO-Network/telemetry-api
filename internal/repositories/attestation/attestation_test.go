@@ -85,12 +85,29 @@ func TestAttestation(t *testing.T) {
 		mockSetup    func()
 		vehTknID     uint32
 		signer       *common.Address
+		filters      *model.AttestationFilter
 		expectedAtts []*model.Attestation
 		expectedErr  bool
 		err          error
 	}{
 		{
-			name: "Success with signer",
+			name: "successful query, search for all attestations for token id",
+			mockSetup: func() {
+				mockService.EXPECT().GetAllCloudEvents(gomock.Any(), gomock.Any()).Return([]cloudevent.CloudEvent[json.RawMessage]{
+					defaultEvent,
+				}, nil)
+			},
+			vehTknID: uint32(validVehTknID),
+			expectedAtts: []*model.Attestation{
+				&model.Attestation{
+					VehicleTokenID: validVehTknID,
+					RecordedAt:     defaultEvent.Time,
+					Attestation:    dataStr,
+				},
+			},
+		},
+		{
+			name: "successful query, search for all attestations for token id by signer",
 			mockSetup: func() {
 				mockService.EXPECT().GetAllCloudEvents(gomock.Any(), gomock.Any()).Return([]cloudevent.CloudEvent[json.RawMessage]{
 					defaultEvent,
@@ -107,13 +124,15 @@ func TestAttestation(t *testing.T) {
 			},
 		},
 		{
-			name: "Success without signer",
+			name: "successful query, search for all attestations for token id by signer",
 			mockSetup: func() {
 				mockService.EXPECT().GetAllCloudEvents(gomock.Any(), gomock.Any()).Return([]cloudevent.CloudEvent[json.RawMessage]{
 					defaultEvent,
 				}, nil)
 			},
+			filters:  &model.AttestationFilter{},
 			vehTknID: uint32(validVehTknID),
+			signer:   &validSigner,
 			expectedAtts: []*model.Attestation{
 				&model.Attestation{
 					VehicleTokenID: validVehTknID,
@@ -123,14 +142,14 @@ func TestAttestation(t *testing.T) {
 			},
 		},
 		{
-			name: "no cloud events returned (not an error)",
+			name: "successful query, no attestations for token id",
 			mockSetup: func() {
 				mockService.EXPECT().GetAllCloudEvents(gomock.Any(), gomock.Any()).Return(nil, nil)
 			},
 			vehTknID: uint32(invalidVehTknID),
 		},
 		{
-			name: "no attestations from signer",
+			name: "successful query, no attestations for token id by signer",
 			mockSetup: func() {
 				mockService.EXPECT().GetAllCloudEvents(gomock.Any(), gomock.Any()).Return(nil, nil)
 			},
@@ -144,7 +163,7 @@ func TestAttestation(t *testing.T) {
 			// Set up the mock expectations
 			tt.mockSetup()
 			// Call the method
-			attestations, err := att.GetAttestations(ctx, tt.vehTknID, tt.signer)
+			attestations, err := att.GetAttestations(ctx, tt.vehTknID, tt.signer, tt.filters)
 
 			// Assert the results
 			if tt.expectedErr {

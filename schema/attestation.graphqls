@@ -12,13 +12,22 @@ extend type Query {
     """
     The attesting party. 
     """
-    signer: Address
+    source: Address
+    """
+    Filter attestation by producer effectiveAt, expiresAt, or attestation ID. 
+    """
+    filter: AttestationFilter
   ): [Attestation]
     @requiresVehicleToken
     @requiresAllOfPrivileges(privileges: [VEHICLE_RAW_DATA])
 }
 
 type Attestation {
+  """
+  ID is the ID of the attestation.
+  """
+  ID: Int!
+
   """
   vehicleTokenId is the token ID of the vehicle.
   """
@@ -35,3 +44,32 @@ type Attestation {
   attestation: String!
 }
 
+"""
+AttestationFilter holds the filter parameters for the attestation querys.
+"""
+input AttestationFilter {
+  """
+  Filter attestations by data version.
+  """
+  dataVersion: String
+
+  """
+  Filter attestations by source type.
+  """
+  producer: Address
+
+  """
+  Filter attestations effective at or after this date.
+  """
+  effectiveAt: Time
+
+  """
+  Filter attestations effective until this date.
+  """
+  expiresAt: Time
+
+  """
+  Filter attestations by ID.
+  """
+  ID: Int
+}

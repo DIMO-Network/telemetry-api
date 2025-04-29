@@ -19,12 +19,28 @@ type AftermarketDeviceBy struct {
 }
 
 type Attestation struct {
+	// ID is the ID of the attestation.
+	ID int `json:"ID"`
 	// vehicleTokenId is the token ID of the vehicle.
 	VehicleTokenID int `json:"vehicleTokenId"`
 	// recordedAt represents the time the attestation was recorded at.
 	RecordedAt time.Time `json:"recordedAt"`
 	// attestation is the data being attested to.
 	Attestation string `json:"attestation"`
+}
+
+// AttestationFilter holds the filter parameters for the attestation querys.
+type AttestationFilter struct {
+	// Filter attestations by data version.
+	DataVersion *string `json:"dataVersion,omitempty"`
+	// Filter attestations by source type.
+	Producer *common.Address `json:"producer,omitempty"`
+	// Filter attestations effective at or after this date.
+	EffectiveAt *time.Time `json:"effectiveAt,omitempty"`
+	// Filter attestations effective until this date.
+	ExpiresAt *time.Time `json:"expiresAt,omitempty"`
+	// Filter attestations by ID.
+	ID *int `json:"ID,omitempty"`
 }
 
 type DeviceActivity struct {
