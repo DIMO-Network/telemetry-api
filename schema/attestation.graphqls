@@ -26,7 +26,7 @@ type Attestation {
   """
   ID is the ID of the attestation.
   """
-  ID: Int!
+  ID: String!
 
   """
   vehicleTokenId is the token ID of the vehicle.
@@ -42,6 +42,27 @@ type Attestation {
   attestation is the data being attested to.
   """
   attestation: String!
+
+  """
+  type
+  """
+  type: String!
+
+  """
+  source
+  """
+  source: Address!
+
+  """
+  dataversion
+  """
+  dataVersion: String!
+
+  """
+  producer
+  """
+  producer: String
+
 }
 
 """
@@ -56,7 +77,7 @@ input AttestationFilter {
   """
   Filter attestations by source type.
   """
-  producer: Address
+  producer: String
 
   """
   Filter attestations effective at or after this date.
@@ -67,9 +88,4 @@ input AttestationFilter {
   Filter attestations effective until this date.
   """
   expiresAt: Time
-
-  """
-  Filter attestations by ID.
-  """
-  ID: Int
 }

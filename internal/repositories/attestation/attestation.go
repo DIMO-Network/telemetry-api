@@ -52,7 +52,7 @@ func (r *Repository) GetAttestations(ctx context.Context, vehicleTokenID uint32,
 
 	if filter != nil {
 		if filter.Producer != nil {
-			opts.Producer = &wrapperspb.StringValue{Value: filter.Producer.Hex()}
+			opts.Producer = &wrapperspb.StringValue{Value: *filter.Producer}
 		}
 
 		if filter.EffectiveAt != nil {
@@ -77,12 +77,21 @@ func (r *Repository) GetAttestations(ctx context.Context, vehicleTokenID uint32,
 	tknID := int(vehicleTokenID)
 	var attestations []*model.Attestation
 	for _, ce := range cloudEvents {
-		attestations = append(attestations, &model.Attestation{
+		attestation := &model.Attestation{
+			ID:             ce.ID,
 			VehicleTokenID: tknID,
 			RecordedAt:     ce.Time,
 			Attestation:    string(ce.Data),
-		})
+			Type:           ce.Type,
+			Source:         common.HexToAddress(ce.Source),
+			DataVersion:    ce.DataVersion,
+		}
 
+		if ce.Producer != "" {
+			attestation.Producer = &ce.Producer
+		}
+
+		attestations = append(attestations, attestation)
 	}
 
 	return attestations, nil

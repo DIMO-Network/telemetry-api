@@ -13,6 +13,7 @@ import (
 	"github.com/DIMO-Network/telemetry-api/internal/repositories/attestation"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/rs/zerolog"
+	"github.com/segmentio/ksuid"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
 )
@@ -78,6 +79,10 @@ func TestAttestation(t *testing.T) {
 	defaultEvent.Time = time.Now()
 	defaultEvent.Source = validSigner.Hex()
 	defaultEvent.Subject = vehicleDID
+	time := time.Now()
+	id := ksuid.New().String()
+	producer := "did:nft:153:0xbA5738a18d83D41847dfFbDC6101d37C69c9B0cF_123"
+	dataVersion := "1.0"
 
 	// Test cases
 	tests := []struct {
@@ -100,9 +105,14 @@ func TestAttestation(t *testing.T) {
 			vehTknID: uint32(validVehTknID),
 			expectedAtts: []*model.Attestation{
 				&model.Attestation{
+					ID:             id,
 					VehicleTokenID: validVehTknID,
 					RecordedAt:     defaultEvent.Time,
 					Attestation:    dataStr,
+					Type:           cloudevent.TypeAttestation,
+					Source:         validSigner,
+					Producer:       &producer,
+					DataVersion:    dataVersion,
 				},
 			},
 		},
@@ -117,27 +127,42 @@ func TestAttestation(t *testing.T) {
 			signer:   &validSigner,
 			expectedAtts: []*model.Attestation{
 				&model.Attestation{
+					ID:             id,
 					VehicleTokenID: validVehTknID,
 					RecordedAt:     defaultEvent.Time,
 					Attestation:    dataStr,
+					Type:           cloudevent.TypeAttestation,
+					Source:         validSigner,
+					Producer:       &producer,
+					DataVersion:    dataVersion,
 				},
 			},
 		},
 		{
-			name: "successful query, search for all attestations for token id by signer",
+			name: "successful query, search for all attestations for token id by signer, test all filters",
 			mockSetup: func() {
 				mockService.EXPECT().GetAllCloudEvents(gomock.Any(), gomock.Any()).Return([]cloudevent.CloudEvent[json.RawMessage]{
 					defaultEvent,
 				}, nil)
 			},
-			filters:  &model.AttestationFilter{},
+			filters: &model.AttestationFilter{
+				EffectiveAt: &time,
+				ExpiresAt:   &time,
+				DataVersion: &dataVersion,
+				Producer:    &producer,
+			},
 			vehTknID: uint32(validVehTknID),
 			signer:   &validSigner,
 			expectedAtts: []*model.Attestation{
 				&model.Attestation{
+					ID:             id,
 					VehicleTokenID: validVehTknID,
 					RecordedAt:     defaultEvent.Time,
 					Attestation:    dataStr,
+					Type:           cloudevent.TypeAttestation,
+					Source:         validSigner,
+					Producer:       &producer,
+					DataVersion:    dataVersion,
 				},
 			},
 		},
