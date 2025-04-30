@@ -147,10 +147,10 @@ func TestAttestation(t *testing.T) {
 				}, nil)
 			},
 			filters: &model.AttestationFilter{
-				EffectiveAt: &time,
-				ExpiresAt:   &time,
-				DataVersion: &dataVersion,
-				Producer:    &producer,
+				RecordedBefore: &time,
+				RecordedAfter:  &time,
+				DataVersion:    &dataVersion,
+				Producer:       &producer,
 			},
 			vehTknID: uint32(validVehTknID),
 			signer:   &validSigner,

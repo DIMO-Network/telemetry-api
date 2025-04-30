@@ -80,14 +80,14 @@ input AttestationFilter {
   producer: String
 
   """
-  Filter attestations effective at or after this date.
+  Filter attestations recorded prior to this timestamp.
   """
-  effectiveAt: Time
+  recordedBefore: Time
 
   """
-  Filter attestations effective until this date.
+  Filter attestations recorded after this timestamp.
   """
-  expiresAt: Time
+  recordedAfter: Time
 
   """
   Limit attestations returned to this value. Defaults to 10. 

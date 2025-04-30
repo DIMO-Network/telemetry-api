@@ -56,12 +56,12 @@ func (r *Repository) GetAttestations(ctx context.Context, vehicleTokenID uint32,
 			opts.Producer = &wrapperspb.StringValue{Value: *filter.Producer}
 		}
 
-		if filter.EffectiveAt != nil {
-			opts.After = timestamppb.New(*filter.EffectiveAt)
+		if filter.RecordedAfter != nil {
+			opts.After = timestamppb.New(*filter.RecordedAfter)
 		}
 
-		if filter.ExpiresAt != nil {
-			opts.Before = timestamppb.New(*filter.ExpiresAt)
+		if filter.RecordedBefore != nil {
+			opts.Before = timestamppb.New(*filter.RecordedBefore)
 		}
 
 		if filter.DataVersion != nil {

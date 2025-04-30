@@ -2327,14 +2327,14 @@ input AttestationFilter {
   producer: String
 
   """
-  Filter attestations effective at or after this date.
+  Filter attestations recorded prior to this timestamp.
   """
-  effectiveAt: Time
+  recordedBefore: Time
 
   """
-  Filter attestations effective until this date.
+  Filter attestations recorded after this timestamp.
   """
-  expiresAt: Time
+  recordedAfter: Time
 
   """
   Limit attestations returned to this value. Defaults to 10. 
@@ -24511,7 +24511,7 @@ func (ec *executionContext) unmarshalInputAttestationFilter(ctx context.Context,
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"dataVersion", "producer", "effectiveAt", "expiresAt", "limit"}
+	fieldsInOrder := [...]string{"dataVersion", "producer", "recordedBefore", "recordedAfter", "limit"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -24532,20 +24532,20 @@ func (ec *executionContext) unmarshalInputAttestationFilter(ctx context.Context,
 				return it, err
 			}
 			it.Producer = data
-		case "effectiveAt":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("effectiveAt"))
+		case "recordedBefore":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("recordedBefore"))
 			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.EffectiveAt = data
-		case "expiresAt":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("expiresAt"))
+			it.RecordedBefore = data
+		case "recordedAfter":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("recordedAfter"))
 			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ExpiresAt = data
+			it.RecordedAfter = data
 		case "limit":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("limit"))
 			data, err := ec.unmarshalOInt2ᚖint(ctx, v)

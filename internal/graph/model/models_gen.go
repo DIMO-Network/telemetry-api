@@ -43,10 +43,10 @@ type AttestationFilter struct {
 	DataVersion *string `json:"dataVersion,omitempty"`
 	// Filter attestations by source type.
 	Producer *string `json:"producer,omitempty"`
-	// Filter attestations effective at or after this date.
-	EffectiveAt *time.Time `json:"effectiveAt,omitempty"`
-	// Filter attestations effective until this date.
-	ExpiresAt *time.Time `json:"expiresAt,omitempty"`
+	// Filter attestations recorded prior to this timestamp.
+	RecordedBefore *time.Time `json:"recordedBefore,omitempty"`
+	// Filter attestations recorded after this timestamp.
+	RecordedAfter *time.Time `json:"recordedAfter,omitempty"`
 	// Limit attestations returned to this value. Defaults to 10.
 	Limit *int `json:"limit,omitempty"`
 }
