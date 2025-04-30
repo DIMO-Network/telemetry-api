@@ -15,7 +15,7 @@ import (
 )
 
 type indexRepoService interface {
-	GetAllCloudEvents(ctx context.Context, filter *grpc.SearchOptions) ([]cloudevent.CloudEvent[json.RawMessage], error)
+	GetAllCloudEvents(ctx context.Context, filter *grpc.SearchOptions, limit int32) ([]cloudevent.CloudEvent[json.RawMessage], error)
 }
 type Repository struct {
 	logger         *zerolog.Logger
@@ -50,6 +50,7 @@ func (r *Repository) GetAttestations(ctx context.Context, vehicleTokenID uint32,
 		opts.Source = &wrapperspb.StringValue{Value: source.Hex()}
 	}
 
+	limit := 10
 	if filter != nil {
 		if filter.Producer != nil {
 			opts.Producer = &wrapperspb.StringValue{Value: *filter.Producer}
@@ -66,9 +67,13 @@ func (r *Repository) GetAttestations(ctx context.Context, vehicleTokenID uint32,
 		if filter.DataVersion != nil {
 			opts.DataVersion = &wrapperspb.StringValue{Value: *filter.DataVersion}
 		}
+
+		if filter.Limit != nil {
+			limit = *filter.Limit
+		}
 	}
 
-	cloudEvents, err := r.indexService.GetAllCloudEvents(ctx, opts)
+	cloudEvents, err := r.indexService.GetAllCloudEvents(ctx, opts, int32(limit))
 	if err != nil {
 		r.logger.Error().Err(err).Msg("failed to get cloud events")
 		return nil, errors.New("internal error")

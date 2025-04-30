@@ -83,6 +83,7 @@ func TestAttestation(t *testing.T) {
 	id := ksuid.New().String()
 	producer := "did:nft:153:0xbA5738a18d83D41847dfFbDC6101d37C69c9B0cF_123"
 	dataVersion := "1.0"
+	limit := int32(10)
 
 	// Test cases
 	tests := []struct {
@@ -98,7 +99,7 @@ func TestAttestation(t *testing.T) {
 		{
 			name: "successful query, search for all attestations for token id",
 			mockSetup: func() {
-				mockService.EXPECT().GetAllCloudEvents(gomock.Any(), gomock.Any()).Return([]cloudevent.CloudEvent[json.RawMessage]{
+				mockService.EXPECT().GetAllCloudEvents(gomock.Any(), gomock.Any(), limit).Return([]cloudevent.CloudEvent[json.RawMessage]{
 					defaultEvent,
 				}, nil)
 			},
@@ -119,7 +120,7 @@ func TestAttestation(t *testing.T) {
 		{
 			name: "successful query, search for all attestations for token id by signer",
 			mockSetup: func() {
-				mockService.EXPECT().GetAllCloudEvents(gomock.Any(), gomock.Any()).Return([]cloudevent.CloudEvent[json.RawMessage]{
+				mockService.EXPECT().GetAllCloudEvents(gomock.Any(), gomock.Any(), limit).Return([]cloudevent.CloudEvent[json.RawMessage]{
 					defaultEvent,
 				}, nil)
 			},
@@ -141,7 +142,7 @@ func TestAttestation(t *testing.T) {
 		{
 			name: "successful query, search for all attestations for token id by signer, test all filters",
 			mockSetup: func() {
-				mockService.EXPECT().GetAllCloudEvents(gomock.Any(), gomock.Any()).Return([]cloudevent.CloudEvent[json.RawMessage]{
+				mockService.EXPECT().GetAllCloudEvents(gomock.Any(), gomock.Any(), limit).Return([]cloudevent.CloudEvent[json.RawMessage]{
 					defaultEvent,
 				}, nil)
 			},
@@ -169,14 +170,14 @@ func TestAttestation(t *testing.T) {
 		{
 			name: "successful query, no attestations for token id",
 			mockSetup: func() {
-				mockService.EXPECT().GetAllCloudEvents(gomock.Any(), gomock.Any()).Return(nil, nil)
+				mockService.EXPECT().GetAllCloudEvents(gomock.Any(), gomock.Any(), limit).Return(nil, nil)
 			},
 			vehTknID: uint32(invalidVehTknID),
 		},
 		{
 			name: "successful query, no attestations for token id by signer",
 			mockSetup: func() {
-				mockService.EXPECT().GetAllCloudEvents(gomock.Any(), gomock.Any()).Return(nil, nil)
+				mockService.EXPECT().GetAllCloudEvents(gomock.Any(), gomock.Any(), limit).Return(nil, nil)
 			},
 			signer:   &invalidSigner,
 			vehTknID: uint32(invalidVehTknID),

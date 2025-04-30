@@ -47,6 +47,8 @@ type AttestationFilter struct {
 	EffectiveAt *time.Time `json:"effectiveAt,omitempty"`
 	// Filter attestations effective until this date.
 	ExpiresAt *time.Time `json:"expiresAt,omitempty"`
+	// Limit attestations returned to this value. Defaults to 10.
+	Limit *int `json:"limit,omitempty"`
 }
 
 type DeviceActivity struct {

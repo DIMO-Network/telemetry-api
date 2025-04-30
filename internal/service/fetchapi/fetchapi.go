@@ -51,14 +51,15 @@ func (c *FetchAPIService) GetLatestCloudEvent(ctx context.Context, filter *pb.Se
 }
 
 // GetAllCloudEvents retrieves the most recent file content matching the provided search criteria
-func (c *FetchAPIService) GetAllCloudEvents(ctx context.Context, filter *pb.SearchOptions) ([]cloudevent.CloudEvent[json.RawMessage], error) {
+func (c *FetchAPIService) GetAllCloudEvents(ctx context.Context, filter *pb.SearchOptions, limit int32) ([]cloudevent.CloudEvent[json.RawMessage], error) {
 	client, err := c.getClient()
 	if err != nil {
 		return nil, err
 	}
+
 	resp, err := client.ListCloudEvents(ctx, &pb.ListCloudEventsRequest{
 		Options: filter,
-		Limit:   c.limit,
+		Limit:   limit,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to get files: %w", err)

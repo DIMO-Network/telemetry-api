@@ -2335,7 +2335,13 @@ input AttestationFilter {
   Filter attestations effective until this date.
   """
   expiresAt: Time
+
+  """
+  Limit attestations returned to this value. Defaults to 10. 
+  """
+  limit: Int
 }
+
 `, BuiltIn: false},
 	{Name: "../../schema/auth.graphqls", Input: `scalar Map
 
@@ -24505,7 +24511,7 @@ func (ec *executionContext) unmarshalInputAttestationFilter(ctx context.Context,
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"dataVersion", "producer", "effectiveAt", "expiresAt"}
+	fieldsInOrder := [...]string{"dataVersion", "producer", "effectiveAt", "expiresAt", "limit"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -24540,6 +24546,13 @@ func (ec *executionContext) unmarshalInputAttestationFilter(ctx context.Context,
 				return it, err
 			}
 			it.ExpiresAt = data
+		case "limit":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("limit"))
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Limit = data
 		}
 	}
 

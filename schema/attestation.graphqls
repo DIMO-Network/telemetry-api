@@ -88,4 +88,10 @@ input AttestationFilter {
   Filter attestations effective until this date.
   """
   expiresAt: Time
+
+  """
+  Limit attestations returned to this value. Defaults to 10. 
+  """
+  limit: Int
 }
+
