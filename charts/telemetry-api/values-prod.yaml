@@ -1,4 +1,4 @@
-replicaCount: 2
+replicaCount: 3
 image:
   repository: dimozone/telemetry-api
   pullPolicy: IfNotPresent
@@ -36,10 +36,10 @@ ingress:
   tls: []
 resources:
   limits:
-    cpu: 1
+    cpu: 2
     memory: 4048Mi
   requests:
-    cpu: 100m
+    cpu: 250
     memory: 1024Mi
 autoscaling:
   enabled: false
