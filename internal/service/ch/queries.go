@@ -70,6 +70,7 @@ var SourceTranslations = map[string][]string{
 	"smartcar": {"dimo/integration/22N2xaPOq2WW2gAHBHd0Ikn4Zob", "0xcd445F4c6bDAD32b68a2939b912150Fe3C88803E"},
 	"ruptela":  {"0xF26421509Efe92861a587482100c6d728aBf1CD0"},
 	"compass":  {"0x55BF1c27d468314Ea119CF74979E2b59F962295c"},
+	"motorq":   {"0x5879B43D88Fa93CE8072d6612cBc8dE93E98CE5d"},
 }
 
 var dialect = drivers.Dialect{
