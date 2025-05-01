@@ -79,6 +79,8 @@ func TestAttestation(t *testing.T) {
 	defaultEvent.Time = time.Now()
 	defaultEvent.Source = validSigner.Hex()
 	defaultEvent.Subject = vehicleDID
+	defaultEvent.Extras = make(map[string]any)
+	defaultEvent.Extras["signature"] = "signature"
 	time := time.Now()
 	id := ksuid.New().String()
 	producer := "did:nft:153:0xbA5738a18d83D41847dfFbDC6101d37C69c9B0cF_123"
@@ -108,7 +110,7 @@ func TestAttestation(t *testing.T) {
 				&model.Attestation{
 					ID:             id,
 					VehicleTokenID: validVehTknID,
-					RecordedAt:     defaultEvent.Time,
+					Time:           defaultEvent.Time,
 					Attestation:    dataStr,
 					Type:           cloudevent.TypeAttestation,
 					Source:         validSigner,
@@ -130,7 +132,7 @@ func TestAttestation(t *testing.T) {
 				&model.Attestation{
 					ID:             id,
 					VehicleTokenID: validVehTknID,
-					RecordedAt:     defaultEvent.Time,
+					Time:           defaultEvent.Time,
 					Attestation:    dataStr,
 					Type:           cloudevent.TypeAttestation,
 					Source:         validSigner,
@@ -147,10 +149,10 @@ func TestAttestation(t *testing.T) {
 				}, nil)
 			},
 			filters: &model.AttestationFilter{
-				RecordedBefore: &time,
-				RecordedAfter:  &time,
-				DataVersion:    &dataVersion,
-				Producer:       &producer,
+				Before:      &time,
+				After:       &time,
+				DataVersion: &dataVersion,
+				Producer:    &producer,
 			},
 			vehTknID: uint32(validVehTknID),
 			signer:   &validSigner,
@@ -158,7 +160,7 @@ func TestAttestation(t *testing.T) {
 				&model.Attestation{
 					ID:             id,
 					VehicleTokenID: validVehTknID,
-					RecordedAt:     defaultEvent.Time,
+					Time:           defaultEvent.Time,
 					Attestation:    dataStr,
 					Type:           cloudevent.TypeAttestation,
 					Source:         validSigner,
@@ -189,7 +191,7 @@ func TestAttestation(t *testing.T) {
 			// Set up the mock expectations
 			tt.mockSetup()
 			// Call the method
-			attestations, err := att.GetAttestations(ctx, tt.vehTknID, tt.signer, tt.filters)
+			attestations, err := att.GetAttestations(ctx, tt.vehTknID, tt.filters)
 
 			// Assert the results
 			if tt.expectedErr {
@@ -207,7 +209,7 @@ func TestAttestation(t *testing.T) {
 
 			for idx, att := range attestations {
 				require.JSONEq(t, tt.expectedAtts[idx].Attestation, att.Attestation)
-				require.EqualValues(t, tt.expectedAtts[idx].RecordedAt, att.RecordedAt)
+				require.EqualValues(t, tt.expectedAtts[idx].Time, att.Time)
 				require.EqualValues(t, tt.expectedAtts[idx].VehicleTokenID, att.VehicleTokenID)
 			}
 		})

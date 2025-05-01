@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 
 	"github.com/DIMO-Network/cloudevent"
 	"github.com/DIMO-Network/fetch-api/pkg/grpc"
@@ -35,7 +36,7 @@ func New(indexService indexRepoService, chainID uint64, vehicleAddress common.Ad
 }
 
 // GetAttestations fetches attestations for the given vehicle.
-func (r *Repository) GetAttestations(ctx context.Context, vehicleTokenID uint32, source *common.Address, filter *model.AttestationFilter) ([]*model.Attestation, error) {
+func (r *Repository) GetAttestations(ctx context.Context, vehicleTokenID uint32, filter *model.AttestationFilter) ([]*model.Attestation, error) {
 	vehicleDID := cloudevent.NFTDID{
 		ChainID:         r.chainID,
 		ContractAddress: r.vehicleAddress,
@@ -46,22 +47,23 @@ func (r *Repository) GetAttestations(ctx context.Context, vehicleTokenID uint32,
 		Subject: &wrapperspb.StringValue{Value: vehicleDID},
 	}
 	r.logger.Info().Msgf("fetching attestations: %s", vehicleDID)
-	if source != nil {
-		opts.Source = &wrapperspb.StringValue{Value: source.Hex()}
-	}
 
 	limit := 10
 	if filter != nil {
+		if filter.Source != nil {
+			opts.Source = &wrapperspb.StringValue{Value: filter.Source.Hex()}
+		}
+
 		if filter.Producer != nil {
 			opts.Producer = &wrapperspb.StringValue{Value: *filter.Producer}
 		}
 
-		if filter.RecordedAfter != nil {
-			opts.After = timestamppb.New(*filter.RecordedAfter)
+		if filter.After != nil {
+			opts.After = timestamppb.New(*filter.After)
 		}
 
-		if filter.RecordedBefore != nil {
-			opts.Before = timestamppb.New(*filter.RecordedBefore)
+		if filter.Before != nil {
+			opts.Before = timestamppb.New(*filter.Before)
 		}
 
 		if filter.DataVersion != nil {
@@ -85,7 +87,7 @@ func (r *Repository) GetAttestations(ctx context.Context, vehicleTokenID uint32,
 		attestation := &model.Attestation{
 			ID:             ce.ID,
 			VehicleTokenID: tknID,
-			RecordedAt:     ce.Time,
+			Time:           ce.Time,
 			Attestation:    string(ce.Data),
 			Type:           ce.Type,
 			Source:         common.HexToAddress(ce.Source),
@@ -96,6 +98,13 @@ func (r *Repository) GetAttestations(ctx context.Context, vehicleTokenID uint32,
 			attestation.Producer = &ce.Producer
 		}
 
+		signature, ok := ce.Extras["signature"].(string)
+		if !ok {
+			r.logger.Info().Str("id", attestation.ID).Str("source", attestation.Source.Hex()).Msg("failed to pull signature")
+			return nil, fmt.Errorf("invalid signature from %s on attestation %s", attestation.ID, attestation.Source)
+		}
+
+		attestation.Signature = signature
 		attestations = append(attestations, attestation)
 	}
 

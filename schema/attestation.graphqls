@@ -9,10 +9,7 @@ extend type Query {
     The token ID of the vehicle.
     """
     tokenId: Int!
-    """
-    The attesting party. 
-    """
-    source: Address
+
     """
     Filter attestation by producer effectiveAt, expiresAt, or attestation ID. 
     """
@@ -34,9 +31,9 @@ type Attestation {
   vehicleTokenId: Int!
 
   """
-  recordedAt represents the time the attestation was recorded at.
+  time represents the time the attestation was made at.
   """
-  recordedAt: Time!
+  time: Time!
 
   """
   attestation is the data being attested to.
@@ -63,12 +60,22 @@ type Attestation {
   """
   producer: String
 
+  """
+  signature
+  """
+  signature: String!
+
 }
 
 """
 AttestationFilter holds the filter parameters for the attestation querys.
 """
 input AttestationFilter {
+  """
+  The attesting party. 
+  """
+  source: Address
+
   """
   Filter attestations by data version.
   """
@@ -80,14 +87,14 @@ input AttestationFilter {
   producer: String
 
   """
-  Filter attestations recorded prior to this timestamp.
+  Filter attestations made prior to this timestamp.
   """
-  recordedBefore: Time
+  before: Time
 
   """
-  Filter attestations recorded after this timestamp.
+  Filter attestations made after this timestamp.
   """
-  recordedAfter: Time
+  after: Time
 
   """
   Limit attestations returned to this value. Defaults to 10. 

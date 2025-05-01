@@ -23,8 +23,8 @@ type Attestation struct {
 	ID string `json:"ID"`
 	// vehicleTokenId is the token ID of the vehicle.
 	VehicleTokenID int `json:"vehicleTokenId"`
-	// recordedAt represents the time the attestation was recorded at.
-	RecordedAt time.Time `json:"recordedAt"`
+	// time represents the time the attestation was made at.
+	Time time.Time `json:"time"`
 	// attestation is the data being attested to.
 	Attestation string `json:"attestation"`
 	// type
@@ -35,18 +35,22 @@ type Attestation struct {
 	DataVersion string `json:"dataVersion"`
 	// producer
 	Producer *string `json:"producer,omitempty"`
+	// signature
+	Signature string `json:"signature"`
 }
 
 // AttestationFilter holds the filter parameters for the attestation querys.
 type AttestationFilter struct {
+	// The attesting party.
+	Source *common.Address `json:"source,omitempty"`
 	// Filter attestations by data version.
 	DataVersion *string `json:"dataVersion,omitempty"`
 	// Filter attestations by source type.
 	Producer *string `json:"producer,omitempty"`
-	// Filter attestations recorded prior to this timestamp.
-	RecordedBefore *time.Time `json:"recordedBefore,omitempty"`
-	// Filter attestations recorded after this timestamp.
-	RecordedAfter *time.Time `json:"recordedAfter,omitempty"`
+	// Filter attestations made prior to this timestamp.
+	Before *time.Time `json:"before,omitempty"`
+	// Filter attestations made after this timestamp.
+	After *time.Time `json:"after,omitempty"`
 	// Limit attestations returned to this value. Defaults to 10.
 	Limit *int `json:"limit,omitempty"`
 }
