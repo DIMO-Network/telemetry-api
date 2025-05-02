@@ -17,24 +17,23 @@ type indexRepoService interface {
 	GetAllCloudEvents(ctx context.Context, filter *grpc.SearchOptions) ([]cloudevent.CloudEvent[json.RawMessage], error)
 }
 type Repository struct {
-	logger         *zerolog.Logger
 	indexService   indexRepoService
 	chainID        uint64
 	vehicleAddress common.Address
 }
 
 // New creates a new instance of Service.
-func New(indexService indexRepoService, chainID uint64, vehicleAddress common.Address, logger *zerolog.Logger) *Repository {
+func New(indexService indexRepoService, chainID uint64, vehicleAddress common.Address) *Repository {
 	return &Repository{
 		indexService:   indexService,
 		chainID:        chainID,
 		vehicleAddress: vehicleAddress,
-		logger:         logger,
 	}
 }
 
 // GetAttestations fetches attestations for the given vehicle.
 func (r *Repository) GetAttestations(ctx context.Context, vehicleTokenID uint32, signer *common.Address) ([]*model.Attestation, error) {
+	logger := r.getLogger(ctx)
 	vehicleDID := cloudevent.NFTDID{
 		ChainID:         r.chainID,
 		ContractAddress: r.vehicleAddress,
@@ -44,14 +43,14 @@ func (r *Repository) GetAttestations(ctx context.Context, vehicleTokenID uint32,
 		Type:    &wrapperspb.StringValue{Value: cloudevent.TypeAttestation},
 		Subject: &wrapperspb.StringValue{Value: vehicleDID},
 	}
-	r.logger.Info().Msgf("fetching attestations: %s", vehicleDID)
+	logger.Info().Msgf("fetching attestations: %s", vehicleDID)
 	if signer != nil {
 		opts.Source = &wrapperspb.StringValue{Value: signer.Hex()}
 	}
 
 	cloudEvents, err := r.indexService.GetAllCloudEvents(ctx, opts)
 	if err != nil {
-		r.logger.Error().Err(err).Msg("failed to get cloud events")
+		logger.Error().Err(err).Msg("failed to get cloud events")
 		return nil, errors.New("internal error")
 	}
 
@@ -67,4 +66,8 @@ func (r *Repository) GetAttestations(ctx context.Context, vehicleTokenID uint32,
 	}
 
 	return attestations, nil
+}
+
+func (r *Repository) getLogger(ctx context.Context) zerolog.Logger {
+	return zerolog.Ctx(ctx).With().Str("component", "attestation").Logger()
 }

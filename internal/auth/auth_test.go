@@ -7,8 +7,8 @@ import (
 	"testing"
 
 	"github.com/99designs/gqlgen/graphql"
-	"github.com/DIMO-Network/shared/middleware/privilegetoken"
-	"github.com/DIMO-Network/shared/privileges"
+	"github.com/DIMO-Network/shared/pkg/middleware/privilegetoken"
+	"github.com/DIMO-Network/shared/pkg/privileges"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	"github.com/DIMO-Network/telemetry-api/internal/service/identity"
 	"github.com/ethereum/go-ethereum/common"

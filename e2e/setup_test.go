@@ -11,7 +11,6 @@ import (
 	"github.com/DIMO-Network/telemetry-api/internal/app"
 	"github.com/DIMO-Network/telemetry-api/internal/config"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/rs/zerolog"
 )
 
 // TestServices holds all singleton service instances.
@@ -92,9 +91,7 @@ func GetTestServices(t *testing.T) *TestServices {
 func NewGraphQLServer(t *testing.T, settings config.Settings) *client.Client {
 	t.Helper()
 
-	logger := zerolog.New(os.Stdout).With().Timestamp().Logger()
-
-	application, err := app.New(settings, &logger)
+	application, err := app.New(settings)
 	if err != nil {
 		t.Fatalf("Failed to create application: %v", err)
 	}
