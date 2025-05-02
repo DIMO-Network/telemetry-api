@@ -32,6 +32,7 @@ func main() {
 	if err != nil {
 		logger.Fatal().Err(err).Msg("Couldn't create application.")
 	}
+
 	defer application.Cleanup()
 
 	serveMonitoring(strconv.Itoa(settings.MonPort), &logger)

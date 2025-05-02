@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/99designs/gqlgen-contrib/prometheus"
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/handler/extension"
@@ -69,6 +70,7 @@ func New(settings config.Settings, logger *zerolog.Logger) (*App, error) {
 	cfg.Directives.HasAggregation = noOp
 
 	server := newDefaultServer(graph.NewExecutableSchema(cfg))
+
 	errLogger := logger.With().Str("component", "gql").Logger()
 	server.SetErrorPresenter(errorHandler(errLogger))
 
@@ -148,6 +150,10 @@ func newDefaultServer(es graphql.ExecutableSchema) *handler.Server {
 	srv.Use(extension.AutomaticPersistedQuery{
 		Cache: lru.New[string](100),
 	})
+
+	// add prometheus metrics
+	prometheus.Register()
+	srv.Use(prometheus.Tracer{})
 
 	return srv
 }
