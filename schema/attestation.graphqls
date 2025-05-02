@@ -11,7 +11,7 @@ extend type Query {
     tokenId: Int!
 
     """
-    Filter attestation by producer effectiveAt, expiresAt, or attestation ID. 
+    Filter attestations by metadata fields. 
     """
     filter: AttestationFilter
   ): [Attestation]
