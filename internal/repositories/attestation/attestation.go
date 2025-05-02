@@ -4,17 +4,19 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 
 	"github.com/DIMO-Network/cloudevent"
 	"github.com/DIMO-Network/fetch-api/pkg/grpc"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/rs/zerolog"
+	"google.golang.org/protobuf/types/known/timestamppb"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
 type indexRepoService interface {
-	GetAllCloudEvents(ctx context.Context, filter *grpc.SearchOptions) ([]cloudevent.CloudEvent[json.RawMessage], error)
+	GetAllCloudEvents(ctx context.Context, filter *grpc.SearchOptions, limit int32) ([]cloudevent.CloudEvent[json.RawMessage], error)
 }
 type Repository struct {
 	indexService   indexRepoService
@@ -32,7 +34,7 @@ func New(indexService indexRepoService, chainID uint64, vehicleAddress common.Ad
 }
 
 // GetAttestations fetches attestations for the given vehicle.
-func (r *Repository) GetAttestations(ctx context.Context, vehicleTokenID uint32, signer *common.Address) ([]*model.Attestation, error) {
+func (r *Repository) GetAttestations(ctx context.Context, vehicleTokenID uint32, filter *model.AttestationFilter) ([]*model.Attestation, error) {
 	logger := r.getLogger(ctx)
 	vehicleDID := cloudevent.NFTDID{
 		ChainID:         r.chainID,
@@ -43,12 +45,36 @@ func (r *Repository) GetAttestations(ctx context.Context, vehicleTokenID uint32,
 		Type:    &wrapperspb.StringValue{Value: cloudevent.TypeAttestation},
 		Subject: &wrapperspb.StringValue{Value: vehicleDID},
 	}
+
 	logger.Info().Msgf("fetching attestations: %s", vehicleDID)
-	if signer != nil {
-		opts.Source = &wrapperspb.StringValue{Value: signer.Hex()}
+	limit := 10
+	if filter != nil {
+		if filter.Source != nil {
+			opts.Source = &wrapperspb.StringValue{Value: filter.Source.Hex()}
+		}
+
+		if filter.Producer != nil {
+			opts.Producer = &wrapperspb.StringValue{Value: *filter.Producer}
+		}
+
+		if filter.After != nil {
+			opts.After = timestamppb.New(*filter.After)
+		}
+
+		if filter.Before != nil {
+			opts.Before = timestamppb.New(*filter.Before)
+		}
+
+		if filter.DataVersion != nil {
+			opts.DataVersion = &wrapperspb.StringValue{Value: *filter.DataVersion}
+		}
+
+		if filter.Limit != nil {
+			limit = *filter.Limit
+		}
 	}
 
-	cloudEvents, err := r.indexService.GetAllCloudEvents(ctx, opts)
+	cloudEvents, err := r.indexService.GetAllCloudEvents(ctx, opts, int32(limit))
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to get cloud events")
 		return nil, errors.New("internal error")
@@ -57,12 +83,28 @@ func (r *Repository) GetAttestations(ctx context.Context, vehicleTokenID uint32,
 	tknID := int(vehicleTokenID)
 	var attestations []*model.Attestation
 	for _, ce := range cloudEvents {
-		attestations = append(attestations, &model.Attestation{
+		attestation := &model.Attestation{
+			ID:             ce.ID,
 			VehicleTokenID: tknID,
-			RecordedAt:     ce.Time,
+			Time:           ce.Time,
 			Attestation:    string(ce.Data),
-		})
+			Type:           ce.Type,
+			Source:         common.HexToAddress(ce.Source),
+			DataVersion:    ce.DataVersion,
+		}
 
+		if ce.Producer != "" {
+			attestation.Producer = &ce.Producer
+		}
+
+		signature, ok := ce.Extras["signature"].(string)
+		if !ok {
+			logger.Info().Str("id", attestation.ID).Str("source", attestation.Source.Hex()).Msg("failed to pull signature")
+			return nil, fmt.Errorf("invalid signature from %s on attestation %s", attestation.ID, attestation.Source)
+		}
+
+		attestation.Signature = signature
+		attestations = append(attestations, attestation)
 	}
 
 	return attestations, nil

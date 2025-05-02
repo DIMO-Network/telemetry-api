@@ -19,6 +19,7 @@ require (
 	github.com/gofiber/fiber/v2 v2.52.6
 	github.com/prometheus/client_golang v1.22.0
 	github.com/rs/zerolog v1.33.0
+	github.com/segmentio/ksuid v1.0.4
 	github.com/stretchr/testify v1.10.0
 	github.com/uber/h3-go/v4 v4.1.2
 	github.com/vektah/gqlparser/v2 v2.5.26

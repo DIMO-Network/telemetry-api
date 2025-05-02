@@ -9,10 +9,11 @@ extend type Query {
     The token ID of the vehicle.
     """
     tokenId: Int!
+
     """
-    The attesting party. 
+    Filter attestations by metadata fields. 
     """
-    signer: Address
+    filter: AttestationFilter
   ): [Attestation]
     @requiresVehicleToken
     @requiresAllOfPrivileges(privileges: [VEHICLE_RAW_DATA])
@@ -20,18 +21,84 @@ extend type Query {
 
 type Attestation {
   """
+  ID is the ID of the attestation.
+  """
+  ID: String!
+
+  """
   vehicleTokenId is the token ID of the vehicle.
   """
   vehicleTokenId: Int!
 
   """
-  recordedAt represents the time the attestation was recorded at.
+  time represents the time the attestation was made at.
   """
-  recordedAt: Time!
+  time: Time!
 
   """
   attestation is the data being attested to.
   """
   attestation: String!
+
+  """
+  type
+  """
+  type: String!
+
+  """
+  source
+  """
+  source: Address!
+
+  """
+  dataversion
+  """
+  dataVersion: String!
+
+  """
+  producer
+  """
+  producer: String
+
+  """
+  signature
+  """
+  signature: String!
+
+}
+
+"""
+AttestationFilter holds the filter parameters for the attestation querys.
+"""
+input AttestationFilter {
+  """
+  The attesting party. 
+  """
+  source: Address
+
+  """
+  Filter attestations by data version.
+  """
+  dataVersion: String
+
+  """
+  Filter attestations by source type.
+  """
+  producer: String
+
+  """
+  Filter attestations made prior to this timestamp.
+  """
+  before: Time
+
+  """
+  Filter attestations made after this timestamp.
+  """
+  after: Time
+
+  """
+  Limit attestations returned to this value. Defaults to 10. 
+  """
+  limit: Int
 }
 
