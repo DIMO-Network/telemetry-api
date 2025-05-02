@@ -3,6 +3,7 @@ package app
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -27,6 +28,10 @@ import (
 	"github.com/vektah/gqlparser/v2/gqlerror"
 )
 
+func init() {
+	prometheus.Register()
+}
+
 // App is the main application for the telemetry API.
 type App struct {
 	Handler http.Handler
@@ -34,24 +39,23 @@ type App struct {
 }
 
 // New creates a new application.
-func New(settings config.Settings, logger *zerolog.Logger) (*App, error) {
+func New(settings config.Settings) (*App, error) {
 	idService := identity.NewService(settings.IdentityAPIURL, settings.IdentityAPIReqTimeoutSeconds)
-	repoLogger := logger.With().Str("component", "repository").Logger()
 	chService, err := ch.NewService(settings)
 	if err != nil {
-		logger.Fatal().Err(err).Msg("Couldn't create ClickHouse service.")
+		return nil, fmt.Errorf("couldn't create ClickHouse service: %w", err)
 	}
-	baseRepo, err := repositories.NewRepository(&repoLogger, chService, settings.DeviceLastSeenBinHrs)
+	baseRepo, err := repositories.NewRepository(chService, settings.DeviceLastSeenBinHrs)
 	if err != nil {
-		logger.Fatal().Err(err).Msg("Couldn't create base repository.")
+		return nil, fmt.Errorf("couldn't create base repository: %w", err)
 	}
-	vcRepo, err := newVinVCServiceFromSettings(settings, logger)
+	vcRepo, err := newVinVCServiceFromSettings(settings)
 	if err != nil {
-		logger.Fatal().Err(err).Msg("Couldn't create VINVC repository.")
+		return nil, fmt.Errorf("couldn't create VINVC repository: %w", err)
 	}
-	attRepo, err := newAttestationServiceFromSettings(settings, logger)
+	attRepo, err := newAttestationServiceFromSettings(settings)
 	if err != nil {
-		logger.Fatal().Err(err).Msg("failed to create attestation repository")
+		return nil, fmt.Errorf("failed to create attestation repository: %w", err)
 	}
 
 	resolver := &graph.Resolver{
@@ -71,24 +75,19 @@ func New(settings config.Settings, logger *zerolog.Logger) (*App, error) {
 
 	server := newDefaultServer(graph.NewExecutableSchema(cfg))
 
-	errLogger := logger.With().Str("component", "gql").Logger()
-	server.SetErrorPresenter(errorHandler(errLogger))
-
-	logger.Info().Str("jwksUrl", settings.TokenExchangeJWTKeySetURL).Str("issuerURL", settings.TokenExchangeIssuer).Str("vehicleAddr", settings.VehicleNFTAddress.Hex()).Msg("Privileges enabled.")
-
-	authMiddleware, err := auth.NewJWTMiddleware(settings.TokenExchangeIssuer, settings.TokenExchangeJWTKeySetURL, logger)
+	authMiddleware, err := auth.NewJWTMiddleware(settings.TokenExchangeIssuer, settings.TokenExchangeJWTKeySetURL)
 	if err != nil {
-		logger.Fatal().Err(err).Msg("Couldn't create JWT middleware.")
+		return nil, fmt.Errorf("couldn't create JWT middleware: %w", err)
 	}
 
 	limiter, err := limits.New(settings.MaxRequestDuration)
 	if err != nil {
-		logger.Fatal().Err(err).Msg("Couldn't create request time limit middleware.")
+		return nil, fmt.Errorf("couldn't create request time limit middleware: %w", err)
 	}
 
 	authedHandler := limiter.AddRequestTimeout(
 		authMiddleware.CheckJWT(
-			auth.AddClaimHandler(server, logger, settings.VehicleNFTAddress, settings.ManufacturerNFTAddress),
+			auth.AddClaimHandler(server, settings.VehicleNFTAddress, settings.ManufacturerNFTAddress),
 		),
 	)
 
@@ -110,27 +109,23 @@ func noOp(ctx context.Context, obj interface{}, next graphql.Resolver) (res inte
 	return next(ctx)
 }
 
-func newAttestationServiceFromSettings(settings config.Settings, parentLogger *zerolog.Logger) (*attestation.Repository, error) {
+func newAttestationServiceFromSettings(settings config.Settings) (*attestation.Repository, error) {
 	fetchapiSvc := fetchapi.New(&settings)
-	attestationLogger := parentLogger.With().Str("component", "attestation").Logger()
-	return attestation.New(fetchapiSvc, uint64(settings.ChainID), settings.VehicleNFTAddress, &attestationLogger), nil
+	return attestation.New(fetchapiSvc, uint64(settings.ChainID), settings.VehicleNFTAddress), nil
 }
 
-func newVinVCServiceFromSettings(settings config.Settings, parentLogger *zerolog.Logger) (*vc.Repository, error) {
+func newVinVCServiceFromSettings(settings config.Settings) (*vc.Repository, error) {
 	fetchapiSvc := fetchapi.New(&settings)
-	vinvcLogger := parentLogger.With().Str("component", "vinvc").Logger()
-	return vc.New(fetchapiSvc, settings.VINVCDataVersion, settings.POMVCDataVersion, uint64(settings.ChainID), settings.VehicleNFTAddress, &vinvcLogger), nil
+	return vc.New(fetchapiSvc, settings.VINVCDataVersion, settings.POMVCDataVersion, uint64(settings.ChainID), settings.VehicleNFTAddress), nil
 }
 
-func errorHandler(log zerolog.Logger) func(ctx context.Context, e error) *gqlerror.Error {
-	return func(ctx context.Context, e error) *gqlerror.Error {
-		var gqlErr *gqlerror.Error
-		if errors.As(e, &gqlErr) {
-			return gqlErr
-		}
-		log.Error().Err(e).Msg("Internal server error")
-		return gqlerror.Errorf("internal server error")
+func errorHandler(ctx context.Context, e error) *gqlerror.Error {
+	var gqlErr *gqlerror.Error
+	if errors.As(e, &gqlErr) {
+		return gqlErr
 	}
+	zerolog.Ctx(ctx).Error().Err(e).Msg("Internal server error")
+	return gqlerror.Errorf("internal server error")
 }
 
 func newDefaultServer(es graphql.ExecutableSchema) *handler.Server {
@@ -151,8 +146,9 @@ func newDefaultServer(es graphql.ExecutableSchema) *handler.Server {
 		Cache: lru.New[string](100),
 	})
 
+	srv.SetErrorPresenter(errorHandler)
+
 	// add prometheus metrics
-	prometheus.Register()
 	srv.Use(prometheus.Tracer{})
 
 	return srv

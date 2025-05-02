@@ -44,13 +44,12 @@ type CHService interface {
 type Repository struct {
 	queryableSignals map[string]struct{}
 	chService        CHService
-	log              *zerolog.Logger
 	lastSeenBin      time.Duration
 }
 
 // NewRepository creates a new base repository.
 // clientCAs is optional and can be nil.
-func NewRepository(logger *zerolog.Logger, chService CHService, lastSeenBin int64) (*Repository, error) {
+func NewRepository(chService CHService, lastSeenBin int64) (*Repository, error) {
 	definitions, err := schema.LoadDefinitionFile(strings.NewReader(schema.DefaultDefinitionsYAML()))
 	if err != nil {
 		return nil, fmt.Errorf("error reading definition file: %w", err)
@@ -62,7 +61,6 @@ func NewRepository(logger *zerolog.Logger, chService CHService, lastSeenBin int6
 
 	return &Repository{
 		chService:        chService,
-		log:              logger,
 		queryableSignals: queryableSignals,
 		lastSeenBin:      time.Duration(lastSeenBin) * time.Hour,
 	}, nil
@@ -71,13 +69,14 @@ func NewRepository(logger *zerolog.Logger, chService CHService, lastSeenBin int6
 
 // GetSignal returns the aggregated signals for the given tokenID, interval, from, to and filter.
 func (r *Repository) GetSignal(ctx context.Context, aggArgs *model.AggregatedSignalArgs) ([]*model.SignalAggregations, error) {
+	logger := r.getLogger(ctx)
 	if err := validateAggSigArgs(aggArgs); err != nil {
 		return nil, fmt.Errorf("invalid arguments: %w", err)
 	}
 
 	signals, err := r.chService.GetAggregatedSignals(ctx, aggArgs)
 	if err != nil {
-		return nil, handleDBError(err, r.log)
+		return nil, handleDBError(err, &logger)
 	}
 
 	// combine signals with the same timestamp by iterating over all signals
@@ -105,12 +104,13 @@ func (r *Repository) GetSignal(ctx context.Context, aggArgs *model.AggregatedSig
 
 // GetSignalLatest returns the latest signals for the given tokenID and filter.
 func (r *Repository) GetSignalLatest(ctx context.Context, latestArgs *model.LatestSignalsArgs) (*model.SignalCollection, error) {
+	logger := r.getLogger(ctx)
 	if err := validateLatestSigArgs(latestArgs); err != nil {
 		return nil, fmt.Errorf("invalid arguments: %w", err)
 	}
 	signals, err := r.chService.GetLatestSignals(ctx, latestArgs)
 	if err != nil {
-		return nil, handleDBError(err, r.log)
+		return nil, handleDBError(err, &logger)
 	}
 	coll := &model.SignalCollection{}
 	for _, signal := range signals {
@@ -160,9 +160,10 @@ func (r *Repository) GetDeviceActivity(ctx context.Context, vehicleTokenID int, 
 // GetAvailableSignals returns the available signals for the given tokenID and filter.
 // If no signals are found, a nil slice is returned.
 func (r *Repository) GetAvailableSignals(ctx context.Context, tokenID uint32, filter *model.SignalFilter) ([]string, error) {
+	logger := r.getLogger(ctx)
 	allSignals, err := r.chService.GetAvailableSignals(ctx, tokenID, filter)
 	if err != nil {
-		return nil, handleDBError(err, r.log)
+		return nil, handleDBError(err, &logger)
 	}
 	var retSignals []string
 	for _, signal := range allSignals {
@@ -205,4 +206,8 @@ func setApproximateLocationInCollection(coll *model.SignalCollection) {
 		Timestamp: coll.CurrentLocationLongitude.Timestamp,
 		Value:     latLong.Lng,
 	}
+}
+
+func (r *Repository) getLogger(ctx context.Context) zerolog.Logger {
+	return zerolog.Ctx(ctx).With().Str("component", "repository").Logger()
 }

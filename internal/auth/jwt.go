@@ -18,7 +18,7 @@ import (
 
 // NewJWTMiddleware creates a new JWT middleware with the given issuer and contract address.
 // This middleware will validate the token and add the claim to the context.
-func NewJWTMiddleware(issuer, jwksURI string, logger *zerolog.Logger) (*jwtmiddleware.JWTMiddleware, error) {
+func NewJWTMiddleware(issuer, jwksURI string) (*jwtmiddleware.JWTMiddleware, error) {
 	issuerURL, err := url.Parse(issuer)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse issuer URL: %w", err)
@@ -49,7 +49,7 @@ func NewJWTMiddleware(issuer, jwksURI string, logger *zerolog.Logger) (*jwtmiddl
 
 	middleware := jwtmiddleware.New(
 		jwtValidator.ValidateToken,
-		jwtmiddleware.WithErrorHandler(ErrorHandler(logger)),
+		jwtmiddleware.WithErrorHandler(ErrorHandler),
 		jwtmiddleware.WithCredentialsOptional(true),
 	)
 	return middleware, nil
@@ -57,7 +57,7 @@ func NewJWTMiddleware(issuer, jwksURI string, logger *zerolog.Logger) (*jwtmiddl
 
 // AddClaimHandler is a middleware that fills in GraphQL-friendly privilege information on
 // the *TelemetryClaim object in the context.
-func AddClaimHandler(next http.Handler, logger *zerolog.Logger, vehicleAddr, mfrAddr common.Address) http.Handler {
+func AddClaimHandler(next http.Handler, vehicleAddr, mfrAddr common.Address) http.Handler {
 	contractPrivMaps := map[common.Address]map[privileges.Privilege]model.Privilege{
 		vehicleAddr: vehiclePrivToAPI,
 		mfrAddr:     manufacturerPrivToAPI,
@@ -73,7 +73,7 @@ func AddClaimHandler(next http.Handler, logger *zerolog.Logger, vehicleAddr, mfr
 
 		telClaim, ok := claims.CustomClaims.(*TelemetryClaim)
 		if !ok {
-			logger.Error().Msg("Could not cast claims to TelemetryClaim")
+			zerolog.Ctx(r.Context()).Error().Msg("Could not cast claims to TelemetryClaim")
 			jwtmiddleware.DefaultErrorHandler(w, r, jwtmiddleware.ErrJWTMissing)
 			return
 		}
@@ -87,9 +87,7 @@ func AddClaimHandler(next http.Handler, logger *zerolog.Logger, vehicleAddr, mfr
 }
 
 // ErrorHandler is a custom error handler for the jwt middleware. It logs the error and then calls the default error handler.
-func ErrorHandler(logger *zerolog.Logger) func(w http.ResponseWriter, r *http.Request, err error) {
-	return func(w http.ResponseWriter, r *http.Request, err error) {
-		logger.Error().Err(err).Msg("error validating token")
-		jwtmiddleware.DefaultErrorHandler(w, r, err)
-	}
+func ErrorHandler(w http.ResponseWriter, r *http.Request, err error) {
+	zerolog.Ctx(r.Context()).Error().Err(err).Msg("error validating token")
+	jwtmiddleware.DefaultErrorHandler(w, r, err)
 }

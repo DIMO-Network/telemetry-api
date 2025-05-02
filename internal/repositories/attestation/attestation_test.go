@@ -12,7 +12,6 @@ import (
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	"github.com/DIMO-Network/telemetry-api/internal/repositories/attestation"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
 )
@@ -45,7 +44,6 @@ func (m *MockRow) ScanStruct(any) error {
 
 func TestAttestation(t *testing.T) {
 	// Initialize variables
-	logger := zerolog.New(nil)
 	ctx := context.Background()
 	validVehTknID := int(123)
 	invalidVehTknID := int(321)
@@ -63,7 +61,7 @@ func TestAttestation(t *testing.T) {
 	chainID := uint64(3)
 
 	// Initialize the service with mock dependencies
-	att := attestation.New(mockService, chainID, vehicleAddress, &logger)
+	att := attestation.New(mockService, chainID, vehicleAddress)
 
 	vehicleDID := cloudevent.NFTDID{
 		ChainID:         1,
