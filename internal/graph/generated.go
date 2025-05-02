@@ -2266,7 +2266,7 @@ var sources = []*ast.Source{
     tokenId: Int!
 
     """
-    Filter attestation by producer effectiveAt, expiresAt, or attestation ID. 
+    Filter attestations by metadata fields. 
     """
     filter: AttestationFilter
   ): [Attestation]
