@@ -21,7 +21,6 @@ type indexRepoService interface {
 	GetLatestCloudEvent(ctx context.Context, filter *grpc.SearchOptions) (cloudevent.CloudEvent[json.RawMessage], error)
 }
 type Repository struct {
-	logger           *zerolog.Logger
 	indexService     indexRepoService
 	vinVCDataVersion string
 	pomVCDataVersion string
@@ -30,19 +29,19 @@ type Repository struct {
 }
 
 // New creates a new instance of Service.
-func New(indexService indexRepoService, vinVCDataVersion, pomVCDataVersion string, chainID uint64, vehicleAddress common.Address, logger *zerolog.Logger) *Repository {
+func New(indexService indexRepoService, vinVCDataVersion, pomVCDataVersion string, chainID uint64, vehicleAddress common.Address) *Repository {
 	return &Repository{
 		indexService:     indexService,
 		vinVCDataVersion: vinVCDataVersion,
 		pomVCDataVersion: pomVCDataVersion,
 		chainID:          chainID,
 		vehicleAddress:   vehicleAddress,
-		logger:           logger,
 	}
 }
 
 // GetLatestVINVC fetches the latest VIN VC for the given vehicle.
 func (r *Repository) GetLatestVINVC(ctx context.Context, vehicleTokenID uint32) (*model.Vinvc, error) {
+	logger := r.getLogger(ctx)
 	vehicleDID := cloudevent.NFTDID{
 		ChainID:         r.chainID,
 		ContractAddress: r.vehicleAddress,
@@ -58,12 +57,12 @@ func (r *Repository) GetLatestVINVC(ctx context.Context, vehicleTokenID uint32) 
 		if status.Code(err) == codes.NotFound {
 			return nil, nil //nolint // we nil is a valid response
 		}
-		r.logger.Error().Err(err).Msg("failed to get latest VIN VC data")
+		logger.Error().Err(err).Msg("failed to get latest VIN VC data")
 		return nil, errors.New("internal error")
 	}
 	cred := verifiable.Credential{}
 	if err := json.Unmarshal(dataObj.Data, &cred); err != nil {
-		r.logger.Error().Err(err).Msg("failed to unmarshal VIN VC")
+		logger.Error().Err(err).Msg("failed to unmarshal VIN VC")
 		return nil, errors.New("internal error")
 	}
 
@@ -77,7 +76,7 @@ func (r *Repository) GetLatestVINVC(ctx context.Context, vehicleTokenID uint32) 
 	}
 	credSubject := verifiable.VINSubject{}
 	if err := json.Unmarshal(cred.CredentialSubject, &credSubject); err != nil {
-		r.logger.Error().Err(err).Msg("failed to unmarshal VIN credential subject")
+		logger.Error().Err(err).Msg("failed to unmarshal VIN credential subject")
 		return nil, errors.New("internal error")
 	}
 	var vin *string
@@ -102,7 +101,7 @@ func (r *Repository) GetLatestVINVC(ctx context.Context, vehicleTokenID uint32) 
 	}
 	rawVc, err := json.Marshal(dataObj)
 	if err != nil {
-		r.logger.Error().Err(err).Msg("failed to marshal VIN VC")
+		logger.Error().Err(err).Msg("failed to marshal VIN VC")
 		return nil, errors.New("internal error")
 	}
 	tokenIDInt := int(credSubject.VehicleTokenID)
@@ -121,6 +120,7 @@ func (r *Repository) GetLatestVINVC(ctx context.Context, vehicleTokenID uint32) 
 
 // GetLatestPOMVC fetches the latest POM VC for the given vehicle.
 func (r *Repository) GetLatestPOMVC(ctx context.Context, vehicleTokenID uint32) (*model.Pomvc, error) {
+	logger := r.getLogger(ctx)
 	vehicleDID := cloudevent.NFTDID{
 		ChainID:         r.chainID,
 		ContractAddress: r.vehicleAddress,
@@ -136,12 +136,12 @@ func (r *Repository) GetLatestPOMVC(ctx context.Context, vehicleTokenID uint32) 
 		if status.Code(err) == codes.NotFound {
 			return nil, nil //nolint // we nil is a valid response
 		}
-		r.logger.Error().Err(err).Msg("failed to get latest POM VC data")
+		logger.Error().Err(err).Msg("failed to get latest POM VC data")
 		return nil, errors.New("internal error")
 	}
 	cred := verifiable.Credential{}
 	if err := json.Unmarshal(dataObj.Data, &cred); err != nil {
-		r.logger.Error().Err(err).Msg("failed to unmarshal POM VC")
+		logger.Error().Err(err).Msg("failed to unmarshal POM VC")
 		return nil, errors.New("internal error")
 	}
 
@@ -151,7 +151,7 @@ func (r *Repository) GetLatestPOMVC(ctx context.Context, vehicleTokenID uint32) 
 	}
 	credSubject := verifiable.POMSubject{}
 	if err := json.Unmarshal(cred.CredentialSubject, &credSubject); err != nil {
-		r.logger.Error().Err(err).Msg("failed to unmarshal POM credential subject")
+		logger.Error().Err(err).Msg("failed to unmarshal POM credential subject")
 		return nil, errors.New("internal error")
 	}
 	var recordedBy *string
@@ -171,4 +171,8 @@ func (r *Repository) GetLatestPOMVC(ctx context.Context, vehicleTokenID uint32) 
 		VehicleContractAddress: vehicleContractAddress,
 		VehicleTokenID:         &tokenIDInt,
 	}, nil
+}
+
+func (r *Repository) getLogger(ctx context.Context) zerolog.Logger {
+	return zerolog.Ctx(ctx).With().Str("component", "vc").Logger()
 }

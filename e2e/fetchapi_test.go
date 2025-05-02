@@ -64,7 +64,7 @@ func (ts *mockFetchServer) Close() {
 	ts.grpcServer.GracefulStop()
 
 	if ts.listener != nil {
-		ts.listener.Close()
+		ts.listener.Close() //nolint:errcheck
 	}
 }
 

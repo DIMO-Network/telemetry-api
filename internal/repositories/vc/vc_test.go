@@ -13,7 +13,6 @@ import (
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	"github.com/DIMO-Network/telemetry-api/internal/repositories/vc"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
 	"google.golang.org/grpc/codes"
@@ -48,7 +47,6 @@ func (m *MockRow) ScanStruct(any) error {
 
 func TestGetLatestVC(t *testing.T) {
 	// Initialize variables
-	logger := zerolog.New(nil)
 	ctx := context.Background()
 	vehicleTokenID := uint32(123)
 	dataVersion := "vinvc"
@@ -63,7 +61,7 @@ func TestGetLatestVC(t *testing.T) {
 	vehicleAddress := common.HexToAddress("0x123")
 	chainID := uint64(3)
 	// Initialize the service with mock dependencies
-	svc := vc.New(mockService, bucketName, dataVersion, chainID, vehicleAddress, &logger)
+	svc := vc.New(mockService, bucketName, dataVersion, chainID, vehicleAddress)
 
 	defaultVC := verifiable.Credential{
 		ValidTo:   time.Now().Add(24 * time.Hour).Format(time.RFC3339),

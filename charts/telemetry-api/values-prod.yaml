@@ -1,8 +1,8 @@
-replicaCount: 2
+replicaCount: 3
 image:
   repository: dimozone/telemetry-api
   pullPolicy: IfNotPresent
-  tag: 0.1.8
+  tag: 0.1.9
 cronJob:
   enabled: false
   schedule: 0 0 * * 0
@@ -36,10 +36,10 @@ ingress:
   tls: []
 resources:
   limits:
-    cpu: 1
+    cpu: 2
     memory: 4048Mi
   requests:
-    cpu: 100m
+    cpu: 250m
     memory: 1024Mi
 autoscaling:
   enabled: false

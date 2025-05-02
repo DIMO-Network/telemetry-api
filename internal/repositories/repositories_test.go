@@ -9,7 +9,6 @@ import (
 	"github.com/DIMO-Network/model-garage/pkg/vss"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	"github.com/DIMO-Network/telemetry-api/internal/repositories"
-	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
 	gomock "go.uber.org/mock/gomock"
 )
@@ -26,7 +25,6 @@ func setupMocks(t *testing.T) *Mocks {
 }
 
 func TestGetSignal(t *testing.T) {
-	logger := zerolog.New(nil)
 	defaultArgs := &model.AggregatedSignalArgs{
 		SignalArgs: model.SignalArgs{
 			TokenID: 1,
@@ -168,7 +166,7 @@ func TestGetSignal(t *testing.T) {
 				tt.mockSetup(mocks)
 			}
 
-			repo, err := repositories.NewRepository(&logger, mocks.CHService, 3)
+			repo, err := repositories.NewRepository(mocks.CHService, 3)
 			require.NoError(t, err)
 			result, err := repo.GetSignal(context.Background(), tt.aggArgs)
 			if tt.expectError {
@@ -188,7 +186,6 @@ func TestGetSignal(t *testing.T) {
 }
 
 func TestGetSignalLatest(t *testing.T) {
-	logger := zerolog.New(nil)
 	defaultArgs := &model.LatestSignalsArgs{
 		SignalArgs: model.SignalArgs{
 			TokenID: 1,
@@ -292,7 +289,7 @@ func TestGetSignalLatest(t *testing.T) {
 				tt.mockSetup(mocks)
 			}
 
-			repo, err := repositories.NewRepository(&logger, mocks.CHService, 2)
+			repo, err := repositories.NewRepository(mocks.CHService, 2)
 			require.NoError(t, err)
 			result, err := repo.GetSignalLatest(context.Background(), tt.latestArgs)
 			if tt.expectError {
@@ -307,7 +304,6 @@ func TestGetSignalLatest(t *testing.T) {
 }
 
 func TestDeviceActivity(t *testing.T) {
-	logger := zerolog.New(nil)
 	vehicleTokenID := int64(1)
 	hashdog := "Hashdog"
 	source := "macaron"
@@ -374,7 +370,7 @@ func TestDeviceActivity(t *testing.T) {
 				tt.mockSetup(mocks)
 			}
 
-			repo, err := repositories.NewRepository(&logger, mocks.CHService, 3)
+			repo, err := repositories.NewRepository(mocks.CHService, 3)
 			require.NoError(t, err)
 			result, err := repo.GetDeviceActivity(context.Background(), int(vehicleTokenID), tt.manufacturer)
 			if tt.expectError {
@@ -389,7 +385,6 @@ func TestDeviceActivity(t *testing.T) {
 }
 
 func TestGetAvailableSignals(t *testing.T) {
-	logger := zerolog.New(nil)
 	testTokenId := uint32(1)
 	tests := []struct {
 		name           string
@@ -477,7 +472,7 @@ func TestGetAvailableSignals(t *testing.T) {
 				tt.mockSetup(mocks)
 			}
 
-			repo, err := repositories.NewRepository(&logger, mocks.CHService, 2)
+			repo, err := repositories.NewRepository(mocks.CHService, 2)
 			require.NoError(t, err)
 			result, err := repo.GetAvailableSignals(context.Background(), 1, nil)
 			if tt.expectError {
