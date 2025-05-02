@@ -79,7 +79,7 @@ func loggerMiddleware(next http.Handler) http.Handler {
 			sourceIP = r.Header.Get("X-Real-IP")
 		}
 		if sourceIP == "" {
-			sourceIP = r.Header.Get("X-Forwarded-For")
+			sourceIP = r.RemoteAddr
 		}
 		loggerCtx := zerolog.Ctx(r.Context()).With().Str("method", r.Method).Str("path", r.URL.Path).Str("sourceIp", sourceIP).Logger().WithContext(r.Context())
 		r = r.WithContext(loggerCtx)
