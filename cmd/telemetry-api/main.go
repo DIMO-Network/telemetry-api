@@ -9,7 +9,7 @@ import (
 	"strconv"
 
 	"github.com/99designs/gqlgen/graphql/playground"
-	"github.com/DIMO-Network/shared"
+	"github.com/DIMO-Network/shared/pkg/settings"
 	"github.com/DIMO-Network/telemetry-api/internal/app"
 	"github.com/DIMO-Network/telemetry-api/internal/config"
 	"github.com/gofiber/fiber/v2"
@@ -33,25 +33,25 @@ func main() {
 	settingsFile := flag.String("settings", "settings.yaml", "settings file")
 	flag.Parse()
 
-	settings, err := shared.LoadConfig[config.Settings](*settingsFile)
+	cfg, err := settings.LoadConfig[config.Settings](*settingsFile)
 	if err != nil {
 		logger.Fatal().Err(err).Msg("Couldn't load settings.")
 	}
 
-	application, err := app.New(settings)
+	application, err := app.New(cfg)
 	if err != nil {
 		logger.Fatal().Err(err).Msg("Couldn't create application.")
 	}
 
 	defer application.Cleanup()
 
-	serveMonitoring(strconv.Itoa(settings.MonPort), &logger)
+	serveMonitoring(strconv.Itoa(cfg.MonPort), &logger)
 	mux := http.NewServeMux()
 	mux.Handle("/", loggerMiddleware(playground.Handler("GraphQL playground", "/query")))
 	mux.Handle("/query", loggerMiddleware(application.Handler))
 
-	logger.Info().Msgf("Server started on port: %d", settings.Port)
-	logger.Fatal().Err(http.ListenAndServe(fmt.Sprintf(":%d", settings.Port), mux)).Msg("Server shut down.")
+	logger.Info().Msgf("Server started on port: %d", cfg.Port)
+	logger.Fatal().Err(http.ListenAndServe(fmt.Sprintf(":%d", cfg.Port), mux)).Msg("Server shut down.")
 }
 
 func serveMonitoring(port string, logger *zerolog.Logger) *fiber.App {

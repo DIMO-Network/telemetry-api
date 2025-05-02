@@ -3,9 +3,9 @@ package auth
 import (
 	"context"
 
-	"github.com/DIMO-Network/shared/middleware/privilegetoken"
-	"github.com/DIMO-Network/shared/privileges"
-	"github.com/DIMO-Network/shared/set"
+	"github.com/DIMO-Network/shared/pkg/middleware/privilegetoken"
+	"github.com/DIMO-Network/shared/pkg/privileges"
+	"github.com/DIMO-Network/shared/pkg/set"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	jwtmiddleware "github.com/auth0/go-jwt-middleware/v2"
 	"github.com/ethereum/go-ethereum/common"

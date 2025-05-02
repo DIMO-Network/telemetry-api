@@ -88,6 +88,8 @@ github.com/DIMO-Network/model-garage v0.5.4 h1:g6xgrMuAUQ9YLM9ok0F+e6ksc2HsCRzc6
 github.com/DIMO-Network/model-garage v0.5.4/go.mod h1:IBYP7xta3LtYV5xXbRZ6B9wtvoVPRpqPLx06Ouh7Pgk=
 github.com/DIMO-Network/shared v0.12.7 h1:6H8Pngxn2zXxhh/y34UHxCXBI6JGWCBr1Bpuczz57UQ=
 github.com/DIMO-Network/shared v0.12.7/go.mod h1:lDHUKwwT2LW6Zvd42Nb33dXklRNTmfyOlbUNx2dQfGY=
+github.com/DIMO-Network/shared v1.0.1 h1:eN2KgoPitt4Ht8/yFu//CgUfaOhRUM5JksHLrNJV6ug=
+github.com/DIMO-Network/shared v1.0.1/go.mod h1:lDHUKwwT2LW6Zvd42Nb33dXklRNTmfyOlbUNx2dQfGY=
 github.com/DIMO-Network/yaml v0.1.0 h1:KQ3oKHUZETchR6Pxbmmol3e4ewrPv/q8cEwqxfwyZbU=
 github.com/DIMO-Network/yaml v0.1.0/go.mod h1:KkiehcbkVzH8Pf8f9dja8B2aW81gYYZSqfwzSj9yN68=
 github.com/DataDog/datadog-go v3.2.0+incompatible/go.mod h1:LButxg5PwREeZtORoXG3tL4fMGNddJ+vMq1mwgfaqoQ=
