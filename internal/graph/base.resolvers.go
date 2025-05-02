@@ -17,7 +17,7 @@ func (r *queryResolver) Signals(ctx context.Context, tokenID int, interval strin
 	if err != nil {
 		return nil, err
 	}
-	return r.Repository.GetSignal(ctx, aggArgs)
+	return r.GetSignal(ctx, aggArgs)
 }
 
 // SignalsLatest is the resolver for the SignalsLatest field.
@@ -26,12 +26,12 @@ func (r *queryResolver) SignalsLatest(ctx context.Context, tokenID int, filter *
 	if err != nil {
 		return nil, err
 	}
-	return r.Repository.GetSignalLatest(ctx, latestArgs)
+	return r.GetSignalLatest(ctx, latestArgs)
 }
 
 // AvailableSignals is the resolver for the AvailableSignals field.
 func (r *queryResolver) AvailableSignals(ctx context.Context, tokenID int, filter *model.SignalFilter) ([]string, error) {
-	return r.Repository.GetAvailableSignals(ctx, uint32(tokenID), filter)
+	return r.GetAvailableSignals(ctx, uint32(tokenID), filter)
 }
 
 // CurrentLocationApproximateLatitude is the resolver for the CurrentLocationApproximateLatitude

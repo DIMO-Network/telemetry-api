@@ -35,7 +35,7 @@ func (t *TelemetryClaim) SetPrivileges(contractPrivMaps map[common.Address]map[p
 		return
 	}
 
-	for _, privID := range t.CustomClaims.PrivilegeIDs {
+	for _, privID := range t.PrivilegeIDs {
 		modelPriv, ok := contractClaims[privID]
 		if !ok {
 			continue
