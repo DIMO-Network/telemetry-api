@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/99designs/gqlgen-contrib/prometheus"
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/handler/extension"
@@ -17,6 +16,7 @@ import (
 	"github.com/DIMO-Network/telemetry-api/internal/config"
 	"github.com/DIMO-Network/telemetry-api/internal/graph"
 	"github.com/DIMO-Network/telemetry-api/internal/limits"
+	"github.com/DIMO-Network/telemetry-api/internal/metrics"
 	"github.com/DIMO-Network/telemetry-api/internal/repositories"
 	"github.com/DIMO-Network/telemetry-api/internal/repositories/attestation"
 	"github.com/DIMO-Network/telemetry-api/internal/repositories/vc"
@@ -29,7 +29,7 @@ import (
 )
 
 func init() {
-	prometheus.Register()
+	metrics.Register()
 }
 
 // App is the main application for the telemetry API.
@@ -149,7 +149,7 @@ func newDefaultServer(es graphql.ExecutableSchema) *handler.Server {
 	srv.SetErrorPresenter(errorHandler)
 
 	// add prometheus metrics
-	srv.Use(prometheus.Tracer{})
+	srv.Use(metrics.Tracer{})
 
 	return srv
 }

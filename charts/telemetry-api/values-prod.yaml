@@ -9,6 +9,7 @@ cronJob:
 env:
   PORT: 8080
   MON_PORT: 8888
+  ENABLE_PPROF: false
   TOKEN_EXCHANGE_JWK_KEY_SET_URL: http://dex-roles-rights-prod.prod.svc.cluster.local:5556/keys
   TOKEN_EXCHANGE_ISSUER_URL: https://auth-roles-rights.dimo.zone
   VEHICLE_NFT_ADDRESS: '0xbA5738a18d83D41847dfFbDC6101d37C69c9B0cF'

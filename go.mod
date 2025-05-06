@@ -4,7 +4,6 @@ go 1.24
 
 require (
 	github.com/99designs/gqlgen v0.17.66
-	github.com/99designs/gqlgen-contrib v0.1.1-0.20250430103718-74be2267bbaf // This repo does not have tags, so we need to use the commit hash
 	github.com/ClickHouse/clickhouse-go/v2 v2.34.0
 	github.com/DIMO-Network/attestation-api v0.0.11
 	github.com/DIMO-Network/clickhouse-infra v0.0.3
