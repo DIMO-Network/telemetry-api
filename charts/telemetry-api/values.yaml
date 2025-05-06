@@ -26,6 +26,7 @@ cronJob:
 env:
   PORT: 8080
   MON_PORT: 8888
+  ENABLE_PPROF: true
   CLICKHOUSE_TCP_PORT: 9440
   CLICKHOUSE_DATABASE: dimo
   TOKEN_EXCHANGE_JWK_KEY_SET_URL: http://dex-roles-rights.dev.svc.cluster.local:5556/keys

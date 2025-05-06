@@ -9,6 +9,7 @@ import (
 type Settings struct {
 	Port                         int             `yaml:"PORT"`
 	MonPort                      int             `yaml:"MON_PORT"`
+	EnablePprof                  bool            `yaml:"ENABLE_PPROF"`
 	Clickhouse                   config.Settings `yaml:",inline"`
 	TokenExchangeJWTKeySetURL    string          `yaml:"TOKEN_EXCHANGE_JWK_KEY_SET_URL"`
 	TokenExchangeIssuer          string          `yaml:"TOKEN_EXCHANGE_ISSUER_URL"`
