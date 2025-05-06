@@ -66,10 +66,10 @@ func serveMonitoring(port string, logger *zerolog.Logger, enablePprof bool) *fib
 
 	// Add pprof handlers if enabled
 	if enablePprof {
-		pprofGroup := monApp.Group("/debug")
+		pprofGroup := monApp.Group("/debug/pprof")
 
 		// Index page and base profiles
-		pprofGroup.Get("/pprof", adaptor.HTTPHandlerFunc(pprof.Index))
+		pprofGroup.Get("/", adaptor.HTTPHandlerFunc(pprof.Index))
 		pprofGroup.Get("/cmdline", adaptor.HTTPHandlerFunc(pprof.Cmdline))
 		pprofGroup.Get("/profile", adaptor.HTTPHandlerFunc(pprof.Profile))
 		pprofGroup.Get("/symbol", adaptor.HTTPHandlerFunc(pprof.Symbol))
