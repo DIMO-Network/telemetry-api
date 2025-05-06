@@ -13,6 +13,8 @@ const (
 	exitStatusSuccess  = "success"
 )
 
+type metricsKey struct{}
+
 var (
 	requestStartedCounter    prometheus.Counter
 	requestCompletedCounter  prometheus.Counter
@@ -172,9 +174,9 @@ func (a Tracer) InterceptOperation(
 	}
 
 	// Store metrics in context.
-	ctx = context.WithValue(ctx, "requestMetrics", metrics)
+	metricsCtx := context.WithValue(ctx, metricsKey{}, metrics)
 
-	return next(ctx)
+	return next(metricsCtx)
 }
 
 // InterceptResponse intercepts GraphQL responses to record metrics.
@@ -195,7 +197,7 @@ func (a Tracer) InterceptResponse(
 	observerStart := oc.Stats.OperationStart
 
 	// Get request metrics from context.
-	metrics, ok := ctx.Value("requestMetrics").(*requestMetrics)
+	metrics, ok := ctx.Value(metricsKey{}).(*requestMetrics)
 	fieldCountRange := "unknown"
 	if ok {
 		// Track the number of fields in this request.
@@ -220,7 +222,7 @@ func (a Tracer) InterceptField(ctx context.Context, next graphql.Resolver) (any,
 	resolverStartedCounter.WithLabelValues(fc.Object, fc.Field.Name).Inc()
 
 	// Increment field count in context.
-	if metrics, ok := ctx.Value("requestMetrics").(*requestMetrics); ok {
+	if metrics, ok := ctx.Value(metricsKey{}).(*requestMetrics); ok {
 		metrics.fieldCount++
 	}
 
