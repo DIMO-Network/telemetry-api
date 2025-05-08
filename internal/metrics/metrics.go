@@ -30,24 +30,28 @@ var (
 type FieldCountRange string
 
 const (
-	// FieldCountSmall represents requests with 1-5 fields.
-	FieldCountSmall FieldCountRange = "small" // 1-5 fields
-	// FieldCountMedium represents requests with 6-10 fields.
-	FieldCountMedium FieldCountRange = "medium" // 6-10 fields
-	// FieldCountLarge represents requests with 11-50 fields.
-	FieldCountLarge FieldCountRange = "large" // 11-50 fields
-	// FieldCountHuge represents requests with 51+ fields.
-	FieldCountHuge FieldCountRange = "huge" // 51+ fields
+	// FieldCountTiny represents requests with 0-5 fields.
+	FieldCountTiny FieldCountRange = "tiny"
+	// FieldCountSmall represents requests with 6-10 fields.
+	FieldCountSmall FieldCountRange = "small"
+	// FieldCountMedium represents requests with 11-20 fields.
+	FieldCountMedium FieldCountRange = "medium"
+	// FieldCountLarge represents requests with 21-40 fields.
+	FieldCountLarge FieldCountRange = "large"
+	// FieldCountHuge represents requests with 41+ fields.
+	FieldCountHuge FieldCountRange = "huge"
 )
 
 // GetFieldCountRange returns a string representation of the field count range.
 func GetFieldCountRange(count int) string {
 	switch {
 	case count <= 5:
-		return string(FieldCountSmall)
+		return string(FieldCountTiny)
 	case count <= 10:
+		return string(FieldCountSmall)
+	case count <= 20:
 		return string(FieldCountMedium)
-	case count <= 50:
+	case count <= 40:
 		return string(FieldCountLarge)
 	default:
 		return string(FieldCountHuge)
@@ -185,6 +189,7 @@ func (a Tracer) InterceptResponse(
 	ctx context.Context,
 	next graphql.ResponseHandler,
 ) *graphql.Response {
+	response := next(ctx)
 	errList := graphql.GetErrors(ctx)
 
 	var exitStatus string
@@ -213,7 +218,7 @@ func (a Tracer) InterceptResponse(
 
 	requestCompletedCounter.Inc()
 
-	return next(ctx)
+	return response
 }
 
 // InterceptField intercepts GraphQL field resolution to track metrics.
