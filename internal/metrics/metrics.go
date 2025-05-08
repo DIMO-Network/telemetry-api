@@ -2,6 +2,7 @@ package metrics
 
 import (
 	"context"
+	"sync/atomic"
 	"time"
 
 	"github.com/99designs/gqlgen/graphql"
@@ -29,24 +30,24 @@ var (
 type FieldCountRange string
 
 const (
-	// FieldCountSmall represents requests with 1-10 fields.
-	FieldCountSmall FieldCountRange = "small" // 1-10 fields
-	// FieldCountMedium represents requests with 11-50 fields.
-	FieldCountMedium FieldCountRange = "medium" // 11-50 fields
-	// FieldCountLarge represents requests with 51-200 fields.
-	FieldCountLarge FieldCountRange = "large" // 51-200 fields
-	// FieldCountHuge represents requests with 201+ fields.
-	FieldCountHuge FieldCountRange = "huge" // 201+ fields
+	// FieldCountSmall represents requests with 1-5 fields.
+	FieldCountSmall FieldCountRange = "small" // 1-5 fields
+	// FieldCountMedium represents requests with 6-10 fields.
+	FieldCountMedium FieldCountRange = "medium" // 6-10 fields
+	// FieldCountLarge represents requests with 11-50 fields.
+	FieldCountLarge FieldCountRange = "large" // 11-50 fields
+	// FieldCountHuge represents requests with 51+ fields.
+	FieldCountHuge FieldCountRange = "huge" // 51+ fields
 )
 
 // GetFieldCountRange returns a string representation of the field count range.
 func GetFieldCountRange(count int) string {
 	switch {
-	case count <= 10:
+	case count <= 5:
 		return string(FieldCountSmall)
-	case count <= 50:
+	case count <= 10:
 		return string(FieldCountMedium)
-	case count <= 200:
+	case count <= 50:
 		return string(FieldCountLarge)
 	default:
 		return string(FieldCountHuge)
@@ -158,7 +159,7 @@ func (a Tracer) Validate(schema graphql.ExecutableSchema) error {
 }
 
 type requestMetrics struct {
-	fieldCount int
+	fieldCount atomic.Int64
 }
 
 // InterceptOperation intercepts GraphQL operations to track metrics.
@@ -170,7 +171,7 @@ func (a Tracer) InterceptOperation(
 
 	// Record initial resource usage for this request.
 	metrics := &requestMetrics{
-		fieldCount: 0,
+		fieldCount: atomic.Int64{},
 	}
 
 	// Store metrics in context.
@@ -201,8 +202,8 @@ func (a Tracer) InterceptResponse(
 	fieldCountRange := "unknown"
 	if ok {
 		// Track the number of fields in this request.
-		fieldsPerRequest.WithLabelValues(exitStatus).Observe(float64(metrics.fieldCount))
-		fieldCountRange = GetFieldCountRange(metrics.fieldCount)
+		fieldsPerRequest.WithLabelValues(exitStatus).Observe(float64(metrics.fieldCount.Load()))
+		fieldCountRange = GetFieldCountRange(int(metrics.fieldCount.Load()))
 	}
 
 	timeToHandleRequest.With(prometheus.Labels{
@@ -223,7 +224,7 @@ func (a Tracer) InterceptField(ctx context.Context, next graphql.Resolver) (any,
 
 	// Increment field count in context.
 	if metrics, ok := ctx.Value(metricsKey{}).(*requestMetrics); ok {
-		metrics.fieldCount++
+		metrics.fieldCount.Add(1)
 	}
 
 	observerStart := time.Now()
