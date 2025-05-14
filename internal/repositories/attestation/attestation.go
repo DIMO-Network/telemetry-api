@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"math/big"
 
 	"github.com/DIMO-Network/cloudevent"
 	"github.com/DIMO-Network/fetch-api/pkg/grpc"
@@ -36,10 +37,10 @@ func New(indexService indexRepoService, chainID uint64, vehicleAddress common.Ad
 // GetAttestations fetches attestations for the given vehicle.
 func (r *Repository) GetAttestations(ctx context.Context, vehicleTokenID uint32, filter *model.AttestationFilter) ([]*model.Attestation, error) {
 	logger := r.getLogger(ctx)
-	vehicleDID := cloudevent.NFTDID{
+	vehicleDID := cloudevent.ERC721DID{
 		ChainID:         r.chainID,
 		ContractAddress: r.vehicleAddress,
-		TokenID:         vehicleTokenID,
+		TokenID:         new(big.Int).SetUint64(uint64(vehicleTokenID)),
 	}.String()
 	opts := &grpc.SearchOptions{
 		Type:    &wrapperspb.StringValue{Value: cloudevent.TypeAttestation},

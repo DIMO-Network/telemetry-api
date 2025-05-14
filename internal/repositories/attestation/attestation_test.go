@@ -63,10 +63,10 @@ func TestAttestation(t *testing.T) {
 	// Initialize the service with mock dependencies
 	att := attestation.New(mockService, chainID, vehicleAddress)
 
-	vehicleDID := cloudevent.NFTDID{
-		ChainID:         1,
+	vehicleDID := cloudevent.ERC721DID{
+		ChainID:         chainID,
 		ContractAddress: vehicleAddress,
-		TokenID:         uint32(validVehTknID),
+		TokenID:         new(big.Int).SetUint64(uint64(validVehTknID)),
 	}.String()
 
 	dataStr := `{"goodTires": true}`
