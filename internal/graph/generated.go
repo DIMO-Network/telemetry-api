@@ -379,7 +379,7 @@ func (e *executableSchema) Schema() *ast.Schema {
 	return parsedSchema
 }
 
-func (e *executableSchema) Complexity(typeName, field string, childComplexity int, rawArgs map[string]any) (int, bool) {
+func (e *executableSchema) Complexity(ctx context.Context, typeName, field string, childComplexity int, rawArgs map[string]any) (int, bool) {
 	ec := executionContext{nil, e, 0, 0, nil}
 	_ = ec
 	switch typeName + "." + field {
@@ -494,7 +494,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_Query_attestations_args(context.TODO(), rawArgs)
+		args, err := ec.field_Query_attestations_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -506,7 +506,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_Query_availableSignals_args(context.TODO(), rawArgs)
+		args, err := ec.field_Query_availableSignals_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -518,7 +518,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_Query_deviceActivity_args(context.TODO(), rawArgs)
+		args, err := ec.field_Query_deviceActivity_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -530,7 +530,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_Query_pomVCLatest_args(context.TODO(), rawArgs)
+		args, err := ec.field_Query_pomVCLatest_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -542,7 +542,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_Query_signals_args(context.TODO(), rawArgs)
+		args, err := ec.field_Query_signals_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -554,7 +554,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_Query_signalsLatest_args(context.TODO(), rawArgs)
+		args, err := ec.field_Query_signalsLatest_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -566,7 +566,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_Query_vinVCLatest_args(context.TODO(), rawArgs)
+		args, err := ec.field_Query_vinVCLatest_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -578,7 +578,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_angularVelocityYaw_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_angularVelocityYaw_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -590,7 +590,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_cabinDoorRow1DriverSideIsOpen_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_cabinDoorRow1DriverSideIsOpen_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -602,7 +602,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_cabinDoorRow1DriverSideWindowIsOpen_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_cabinDoorRow1DriverSideWindowIsOpen_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -614,7 +614,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_cabinDoorRow1PassengerSideIsOpen_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_cabinDoorRow1PassengerSideIsOpen_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -626,7 +626,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_cabinDoorRow1PassengerSideWindowIsOpen_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_cabinDoorRow1PassengerSideWindowIsOpen_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -638,7 +638,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_cabinDoorRow2DriverSideIsOpen_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_cabinDoorRow2DriverSideIsOpen_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -650,7 +650,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_cabinDoorRow2DriverSideWindowIsOpen_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_cabinDoorRow2DriverSideWindowIsOpen_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -662,7 +662,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_cabinDoorRow2PassengerSideIsOpen_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_cabinDoorRow2PassengerSideIsOpen_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -674,7 +674,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_cabinDoorRow2PassengerSideWindowIsOpen_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_cabinDoorRow2PassengerSideWindowIsOpen_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -686,7 +686,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_chassisAxleRow1WheelLeftSpeed_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_chassisAxleRow1WheelLeftSpeed_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -698,7 +698,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_chassisAxleRow1WheelLeftTirePressure_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_chassisAxleRow1WheelLeftTirePressure_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -710,7 +710,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_chassisAxleRow1WheelRightSpeed_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_chassisAxleRow1WheelRightSpeed_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -722,7 +722,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_chassisAxleRow1WheelRightTirePressure_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_chassisAxleRow1WheelRightTirePressure_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -734,7 +734,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_chassisAxleRow2WheelLeftTirePressure_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_chassisAxleRow2WheelLeftTirePressure_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -746,7 +746,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_chassisAxleRow2WheelRightTirePressure_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_chassisAxleRow2WheelRightTirePressure_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -758,7 +758,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_currentLocationAltitude_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_currentLocationAltitude_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -770,7 +770,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_currentLocationApproximateLatitude_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_currentLocationApproximateLatitude_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -782,7 +782,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_currentLocationApproximateLongitude_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_currentLocationApproximateLongitude_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -794,7 +794,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_currentLocationHeading_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_currentLocationHeading_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -806,7 +806,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_currentLocationIsRedacted_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_currentLocationIsRedacted_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -818,7 +818,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_currentLocationLatitude_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_currentLocationLatitude_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -830,7 +830,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_currentLocationLongitude_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_currentLocationLongitude_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -842,7 +842,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_dimoAftermarketHDOP_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_dimoAftermarketHDOP_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -854,7 +854,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_dimoAftermarketNSAT_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_dimoAftermarketNSAT_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -866,7 +866,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_dimoAftermarketSSID_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_dimoAftermarketSSID_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -878,7 +878,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_dimoAftermarketWPAState_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_dimoAftermarketWPAState_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -890,7 +890,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_exteriorAirTemperature_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_exteriorAirTemperature_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -902,7 +902,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_isIgnitionOn_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_isIgnitionOn_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -914,7 +914,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_lowVoltageBatteryCurrentVoltage_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_lowVoltageBatteryCurrentVoltage_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -926,7 +926,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_obdBarometricPressure_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_obdBarometricPressure_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -938,7 +938,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_obdCommandedEGR_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_obdCommandedEGR_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -950,7 +950,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_obdCommandedEVAP_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_obdCommandedEVAP_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -962,7 +962,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_obdDTCList_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_obdDTCList_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -974,7 +974,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_obdDistanceSinceDTCClear_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_obdDistanceSinceDTCClear_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -986,7 +986,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_obdDistanceWithMIL_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_obdDistanceWithMIL_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -998,7 +998,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_obdEngineLoad_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_obdEngineLoad_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -1010,7 +1010,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_obdFuelPressure_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_obdFuelPressure_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -1022,7 +1022,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_obdIntakeTemp_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_obdIntakeTemp_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -1034,7 +1034,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_obdLongTermFuelTrim1_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_obdLongTermFuelTrim1_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -1046,7 +1046,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_obdMAP_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_obdMAP_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -1058,7 +1058,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_obdO2WRSensor1Voltage_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_obdO2WRSensor1Voltage_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -1070,7 +1070,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_obdO2WRSensor2Voltage_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_obdO2WRSensor2Voltage_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -1082,7 +1082,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_obdRunTime_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_obdRunTime_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -1094,7 +1094,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_obdShortTermFuelTrim1_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_obdShortTermFuelTrim1_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -1106,7 +1106,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_obdWarmupsSinceDTCClear_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_obdWarmupsSinceDTCClear_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -1118,7 +1118,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_powertrainCombustionEngineDieselExhaustFluidCapacity_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_powertrainCombustionEngineDieselExhaustFluidCapacity_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -1130,7 +1130,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_powertrainCombustionEngineDieselExhaustFluidLevel_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_powertrainCombustionEngineDieselExhaustFluidLevel_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -1142,7 +1142,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_powertrainCombustionEngineECT_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_powertrainCombustionEngineECT_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -1154,7 +1154,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_powertrainCombustionEngineEngineOilLevel_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_powertrainCombustionEngineEngineOilLevel_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -1166,7 +1166,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_powertrainCombustionEngineEngineOilRelativeLevel_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_powertrainCombustionEngineEngineOilRelativeLevel_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -1178,7 +1178,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_powertrainCombustionEngineEOP_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_powertrainCombustionEngineEOP_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -1190,7 +1190,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_powertrainCombustionEngineEOT_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_powertrainCombustionEngineEOT_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -1202,7 +1202,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_powertrainCombustionEngineMAF_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_powertrainCombustionEngineMAF_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -1214,7 +1214,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_powertrainCombustionEngineSpeed_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_powertrainCombustionEngineSpeed_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -1226,7 +1226,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_powertrainCombustionEngineTorque_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_powertrainCombustionEngineTorque_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -1238,7 +1238,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_powertrainCombustionEngineTPS_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_powertrainCombustionEngineTPS_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -1250,7 +1250,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_powertrainFuelSystemAbsoluteLevel_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_powertrainFuelSystemAbsoluteLevel_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -1262,7 +1262,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_powertrainFuelSystemRelativeLevel_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_powertrainFuelSystemRelativeLevel_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -1274,7 +1274,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_powertrainFuelSystemSupportedFuelTypes_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_powertrainFuelSystemSupportedFuelTypes_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -1286,7 +1286,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_powertrainRange_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_powertrainRange_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -1298,7 +1298,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_powertrainTractionBatteryChargingAddedEnergy_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_powertrainTractionBatteryChargingAddedEnergy_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -1310,7 +1310,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_powertrainTractionBatteryChargingChargeCurrentAC_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_powertrainTractionBatteryChargingChargeCurrentAC_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -1322,7 +1322,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_powertrainTractionBatteryChargingChargeLimit_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_powertrainTractionBatteryChargingChargeLimit_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -1334,7 +1334,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_powertrainTractionBatteryChargingChargeVoltageUnknownType_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_powertrainTractionBatteryChargingChargeVoltageUnknownType_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -1346,7 +1346,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_powertrainTractionBatteryChargingIsCharging_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_powertrainTractionBatteryChargingIsCharging_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -1358,7 +1358,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_powertrainTractionBatteryCurrentPower_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_powertrainTractionBatteryCurrentPower_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -1370,7 +1370,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_powertrainTractionBatteryCurrentVoltage_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_powertrainTractionBatteryCurrentVoltage_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -1382,7 +1382,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_powertrainTractionBatteryGrossCapacity_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_powertrainTractionBatteryGrossCapacity_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -1394,7 +1394,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_powertrainTractionBatteryRange_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_powertrainTractionBatteryRange_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -1406,7 +1406,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_powertrainTractionBatteryStateOfChargeCurrent_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_powertrainTractionBatteryStateOfChargeCurrent_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -1418,7 +1418,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_powertrainTractionBatteryStateOfChargeCurrentEnergy_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_powertrainTractionBatteryStateOfChargeCurrentEnergy_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -1430,7 +1430,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_powertrainTractionBatteryTemperatureAverage_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_powertrainTractionBatteryTemperatureAverage_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -1442,7 +1442,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_powertrainTransmissionCurrentGear_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_powertrainTransmissionCurrentGear_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -1454,7 +1454,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_powertrainTransmissionTemperature_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_powertrainTransmissionTemperature_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -1466,7 +1466,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_powertrainTransmissionTravelledDistance_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_powertrainTransmissionTravelledDistance_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -1478,7 +1478,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_powertrainType_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_powertrainType_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -1490,7 +1490,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_serviceDistanceToService_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_serviceDistanceToService_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -1502,7 +1502,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_speed_args(context.TODO(), rawArgs)
+		args, err := ec.field_SignalAggregations_speed_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -28270,6 +28270,7 @@ func (ec *executionContext) unmarshalNAddress2githubᚗcomᚋethereumᚋgoᚑeth
 }
 
 func (ec *executionContext) marshalNAddress2githubᚗcomᚋethereumᚋgoᚑethereumᚋcommonᚐAddress(ctx context.Context, sel ast.SelectionSet, v common.Address) graphql.Marshaler {
+	_ = sel
 	res := model.MarshalAddress(v)
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
@@ -28290,6 +28291,7 @@ func (ec *executionContext) unmarshalNBoolean2bool(ctx context.Context, v any) (
 }
 
 func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.SelectionSet, v bool) graphql.Marshaler {
+	_ = sel
 	res := graphql.MarshalBoolean(v)
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
@@ -28305,6 +28307,7 @@ func (ec *executionContext) unmarshalNFloat2float64(ctx context.Context, v any) 
 }
 
 func (ec *executionContext) marshalNFloat2float64(ctx context.Context, sel ast.SelectionSet, v float64) graphql.Marshaler {
+	_ = sel
 	res := graphql.MarshalFloatContext(v)
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
@@ -28330,6 +28333,7 @@ func (ec *executionContext) unmarshalNInt2int(ctx context.Context, v any) (int, 
 }
 
 func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.SelectionSet, v int) graphql.Marshaler {
+	_ = sel
 	res := graphql.MarshalInt(v)
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
@@ -28351,9 +28355,7 @@ func (ec *executionContext) marshalNPrivilege2githubᚗcomᚋDIMOᚑNetworkᚋte
 
 func (ec *executionContext) unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx context.Context, v any) ([]model.Privilege, error) {
 	var vSlice []any
-	if v != nil {
-		vSlice = graphql.CoerceList(v)
-	}
+	vSlice = graphql.CoerceList(v)
 	var err error
 	res := make([]model.Privilege, len(vSlice))
 	for i := range vSlice {
@@ -28426,6 +28428,7 @@ func (ec *executionContext) unmarshalNString2string(ctx context.Context, v any) 
 }
 
 func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
+	_ = sel
 	res := graphql.MarshalString(v)
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
@@ -28451,6 +28454,7 @@ func (ec *executionContext) unmarshalNTime2timeᚐTime(ctx context.Context, v an
 }
 
 func (ec *executionContext) marshalNTime2timeᚐTime(ctx context.Context, sel ast.SelectionSet, v time.Time) graphql.Marshaler {
+	_ = sel
 	res := graphql.MarshalTime(v)
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
@@ -28514,6 +28518,7 @@ func (ec *executionContext) unmarshalN__DirectiveLocation2string(ctx context.Con
 }
 
 func (ec *executionContext) marshalN__DirectiveLocation2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
+	_ = sel
 	res := graphql.MarshalString(v)
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
@@ -28525,9 +28530,7 @@ func (ec *executionContext) marshalN__DirectiveLocation2string(ctx context.Conte
 
 func (ec *executionContext) unmarshalN__DirectiveLocation2ᚕstringᚄ(ctx context.Context, v any) ([]string, error) {
 	var vSlice []any
-	if v != nil {
-		vSlice = graphql.CoerceList(v)
-	}
+	vSlice = graphql.CoerceList(v)
 	var err error
 	res := make([]string, len(vSlice))
 	for i := range vSlice {
@@ -28704,6 +28707,7 @@ func (ec *executionContext) unmarshalN__TypeKind2string(ctx context.Context, v a
 }
 
 func (ec *executionContext) marshalN__TypeKind2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
+	_ = sel
 	res := graphql.MarshalString(v)
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
@@ -28725,6 +28729,8 @@ func (ec *executionContext) marshalOAddress2ᚖgithubᚗcomᚋethereumᚋgoᚑet
 	if v == nil {
 		return graphql.Null
 	}
+	_ = sel
+	_ = ctx
 	res := model.MarshalAddress(*v)
 	return res
 }
@@ -28791,6 +28797,8 @@ func (ec *executionContext) unmarshalOBoolean2bool(ctx context.Context, v any) (
 }
 
 func (ec *executionContext) marshalOBoolean2bool(ctx context.Context, sel ast.SelectionSet, v bool) graphql.Marshaler {
+	_ = sel
+	_ = ctx
 	res := graphql.MarshalBoolean(v)
 	return res
 }
@@ -28807,6 +28815,8 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 	if v == nil {
 		return graphql.Null
 	}
+	_ = sel
+	_ = ctx
 	res := graphql.MarshalBoolean(*v)
 	return res
 }
@@ -28830,6 +28840,7 @@ func (ec *executionContext) marshalOFloat2ᚖfloat64(ctx context.Context, sel as
 	if v == nil {
 		return graphql.Null
 	}
+	_ = sel
 	res := graphql.MarshalFloatContext(*v)
 	return graphql.WrapContextMarshaler(ctx, res)
 }
@@ -28846,6 +28857,8 @@ func (ec *executionContext) marshalOInt2ᚖint(ctx context.Context, sel ast.Sele
 	if v == nil {
 		return graphql.Null
 	}
+	_ = sel
+	_ = ctx
 	res := graphql.MarshalInt(*v)
 	return res
 }
@@ -28938,9 +28951,7 @@ func (ec *executionContext) unmarshalOString2ᚕstringᚄ(ctx context.Context, v
 		return nil, nil
 	}
 	var vSlice []any
-	if v != nil {
-		vSlice = graphql.CoerceList(v)
-	}
+	vSlice = graphql.CoerceList(v)
 	var err error
 	res := make([]string, len(vSlice))
 	for i := range vSlice {
@@ -28983,6 +28994,8 @@ func (ec *executionContext) marshalOString2ᚖstring(ctx context.Context, sel as
 	if v == nil {
 		return graphql.Null
 	}
+	_ = sel
+	_ = ctx
 	res := graphql.MarshalString(*v)
 	return res
 }
@@ -28999,6 +29012,8 @@ func (ec *executionContext) marshalOTime2ᚖtimeᚐTime(ctx context.Context, sel
 	if v == nil {
 		return graphql.Null
 	}
+	_ = sel
+	_ = ctx
 	res := graphql.MarshalTime(*v)
 	return res
 }
