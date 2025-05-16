@@ -2,7 +2,7 @@ replicaCount: 1
 image:
   repository: dimozone/telemetry-api
   pullPolicy: IfNotPresent
-  tag: 471329a
+  tag: 107c6b9
 imagePullSecrets: []
 nameOverride: ''
 fullnameOverride: ''
