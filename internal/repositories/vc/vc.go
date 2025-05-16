@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"math/big"
 	"time"
 
 	"github.com/DIMO-Network/attestation-api/pkg/verifiable"
@@ -42,10 +43,10 @@ func New(indexService indexRepoService, vinVCDataVersion, pomVCDataVersion strin
 // GetLatestVINVC fetches the latest VIN VC for the given vehicle.
 func (r *Repository) GetLatestVINVC(ctx context.Context, vehicleTokenID uint32) (*model.Vinvc, error) {
 	logger := r.getLogger(ctx)
-	vehicleDID := cloudevent.NFTDID{
+	vehicleDID := cloudevent.ERC721DID{
 		ChainID:         r.chainID,
 		ContractAddress: r.vehicleAddress,
-		TokenID:         vehicleTokenID,
+		TokenID:         new(big.Int).SetUint64(uint64(vehicleTokenID)),
 	}.String()
 	opts := &grpc.SearchOptions{
 		DataVersion: &wrapperspb.StringValue{Value: r.vinVCDataVersion},
@@ -121,10 +122,10 @@ func (r *Repository) GetLatestVINVC(ctx context.Context, vehicleTokenID uint32) 
 // GetLatestPOMVC fetches the latest POM VC for the given vehicle.
 func (r *Repository) GetLatestPOMVC(ctx context.Context, vehicleTokenID uint32) (*model.Pomvc, error) {
 	logger := r.getLogger(ctx)
-	vehicleDID := cloudevent.NFTDID{
+	vehicleDID := cloudevent.ERC721DID{
 		ChainID:         r.chainID,
 		ContractAddress: r.vehicleAddress,
-		TokenID:         vehicleTokenID,
+		TokenID:         new(big.Int).SetUint64(uint64(vehicleTokenID)),
 	}.String()
 	opts := &grpc.SearchOptions{
 		DataVersion: &wrapperspb.StringValue{Value: r.pomVCDataVersion},
