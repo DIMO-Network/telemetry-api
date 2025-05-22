@@ -40,7 +40,7 @@ resources:
     cpu: 2
     memory: 4048Mi
   requests:
-    cpu: 250m
+    cpu: 500m
     memory: 1024Mi
 autoscaling:
   enabled: false
