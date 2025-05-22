@@ -8,9 +8,15 @@ import (
 	"context"
 
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
+	"github.com/ethereum/go-ethereum/common"
 )
 
 // Attestations is the resolver for the attestations field.
 func (r *queryResolver) Attestations(ctx context.Context, tokenID int, filter *model.AttestationFilter) ([]*model.Attestation, error) {
-	return r.AttestationRepo.GetAttestations(ctx, uint32(tokenID), filter)
+	return r.AttestationRepo.GetAttestations(ctx, tokenID, filter)
+}
+
+// Attestation is the resolver for the attestation field.
+func (r *queryResolver) Attestation(ctx context.Context, tokenID int, source common.Address, id string) (*model.Attestation, error) {
+	return r.AttestationRepo.GetAttestation(ctx, tokenID, source, id)
 }

@@ -19,6 +19,34 @@ extend type Query {
     @requiresAllOfPrivileges(privileges: [VEHICLE_RAW_DATA])
 }
 
+extend type Query {
+  """
+  attestation returns an individual attestation for a given vehicle token based on attestation source and id.
+
+  Required Privileges: [VEHICLE_RAW_DATA]
+  """
+  attestation(
+    """
+    The token ID of the vehicle.
+    """
+    tokenId: Int!
+
+    """
+    The source of the attestation.
+    """
+    source: Address!
+
+    """
+    The attestation id.
+    """
+    id: String!
+
+  ): Attestation
+    @requiresVehicleToken
+    @requiresAllOfPrivileges(privileges: [VEHICLE_RAW_DATA])
+}
+
+
 type Attestation {
   """
   ID is the ID of the attestation.
@@ -71,6 +99,11 @@ type Attestation {
 AttestationFilter holds the filter parameters for the attestation querys.
 """
 input AttestationFilter {
+  """
+  id is the id of the attestation.
+  """
+  id: String
+
   """
   The attesting party. 
   """
