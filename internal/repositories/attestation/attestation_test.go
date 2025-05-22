@@ -43,7 +43,7 @@ func (m *MockRow) ScanStruct(any) error {
 	return nil
 }
 
-func TestAttestation(t *testing.T) {
+func TestGetAttestations(t *testing.T) {
 	// Initialize variables
 	ctx := context.Background()
 	validVehTknID := int(123)
@@ -88,7 +88,7 @@ func TestAttestation(t *testing.T) {
 	tests := []struct {
 		name         string
 		mockSetup    func()
-		vehTknID     uint32
+		vehTknID     int
 		filters      *model.AttestationFilter
 		expectedAtts []*model.Attestation
 		expectedErr  bool
@@ -101,7 +101,7 @@ func TestAttestation(t *testing.T) {
 					defaultEvent,
 				}, nil)
 			},
-			vehTknID: uint32(validVehTknID),
+			vehTknID: validVehTknID,
 			expectedAtts: []*model.Attestation{
 				&model.Attestation{
 					ID:             id,
@@ -130,7 +130,7 @@ func TestAttestation(t *testing.T) {
 				Source:      &validSigner,
 				Limit:       &limit,
 			},
-			vehTknID: uint32(validVehTknID),
+			vehTknID: validVehTknID,
 			expectedAtts: []*model.Attestation{
 				&model.Attestation{
 					ID:             id,
@@ -149,7 +149,7 @@ func TestAttestation(t *testing.T) {
 			mockSetup: func() {
 				mockService.EXPECT().GetAllCloudEvents(gomock.Any(), gomock.Any(), gomock.Any()).Return(nil, nil)
 			},
-			vehTknID: uint32(invalidVehTknID),
+			vehTknID: invalidVehTknID,
 		},
 	}
 
@@ -179,6 +179,78 @@ func TestAttestation(t *testing.T) {
 				require.EqualValues(t, tt.expectedAtts[idx].Time, att.Time)
 				require.EqualValues(t, tt.expectedAtts[idx].VehicleTokenID, att.VehicleTokenID)
 			}
+		})
+	}
+}
+
+func TestGetAttestation(t *testing.T) {
+	// Initialize variables
+	ctx := context.Background()
+	validVehTknID := int(123)
+
+	validSigner := common.BigToAddress(big.NewInt(1))
+
+	// Create mock controller
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	// Create mock services
+	mockService := NewMockindexRepoService(ctrl)
+	vehicleAddress := common.HexToAddress("0x123")
+	chainID := uint64(3)
+
+	// Initialize the service with mock dependencies
+	att := attestation.New(mockService, chainID, vehicleAddress)
+
+	vehicleDID := cloudevent.ERC721DID{
+		ChainID:         chainID,
+		ContractAddress: vehicleAddress,
+		TokenID:         new(big.Int).SetUint64(uint64(validVehTknID)),
+	}.String()
+
+	dataStr := `{"goodTires": true}`
+	defaultEvent := cloudevent.CloudEvent[json.RawMessage]{
+		Data: json.RawMessage(dataStr),
+	}
+	defaultEvent.Time = time.Now()
+	defaultEvent.Source = validSigner.Hex()
+	defaultEvent.Subject = vehicleDID
+	defaultEvent.Extras = make(map[string]any)
+	defaultEvent.Extras["signature"] = "signature"
+	id := ksuid.New().String()
+
+	// Test cases
+	tests := []struct {
+		name        string
+		mockSetup   func()
+		vehTknID    int
+		filters     *model.AttestationFilter
+		source      common.Address
+		attID       string
+		expectedErr bool
+		err         error
+	}{
+		{
+			name: "successful query, get attestation by id and source",
+			mockSetup: func() {
+				mockService.EXPECT().GetAllCloudEvents(gomock.Any(), gomock.Any(), gomock.Any()).Return([]cloudevent.CloudEvent[json.RawMessage]{
+					defaultEvent,
+				}, nil)
+			},
+			vehTknID: validVehTknID,
+			source:   validSigner,
+			attID:    id,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Set up the mock expectations
+			tt.mockSetup()
+			// Call the method
+			_, err := att.GetAttestation(ctx, tt.vehTknID, tt.source, tt.attID)
+			require.ErrorIs(t, err, tt.err)
+
 		})
 	}
 }
