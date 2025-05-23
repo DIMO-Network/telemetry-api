@@ -138,6 +138,7 @@ func newDefaultServer(es graphql.ExecutableSchema) *handler.Server {
 	srv.AddTransport(transport.MultipartForm{})
 	srv.Use(extension.FixedComplexityLimit(200))
 	srv.Use(extension.Introspection{})
+	srv.Use(metrics.Tracer{})
 
 	srv.SetErrorPresenter(errorHandler)
 

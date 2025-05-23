@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/99designs/gqlgen/graphql"
+	"github.com/99designs/gqlgen/graphql/handler/extension"
 	"github.com/prometheus/client_golang/prometheus"
 )
 
@@ -24,6 +25,12 @@ var (
 	timeToResolveField       *prometheus.HistogramVec
 	timeToHandleRequest      *prometheus.HistogramVec
 	fieldsPerRequest         *prometheus.HistogramVec
+	// Field range specific counters
+	requestStartedTinyCounter   prometheus.Counter
+	requestStartedSmallCounter  prometheus.Counter
+	requestStartedMediumCounter prometheus.Counter
+	requestStartedLargeCounter  prometheus.Counter
+	requestStartedHugeCounter   prometheus.Counter
 )
 
 // FieldCountRange categorizes requests by field count.
@@ -72,7 +79,7 @@ var _ interface {
 
 // Register registers metrics with the default Prometheus registerer.
 func Register() {
-	// RegisterOn(prometheus.DefaultRegisterer)
+	RegisterOn(prometheus.DefaultRegisterer)
 }
 
 // RegisterOn registers metrics with the provided Prometheus registerer.
@@ -81,6 +88,41 @@ func RegisterOn(registerer prometheus.Registerer) {
 		prometheus.CounterOpts{
 			Name: "graphql_request_started_total",
 			Help: "Total number of requests started on the graphql server.",
+		},
+	)
+
+	requestStartedTinyCounter = prometheus.NewCounter(
+		prometheus.CounterOpts{
+			Name: "graphql_request_started_tiny_total",
+			Help: "Total number of tiny requests (0-5 fields) started on the graphql server.",
+		},
+	)
+
+	requestStartedSmallCounter = prometheus.NewCounter(
+		prometheus.CounterOpts{
+			Name: "graphql_request_started_small_total",
+			Help: "Total number of small requests (6-10 fields) started on the graphql server.",
+		},
+	)
+
+	requestStartedMediumCounter = prometheus.NewCounter(
+		prometheus.CounterOpts{
+			Name: "graphql_request_started_medium_total",
+			Help: "Total number of medium requests (11-20 fields) started on the graphql server.",
+		},
+	)
+
+	requestStartedLargeCounter = prometheus.NewCounter(
+		prometheus.CounterOpts{
+			Name: "graphql_request_started_large_total",
+			Help: "Total number of large requests (21-40 fields) started on the graphql server.",
+		},
+	)
+
+	requestStartedHugeCounter = prometheus.NewCounter(
+		prometheus.CounterOpts{
+			Name: "graphql_request_started_huge_total",
+			Help: "Total number of huge requests (41+ fields) started on the graphql server.",
 		},
 	)
 
@@ -133,6 +175,11 @@ func RegisterOn(registerer prometheus.Registerer) {
 		timeToResolveField,
 		timeToHandleRequest,
 		fieldsPerRequest,
+		requestStartedTinyCounter,
+		requestStartedSmallCounter,
+		requestStartedMediumCounter,
+		requestStartedLargeCounter,
+		requestStartedHugeCounter,
 	)
 }
 
@@ -150,6 +197,11 @@ func UnRegisterFrom(registerer prometheus.Registerer) {
 	registerer.Unregister(timeToResolveField)
 	registerer.Unregister(timeToHandleRequest)
 	registerer.Unregister(fieldsPerRequest)
+	registerer.Unregister(requestStartedTinyCounter)
+	registerer.Unregister(requestStartedSmallCounter)
+	registerer.Unregister(requestStartedMediumCounter)
+	registerer.Unregister(requestStartedLargeCounter)
+	registerer.Unregister(requestStartedHugeCounter)
 }
 
 // ExtensionName returns the name of this extension.
@@ -171,8 +223,23 @@ func (a Tracer) InterceptOperation(
 	ctx context.Context,
 	next graphql.OperationHandler,
 ) graphql.ResponseHandler {
-	return next(ctx)
+	complexity := extension.GetComplexityStats(ctx)
+	if complexity != nil {
+		switch GetFieldCountRange(complexity.Complexity) {
+		case string(FieldCountTiny):
+			requestStartedTinyCounter.Inc()
+		case string(FieldCountSmall):
+			requestStartedSmallCounter.Inc()
+		case string(FieldCountMedium):
+			requestStartedMediumCounter.Inc()
+		case string(FieldCountLarge):
+			requestStartedLargeCounter.Inc()
+		case string(FieldCountHuge):
+			requestStartedHugeCounter.Inc()
+		}
+	}
 	requestStartedCounter.Inc()
+	return next(ctx)
 
 	// Record initial resource usage for this request.
 	metrics := &requestMetrics{
