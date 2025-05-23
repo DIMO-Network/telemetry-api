@@ -324,7 +324,9 @@ func (a Tracer) InterceptOperation(
 			requestStartedHugeCounter.Inc()
 		}
 	}
+
 	requestStartedCounter.Inc()
+
 	return next(ctx)
 
 	// // Record initial resource usage for this request.
@@ -343,6 +345,16 @@ func (a Tracer) InterceptResponse(
 	ctx context.Context,
 	next graphql.ResponseHandler,
 ) *graphql.Response {
+	opCtx := graphql.GetOperationContext(ctx)
+	if opCtx != nil {
+		if len(opCtx.Variables) > 0 {
+			if opCtx.Variables["from"] == "2025-01-01T00:00:00Z" &&
+				opCtx.Variables["to"] == "2025-05-19T23:59:59Z" &&
+				opCtx.Variables["interval"] == "1ms" {
+				return graphql.ErrorResponse(ctx, "This request causes a large response size")
+			}
+		}
+	}
 	response := next(ctx)
 	// errList := graphql.GetErrors(ctx)
 
