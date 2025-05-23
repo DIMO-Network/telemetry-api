@@ -2,12 +2,12 @@ replicaCount: 5
 image:
   repository: dimozone/telemetry-api
   pullPolicy: IfNotPresent
-  tag: 0.1.11
+  tag: 0.1.12
 cronJob:
   enabled: false
   schedule: 0 0 * * 0
 podAnnotations:
-  config.linkerd.io/proxy-cpu-request: "500m"
+  config.linkerd.io/proxy-cpu-request: 500m
 env:
   PORT: 8080
   MON_PORT: 8888
