@@ -15,6 +15,40 @@ const (
 	exitStatusSuccess  = "success"
 )
 
+// ResponseSizeRange categorizes responses by size in bytes.
+type ResponseSizeRange string
+
+const (
+	// ResponseSizeTiny represents responses with 0-10KB.
+	ResponseSizeTiny ResponseSizeRange = "tiny"
+	// ResponseSizeSmall represents responses with 10-100KB.
+	ResponseSizeSmall ResponseSizeRange = "small"
+	// ResponseSizeMedium represents responses with 100KB-1MB.
+	ResponseSizeMedium ResponseSizeRange = "medium"
+	// ResponseSizeLarge represents responses with 1-10MB.
+	ResponseSizeLarge ResponseSizeRange = "large"
+	// ResponseSizeHuge represents responses with 10MB-1GB.
+	ResponseSizeHuge ResponseSizeRange = "huge"
+)
+
+// GetResponseSizeRange returns a string representation of the response size range.
+func GetResponseSizeRange(size int) string {
+	switch {
+	case size <= 10*1024: // 10KB
+		return string(ResponseSizeTiny)
+	case size <= 100*1024: // 100KB
+		return string(ResponseSizeSmall)
+	case size <= 1024*1024: // 1MB
+		return string(ResponseSizeMedium)
+	case size <= 10*1024*1024: // 10MB
+		return string(ResponseSizeLarge)
+	case size <= 1024*1024*1024: // 1GB
+		return string(ResponseSizeHuge)
+	default:
+		return string(ResponseSizeHuge) // Anything over 1GB is still considered huge
+	}
+}
+
 type metricsKey struct{}
 
 var (
@@ -31,6 +65,12 @@ var (
 	requestStartedMediumCounter prometheus.Counter
 	requestStartedLargeCounter  prometheus.Counter
 	requestStartedHugeCounter   prometheus.Counter
+	// Response size specific counters
+	responseSizeTinyCounter   prometheus.Counter
+	responseSizeSmallCounter  prometheus.Counter
+	responseSizeMediumCounter prometheus.Counter
+	responseSizeLargeCounter  prometheus.Counter
+	responseSizeHugeCounter   prometheus.Counter
 )
 
 // FieldCountRange categorizes requests by field count.
@@ -167,6 +207,41 @@ func RegisterOn(registerer prometheus.Registerer) {
 		Buckets: prometheus.LinearBuckets(1, 5, 60), // From 1 to 300 fields in buckets of 5
 	}, []string{"exitStatus"})
 
+	responseSizeTinyCounter = prometheus.NewCounter(
+		prometheus.CounterOpts{
+			Name: "graphql_response_size_tiny_total",
+			Help: "Total number of tiny responses (0-10KB) completed on the graphql server.",
+		},
+	)
+
+	responseSizeSmallCounter = prometheus.NewCounter(
+		prometheus.CounterOpts{
+			Name: "graphql_response_size_small_total",
+			Help: "Total number of small responses (10-100KB) completed on the graphql server.",
+		},
+	)
+
+	responseSizeMediumCounter = prometheus.NewCounter(
+		prometheus.CounterOpts{
+			Name: "graphql_response_size_medium_total",
+			Help: "Total number of medium responses (100KB-1MB) completed on the graphql server.",
+		},
+	)
+
+	responseSizeLargeCounter = prometheus.NewCounter(
+		prometheus.CounterOpts{
+			Name: "graphql_response_size_large_total",
+			Help: "Total number of large responses (1-10MB) completed on the graphql server.",
+		},
+	)
+
+	responseSizeHugeCounter = prometheus.NewCounter(
+		prometheus.CounterOpts{
+			Name: "graphql_response_size_huge_total",
+			Help: "Total number of huge responses (10MB-1GB) completed on the graphql server.",
+		},
+	)
+
 	registerer.MustRegister(
 		requestStartedCounter,
 		requestCompletedCounter,
@@ -180,6 +255,11 @@ func RegisterOn(registerer prometheus.Registerer) {
 		requestStartedMediumCounter,
 		requestStartedLargeCounter,
 		requestStartedHugeCounter,
+		responseSizeTinyCounter,
+		responseSizeSmallCounter,
+		responseSizeMediumCounter,
+		responseSizeLargeCounter,
+		responseSizeHugeCounter,
 	)
 }
 
@@ -202,6 +282,11 @@ func UnRegisterFrom(registerer prometheus.Registerer) {
 	registerer.Unregister(requestStartedMediumCounter)
 	registerer.Unregister(requestStartedLargeCounter)
 	registerer.Unregister(requestStartedHugeCounter)
+	registerer.Unregister(responseSizeTinyCounter)
+	registerer.Unregister(responseSizeSmallCounter)
+	registerer.Unregister(responseSizeMediumCounter)
+	registerer.Unregister(responseSizeLargeCounter)
+	registerer.Unregister(responseSizeHugeCounter)
 }
 
 // ExtensionName returns the name of this extension.
@@ -257,33 +342,49 @@ func (a Tracer) InterceptResponse(
 	ctx context.Context,
 	next graphql.ResponseHandler,
 ) *graphql.Response {
-	return next(ctx)
 	response := next(ctx)
-	errList := graphql.GetErrors(ctx)
+	// errList := graphql.GetErrors(ctx)
 
-	var exitStatus string
-	if len(errList) > 0 {
-		exitStatus = existStatusFailure
-	} else {
-		exitStatus = exitStatusSuccess
+	// var exitStatus string
+	// if len(errList) > 0 {
+	// 	exitStatus = existStatusFailure
+	// } else {
+	// 	exitStatus = exitStatusSuccess
+	// }
+
+	// oc := graphql.GetOperationContext(ctx)
+	// observerStart := oc.Stats.OperationStart
+
+	// // Get request metrics from context.
+	// metrics, ok := ctx.Value(metricsKey{}).(*requestMetrics)
+	// fieldCountRange := "unknown"
+	// if ok {
+	// 	// Track the number of fields in this request.
+	// 	fieldsPerRequest.WithLabelValues(exitStatus).Observe(float64(metrics.fieldCount.Load()))
+	// 	fieldCountRange = GetFieldCountRange(int(metrics.fieldCount.Load()))
+	// }
+
+	// Calculate response size and increment appropriate counter
+	if response != nil && response.Data != nil {
+		responseSize := len(response.Data)
+		switch GetResponseSizeRange(responseSize) {
+		case string(ResponseSizeTiny):
+			responseSizeTinyCounter.Inc()
+		case string(ResponseSizeSmall):
+			responseSizeSmallCounter.Inc()
+		case string(ResponseSizeMedium):
+			responseSizeMediumCounter.Inc()
+		case string(ResponseSizeLarge):
+			responseSizeLargeCounter.Inc()
+		case string(ResponseSizeHuge):
+			responseSizeHugeCounter.Inc()
+		}
 	}
 
-	oc := graphql.GetOperationContext(ctx)
-	observerStart := oc.Stats.OperationStart
-
-	// Get request metrics from context.
-	metrics, ok := ctx.Value(metricsKey{}).(*requestMetrics)
-	fieldCountRange := "unknown"
-	if ok {
-		// Track the number of fields in this request.
-		fieldsPerRequest.WithLabelValues(exitStatus).Observe(float64(metrics.fieldCount.Load()))
-		fieldCountRange = GetFieldCountRange(int(metrics.fieldCount.Load()))
-	}
-
-	timeToHandleRequest.With(prometheus.Labels{
-		"exitStatus":      exitStatus,
-		"fieldCountRange": fieldCountRange,
-	}).Observe(float64(time.Since(observerStart).Nanoseconds() / int64(time.Millisecond)))
+	// timeToHandleRequest.With(prometheus.Labels{
+	// 	"exitStatus":      exitStatus,
+	// 	"fieldCountRange": fieldCountRange,
+	// }).Observe(float64(time.Since(observerStart).Nanoseconds() / int64(time.Millisecond)))
 
 	requestCompletedCounter.Inc()
 
