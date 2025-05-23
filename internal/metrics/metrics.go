@@ -371,8 +371,8 @@ func (a Tracer) InterceptResponse(
 		if int64(responseSize) > maxResponseSize.Load() {
 			logger := zerolog.Ctx(ctx)
 			logger.Info().
-				Int("previous_max_bytes", int(maxResponseSize.Load())).
-				Int("new_max_bytes", responseSize).
+				Int("previousMaxResponseSize", int(maxResponseSize.Load())).
+				Int("newMaxResponseSize", responseSize).
 				Msg("New maximum response size recorded")
 			maxResponseSize.Store(int64(responseSize))
 		}
@@ -386,6 +386,14 @@ func (a Tracer) InterceptResponse(
 		case string(ResponseSizeLarge):
 			responseSizeLargeCounter.Inc()
 		case string(ResponseSizeHuge):
+			opCtx := graphql.GetOperationContext(ctx)
+			if opCtx != nil {
+				logger := zerolog.Ctx(ctx)
+				logger.Info().
+					Int("responseSize", responseSize).
+					Str("telemetryRequest", opCtx.RawQuery).
+					Msg("Huge response size recorded")
+			}
 			responseSizeHugeCounter.Inc()
 		}
 	}
