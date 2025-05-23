@@ -3,7 +3,6 @@ package metrics
 import (
 	"context"
 	"sync/atomic"
-	"time"
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/handler/extension"
@@ -11,10 +10,12 @@ import (
 	"github.com/rs/zerolog"
 )
 
-const (
-	existStatusFailure = "failure"
-	exitStatusSuccess  = "success"
-)
+// const (
+// 	existStatusFailure = "failure"
+// 	exitStatusSuccess  = "success"
+// )
+
+var maxResponseSize atomic.Int64
 
 // ResponseSizeRange categorizes responses by size in bytes.
 type ResponseSizeRange string
@@ -50,7 +51,7 @@ func GetResponseSizeRange(size int) string {
 	}
 }
 
-type metricsKey struct{}
+// type metricsKey struct{}
 
 var (
 	requestStartedCounter    prometheus.Counter
@@ -108,7 +109,6 @@ func GetFieldCountRange(count int) string {
 
 // Tracer provides a GraphQL middleware for collecting Prometheus metrics.
 type Tracer struct {
-	maxResponseSize atomic.Int64
 }
 
 var _ interface {
@@ -300,9 +300,9 @@ func (a Tracer) Validate(schema graphql.ExecutableSchema) error {
 	return nil
 }
 
-type requestMetrics struct {
-	fieldCount atomic.Int64
-}
+// type requestMetrics struct {
+// 	fieldCount atomic.Int64
+// }
 
 // InterceptOperation intercepts GraphQL operations to track metrics.
 func (a Tracer) InterceptOperation(
@@ -327,15 +327,15 @@ func (a Tracer) InterceptOperation(
 	requestStartedCounter.Inc()
 	return next(ctx)
 
-	// Record initial resource usage for this request.
-	metrics := &requestMetrics{
-		fieldCount: atomic.Int64{},
-	}
+	// // Record initial resource usage for this request.
+	// metrics := &requestMetrics{
+	// 	fieldCount: atomic.Int64{},
+	// }
 
-	// Store metrics in context.
-	metricsCtx := context.WithValue(ctx, metricsKey{}, metrics)
+	// // Store metrics in context.
+	// metricsCtx := context.WithValue(ctx, metricsKey{}, metrics)
 
-	return next(metricsCtx)
+	// return next(metricsCtx)
 }
 
 // InterceptResponse intercepts GraphQL responses to record metrics.
@@ -368,13 +368,13 @@ func (a Tracer) InterceptResponse(
 	// Calculate response size and increment appropriate counter
 	if response != nil && response.Data != nil {
 		responseSize := len(response.Data)
-		if int64(responseSize) > a.maxResponseSize.Load() {
+		if int64(responseSize) > maxResponseSize.Load() {
 			logger := zerolog.Ctx(ctx)
 			logger.Info().
-				Int("previous_max_bytes", int(a.maxResponseSize.Load())).
+				Int("previous_max_bytes", int(maxResponseSize.Load())).
 				Int("new_max_bytes", responseSize).
 				Msg("New maximum response size recorded")
-			a.maxResponseSize.Store(int64(responseSize))
+			maxResponseSize.Store(int64(responseSize))
 		}
 		switch GetResponseSizeRange(responseSize) {
 		case string(ResponseSizeTiny):
@@ -403,30 +403,30 @@ func (a Tracer) InterceptResponse(
 // InterceptField intercepts GraphQL field resolution to track metrics.
 func (a Tracer) InterceptField(ctx context.Context, next graphql.Resolver) (any, error) {
 	return next(ctx)
-	fc := graphql.GetFieldContext(ctx)
+	// fc := graphql.GetFieldContext(ctx)
 
-	resolverStartedCounter.WithLabelValues(fc.Object, fc.Field.Name).Inc()
+	// resolverStartedCounter.WithLabelValues(fc.Object, fc.Field.Name).Inc()
 
-	// Increment field count in context.
-	if metrics, ok := ctx.Value(metricsKey{}).(*requestMetrics); ok {
-		metrics.fieldCount.Add(1)
-	}
+	// // Increment field count in context.
+	// if metrics, ok := ctx.Value(metricsKey{}).(*requestMetrics); ok {
+	// 	metrics.fieldCount.Add(1)
+	// }
 
-	observerStart := time.Now()
+	// observerStart := time.Now()
 
-	res, err := next(ctx)
+	// res, err := next(ctx)
 
-	var exitStatus string
-	if err != nil {
-		exitStatus = existStatusFailure
-	} else {
-		exitStatus = exitStatusSuccess
-	}
+	// var exitStatus string
+	// if err != nil {
+	// 	exitStatus = existStatusFailure
+	// } else {
+	// 	exitStatus = exitStatusSuccess
+	// }
 
-	timeToResolveField.WithLabelValues(exitStatus, fc.Object, fc.Field.Name).
-		Observe(float64(time.Since(observerStart).Nanoseconds() / int64(time.Millisecond)))
+	// timeToResolveField.WithLabelValues(exitStatus, fc.Object, fc.Field.Name).
+	// 	Observe(float64(time.Since(observerStart).Nanoseconds() / int64(time.Millisecond)))
 
-	resolverCompletedCounter.WithLabelValues(fc.Object, fc.Field.Name).Inc()
+	// resolverCompletedCounter.WithLabelValues(fc.Object, fc.Field.Name).Inc()
 
-	return res, err
+	// return res, err
 }
