@@ -392,6 +392,7 @@ func (a Tracer) InterceptResponse(
 				logger.Info().
 					Int("responseSize", responseSize).
 					Str("telemetryRequest", opCtx.RawQuery).
+					Interface("telemetryRequestVariables", opCtx.Variables).
 					Msg("Huge response size recorded")
 			}
 			responseSizeHugeCounter.Inc()
