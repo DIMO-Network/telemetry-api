@@ -8,6 +8,7 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/handler/extension"
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/rs/zerolog"
 )
 
 const (
@@ -106,9 +107,9 @@ func GetFieldCountRange(count int) string {
 }
 
 // Tracer provides a GraphQL middleware for collecting Prometheus metrics.
-type (
-	Tracer struct{}
-)
+type Tracer struct {
+	maxResponseSize atomic.Int64
+}
 
 var _ interface {
 	graphql.HandlerExtension
@@ -367,6 +368,14 @@ func (a Tracer) InterceptResponse(
 	// Calculate response size and increment appropriate counter
 	if response != nil && response.Data != nil {
 		responseSize := len(response.Data)
+		if int64(responseSize) > a.maxResponseSize.Load() {
+			logger := zerolog.Ctx(ctx)
+			logger.Info().
+				Int("previous_max_bytes", int(a.maxResponseSize.Load())).
+				Int("new_max_bytes", responseSize).
+				Msg("New maximum response size recorded")
+			a.maxResponseSize.Store(int64(responseSize))
+		}
 		switch GetResponseSizeRange(responseSize) {
 		case string(ResponseSizeTiny):
 			responseSizeTinyCounter.Inc()
