@@ -11,7 +11,7 @@ podAnnotations:
   config.linkerd.io/proxy-cpu-limit: "2"
   config.linkerd.io/proxy-memory-request: "1024Mi"
   config.linkerd.io/proxy-memory-limit: "2048Mi"
-  config.linkerd.io/proxy-log-level: "debug"
+  config.linkerd.io/proxy-log-level: "info"
 env:
   PORT: 8080
   MON_PORT: 8888
