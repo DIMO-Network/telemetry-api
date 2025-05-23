@@ -72,7 +72,7 @@ var _ interface {
 
 // Register registers metrics with the default Prometheus registerer.
 func Register() {
-	RegisterOn(prometheus.DefaultRegisterer)
+	// RegisterOn(prometheus.DefaultRegisterer)
 }
 
 // RegisterOn registers metrics with the provided Prometheus registerer.
@@ -171,6 +171,7 @@ func (a Tracer) InterceptOperation(
 	ctx context.Context,
 	next graphql.OperationHandler,
 ) graphql.ResponseHandler {
+	return next(ctx)
 	requestStartedCounter.Inc()
 
 	// Record initial resource usage for this request.
@@ -189,6 +190,7 @@ func (a Tracer) InterceptResponse(
 	ctx context.Context,
 	next graphql.ResponseHandler,
 ) *graphql.Response {
+	return next(ctx)
 	response := next(ctx)
 	errList := graphql.GetErrors(ctx)
 
@@ -223,6 +225,7 @@ func (a Tracer) InterceptResponse(
 
 // InterceptField intercepts GraphQL field resolution to track metrics.
 func (a Tracer) InterceptField(ctx context.Context, next graphql.Resolver) (any, error) {
+	return next(ctx)
 	fc := graphql.GetFieldContext(ctx)
 
 	resolverStartedCounter.WithLabelValues(fc.Object, fc.Field.Name).Inc()
