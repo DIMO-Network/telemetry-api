@@ -188,8 +188,14 @@ func handleDBError(err error, log *zerolog.Logger) error {
 // GetApproximateLoc returns the approximate location for the given latitude and longitude.
 func GetApproximateLoc(lat, long float64) *h3.LatLng {
 	h3LatLng := h3.NewLatLng(lat, long)
-	cell := h3.LatLngToCell(h3LatLng, approximateLocationResolution)
-	latLong := h3.CellToLatLng(cell)
+	cell, err := h3.LatLngToCell(h3LatLng, approximateLocationResolution)
+	if err != nil {
+		return nil
+	}
+	latLong, err := h3.CellToLatLng(cell)
+	if err != nil {
+		return nil
+	}
 	return &latLong
 }
 
