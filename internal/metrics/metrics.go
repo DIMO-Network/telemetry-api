@@ -3,6 +3,7 @@ package metrics
 import (
 	"context"
 	"sync/atomic"
+	"time"
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/handler/extension"
@@ -349,9 +350,12 @@ func (a Tracer) InterceptResponse(
 	if opCtx != nil {
 		if len(opCtx.Variables) > 0 {
 			if opCtx.Variables["from"] == "2025-01-01T00:00:00Z" &&
-				opCtx.Variables["to"] == "2025-05-19T23:59:59Z" &&
 				opCtx.Variables["interval"] == "1ms" {
-				return graphql.ErrorResponse(ctx, "This request causes a large response size")
+				if to, ok := opCtx.Variables["to"]; ok {
+					if toTime, err := time.Parse(time.RFC3339, to.(string)); err == nil && toTime.After(time.Date(2025, 5, 18, 0, 0, 0, 0, time.UTC)) {
+						return graphql.ErrorResponse(ctx, "This request causes a large response size")
+					}
+				}
 			}
 		}
 	}
