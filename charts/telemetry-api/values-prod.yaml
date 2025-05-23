@@ -7,7 +7,7 @@ cronJob:
   enabled: false
   schedule: 0 0 * * 0
 podAnnotations:
-  config.linkerd.io/proxy-cpu-request: "200m"
+  config.linkerd.io/proxy-cpu-request: "500m"
 env:
   PORT: 8080
   MON_PORT: 8888
