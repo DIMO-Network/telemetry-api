@@ -20,11 +20,11 @@ require (
 	github.com/rs/zerolog v1.34.0
 	github.com/segmentio/ksuid v1.0.4
 	github.com/stretchr/testify v1.10.0
-	github.com/uber/h3-go/v4 v4.2.1
+	github.com/uber/h3-go/v4 v4.2.2
 	github.com/vektah/gqlparser/v2 v2.5.27
 	github.com/volatiletech/sqlboiler/v4 v4.19.1
 	go.uber.org/mock v0.5.2
-	google.golang.org/grpc v1.72.1
+	google.golang.org/grpc v1.72.2
 	google.golang.org/protobuf v1.36.6
 )
 
