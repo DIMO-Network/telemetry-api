@@ -233,9 +233,7 @@ func TestGetAttestation(t *testing.T) {
 		{
 			name: "successful query, get attestation by id and source",
 			mockSetup: func() {
-				mockService.EXPECT().GetAllCloudEvents(gomock.Any(), gomock.Any(), gomock.Any()).Return([]cloudevent.CloudEvent[json.RawMessage]{
-					defaultEvent,
-				}, nil)
+				mockService.EXPECT().GetLatestCloudEvent(gomock.Any(), gomock.Any()).Return(defaultEvent, nil)
 			},
 			vehTknID: validVehTknID,
 			source:   validSigner,

@@ -18,6 +18,7 @@ import (
 
 type indexRepoService interface {
 	GetAllCloudEvents(ctx context.Context, filter *grpc.SearchOptions, limit int32) ([]cloudevent.CloudEvent[json.RawMessage], error)
+	GetLatestCloudEvent(ctx context.Context, filter *grpc.SearchOptions) (cloudevent.CloudEvent[json.RawMessage], error)
 }
 type Repository struct {
 	indexService   indexRepoService
@@ -128,41 +129,32 @@ func (r *Repository) GetAttestation(ctx context.Context, vehicleTokenID int, sou
 		Subject: &wrapperspb.StringValue{Value: vehicleDID},
 	}
 
-	limit := 1
 	opts.Source = &wrapperspb.StringValue{Value: source.Hex()}
 	opts.Id = &wrapperspb.StringValue{Value: id}
 
-	cloudEvents, err := r.indexService.GetAllCloudEvents(ctx, opts, int32(limit))
-	if err != nil || len(cloudEvents) == 0 {
+	cloudEvent, err := r.indexService.GetLatestCloudEvent(ctx, opts)
+	if err != nil {
 		logger.Error().Err(err).Msgf("failed to get cloudevent %s from source: %s", id, source)
 		return nil, errors.New("internal error")
 	}
 
 	tknID := int(vehicleTokenID)
-	var att *model.Attestation
-	for _, ce := range cloudEvents {
-		att = &model.Attestation{
-			ID:             ce.ID,
-			VehicleTokenID: tknID,
-			Time:           ce.Time,
-			Attestation:    string(ce.Data),
-			Type:           ce.Type,
-			Source:         common.HexToAddress(ce.Source),
-			DataVersion:    ce.DataVersion,
-		}
-
-		if ce.Producer != "" {
-			att.Producer = &ce.Producer
-		}
-
-		signature, ok := ce.Extras["signature"].(string)
-		if !ok {
-			logger.Info().Str("id", att.ID).Str("source", att.Source.Hex()).Msg("failed to pull signature")
-			return nil, fmt.Errorf("invalid format: attestation signature missing")
-		}
-
-		att.Signature = signature
+	att := &model.Attestation{
+		ID:             cloudEvent.ID,
+		VehicleTokenID: tknID,
+		Time:           cloudEvent.Time,
+		Attestation:    string(cloudEvent.Data),
+		Type:           cloudEvent.Type,
+		Source:         common.HexToAddress(cloudEvent.Source),
+		DataVersion:    cloudEvent.DataVersion,
 	}
+
+	signature, ok := cloudEvent.Extras["signature"].(string)
+	if !ok {
+		logger.Info().Str("id", cloudEvent.ID).Str("source", cloudEvent.Source).Msg("failed to pull signature")
+		return nil, fmt.Errorf("invalid format: attestation signature missing")
+	}
+	att.Signature = signature
 
 	return att, nil
 }

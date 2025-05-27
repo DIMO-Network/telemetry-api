@@ -57,3 +57,18 @@ func (mr *MockindexRepoServiceMockRecorder) GetAllCloudEvents(ctx, filter, limit
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllCloudEvents", reflect.TypeOf((*MockindexRepoService)(nil).GetAllCloudEvents), ctx, filter, limit)
 }
+
+// GetLatestCloudEvent mocks base method.
+func (m *MockindexRepoService) GetLatestCloudEvent(ctx context.Context, filter *grpc.SearchOptions) (cloudevent.CloudEvent[json.RawMessage], error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetLatestCloudEvent", ctx, filter)
+	ret0, _ := ret[0].(cloudevent.CloudEvent[json.RawMessage])
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetLatestCloudEvent indicates an expected call of GetLatestCloudEvent.
+func (mr *MockindexRepoServiceMockRecorder) GetLatestCloudEvent(ctx, filter any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetLatestCloudEvent", reflect.TypeOf((*MockindexRepoService)(nil).GetLatestCloudEvent), ctx, filter)
+}
