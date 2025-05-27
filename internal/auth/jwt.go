@@ -23,7 +23,7 @@ func NewJWTMiddleware(issuer, jwksURI string) (*jwtmiddleware.JWTMiddleware, err
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse issuer URL: %w", err)
 	}
-	opts := []jwks.ProviderOption{}
+	opts := []any{}
 	if jwksURI != "" {
 		keysURI, err := url.Parse(jwksURI)
 		if err != nil {

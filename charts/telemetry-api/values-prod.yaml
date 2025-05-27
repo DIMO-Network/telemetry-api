@@ -1,13 +1,17 @@
-replicaCount: 5
+replicaCount: 8
 image:
   repository: dimozone/telemetry-api
   pullPolicy: IfNotPresent
-  tag: 0.1.11
+  tag: 0.1.12
 cronJob:
   enabled: false
   schedule: 0 0 * * 0
 podAnnotations:
-  config.linkerd.io/proxy-cpu-request: "200m"
+  config.linkerd.io/proxy-cpu-request: "1"
+  config.linkerd.io/proxy-cpu-limit: "2"
+  config.linkerd.io/proxy-memory-request: "1024Mi"
+  config.linkerd.io/proxy-memory-limit: "2048Mi"
+  config.linkerd.io/proxy-log-level: "info"
 env:
   PORT: 8080
   MON_PORT: 8888
@@ -40,10 +44,11 @@ ingress:
 resources:
   limits:
     cpu: 2
-    memory: 4048Mi
+    memory: 32768Mi
   requests:
     cpu: 1
-    memory: 1024Mi
+    # 10GB in MiB
+    memory: 10240Mi
 autoscaling:
   enabled: false
   minReplicas: 1

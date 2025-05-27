@@ -6,15 +6,53 @@ import (
 	"time"
 
 	"github.com/99designs/gqlgen/graphql"
+	"github.com/99designs/gqlgen/graphql/handler/extension"
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/rs/zerolog"
 )
+
+// const (
+// 	existStatusFailure = "failure"
+// 	exitStatusSuccess  = "success"
+// )
+
+var maxResponseSize atomic.Int64
+
+// ResponseSizeRange categorizes responses by size in bytes.
+type ResponseSizeRange string
 
 const (
-	existStatusFailure = "failure"
-	exitStatusSuccess  = "success"
+	// ResponseSizeTiny represents responses with 0-10KB.
+	ResponseSizeTiny ResponseSizeRange = "tiny"
+	// ResponseSizeSmall represents responses with 10-100KB.
+	ResponseSizeSmall ResponseSizeRange = "small"
+	// ResponseSizeMedium represents responses with 100KB-1MB.
+	ResponseSizeMedium ResponseSizeRange = "medium"
+	// ResponseSizeLarge represents responses with 1-10MB.
+	ResponseSizeLarge ResponseSizeRange = "large"
+	// ResponseSizeHuge represents responses with 10MB-1GB.
+	ResponseSizeHuge ResponseSizeRange = "huge"
 )
 
-type metricsKey struct{}
+// GetResponseSizeRange returns a string representation of the response size range.
+func GetResponseSizeRange(size int) string {
+	switch {
+	case size <= 10*1024: // 10KB
+		return string(ResponseSizeTiny)
+	case size <= 100*1024: // 100KB
+		return string(ResponseSizeSmall)
+	case size <= 1024*1024: // 1MB
+		return string(ResponseSizeMedium)
+	case size <= 10*1024*1024: // 10MB
+		return string(ResponseSizeLarge)
+	case size <= 1024*1024*1024: // 1GB
+		return string(ResponseSizeHuge)
+	default:
+		return string(ResponseSizeHuge) // Anything over 1GB is still considered huge
+	}
+}
+
+// type metricsKey struct{}
 
 var (
 	requestStartedCounter    prometheus.Counter
@@ -24,6 +62,18 @@ var (
 	timeToResolveField       *prometheus.HistogramVec
 	timeToHandleRequest      *prometheus.HistogramVec
 	fieldsPerRequest         *prometheus.HistogramVec
+	// Field range specific counters
+	requestStartedTinyCounter   prometheus.Counter
+	requestStartedSmallCounter  prometheus.Counter
+	requestStartedMediumCounter prometheus.Counter
+	requestStartedLargeCounter  prometheus.Counter
+	requestStartedHugeCounter   prometheus.Counter
+	// Response size specific counters
+	responseSizeTinyCounter   prometheus.Counter
+	responseSizeSmallCounter  prometheus.Counter
+	responseSizeMediumCounter prometheus.Counter
+	responseSizeLargeCounter  prometheus.Counter
+	responseSizeHugeCounter   prometheus.Counter
 )
 
 // FieldCountRange categorizes requests by field count.
@@ -59,9 +109,8 @@ func GetFieldCountRange(count int) string {
 }
 
 // Tracer provides a GraphQL middleware for collecting Prometheus metrics.
-type (
-	Tracer struct{}
-)
+type Tracer struct {
+}
 
 var _ interface {
 	graphql.HandlerExtension
@@ -81,6 +130,41 @@ func RegisterOn(registerer prometheus.Registerer) {
 		prometheus.CounterOpts{
 			Name: "graphql_request_started_total",
 			Help: "Total number of requests started on the graphql server.",
+		},
+	)
+
+	requestStartedTinyCounter = prometheus.NewCounter(
+		prometheus.CounterOpts{
+			Name: "graphql_request_started_tiny_total",
+			Help: "Total number of tiny requests (0-5 fields) started on the graphql server.",
+		},
+	)
+
+	requestStartedSmallCounter = prometheus.NewCounter(
+		prometheus.CounterOpts{
+			Name: "graphql_request_started_small_total",
+			Help: "Total number of small requests (6-10 fields) started on the graphql server.",
+		},
+	)
+
+	requestStartedMediumCounter = prometheus.NewCounter(
+		prometheus.CounterOpts{
+			Name: "graphql_request_started_medium_total",
+			Help: "Total number of medium requests (11-20 fields) started on the graphql server.",
+		},
+	)
+
+	requestStartedLargeCounter = prometheus.NewCounter(
+		prometheus.CounterOpts{
+			Name: "graphql_request_started_large_total",
+			Help: "Total number of large requests (21-40 fields) started on the graphql server.",
+		},
+	)
+
+	requestStartedHugeCounter = prometheus.NewCounter(
+		prometheus.CounterOpts{
+			Name: "graphql_request_started_huge_total",
+			Help: "Total number of huge requests (41+ fields) started on the graphql server.",
 		},
 	)
 
@@ -125,6 +209,41 @@ func RegisterOn(registerer prometheus.Registerer) {
 		Buckets: prometheus.LinearBuckets(1, 5, 60), // From 1 to 300 fields in buckets of 5
 	}, []string{"exitStatus"})
 
+	responseSizeTinyCounter = prometheus.NewCounter(
+		prometheus.CounterOpts{
+			Name: "graphql_response_size_tiny_total",
+			Help: "Total number of tiny responses (0-10KB) completed on the graphql server.",
+		},
+	)
+
+	responseSizeSmallCounter = prometheus.NewCounter(
+		prometheus.CounterOpts{
+			Name: "graphql_response_size_small_total",
+			Help: "Total number of small responses (10-100KB) completed on the graphql server.",
+		},
+	)
+
+	responseSizeMediumCounter = prometheus.NewCounter(
+		prometheus.CounterOpts{
+			Name: "graphql_response_size_medium_total",
+			Help: "Total number of medium responses (100KB-1MB) completed on the graphql server.",
+		},
+	)
+
+	responseSizeLargeCounter = prometheus.NewCounter(
+		prometheus.CounterOpts{
+			Name: "graphql_response_size_large_total",
+			Help: "Total number of large responses (1-10MB) completed on the graphql server.",
+		},
+	)
+
+	responseSizeHugeCounter = prometheus.NewCounter(
+		prometheus.CounterOpts{
+			Name: "graphql_response_size_huge_total",
+			Help: "Total number of huge responses (10MB-1GB) completed on the graphql server.",
+		},
+	)
+
 	registerer.MustRegister(
 		requestStartedCounter,
 		requestCompletedCounter,
@@ -133,6 +252,16 @@ func RegisterOn(registerer prometheus.Registerer) {
 		timeToResolveField,
 		timeToHandleRequest,
 		fieldsPerRequest,
+		requestStartedTinyCounter,
+		requestStartedSmallCounter,
+		requestStartedMediumCounter,
+		requestStartedLargeCounter,
+		requestStartedHugeCounter,
+		responseSizeTinyCounter,
+		responseSizeSmallCounter,
+		responseSizeMediumCounter,
+		responseSizeLargeCounter,
+		responseSizeHugeCounter,
 	)
 }
 
@@ -150,6 +279,16 @@ func UnRegisterFrom(registerer prometheus.Registerer) {
 	registerer.Unregister(timeToResolveField)
 	registerer.Unregister(timeToHandleRequest)
 	registerer.Unregister(fieldsPerRequest)
+	registerer.Unregister(requestStartedTinyCounter)
+	registerer.Unregister(requestStartedSmallCounter)
+	registerer.Unregister(requestStartedMediumCounter)
+	registerer.Unregister(requestStartedLargeCounter)
+	registerer.Unregister(requestStartedHugeCounter)
+	registerer.Unregister(responseSizeTinyCounter)
+	registerer.Unregister(responseSizeSmallCounter)
+	registerer.Unregister(responseSizeMediumCounter)
+	registerer.Unregister(responseSizeLargeCounter)
+	registerer.Unregister(responseSizeHugeCounter)
 }
 
 // ExtensionName returns the name of this extension.
@@ -162,26 +301,44 @@ func (a Tracer) Validate(schema graphql.ExecutableSchema) error {
 	return nil
 }
 
-type requestMetrics struct {
-	fieldCount atomic.Int64
-}
+// type requestMetrics struct {
+// 	fieldCount atomic.Int64
+// }
 
 // InterceptOperation intercepts GraphQL operations to track metrics.
 func (a Tracer) InterceptOperation(
 	ctx context.Context,
 	next graphql.OperationHandler,
 ) graphql.ResponseHandler {
-	requestStartedCounter.Inc()
-
-	// Record initial resource usage for this request.
-	metrics := &requestMetrics{
-		fieldCount: atomic.Int64{},
+	complexity := extension.GetComplexityStats(ctx)
+	if complexity != nil {
+		switch GetFieldCountRange(complexity.Complexity) {
+		case string(FieldCountTiny):
+			requestStartedTinyCounter.Inc()
+		case string(FieldCountSmall):
+			requestStartedSmallCounter.Inc()
+		case string(FieldCountMedium):
+			requestStartedMediumCounter.Inc()
+		case string(FieldCountLarge):
+			requestStartedLargeCounter.Inc()
+		case string(FieldCountHuge):
+			requestStartedHugeCounter.Inc()
+		}
 	}
 
-	// Store metrics in context.
-	metricsCtx := context.WithValue(ctx, metricsKey{}, metrics)
+	requestStartedCounter.Inc()
 
-	return next(metricsCtx)
+	return next(ctx)
+
+	// // Record initial resource usage for this request.
+	// metrics := &requestMetrics{
+	// 	fieldCount: atomic.Int64{},
+	// }
+
+	// // Store metrics in context.
+	// metricsCtx := context.WithValue(ctx, metricsKey{}, metrics)
+
+	// return next(metricsCtx)
 }
 
 // InterceptResponse intercepts GraphQL responses to record metrics.
@@ -189,32 +346,79 @@ func (a Tracer) InterceptResponse(
 	ctx context.Context,
 	next graphql.ResponseHandler,
 ) *graphql.Response {
+	opCtx := graphql.GetOperationContext(ctx)
+	if opCtx != nil {
+		if len(opCtx.Variables) > 0 {
+			if opCtx.Variables["from"] == "2025-01-01T00:00:00Z" &&
+				opCtx.Variables["interval"] == "1ms" {
+				if to, ok := opCtx.Variables["to"]; ok {
+					if toTime, err := time.Parse(time.RFC3339, to.(string)); err == nil && toTime.After(time.Date(2025, 5, 18, 0, 0, 0, 0, time.UTC)) {
+						return graphql.ErrorResponse(ctx, "This request causes a large response size")
+					}
+				}
+			}
+		}
+	}
 	response := next(ctx)
-	errList := graphql.GetErrors(ctx)
+	// errList := graphql.GetErrors(ctx)
 
-	var exitStatus string
-	if len(errList) > 0 {
-		exitStatus = existStatusFailure
-	} else {
-		exitStatus = exitStatusSuccess
+	// var exitStatus string
+	// if len(errList) > 0 {
+	// 	exitStatus = existStatusFailure
+	// } else {
+	// 	exitStatus = exitStatusSuccess
+	// }
+
+	// oc := graphql.GetOperationContext(ctx)
+	// observerStart := oc.Stats.OperationStart
+
+	// // Get request metrics from context.
+	// metrics, ok := ctx.Value(metricsKey{}).(*requestMetrics)
+	// fieldCountRange := "unknown"
+	// if ok {
+	// 	// Track the number of fields in this request.
+	// 	fieldsPerRequest.WithLabelValues(exitStatus).Observe(float64(metrics.fieldCount.Load()))
+	// 	fieldCountRange = GetFieldCountRange(int(metrics.fieldCount.Load()))
+	// }
+
+	// Calculate response size and increment appropriate counter
+	if response != nil && response.Data != nil {
+		responseSize := len(response.Data)
+		if int64(responseSize) > maxResponseSize.Load() {
+			logger := zerolog.Ctx(ctx)
+			logger.Info().
+				Int("previousMaxResponseSize", int(maxResponseSize.Load())).
+				Int("newMaxResponseSize", responseSize).
+				Msg("New maximum response size recorded")
+			maxResponseSize.Store(int64(responseSize))
+		}
+		switch GetResponseSizeRange(responseSize) {
+		case string(ResponseSizeTiny):
+			responseSizeTinyCounter.Inc()
+		case string(ResponseSizeSmall):
+			responseSizeSmallCounter.Inc()
+		case string(ResponseSizeMedium):
+			responseSizeMediumCounter.Inc()
+		case string(ResponseSizeLarge):
+			responseSizeLargeCounter.Inc()
+		case string(ResponseSizeHuge):
+			opCtx := graphql.GetOperationContext(ctx)
+			if opCtx != nil {
+				logger := zerolog.Ctx(ctx)
+				logger.Info().
+					Int("responseSize", responseSize).
+					Str("telemetryRequest", opCtx.RawQuery).
+					Interface("telemetryRequestVariables", opCtx.Variables).
+					Msg("Huge response size recorded")
+			}
+			responseSizeHugeCounter.Inc()
+		}
 	}
 
-	oc := graphql.GetOperationContext(ctx)
-	observerStart := oc.Stats.OperationStart
-
-	// Get request metrics from context.
-	metrics, ok := ctx.Value(metricsKey{}).(*requestMetrics)
-	fieldCountRange := "unknown"
-	if ok {
-		// Track the number of fields in this request.
-		fieldsPerRequest.WithLabelValues(exitStatus).Observe(float64(metrics.fieldCount.Load()))
-		fieldCountRange = GetFieldCountRange(int(metrics.fieldCount.Load()))
-	}
-
-	timeToHandleRequest.With(prometheus.Labels{
-		"exitStatus":      exitStatus,
-		"fieldCountRange": fieldCountRange,
-	}).Observe(float64(time.Since(observerStart).Nanoseconds() / int64(time.Millisecond)))
+	// timeToHandleRequest.With(prometheus.Labels{
+	// 	"exitStatus":      exitStatus,
+	// 	"fieldCountRange": fieldCountRange,
+	// }).Observe(float64(time.Since(observerStart).Nanoseconds() / int64(time.Millisecond)))
 
 	requestCompletedCounter.Inc()
 
@@ -223,30 +427,31 @@ func (a Tracer) InterceptResponse(
 
 // InterceptField intercepts GraphQL field resolution to track metrics.
 func (a Tracer) InterceptField(ctx context.Context, next graphql.Resolver) (any, error) {
-	fc := graphql.GetFieldContext(ctx)
+	return next(ctx)
+	// fc := graphql.GetFieldContext(ctx)
 
-	resolverStartedCounter.WithLabelValues(fc.Object, fc.Field.Name).Inc()
+	// resolverStartedCounter.WithLabelValues(fc.Object, fc.Field.Name).Inc()
 
-	// Increment field count in context.
-	if metrics, ok := ctx.Value(metricsKey{}).(*requestMetrics); ok {
-		metrics.fieldCount.Add(1)
-	}
+	// // Increment field count in context.
+	// if metrics, ok := ctx.Value(metricsKey{}).(*requestMetrics); ok {
+	// 	metrics.fieldCount.Add(1)
+	// }
 
-	observerStart := time.Now()
+	// observerStart := time.Now()
 
-	res, err := next(ctx)
+	// res, err := next(ctx)
 
-	var exitStatus string
-	if err != nil {
-		exitStatus = existStatusFailure
-	} else {
-		exitStatus = exitStatusSuccess
-	}
+	// var exitStatus string
+	// if err != nil {
+	// 	exitStatus = existStatusFailure
+	// } else {
+	// 	exitStatus = exitStatusSuccess
+	// }
 
-	timeToResolveField.WithLabelValues(exitStatus, fc.Object, fc.Field.Name).
-		Observe(float64(time.Since(observerStart).Nanoseconds() / int64(time.Millisecond)))
+	// timeToResolveField.WithLabelValues(exitStatus, fc.Object, fc.Field.Name).
+	// 	Observe(float64(time.Since(observerStart).Nanoseconds() / int64(time.Millisecond)))
 
-	resolverCompletedCounter.WithLabelValues(fc.Object, fc.Field.Name).Inc()
+	// resolverCompletedCounter.WithLabelValues(fc.Object, fc.Field.Name).Inc()
 
-	return res, err
+	// return res, err
 }

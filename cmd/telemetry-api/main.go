@@ -16,6 +16,7 @@ import (
 	"github.com/DIMO-Network/telemetry-api/internal/config"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/adaptor"
+	fiberrecover "github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/rs/zerolog"
 )
@@ -49,8 +50,8 @@ func main() {
 
 	serveMonitoring(strconv.Itoa(cfg.MonPort), &logger, cfg.EnablePprof)
 	mux := http.NewServeMux()
-	mux.Handle("/", loggerMiddleware(playground.Handler("GraphQL playground", "/query")))
-	mux.Handle("/query", loggerMiddleware(application.Handler))
+	mux.Handle("/", loggerMiddleware(panicRecoveryMiddleware(playground.Handler("GraphQL playground", "/query"))))
+	mux.Handle("/query", loggerMiddleware(panicRecoveryMiddleware(application.Handler)))
 
 	logger.Info().Msgf("Server started on port: %d", cfg.Port)
 	logger.Fatal().Err(http.ListenAndServe(fmt.Sprintf(":%d", cfg.Port), mux)).Msg("Server shut down.")
@@ -60,6 +61,11 @@ func serveMonitoring(port string, logger *zerolog.Logger, enablePprof bool) *fib
 	logger.Info().Str("port", port).Bool("pprof", enablePprof).Msg("Starting monitoring web server.")
 
 	monApp := fiber.New(fiber.Config{DisableStartupMessage: true})
+
+	// Add panic recovery middleware
+	monApp.Use(fiberrecover.New(fiberrecover.Config{
+		EnableStackTrace: true,
+	}))
 
 	monApp.Get("/", func(c *fiber.Ctx) error { return nil })
 	monApp.Get("/metrics", adaptor.HTTPHandler(promhttp.Handler()))
@@ -105,6 +111,18 @@ func loggerMiddleware(next http.Handler) http.Handler {
 		}
 		loggerCtx := zerolog.Ctx(r.Context()).With().Str("method", r.Method).Str("path", r.URL.Path).Str("sourceIp", sourceIP).Logger().WithContext(r.Context())
 		r = r.WithContext(loggerCtx)
+		next.ServeHTTP(w, r)
+	})
+}
+
+func panicRecoveryMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		defer func() {
+			if err := recover(); err != nil {
+				_, _ = fmt.Fprintf(os.Stderr, "panic: %v\n%s\n", err, debug.Stack())
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			}
+		}()
 		next.ServeHTTP(w, r)
 	})
 }
