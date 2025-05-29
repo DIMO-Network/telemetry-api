@@ -9,7 +9,10 @@ import (
 
 	"github.com/DIMO-Network/cloudevent"
 	"github.com/DIMO-Network/fetch-api/pkg/grpc"
+	"github.com/DIMO-Network/shared/pkg/set"
+	"github.com/DIMO-Network/telemetry-api/internal/auth"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
+	"github.com/DIMO-Network/token-exchange-api/pkg/tokenclaims"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/rs/zerolog"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -37,6 +40,11 @@ func New(indexService indexRepoService, chainID uint64, vehicleAddress common.Ad
 // GetAttestations fetches attestations for the given vehicle.
 func (r *Repository) GetAttestations(ctx context.Context, vehicleTokenID int, filter *model.AttestationFilter) ([]*model.Attestation, error) {
 	logger := r.getLogger(ctx, vehicleTokenID)
+	claimMap, err := auth.GetAttestationClaimMap(ctx)
+	if err != nil {
+		logger.Err(err).Msg("failed to fetch ce claims from jwt")
+		return nil, fmt.Errorf("no claims found in jwt for vehicle token: %d", vehicleTokenID)
+	}
 	vehicleDID := cloudevent.ERC721DID{
 		ChainID:         r.chainID,
 		ContractAddress: r.vehicleAddress,
@@ -88,6 +96,10 @@ func (r *Repository) GetAttestations(ctx context.Context, vehicleTokenID int, fi
 	tknID := int(vehicleTokenID)
 	var attestations []*model.Attestation
 	for _, ce := range cloudEvents {
+		if !validClaim(claimMap, ce.Source, ce.ID) {
+			return nil, fmt.Errorf("no claim found for requested attestation: %s %s", ce.Source, ce.ID)
+		}
+
 		attestation := &model.Attestation{
 			ID:             ce.ID,
 			VehicleTokenID: tknID,
@@ -117,4 +129,18 @@ func (r *Repository) GetAttestations(ctx context.Context, vehicleTokenID int, fi
 
 func (r *Repository) getLogger(ctx context.Context, vehicleTokenID int) zerolog.Logger {
 	return zerolog.Ctx(ctx).With().Str("component", "attestation").Int("vehicleTokenId", vehicleTokenID).Logger()
+}
+
+func validClaim(claims map[string]*set.StringSet, source, id string) bool {
+	accessBySource, ok := claims[source]
+	if !ok {
+		globalAccess, ok := claims[tokenclaims.GlobalIdentifier]
+		if !ok {
+			return false
+		}
+
+		return globalAccess.Contains(id) || globalAccess.Contains(tokenclaims.GlobalIdentifier)
+	}
+
+	return accessBySource.Contains(id) || accessBySource.Contains(tokenclaims.GlobalIdentifier)
 }

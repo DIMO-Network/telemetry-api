@@ -2,19 +2,22 @@
 package attestation_test
 
 import (
-	"context"
-	"encoding/json"
+	context "context"
+	json "encoding/json"
+	"fmt"
 	"math/big"
 	"testing"
 	"time"
 
-	"github.com/DIMO-Network/cloudevent"
+	cloudevent "github.com/DIMO-Network/cloudevent"
+	"github.com/DIMO-Network/telemetry-api/internal/auth"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	"github.com/DIMO-Network/telemetry-api/internal/repositories/attestation"
+	"github.com/DIMO-Network/token-exchange-api/pkg/tokenclaims"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/segmentio/ksuid"
 	"github.com/stretchr/testify/require"
-	"go.uber.org/mock/gomock"
+	gomock "go.uber.org/mock/gomock"
 )
 
 // MockRow implements sql.Row and returns a string when scanned.
@@ -87,7 +90,7 @@ func TestGetAttestations(t *testing.T) {
 	// Test cases
 	tests := []struct {
 		name         string
-		mockSetup    func()
+		mockSetup    func() context.Context
 		vehTknID     int
 		filters      *model.AttestationFilter
 		expectedAtts []*model.Attestation
@@ -96,10 +99,11 @@ func TestGetAttestations(t *testing.T) {
 	}{
 		{
 			name: "successful query, search for all attestations for token id",
-			mockSetup: func() {
+			mockSetup: func() context.Context {
 				mockService.EXPECT().GetAllCloudEvents(gomock.Any(), gomock.Any(), gomock.Any()).Return([]cloudevent.CloudEvent[json.RawMessage]{
 					defaultEvent,
 				}, nil)
+				return populateClaimMap(ctx, tokenclaims.GlobalIdentifier, tokenclaims.GlobalIdentifier, []string{tokenclaims.GlobalIdentifier})
 			},
 			vehTknID: validVehTknID,
 			expectedAtts: []*model.Attestation{
@@ -117,10 +121,12 @@ func TestGetAttestations(t *testing.T) {
 		},
 		{
 			name: "successful query, search for all attestations for token id, test all filters",
-			mockSetup: func() {
+			mockSetup: func() context.Context {
+				populateClaimMap(ctx, tokenclaims.GlobalIdentifier, tokenclaims.GlobalIdentifier, []string{tokenclaims.GlobalIdentifier})
 				mockService.EXPECT().GetAllCloudEvents(gomock.Any(), gomock.Any(), gomock.Any()).Return([]cloudevent.CloudEvent[json.RawMessage]{
 					defaultEvent,
 				}, nil)
+				return populateClaimMap(ctx, tokenclaims.GlobalIdentifier, tokenclaims.GlobalIdentifier, []string{tokenclaims.GlobalIdentifier})
 			},
 			filters: &model.AttestationFilter{
 				Before:      &time,
@@ -146,19 +152,84 @@ func TestGetAttestations(t *testing.T) {
 		},
 		{
 			name: "successful query, no attestations for token id",
-			mockSetup: func() {
+			mockSetup: func() context.Context {
 				mockService.EXPECT().GetAllCloudEvents(gomock.Any(), gomock.Any(), gomock.Any()).Return(nil, nil)
+				return populateClaimMap(ctx, tokenclaims.GlobalIdentifier, tokenclaims.GlobalIdentifier, []string{tokenclaims.GlobalIdentifier})
 			},
 			vehTknID: invalidVehTknID,
+		},
+		{
+			name: "failed: no claims for source",
+			mockSetup: func() context.Context {
+				populateClaimMap(ctx, tokenclaims.GlobalIdentifier, tokenclaims.GlobalIdentifier, []string{tokenclaims.GlobalIdentifier})
+				mockService.EXPECT().GetAllCloudEvents(gomock.Any(), gomock.Any(), gomock.Any()).Return([]cloudevent.CloudEvent[json.RawMessage]{
+					defaultEvent,
+				}, nil)
+				return populateClaimMap(ctx, common.BigToAddress(big.NewInt(999)).Hex(), tokenclaims.GlobalIdentifier, []string{tokenclaims.GlobalIdentifier})
+			},
+			filters: &model.AttestationFilter{
+				Before:      &time,
+				After:       &time,
+				DataVersion: &dataVersion,
+				Producer:    &producer,
+				Source:      &validSigner,
+				Limit:       &limit,
+			},
+			vehTknID: validVehTknID,
+			expectedAtts: []*model.Attestation{
+				&model.Attestation{
+					ID:             id,
+					VehicleTokenID: validVehTknID,
+					Time:           defaultEvent.Time,
+					Attestation:    dataStr,
+					Type:           cloudevent.TypeAttestation,
+					Source:         validSigner,
+					Producer:       &producer,
+					DataVersion:    dataVersion,
+				},
+			},
+			err: fmt.Errorf("no claim found for requested attestation: %s %s", validSigner, id),
+		},
+		{
+			name: "failed: no claims in jwt",
+			mockSetup: func() context.Context {
+				populateClaimMap(ctx, tokenclaims.GlobalIdentifier, tokenclaims.GlobalIdentifier, []string{tokenclaims.GlobalIdentifier})
+				mockService.EXPECT().GetAllCloudEvents(gomock.Any(), gomock.Any(), gomock.Any()).Return([]cloudevent.CloudEvent[json.RawMessage]{
+					defaultEvent,
+				}, nil)
+				return populateClaimMap(ctx, common.BigToAddress(big.NewInt(999)).Hex(), tokenclaims.GlobalIdentifier, []string{tokenclaims.GlobalIdentifier})
+			},
+			filters: &model.AttestationFilter{
+				Before:      &time,
+				After:       &time,
+				DataVersion: &dataVersion,
+				Producer:    &producer,
+				Source:      &validSigner,
+				Limit:       &limit,
+			},
+			vehTknID: validVehTknID,
+			expectedAtts: []*model.Attestation{
+				&model.Attestation{
+					ID:             id,
+					VehicleTokenID: validVehTknID,
+					Time:           defaultEvent.Time,
+					Attestation:    dataStr,
+					Type:           cloudevent.TypeAttestation,
+					Source:         validSigner,
+					Producer:       &producer,
+					DataVersion:    dataVersion,
+				},
+			},
+			err: fmt.Errorf("no claims found in jwt for vehicle token: %d", validVehTknID),
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// Set up the mock expectations
-			tt.mockSetup()
-			// Call the method
-			attestations, err := att.GetAttestations(ctx, tt.vehTknID, tt.filters)
+			enrichedCtx := tt.mockSetup()
+			// Call the met
+			attestations, err := att.GetAttestations(enrichedCtx, tt.vehTknID, tt.filters)
 
 			// Assert the results
 			if tt.expectedErr {
@@ -181,4 +252,16 @@ func TestGetAttestations(t *testing.T) {
 			}
 		})
 	}
+}
+
+func populateClaimMap(ctx context.Context, ce, source string, ids []string) context.Context {
+	var claims auth.TelemetryClaim
+	claims.CloudEvents = &tokenclaims.CloudEvents{}
+
+	claims.CloudEvents.Events = append(claims.CloudEvents.Events, tokenclaims.Event{
+		EventType: tokenclaims.GlobalIdentifier,
+		Source:    tokenclaims.GlobalIdentifier,
+		IDs:       []string{tokenclaims.GlobalIdentifier},
+	})
+	return context.WithValue(ctx, auth.TelemetryClaimContextKey{}, &claims)
 }
