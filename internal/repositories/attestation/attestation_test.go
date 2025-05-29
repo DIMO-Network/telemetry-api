@@ -27,7 +27,7 @@ func (m *MockRow) ScanStruct(any) error {
 	return nil
 }
 
-// func TestAttestation(t *testing.T) {
+// func TestGetAttestations(t *testing.T) {
 // 	// Initialize variables
 // 	ctx := context.Background()
 // 	validVehTknID := int(123)
@@ -72,7 +72,7 @@ func (m *MockRow) ScanStruct(any) error {
 // 	tests := []struct {
 // 		name         string
 // 		mockSetup    func()
-// 		vehTknID     uint32
+// 		vehTknID     int
 // 		filters      *model.AttestationFilter
 // 		expectedAtts []*model.Attestation
 // 		expectedErr  bool
@@ -85,7 +85,7 @@ func (m *MockRow) ScanStruct(any) error {
 // 					defaultEvent,
 // 				}, nil)
 // 			},
-// 			vehTknID: uint32(validVehTknID),
+// 			vehTknID: validVehTknID,
 // 			expectedAtts: []*model.Attestation{
 // 				&model.Attestation{
 // 					ID:             id,
@@ -114,7 +114,7 @@ func (m *MockRow) ScanStruct(any) error {
 // 				Source:      &validSigner,
 // 				Limit:       &limit,
 // 			},
-// 			vehTknID: uint32(validVehTknID),
+// 			vehTknID: validVehTknID,
 // 			expectedAtts: []*model.Attestation{
 // 				&model.Attestation{
 // 					ID:             id,
@@ -133,7 +133,7 @@ func (m *MockRow) ScanStruct(any) error {
 // 			mockSetup: func() {
 // 				mockService.EXPECT().GetAllCloudEvents(gomock.Any(), gomock.Any(), gomock.Any()).Return(nil, nil)
 // 			},
-// 			vehTknID: uint32(invalidVehTknID),
+// 			vehTknID: invalidVehTknID,
 // 		},
 // 	}
 
