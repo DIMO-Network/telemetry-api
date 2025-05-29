@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/DIMO-Network/telemetry-api/pkg/errorhandler"
 	"github.com/Khan/genqlient/graphql"
 	"github.com/ethereum/go-ethereum/common"
 )
@@ -30,11 +31,11 @@ func (i *APIClient) GetAftermarketDevice(ctx context.Context, address *common.Ad
 		Serial:  serial,
 	})
 	if err != nil {
-		return nil, err
+		return nil, errorhandler.NewInternalErrorWithMsg(ctx, err, "internal identity service error")
 	}
 
 	if resp.AftermarketDevice.Vehicle == nil {
-		return nil, errors.New("no vehicle attached to device")
+		return nil, errorhandler.NewBadRequestError(ctx, errors.New("no vehicle attached to device"))
 	}
 
 	return &DeviceInfos{

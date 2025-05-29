@@ -12,17 +12,14 @@ import (
 	"github.com/DIMO-Network/model-garage/pkg/vss"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	"github.com/DIMO-Network/telemetry-api/internal/service/ch"
-	"github.com/rs/zerolog"
+	"github.com/DIMO-Network/telemetry-api/pkg/errorhandler"
 	"github.com/uber/h3-go/v4"
 )
 
-const approximateLocationResolution = 6
 
-var (
-	errInternal = errors.New("internal error")
-	errTimeout  = errors.New("request exceeded or is estimated to exceed the maximum execution time")
-	unixEpoch   = time.Unix(0, 0).UTC()
-)
+const	approximateLocationResolution = 6
+
+var unixEpoch = time.Unix(0, 0).UTC()
 
 // TODO(elffjs): Get rid of this when we have device addresses in CH.
 var ManufacturerSourceTranslations = map[string]string{
@@ -69,14 +66,13 @@ func NewRepository(chService CHService, lastSeenBin int64) (*Repository, error) 
 
 // GetSignal returns the aggregated signals for the given tokenID, interval, from, to and filter.
 func (r *Repository) GetSignal(ctx context.Context, aggArgs *model.AggregatedSignalArgs) ([]*model.SignalAggregations, error) {
-	logger := r.getLogger(ctx)
 	if err := validateAggSigArgs(aggArgs); err != nil {
-		return nil, fmt.Errorf("invalid arguments: %w", err)
+		return nil, errorhandler.NewBadRequestError(ctx, err)
 	}
 
 	signals, err := r.chService.GetAggregatedSignals(ctx, aggArgs)
 	if err != nil {
-		return nil, handleDBError(err, &logger)
+		return nil, handleDBError(ctx, err)
 	}
 
 	// combine signals with the same timestamp by iterating over all signals
@@ -104,13 +100,12 @@ func (r *Repository) GetSignal(ctx context.Context, aggArgs *model.AggregatedSig
 
 // GetSignalLatest returns the latest signals for the given tokenID and filter.
 func (r *Repository) GetSignalLatest(ctx context.Context, latestArgs *model.LatestSignalsArgs) (*model.SignalCollection, error) {
-	logger := r.getLogger(ctx)
 	if err := validateLatestSigArgs(latestArgs); err != nil {
-		return nil, fmt.Errorf("invalid arguments: %w", err)
+		return nil, errorhandler.NewBadRequestError(ctx, err)
 	}
 	signals, err := r.chService.GetLatestSignals(ctx, latestArgs)
 	if err != nil {
-		return nil, handleDBError(err, &logger)
+		return nil, handleDBError(ctx, err)
 	}
 	coll := &model.SignalCollection{}
 	for _, signal := range signals {
@@ -129,7 +124,7 @@ func (r *Repository) GetSignalLatest(ctx context.Context, latestArgs *model.Late
 func (r *Repository) GetDeviceActivity(ctx context.Context, vehicleTokenID int, adMfrName string) (*model.DeviceActivity, error) {
 	source, ok := ManufacturerSourceTranslations[adMfrName]
 	if !ok {
-		return nil, fmt.Errorf("unrecognized manufacturer name %s", adMfrName)
+		return nil, errorhandler.NewBadRequestError(ctx, fmt.Errorf("unrecognized manufacturer name %s", adMfrName))
 	}
 
 	args := &model.LatestSignalsArgs{
@@ -160,10 +155,9 @@ func (r *Repository) GetDeviceActivity(ctx context.Context, vehicleTokenID int, 
 // GetAvailableSignals returns the available signals for the given tokenID and filter.
 // If no signals are found, a nil slice is returned.
 func (r *Repository) GetAvailableSignals(ctx context.Context, tokenID uint32, filter *model.SignalFilter) ([]string, error) {
-	logger := r.getLogger(ctx)
 	allSignals, err := r.chService.GetAvailableSignals(ctx, tokenID, filter)
 	if err != nil {
-		return nil, handleDBError(err, &logger)
+		return nil, handleDBError(ctx, err)
 	}
 	var retSignals []string
 	for _, signal := range allSignals {
@@ -175,14 +169,13 @@ func (r *Repository) GetAvailableSignals(ctx context.Context, tokenID uint32, fi
 }
 
 // handleDBError logs the error and returns a generic error message.
-func handleDBError(err error, log *zerolog.Logger) error {
+func handleDBError(ctx context.Context, err error) error {
 	exceptionErr := &proto.Exception{}
 	if errors.Is(err, context.DeadlineExceeded) || (errors.As(err, &exceptionErr) && exceptionErr.Code == ch.TimeoutErrCode) {
-		log.Error().Err(err).Msg("failed to query db")
-		return errTimeout
+		return errorhandler.NewInternalErrorWithMsg(ctx, err, "request exceeded or is estimated to exceed the maximum execution time")
+))
 	}
-	log.Error().Err(err).Msg("failed to query db")
-	return errInternal
+	return errorhandler.NewInternalErrorWithMsg(ctx, err, "failed to query db")
 }
 
 // GetApproximateLoc returns the approximate location for the given latitude and longitude.
@@ -212,8 +205,4 @@ func setApproximateLocationInCollection(coll *model.SignalCollection) {
 		Timestamp: coll.CurrentLocationLongitude.Timestamp,
 		Value:     latLong.Lng,
 	}
-}
-
-func (r *Repository) getLogger(ctx context.Context) zerolog.Logger {
-	return zerolog.Ctx(ctx).With().Str("component", "repository").Logger()
 }
