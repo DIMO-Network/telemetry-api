@@ -43,7 +43,7 @@ func (m *MockRow) ScanStruct(any) error {
 	return nil
 }
 
-func TestAttestation(t *testing.T) {
+func TestGetAttestations(t *testing.T) {
 	// Initialize variables
 	ctx := context.Background()
 	validVehTknID := int(123)
@@ -88,7 +88,7 @@ func TestAttestation(t *testing.T) {
 	tests := []struct {
 		name         string
 		mockSetup    func()
-		vehTknID     uint32
+		vehTknID     int
 		filters      *model.AttestationFilter
 		expectedAtts []*model.Attestation
 		expectedErr  bool
@@ -101,7 +101,7 @@ func TestAttestation(t *testing.T) {
 					defaultEvent,
 				}, nil)
 			},
-			vehTknID: uint32(validVehTknID),
+			vehTknID: validVehTknID,
 			expectedAtts: []*model.Attestation{
 				&model.Attestation{
 					ID:             id,
@@ -130,7 +130,7 @@ func TestAttestation(t *testing.T) {
 				Source:      &validSigner,
 				Limit:       &limit,
 			},
-			vehTknID: uint32(validVehTknID),
+			vehTknID: validVehTknID,
 			expectedAtts: []*model.Attestation{
 				&model.Attestation{
 					ID:             id,
@@ -149,7 +149,7 @@ func TestAttestation(t *testing.T) {
 			mockSetup: func() {
 				mockService.EXPECT().GetAllCloudEvents(gomock.Any(), gomock.Any(), gomock.Any()).Return(nil, nil)
 			},
-			vehTknID: uint32(invalidVehTknID),
+			vehTknID: invalidVehTknID,
 		},
 	}
 

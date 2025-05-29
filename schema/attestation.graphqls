@@ -72,6 +72,11 @@ AttestationFilter holds the filter parameters for the attestation querys.
 """
 input AttestationFilter {
   """
+  id is the id of the attestation.
+  """
+  id: String
+
+  """
   The attesting party. 
   """
   source: Address

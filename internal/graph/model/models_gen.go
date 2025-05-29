@@ -42,6 +42,8 @@ type Attestation struct {
 
 // AttestationFilter holds the filter parameters for the attestation querys.
 type AttestationFilter struct {
+	// id is the id of the attestation.
+	ID *string `json:"id,omitempty"`
 	// The attesting party.
 	Source *common.Address `json:"source,omitempty"`
 	// Filter attestations by data version.

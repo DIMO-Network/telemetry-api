@@ -35,8 +35,8 @@ func New(indexService indexRepoService, chainID uint64, vehicleAddress common.Ad
 }
 
 // GetAttestations fetches attestations for the given vehicle.
-func (r *Repository) GetAttestations(ctx context.Context, vehicleTokenID uint32, filter *model.AttestationFilter) ([]*model.Attestation, error) {
-	logger := r.getLogger(ctx)
+func (r *Repository) GetAttestations(ctx context.Context, vehicleTokenID int, filter *model.AttestationFilter) ([]*model.Attestation, error) {
+	logger := r.getLogger(ctx, vehicleTokenID)
 	vehicleDID := cloudevent.ERC721DID{
 		ChainID:         r.chainID,
 		ContractAddress: r.vehicleAddress,
@@ -73,6 +73,10 @@ func (r *Repository) GetAttestations(ctx context.Context, vehicleTokenID uint32,
 		if filter.Limit != nil {
 			limit = *filter.Limit
 		}
+
+		if filter.ID != nil {
+			opts.Id = &wrapperspb.StringValue{Value: *filter.ID}
+		}
 	}
 
 	cloudEvents, err := r.indexService.GetAllCloudEvents(ctx, opts, int32(limit))
@@ -101,7 +105,7 @@ func (r *Repository) GetAttestations(ctx context.Context, vehicleTokenID uint32,
 		signature, ok := ce.Extras["signature"].(string)
 		if !ok {
 			logger.Info().Str("id", attestation.ID).Str("source", attestation.Source.Hex()).Msg("failed to pull signature")
-			return nil, fmt.Errorf("invalid signature from %s on attestation %s", attestation.ID, attestation.Source)
+			return nil, fmt.Errorf("invalid format: attestation signature missing")
 		}
 
 		attestation.Signature = signature
@@ -111,6 +115,6 @@ func (r *Repository) GetAttestations(ctx context.Context, vehicleTokenID uint32,
 	return attestations, nil
 }
 
-func (r *Repository) getLogger(ctx context.Context) zerolog.Logger {
-	return zerolog.Ctx(ctx).With().Str("component", "attestation").Logger()
+func (r *Repository) getLogger(ctx context.Context, vehicleTokenID int) zerolog.Logger {
+	return zerolog.Ctx(ctx).With().Str("component", "attestation").Int("vehicleTokenId", vehicleTokenID).Logger()
 }

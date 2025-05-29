@@ -2327,6 +2327,11 @@ AttestationFilter holds the filter parameters for the attestation querys.
 """
 input AttestationFilter {
   """
+  id is the id of the attestation.
+  """
+  id: String
+
+  """
   The attesting party. 
   """
   source: Address
@@ -24549,13 +24554,20 @@ func (ec *executionContext) unmarshalInputAttestationFilter(ctx context.Context,
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"source", "dataVersion", "producer", "before", "after", "limit"}
+	fieldsInOrder := [...]string{"id", "source", "dataVersion", "producer", "before", "after", "limit"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
+		case "id":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ID = data
 		case "source":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("source"))
 			data, err := ec.unmarshalOAddress2ᚖgithubᚗcomᚋethereumᚋgoᚑethereumᚋcommonᚐAddress(ctx, v)
