@@ -128,12 +128,7 @@ func newDefaultServer(es graphql.ExecutableSchema) *handler.Server {
 	srv.Use(extension.FixedComplexityLimit(100))
 	srv.Use(extension.Introspection{})
 	srv.Use(metrics.Tracer{})
-
-	srv.SetErrorPresenter(errorHandler)
 	srv.SetErrorPresenter(errorhandler.ErrorPresenter)
-
-	// add prometheus metrics
-	srv.Use(metrics.Tracer{})
 
 	return srv
 }

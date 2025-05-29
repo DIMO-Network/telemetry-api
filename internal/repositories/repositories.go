@@ -16,8 +16,7 @@ import (
 	"github.com/uber/h3-go/v4"
 )
 
-
-const	approximateLocationResolution = 6
+const approximateLocationResolution = 6
 
 var unixEpoch = time.Unix(0, 0).UTC()
 
@@ -173,7 +172,6 @@ func handleDBError(ctx context.Context, err error) error {
 	exceptionErr := &proto.Exception{}
 	if errors.Is(err, context.DeadlineExceeded) || (errors.As(err, &exceptionErr) && exceptionErr.Code == ch.TimeoutErrCode) {
 		return errorhandler.NewInternalErrorWithMsg(ctx, err, "request exceeded or is estimated to exceed the maximum execution time")
-))
 	}
 	return errorhandler.NewInternalErrorWithMsg(ctx, err, "failed to query db")
 }

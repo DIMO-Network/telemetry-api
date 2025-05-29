@@ -42,7 +42,6 @@ func New(indexService indexRepoService, vinVCDataVersion, pomVCDataVersion strin
 
 // GetLatestVINVC fetches the latest VIN VC for the given vehicle.
 func (r *Repository) GetLatestVINVC(ctx context.Context, vehicleTokenID uint32) (*model.Vinvc, error) {
-	logger := r.getLogger(ctx)
 	vehicleDID := cloudevent.ERC721DID{
 		ChainID:         r.chainID,
 		ContractAddress: r.vehicleAddress,
