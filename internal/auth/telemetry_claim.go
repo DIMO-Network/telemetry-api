@@ -60,9 +60,8 @@ func GetAttestationClaimMap(ctx context.Context) (map[string]*set.StringSet, err
 	if !ok || claim == nil || claim.CloudEvents == nil {
 		return nil, errors.New("no cloudevent claims found")
 	}
-
 	for _, ce := range claim.CloudEvents.Events {
-		if ce.EventType == cloudevent.TypeAttestation {
+		if ce.EventType == cloudevent.TypeAttestation || ce.EventType == tokenclaims.GlobalIdentifier {
 			if _, ok := claims[ce.Source]; !ok {
 				claims[ce.Source] = set.NewStringSet()
 			}

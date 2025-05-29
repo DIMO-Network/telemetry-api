@@ -60,9 +60,6 @@ func (r *Repository) GetAttestations(ctx context.Context, vehicleTokenID int, fi
 	if filter != nil {
 		if filter.Source != nil {
 			opts.Source = &wrapperspb.StringValue{Value: filter.Source.Hex()}
-			if _, ok := claimMap[filter.Source.Hex()]; !ok {
-				return nil, fmt.Errorf("no valid claim found for source: %s", filter.Source.Hex())
-			}
 		}
 
 		if filter.Producer != nil {
@@ -142,8 +139,8 @@ func validClaim(claims map[string]*set.StringSet, source, id string) bool {
 			return false
 		}
 
-		return globalAccess.Contains(id)
+		return globalAccess.Contains(id) || globalAccess.Contains(tokenclaims.GlobalIdentifier)
 	}
 
-	return accessBySource.Contains(id)
+	return accessBySource.Contains(id) || accessBySource.Contains(tokenclaims.GlobalIdentifier)
 }
