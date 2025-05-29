@@ -9,7 +9,10 @@ import (
 
 	"github.com/DIMO-Network/cloudevent"
 	"github.com/DIMO-Network/fetch-api/pkg/grpc"
+	"github.com/DIMO-Network/shared/pkg/set"
+	"github.com/DIMO-Network/telemetry-api/internal/auth"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
+	"github.com/DIMO-Network/token-exchange-api/pkg/tokenclaims"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/rs/zerolog"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -36,6 +39,11 @@ func New(indexService indexRepoService, chainID uint64, vehicleAddress common.Ad
 
 // GetAttestations fetches attestations for the given vehicle.
 func (r *Repository) GetAttestations(ctx context.Context, vehicleTokenID uint32, filter *model.AttestationFilter) ([]*model.Attestation, error) {
+	claimMap, err := auth.GetAttestationClaimMap(ctx)
+	if err != nil {
+		return nil, errors.New("failed to access validated claims")
+	}
+
 	logger := r.getLogger(ctx)
 	vehicleDID := cloudevent.ERC721DID{
 		ChainID:         r.chainID,
@@ -52,6 +60,9 @@ func (r *Repository) GetAttestations(ctx context.Context, vehicleTokenID uint32,
 	if filter != nil {
 		if filter.Source != nil {
 			opts.Source = &wrapperspb.StringValue{Value: filter.Source.Hex()}
+			if _, ok := claimMap[filter.Source.Hex()]; !ok {
+				return nil, fmt.Errorf("no valid claim found for source: %s", filter.Source.Hex())
+			}
 		}
 
 		if filter.Producer != nil {
@@ -84,6 +95,10 @@ func (r *Repository) GetAttestations(ctx context.Context, vehicleTokenID uint32,
 	tknID := int(vehicleTokenID)
 	var attestations []*model.Attestation
 	for _, ce := range cloudEvents {
+		if !validClaim(claimMap, ce.Source, ce.ID) {
+			return nil, fmt.Errorf("no claim found for requested attestation: %s %s", ce.Source, ce.ID)
+		}
+
 		attestation := &model.Attestation{
 			ID:             ce.ID,
 			VehicleTokenID: tknID,
@@ -113,4 +128,18 @@ func (r *Repository) GetAttestations(ctx context.Context, vehicleTokenID uint32,
 
 func (r *Repository) getLogger(ctx context.Context) zerolog.Logger {
 	return zerolog.Ctx(ctx).With().Str("component", "attestation").Logger()
+}
+
+func validClaim(claims map[string]*set.StringSet, source, id string) bool {
+	accessBySource, ok := claims[source]
+	if !ok {
+		globalAccess, ok := claims[tokenclaims.GlobalIdentifier]
+		if !ok {
+			return false
+		}
+
+		return globalAccess.Contains(id)
+	}
+
+	return accessBySource.Contains(id)
 }

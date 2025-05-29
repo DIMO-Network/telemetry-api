@@ -7,10 +7,10 @@ import (
 	"testing"
 
 	"github.com/99designs/gqlgen/graphql"
-	"github.com/DIMO-Network/shared/pkg/middleware/privilegetoken"
 	"github.com/DIMO-Network/shared/pkg/privileges"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	"github.com/DIMO-Network/telemetry-api/internal/service/identity"
+	"github.com/DIMO-Network/token-exchange-api/pkg/tokenclaims"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
@@ -39,7 +39,7 @@ func TestRequiresVehicleTokenCheck(t *testing.T) {
 				"tokenId": 123,
 			},
 			telemetryClaim: &TelemetryClaim{
-				CustomClaims: privilegetoken.CustomClaims{
+				CustomClaims: tokenclaims.CustomClaims{
 					ContractAddress: vehicleNFTAddr,
 					TokenID:         "123",
 				},
@@ -51,7 +51,7 @@ func TestRequiresVehicleTokenCheck(t *testing.T) {
 				"tokenId": 456,
 			},
 			telemetryClaim: &TelemetryClaim{
-				CustomClaims: privilegetoken.CustomClaims{
+				CustomClaims: tokenclaims.CustomClaims{
 					ContractAddress: vehicleNFTAddr,
 					TokenID:         "123",
 				},
@@ -63,7 +63,7 @@ func TestRequiresVehicleTokenCheck(t *testing.T) {
 			args:          map[string]any{},
 			expectedError: true,
 			telemetryClaim: &TelemetryClaim{
-				CustomClaims: privilegetoken.CustomClaims{
+				CustomClaims: tokenclaims.CustomClaims{
 					ContractAddress: vehicleNFTAddr,
 					TokenID:         "123",
 				},
@@ -74,7 +74,7 @@ func TestRequiresVehicleTokenCheck(t *testing.T) {
 			args:          map[string]any{},
 			expectedError: true,
 			telemetryClaim: &TelemetryClaim{
-				CustomClaims: privilegetoken.CustomClaims{
+				CustomClaims: tokenclaims.CustomClaims{
 					ContractAddress: common.HexToAddress("0x4"),
 					TokenID:         "123",
 				},
@@ -132,7 +132,7 @@ func TestRequiresManufacturerTokenCheck(t *testing.T) {
 				Address: &autopiAddr,
 			},
 			telmetryClaim: &TelemetryClaim{
-				CustomClaims: privilegetoken.CustomClaims{
+				CustomClaims: tokenclaims.CustomClaims{
 					ContractAddress: mtrNFTAddr,
 					TokenID:         "137",
 				},
@@ -147,7 +147,7 @@ func TestRequiresManufacturerTokenCheck(t *testing.T) {
 				TokenID: &autopiTknID,
 			},
 			telmetryClaim: &TelemetryClaim{
-				CustomClaims: privilegetoken.CustomClaims{
+				CustomClaims: tokenclaims.CustomClaims{
 					ContractAddress: mtrNFTAddr,
 					TokenID:         "137",
 				},
@@ -162,7 +162,7 @@ func TestRequiresManufacturerTokenCheck(t *testing.T) {
 				Serial: &autopiSerial,
 			},
 			telmetryClaim: &TelemetryClaim{
-				CustomClaims: privilegetoken.CustomClaims{
+				CustomClaims: tokenclaims.CustomClaims{
 					ContractAddress: mtrNFTAddr,
 					TokenID:         "137",
 				},
@@ -174,7 +174,7 @@ func TestRequiresManufacturerTokenCheck(t *testing.T) {
 		{
 			name: "wrong aftermarket device manufacturer",
 			telmetryClaim: &TelemetryClaim{
-				CustomClaims: privilegetoken.CustomClaims{
+				CustomClaims: tokenclaims.CustomClaims{
 					ContractAddress: mtrNFTAddr,
 					TokenID:         "138",
 				},
@@ -188,7 +188,7 @@ func TestRequiresManufacturerTokenCheck(t *testing.T) {
 		{
 			name: "invalid autopi address",
 			telmetryClaim: &TelemetryClaim{
-				CustomClaims: privilegetoken.CustomClaims{
+				CustomClaims: tokenclaims.CustomClaims{
 					ContractAddress: mtrNFTAddr,
 					TokenID:         "137",
 				},
@@ -254,7 +254,7 @@ func TestRequiresPrivilegeCheck(t *testing.T) {
 				model.PrivilegeVehicleNonLocationData,
 			},
 			telemetryClaim: &TelemetryClaim{
-				CustomClaims: privilegetoken.CustomClaims{
+				CustomClaims: tokenclaims.CustomClaims{
 					PrivilegeIDs: []privileges.Privilege{
 						privileges.VehicleAllTimeLocation,
 						privileges.VehicleNonLocationData,
@@ -271,7 +271,7 @@ func TestRequiresPrivilegeCheck(t *testing.T) {
 				model.PrivilegeVehicleNonLocationData,
 			},
 			telemetryClaim: &TelemetryClaim{
-				CustomClaims: privilegetoken.CustomClaims{
+				CustomClaims: tokenclaims.CustomClaims{
 					PrivilegeIDs:    nil,
 					ContractAddress: vehicleNFTAddr,
 				},
@@ -285,7 +285,7 @@ func TestRequiresPrivilegeCheck(t *testing.T) {
 				model.PrivilegeVehicleNonLocationData,
 			},
 			telemetryClaim: &TelemetryClaim{
-				CustomClaims: privilegetoken.CustomClaims{
+				CustomClaims: tokenclaims.CustomClaims{
 					PrivilegeIDs: []privileges.Privilege{
 						privileges.VehicleAllTimeLocation,
 					},
@@ -307,7 +307,7 @@ func TestRequiresPrivilegeCheck(t *testing.T) {
 				model.PrivilegeVehicleAllTimeLocation,
 			},
 			telemetryClaim: &TelemetryClaim{
-				CustomClaims: privilegetoken.CustomClaims{
+				CustomClaims: tokenclaims.CustomClaims{
 					PrivilegeIDs: []privileges.Privilege{
 						// this is the same number priv but from a different contract
 						privileges.ManufacturerDeviceDefinitionInsert,
@@ -361,7 +361,7 @@ func TestRequiresOneOfPrivilegeCheck(t *testing.T) {
 				model.PrivilegeVehicleNonLocationData,
 			},
 			telemetryClaim: &TelemetryClaim{
-				CustomClaims: privilegetoken.CustomClaims{
+				CustomClaims: tokenclaims.CustomClaims{
 					PrivilegeIDs: []privileges.Privilege{
 						privileges.VehicleAllTimeLocation,
 					},
@@ -377,7 +377,7 @@ func TestRequiresOneOfPrivilegeCheck(t *testing.T) {
 				model.PrivilegeVehicleNonLocationData,
 			},
 			telemetryClaim: &TelemetryClaim{
-				CustomClaims: privilegetoken.CustomClaims{
+				CustomClaims: tokenclaims.CustomClaims{
 					PrivilegeIDs: []privileges.Privilege{
 						privileges.VehicleAllTimeLocation,
 						privileges.VehicleNonLocationData,
@@ -394,7 +394,7 @@ func TestRequiresOneOfPrivilegeCheck(t *testing.T) {
 				model.PrivilegeVehicleNonLocationData,
 			},
 			telemetryClaim: &TelemetryClaim{
-				CustomClaims: privilegetoken.CustomClaims{
+				CustomClaims: tokenclaims.CustomClaims{
 					PrivilegeIDs:    nil,
 					ContractAddress: vehicleNFTAddr,
 				},
@@ -413,7 +413,7 @@ func TestRequiresOneOfPrivilegeCheck(t *testing.T) {
 				model.PrivilegeVehicleAllTimeLocation,
 			},
 			telemetryClaim: &TelemetryClaim{
-				CustomClaims: privilegetoken.CustomClaims{
+				CustomClaims: tokenclaims.CustomClaims{
 					PrivilegeIDs: []privileges.Privilege{
 						privileges.ManufacturerDeviceDefinitionInsert,
 					},
