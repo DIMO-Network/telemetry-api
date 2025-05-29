@@ -79,7 +79,6 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Attestation      func(childComplexity int, tokenID int, source common.Address, id string) int
 		Attestations     func(childComplexity int, tokenID int, filter *model.AttestationFilter) int
 		AvailableSignals func(childComplexity int, tokenID int, filter *model.SignalFilter) int
 		DeviceActivity   func(childComplexity int, by model.AftermarketDeviceBy) int
@@ -281,7 +280,6 @@ type QueryResolver interface {
 	SignalsLatest(ctx context.Context, tokenID int, filter *model.SignalFilter) (*model.SignalCollection, error)
 	AvailableSignals(ctx context.Context, tokenID int, filter *model.SignalFilter) ([]string, error)
 	Attestations(ctx context.Context, tokenID int, filter *model.AttestationFilter) ([]*model.Attestation, error)
-	Attestation(ctx context.Context, tokenID int, source common.Address, id string) (*model.Attestation, error)
 	DeviceActivity(ctx context.Context, by model.AftermarketDeviceBy) (*model.DeviceActivity, error)
 	VinVCLatest(ctx context.Context, tokenID int) (*model.Vinvc, error)
 	PomVCLatest(ctx context.Context, tokenID int) (*model.Pomvc, error)
@@ -490,18 +488,6 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.POMVC.VehicleTokenID(childComplexity), true
-
-	case "Query.attestation":
-		if e.complexity.Query.Attestation == nil {
-			break
-		}
-
-		args, err := ec.field_Query_attestation_args(ctx, rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Query.Attestation(childComplexity, args["tokenId"].(int), args["source"].(common.Address), args["id"].(string)), true
 
 	case "Query.attestations":
 		if e.complexity.Query.Attestations == nil {
@@ -2288,34 +2274,6 @@ var sources = []*ast.Source{
     @requiresAllOfPrivileges(privileges: [VEHICLE_RAW_DATA])
 }
 
-extend type Query {
-  """
-  attestation returns an individual attestation for a given vehicle token based on attestation source and id.
-
-  Required Privileges: [VEHICLE_RAW_DATA]
-  """
-  attestation(
-    """
-    The token ID of the vehicle.
-    """
-    tokenId: Int!
-
-    """
-    The source of the attestation.
-    """
-    source: Address!
-
-    """
-    The attestation id.
-    """
-    id: String!
-
-  ): Attestation
-    @requiresVehicleToken
-    @requiresAllOfPrivileges(privileges: [VEHICLE_RAW_DATA])
-}
-
-
 type Attestation {
   """
   ID is the ID of the attestation.
@@ -4009,80 +3967,6 @@ func (ec *executionContext) field_Query___type_argsName(
 
 	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
 	if tmp, ok := rawArgs["name"]; ok {
-		return ec.unmarshalNString2string(ctx, tmp)
-	}
-
-	var zeroVal string
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_Query_attestation_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
-	var err error
-	args := map[string]any{}
-	arg0, err := ec.field_Query_attestation_argsTokenID(ctx, rawArgs)
-	if err != nil {
-		return nil, err
-	}
-	args["tokenId"] = arg0
-	arg1, err := ec.field_Query_attestation_argsSource(ctx, rawArgs)
-	if err != nil {
-		return nil, err
-	}
-	args["source"] = arg1
-	arg2, err := ec.field_Query_attestation_argsID(ctx, rawArgs)
-	if err != nil {
-		return nil, err
-	}
-	args["id"] = arg2
-	return args, nil
-}
-func (ec *executionContext) field_Query_attestation_argsTokenID(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (int, error) {
-	if _, ok := rawArgs["tokenId"]; !ok {
-		var zeroVal int
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("tokenId"))
-	if tmp, ok := rawArgs["tokenId"]; ok {
-		return ec.unmarshalNInt2int(ctx, tmp)
-	}
-
-	var zeroVal int
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_Query_attestation_argsSource(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (common.Address, error) {
-	if _, ok := rawArgs["source"]; !ok {
-		var zeroVal common.Address
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("source"))
-	if tmp, ok := rawArgs["source"]; ok {
-		return ec.unmarshalNAddress2githubᚗcomᚋethereumᚋgoᚑethereumᚋcommonᚐAddress(ctx, tmp)
-	}
-
-	var zeroVal common.Address
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_Query_attestation_argsID(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (string, error) {
-	if _, ok := rawArgs["id"]; !ok {
-		var zeroVal string
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-	if tmp, ok := rawArgs["id"]; ok {
 		return ec.unmarshalNString2string(ctx, tmp)
 	}
 
@@ -8035,112 +7919,6 @@ func (ec *executionContext) fieldContext_Query_attestations(ctx context.Context,
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Query_attestations_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return fc, err
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Query_attestation(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Query_attestation(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
-		directive0 := func(rctx context.Context) (any, error) {
-			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Query().Attestation(rctx, fc.Args["tokenId"].(int), fc.Args["source"].(common.Address), fc.Args["id"].(string))
-		}
-
-		directive1 := func(ctx context.Context) (any, error) {
-			if ec.directives.RequiresVehicleToken == nil {
-				var zeroVal *model.Attestation
-				return zeroVal, errors.New("directive requiresVehicleToken is not implemented")
-			}
-			return ec.directives.RequiresVehicleToken(ctx, nil, directive0)
-		}
-		directive2 := func(ctx context.Context) (any, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_RAW_DATA"})
-			if err != nil {
-				var zeroVal *model.Attestation
-				return zeroVal, err
-			}
-			if ec.directives.RequiresAllOfPrivileges == nil {
-				var zeroVal *model.Attestation
-				return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
-			}
-			return ec.directives.RequiresAllOfPrivileges(ctx, nil, directive1, privileges)
-		}
-
-		tmp, err := directive2(rctx)
-		if err != nil {
-			return nil, graphql.ErrorOnPath(ctx, err)
-		}
-		if tmp == nil {
-			return nil, nil
-		}
-		if data, ok := tmp.(*model.Attestation); ok {
-			return data, nil
-		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.Attestation`, tmp)
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*model.Attestation)
-	fc.Result = res
-	return ec.marshalOAttestation2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐAttestation(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Query_attestation(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Query",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "ID":
-				return ec.fieldContext_Attestation_ID(ctx, field)
-			case "vehicleTokenId":
-				return ec.fieldContext_Attestation_vehicleTokenId(ctx, field)
-			case "time":
-				return ec.fieldContext_Attestation_time(ctx, field)
-			case "attestation":
-				return ec.fieldContext_Attestation_attestation(ctx, field)
-			case "type":
-				return ec.fieldContext_Attestation_type(ctx, field)
-			case "source":
-				return ec.fieldContext_Attestation_source(ctx, field)
-			case "dataVersion":
-				return ec.fieldContext_Attestation_dataVersion(ctx, field)
-			case "producer":
-				return ec.fieldContext_Attestation_producer(ctx, field)
-			case "signature":
-				return ec.fieldContext_Attestation_signature(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type Attestation", field.Name)
-		},
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Query_attestation_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -25118,25 +24896,6 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_attestations(ctx, field)
-				return res
-			}
-
-			rrm := func(ctx context.Context) graphql.Marshaler {
-				return ec.OperationContext.RootResolverMiddleware(ctx,
-					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
-		case "attestation":
-			field := field
-
-			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Query_attestation(ctx, field)
 				return res
 			}
 

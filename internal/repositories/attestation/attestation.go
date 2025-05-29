@@ -18,7 +18,6 @@ import (
 
 type indexRepoService interface {
 	GetAllCloudEvents(ctx context.Context, filter *grpc.SearchOptions, limit int32) ([]cloudevent.CloudEvent[json.RawMessage], error)
-	GetLatestCloudEvent(ctx context.Context, filter *grpc.SearchOptions) (cloudevent.CloudEvent[json.RawMessage], error)
 }
 type Repository struct {
 	indexService   indexRepoService
@@ -114,49 +113,6 @@ func (r *Repository) GetAttestations(ctx context.Context, vehicleTokenID int, fi
 	}
 
 	return attestations, nil
-}
-
-// GetAttestations fetches attestations for the given vehicle.
-func (r *Repository) GetAttestation(ctx context.Context, vehicleTokenID int, source common.Address, id string) (*model.Attestation, error) {
-	logger := r.getLogger(ctx, vehicleTokenID)
-	vehicleDID := cloudevent.ERC721DID{
-		ChainID:         r.chainID,
-		ContractAddress: r.vehicleAddress,
-		TokenID:         new(big.Int).SetUint64(uint64(vehicleTokenID)),
-	}.String()
-	opts := &grpc.SearchOptions{
-		Type:    &wrapperspb.StringValue{Value: cloudevent.TypeAttestation},
-		Subject: &wrapperspb.StringValue{Value: vehicleDID},
-	}
-
-	opts.Source = &wrapperspb.StringValue{Value: source.Hex()}
-	opts.Id = &wrapperspb.StringValue{Value: id}
-
-	cloudEvent, err := r.indexService.GetLatestCloudEvent(ctx, opts)
-	if err != nil {
-		logger.Error().Err(err).Msgf("failed to get cloudevent %s from source: %s", id, source)
-		return nil, errors.New("internal error")
-	}
-
-	tknID := int(vehicleTokenID)
-	att := &model.Attestation{
-		ID:             cloudEvent.ID,
-		VehicleTokenID: tknID,
-		Time:           cloudEvent.Time,
-		Attestation:    string(cloudEvent.Data),
-		Type:           cloudEvent.Type,
-		Source:         common.HexToAddress(cloudEvent.Source),
-		DataVersion:    cloudEvent.DataVersion,
-	}
-
-	signature, ok := cloudEvent.Extras["signature"].(string)
-	if !ok {
-		logger.Info().Str("id", cloudEvent.ID).Str("source", cloudEvent.Source).Msg("failed to pull signature")
-		return nil, fmt.Errorf("invalid format: attestation signature missing")
-	}
-	att.Signature = signature
-
-	return att, nil
 }
 
 func (r *Repository) getLogger(ctx context.Context, vehicleTokenID int) zerolog.Logger {

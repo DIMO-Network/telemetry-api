@@ -8,7 +8,6 @@ import (
 	"context"
 
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
-	"github.com/ethereum/go-ethereum/common"
 )
 
 // Attestations is the resolver for the attestations field.
@@ -16,7 +15,14 @@ func (r *queryResolver) Attestations(ctx context.Context, tokenID int, filter *m
 	return r.AttestationRepo.GetAttestations(ctx, tokenID, filter)
 }
 
-// Attestation is the resolver for the attestation field.
-func (r *queryResolver) Attestation(ctx context.Context, tokenID int, source common.Address, id string) (*model.Attestation, error) {
+// !!! WARNING !!!
+// The code below was going to be deleted when updating resolvers. It has been copied here so you have
+// one last chance to move it out of harms way if you want. There are two reasons this happens:
+//  - When renaming or deleting a resolver the old code will be put in here. You can safely delete
+//    it when you're done.
+//  - You have helper methods in this file. Move them out to keep these resolver files clean.
+/*
+	func (r *queryResolver) Attestation(ctx context.Context, tokenID int, source common.Address, id string) (*model.Attestation, error) {
 	return r.AttestationRepo.GetAttestation(ctx, tokenID, source, id)
 }
+*/
