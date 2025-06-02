@@ -84,8 +84,8 @@ func New(settings config.Settings) (*App, error) {
 		return nil, fmt.Errorf("couldn't create request time limit middleware: %w", err)
 	}
 
-	serverHandler := panicRecoveryMiddleware(
-		loggerMiddleware(
+	serverHandler := PanicRecoveryMiddleware(
+		LoggerMiddleware(
 			limiter.AddRequestTimeout(
 				authMiddleware.CheckJWT(
 					authLoggerMiddleware(

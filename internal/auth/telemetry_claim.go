@@ -3,10 +3,10 @@ package auth
 import (
 	"context"
 
-	"github.com/DIMO-Network/shared/pkg/middleware/privilegetoken"
 	"github.com/DIMO-Network/shared/pkg/privileges"
 	"github.com/DIMO-Network/shared/pkg/set"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
+	"github.com/DIMO-Network/token-exchange-api/pkg/tokenclaims"
 	jwtmiddleware "github.com/auth0/go-jwt-middleware/v2"
 	"github.com/ethereum/go-ethereum/common"
 )
@@ -17,7 +17,7 @@ type TelemetryClaimContextKey struct{}
 // TelemetryClaim is a custom claim for the telemetry API.
 type TelemetryClaim struct {
 	privileges set.Set[model.Privilege]
-	privilegetoken.CustomClaims
+	tokenclaims.CustomClaims
 }
 
 // Validate function is required to implement the validator.CustomClaims interface.
