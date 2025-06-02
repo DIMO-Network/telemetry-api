@@ -66,7 +66,7 @@ func AddClaimHandler(next http.Handler, vehicleAddr, mfrAddr common.Address) htt
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		claims, ok := GetValidatedClaims(r)
 		if !ok || claims.CustomClaims == nil {
-			// unathorized calls will not have a claims.
+			// unauthorized calls will not have a claims.
 			next.ServeHTTP(w, r)
 			return
 		}
