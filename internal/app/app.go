@@ -2,7 +2,6 @@ package app
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net/http"
 	"time"
@@ -22,8 +21,7 @@ import (
 	"github.com/DIMO-Network/telemetry-api/internal/service/ch"
 	"github.com/DIMO-Network/telemetry-api/internal/service/fetchapi"
 	"github.com/DIMO-Network/telemetry-api/internal/service/identity"
-	"github.com/rs/zerolog"
-	"github.com/vektah/gqlparser/v2/gqlerror"
+	"github.com/DIMO-Network/telemetry-api/pkg/errorhandler"
 )
 
 func init() {
@@ -117,15 +115,6 @@ func newVinVCServiceFromSettings(settings config.Settings) (*vc.Repository, erro
 	return vc.New(fetchapiSvc, settings.VINVCDataVersion, settings.POMVCDataVersion, uint64(settings.ChainID), settings.VehicleNFTAddress), nil
 }
 
-func errorHandler(ctx context.Context, e error) *gqlerror.Error {
-	var gqlErr *gqlerror.Error
-	if errors.As(e, &gqlErr) {
-		return gqlErr
-	}
-	zerolog.Ctx(ctx).Error().Err(e).Msg("Internal server error")
-	return gqlerror.Errorf("internal server error")
-}
-
 func newDefaultServer(es graphql.ExecutableSchema) *handler.Server {
 	srv := handler.New(es)
 
@@ -139,11 +128,7 @@ func newDefaultServer(es graphql.ExecutableSchema) *handler.Server {
 	srv.Use(extension.FixedComplexityLimit(100))
 	srv.Use(extension.Introspection{})
 	srv.Use(metrics.Tracer{})
-
-	srv.SetErrorPresenter(errorHandler)
-
-	// add prometheus metrics
-	srv.Use(metrics.Tracer{})
+	srv.SetErrorPresenter(errorhandler.ErrorPresenter)
 
 	return srv
 }
