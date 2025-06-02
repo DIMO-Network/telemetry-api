@@ -3,7 +3,7 @@ module github.com/DIMO-Network/telemetry-api
 go 1.24.0
 
 require (
-	github.com/99designs/gqlgen v0.17.73
+	github.com/99designs/gqlgen v0.17.74
 	github.com/ClickHouse/clickhouse-go/v2 v2.35.0
 	github.com/DIMO-Network/attestation-api v0.0.22
 	github.com/DIMO-Network/clickhouse-infra v0.0.3
@@ -11,7 +11,7 @@ require (
 	github.com/DIMO-Network/fetch-api v0.0.12
 	github.com/DIMO-Network/model-garage v0.6.0
 	github.com/DIMO-Network/shared v1.0.3
-	github.com/DIMO-Network/token-exchange-api v0.3.0
+	github.com/DIMO-Network/token-exchange-api v0.3.2
 	github.com/Khan/genqlient v0.8.1
 	github.com/auth0/go-jwt-middleware/v2 v2.3.0
 	github.com/ethereum/go-ethereum v1.15.11
@@ -21,11 +21,11 @@ require (
 	github.com/rs/zerolog v1.34.0
 	github.com/segmentio/ksuid v1.0.4
 	github.com/stretchr/testify v1.10.0
-	github.com/uber/h3-go/v4 v4.2.1
+	github.com/uber/h3-go/v4 v4.2.2
 	github.com/vektah/gqlparser/v2 v2.5.27
 	github.com/volatiletech/sqlboiler/v4 v4.19.1
 	go.uber.org/mock v0.5.2
-	google.golang.org/grpc v1.72.1
+	google.golang.org/grpc v1.72.2
 	google.golang.org/protobuf v1.36.6
 )
 
