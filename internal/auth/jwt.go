@@ -64,7 +64,7 @@ func AddClaimHandler(next http.Handler, vehicleAddr, mfrAddr common.Address) htt
 	}
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		claims, ok := GetValidatedClaims(r)
+		claims, ok := GetValidatedClaims(r.Context())
 		if !ok || claims.CustomClaims == nil {
 			// unauthorized calls will not have a claims.
 			next.ServeHTTP(w, r)
@@ -87,8 +87,8 @@ func AddClaimHandler(next http.Handler, vehicleAddr, mfrAddr common.Address) htt
 }
 
 // GetValidatedClaims returns the validated claims from the request context.
-func GetValidatedClaims(r *http.Request) (*validator.ValidatedClaims, bool) {
-	claim := r.Context().Value(jwtmiddleware.ContextKey{})
+func GetValidatedClaims(ctx context.Context) (*validator.ValidatedClaims, bool) {
+	claim := ctx.Value(jwtmiddleware.ContextKey{})
 	if claim == nil {
 		return nil, false
 	}
