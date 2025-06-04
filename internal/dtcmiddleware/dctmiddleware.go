@@ -119,19 +119,12 @@ func processDCTErrorToGraphqlError(ctx context.Context, err error) *gqlerror.Err
 func handleErrorDetails(ctx context.Context, errorInfo *errdetails.ErrorInfo, originalError error) *gqlerror.Error {
 	switch errorInfo.Reason {
 	case grpc.ErrorReason_ERROR_REASON_INVALID_ASSET_DID.String():
-		return &gqlerror.Error{
-			Message: fmt.Sprintf("invalid asset DID: %s", errorInfo.Metadata[grpc.MetadataKey_METADATA_KEY_ASSET_DID.String()]),
-			Err:     originalError,
-			Path:    graphql.GetPath(ctx),
-			Extensions: map[string]any{
-				"reason": errorInfo.Reason,
-				"code":   http.StatusPaymentRequired,
-			},
-		}
+		err := fmt.Errorf("invalid asset DID: %s", errorInfo.Metadata[grpc.MetadataKey_METADATA_KEY_ASSET_DID.String()])
+		return errorhandler.NewInternalErrorWithMsg(ctx, err, "Failed to process credit operation")
 	case grpc.ErrorReason_ERROR_REASON_INSUFFICIENT_CREDITS.String():
 		if txHash, ok := errorInfo.Metadata[grpc.MetadataKey_METADATA_KEY_TRANSACTION_HASH.String()]; ok {
 			return &gqlerror.Error{
-				Message: fmt.Sprintf("insufficient credits, transaction initiated: %s", txHash),
+				Message: fmt.Sprintf("insufficient credits, burn transaction initiated: %s", txHash),
 				Err:     originalError,
 				Extensions: map[string]any{
 					"reason": errorInfo.Reason,
