@@ -110,7 +110,9 @@ func (c *Client) runWithRetry(ctx context.Context, f func() error) error {
 	for i := 0; i < c.MaxRetries; i++ {
 		if err = f(); err != nil {
 			time.Sleep(c.RetryTimeout)
+			continue
 		}
+		return nil
 	}
 	return err
 }
