@@ -60,7 +60,7 @@ func setupCreditTrackerContainer(t *testing.T) *mockCreditTrackerServer {
 		default:
 			conn, err := net.Dial("tcp", testServer.URL())
 			if err == nil {
-				conn.Close()
+				_ = conn.Close()
 				return testServer
 			}
 			time.Sleep(10 * time.Millisecond)
