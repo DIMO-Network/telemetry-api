@@ -59,7 +59,7 @@ func (c *Client) DeductCredits(ctx context.Context, developerLicense string, tok
 			Amount: amount,
 		})
 		if err != nil {
-			return fmt.Errorf("failed deduct request to credit tracker: %w", err)
+			return fmt.Errorf("failed to send deduct request to credit tracker: %w", err)
 		}
 		return nil
 	}
@@ -86,7 +86,7 @@ func (c *Client) RefundCredits(ctx context.Context, developerLicense string, tok
 			Amount: amount,
 		})
 		if err != nil {
-			return fmt.Errorf("failed refund request to credit tracker: %w", err)
+			return fmt.Errorf("failed to send refund request to credit tracker: %w", err)
 		}
 		return nil
 	}

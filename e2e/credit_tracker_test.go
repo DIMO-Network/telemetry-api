@@ -49,10 +49,23 @@ func setupCreditTrackerContainer(t *testing.T) *mockCreditTrackerServer {
 		}
 	}()
 
-	// Wait a moment for the server to start
-	time.Sleep(100 * time.Millisecond)
+	// Wait for server to be ready by attempting to connect
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
 
-	return testServer
+	for {
+		select {
+		case <-ctx.Done():
+			t.Fatal("timeout waiting for server to start")
+		default:
+			conn, err := net.Dial("tcp", testServer.URL())
+			if err == nil {
+				conn.Close()
+				return testServer
+			}
+			time.Sleep(10 * time.Millisecond)
+		}
+	}
 }
 
 // Close gracefully stops the test server
