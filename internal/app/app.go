@@ -14,6 +14,7 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/DIMO-Network/telemetry-api/internal/auth"
 	"github.com/DIMO-Network/telemetry-api/internal/config"
+	"github.com/DIMO-Network/telemetry-api/internal/dtcmiddleware"
 	"github.com/DIMO-Network/telemetry-api/internal/graph"
 	"github.com/DIMO-Network/telemetry-api/internal/limits"
 	"github.com/DIMO-Network/telemetry-api/internal/metrics"
@@ -21,6 +22,7 @@ import (
 	"github.com/DIMO-Network/telemetry-api/internal/repositories/attestation"
 	"github.com/DIMO-Network/telemetry-api/internal/repositories/vc"
 	"github.com/DIMO-Network/telemetry-api/internal/service/ch"
+	"github.com/DIMO-Network/telemetry-api/internal/service/credittracker"
 	"github.com/DIMO-Network/telemetry-api/internal/service/fetchapi"
 	"github.com/DIMO-Network/telemetry-api/internal/service/identity"
 	"github.com/DIMO-Network/telemetry-api/pkg/errorhandler"
@@ -57,6 +59,11 @@ func New(settings config.Settings) (*App, error) {
 		return nil, fmt.Errorf("failed to create attestation repository: %w", err)
 	}
 
+	ctClient, err := credittracker.NewClient(&settings)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create credit tracker client: %w", err)
+	}
+
 	resolver := &graph.Resolver{
 		Repository:      baseRepo,
 		IdentityService: idService,
@@ -72,7 +79,8 @@ func New(settings config.Settings) (*App, error) {
 	cfg.Directives.IsSignal = noOp
 	cfg.Directives.HasAggregation = noOp
 
-	server := newDefaultServer(graph.NewExecutableSchema(cfg))
+	server := newServer(graph.NewExecutableSchema(cfg))
+	server.Use(dtcmiddleware.NewDCT(ctClient))
 
 	authMiddleware, err := auth.NewJWTMiddleware(settings.TokenExchangeIssuer, settings.TokenExchangeJWTKeySetURL)
 	if err != nil {
@@ -124,7 +132,7 @@ func newVinVCServiceFromSettings(settings config.Settings) (*vc.Repository, erro
 	return vc.New(fetchapiSvc, settings.VINVCDataVersion, settings.POMVCDataVersion, uint64(settings.ChainID), settings.VehicleNFTAddress), nil
 }
 
-func newDefaultServer(es graphql.ExecutableSchema) *handler.Server {
+func newServer(es graphql.ExecutableSchema) *handler.Server {
 	srv := handler.New(es)
 
 	srv.AddTransport(transport.Websocket{
@@ -162,7 +170,7 @@ func LoggerMiddleware(next http.Handler) http.Handler {
 // authLoggerMiddleware adds the authenticated user to the logger
 func authLoggerMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		validateClaims, ok := auth.GetValidatedClaims(r)
+		validateClaims, ok := auth.GetValidatedClaims(r.Context())
 		if !ok {
 			next.ServeHTTP(w, r)
 			return

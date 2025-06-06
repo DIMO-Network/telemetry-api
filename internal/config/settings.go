@@ -23,4 +23,5 @@ type Settings struct {
 	DeviceLastSeenBinHrs         int64           `yaml:"DEVICE_LAST_SEEN_BIN_HOURS"`
 	ChainID                      int             `yaml:"DIMO_REGISTRY_CHAIN_ID"`
 	FetchAPIGRPCEndpoint         string          `yaml:"FETCH_API_GRPC_ENDPOINT"`
+	CreditTrackerEndpoint        string          `yaml:"CREDIT_TRACKER_ENDPOINT"`
 }

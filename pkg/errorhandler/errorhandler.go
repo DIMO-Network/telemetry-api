@@ -77,3 +77,38 @@ func NewUnauthorizedErrorWithMsg(ctx context.Context, err error, message string)
 func NewUnauthorizedError(ctx context.Context, err error) *gqlerror.Error {
 	return NewUnauthorizedErrorWithMsg(ctx, err, err.Error())
 }
+
+// HasInternalError checks if the gqlerror.List contains an internal server error.
+func HasInternalError(gqlErrs *gqlerror.List) bool {
+	for _, err := range *gqlErrs {
+		if IsInternalError(err) {
+			return true
+		}
+	}
+	return false
+}
+
+// IsInternalError checks if the gqlerror.Error is an internal server error.
+func IsInternalError(gqlErr *gqlerror.Error) bool {
+	return gqlErr.Extensions["code"] == http.StatusInternalServerError
+}
+
+// HasBadRequestError checks if the gqlerror.List contains a bad request error.
+func HasBadRequestError(gqlErrs *gqlerror.List) bool {
+	for _, err := range *gqlErrs {
+		if IsBadRequestError(err) {
+			return true
+		}
+	}
+	return false
+}
+
+// IsBadRequestError checks if the gqlerror.Error is a bad request error.
+func IsBadRequestError(gqlErr *gqlerror.Error) bool {
+	return gqlErr.Extensions["code"] == http.StatusBadRequest
+}
+
+// IsUnauthorizedError checks if the gqlerror.Error is an unauthorized error.
+func IsUnauthorizedError(gqlErr *gqlerror.Error) bool {
+	return gqlErr.Extensions["code"] == http.StatusUnauthorized
+}

@@ -19,6 +19,7 @@ type TestServices struct {
 	Auth        *mockAuthServer
 	FetchServer *mockFetchServer
 	CH          *container.Container
+	CT          *mockCreditTrackerServer
 	Settings    config.Settings
 }
 
@@ -61,18 +62,21 @@ func GetTestServices(t *testing.T) *TestServices {
 		auth := setupAuthServer(t, settings.VehicleNFTAddress, settings.ManufacturerNFTAddress)
 		fetch := NewTestFetchAPI(t)
 		ch := setupClickhouseContainer(t)
-		// Create test settings
+		ct := setupCreditTrackerContainer(t)
 
+		// Create test settings
 		settings.FetchAPIGRPCEndpoint = fetch.URL()
 		settings.Clickhouse = ch.Config()
 		settings.IdentityAPIURL = identity.URL()
 		settings.TokenExchangeJWTKeySetURL = auth.URL() + "/keys"
+		settings.CreditTrackerEndpoint = ct.URL()
 
 		testServices = &TestServices{
 			Identity:    identity,
 			Auth:        auth,
 			FetchServer: fetch,
 			CH:          ch,
+			CT:          ct,
 			Settings:    settings,
 		}
 		cleanup = func() {
@@ -81,6 +85,7 @@ func GetTestServices(t *testing.T) *TestServices {
 				auth.Close()
 				fetch.Close()
 				ch.Terminate(context.Background())
+				ct.Close()
 			})
 		}
 	})
