@@ -53,33 +53,39 @@ func (d DCT) InterceptResponse(
 	next graphql.ResponseHandler,
 ) *graphql.Response {
 	if d.Tracker == nil {
-		return graphql.ErrorResponse(ctx, "DCT is not enabled")
+		zerolog.Ctx(ctx).Error().Msg("DCT is not enabled")
+		// return graphql.ErrorResponse(ctx, "DCT is not enabled")
 	}
 
 	// Determine who to charge
 	developerID, tokenID, gqlError := d.getSubjectAndTokenID(ctx)
 	if gqlError != nil {
-		return &graphql.Response{
-			Errors: gqlerror.List{gqlError},
-		}
+		zerolog.Ctx(ctx).Error().Err(gqlError).Msg("Failed to get subject and token ID")
+		// return &graphql.Response{
+		// 	Errors: gqlerror.List{gqlError},
+		// }
+		return next(ctx)
 	}
 
 	// Determine how many credits to charge
 	credits, gqlError := d.calculateCredits(ctx)
 	if gqlError != nil {
-		return &graphql.Response{
-			Errors: gqlerror.List{gqlError},
-		}
+		zerolog.Ctx(ctx).Error().Err(gqlError).Msg("Failed to calculate credits")
+		// return &graphql.Response{
+		// 	Errors: gqlerror.List{gqlError},
+		// }
+		return next(ctx)
 	}
 
 	// Deduct the credits
 	err := d.Tracker.DeductCredits(ctx, developerID, tokenID, credits)
 	if err != nil {
-		zerolog.Ctx(ctx).Error().Err(err).Msg("Failed to deduct credits")
 		gqlError := processDCTErrorToGraphqlError(ctx, err)
-		return &graphql.Response{
-			Errors: gqlerror.List{gqlError},
-		}
+		zerolog.Ctx(ctx).Error().Err(gqlError).Msg("Failed to deduct credits")
+		// return &graphql.Response{
+		// 	Errors: gqlerror.List{gqlError},
+		// }
+		return next(ctx)
 	}
 
 	// Complete the request and get the response
