@@ -64,9 +64,9 @@ func AddClaimHandler(next http.Handler, vehicleAddr, mfrAddr common.Address) htt
 	}
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		claims, ok := r.Context().Value(jwtmiddleware.ContextKey{}).(*validator.ValidatedClaims)
-		if !ok || claims == nil || claims.CustomClaims == nil {
-			// unathorized calls will not have a claims.
+		claims, ok := GetValidatedClaims(r.Context())
+		if !ok || claims.CustomClaims == nil {
+			// unauthorized calls will not have a claims.
 			next.ServeHTTP(w, r)
 			return
 		}
@@ -84,6 +84,19 @@ func AddClaimHandler(next http.Handler, vehicleAddr, mfrAddr common.Address) htt
 		r = r.Clone(context.WithValue(r.Context(), TelemetryClaimContextKey{}, telClaim))
 		next.ServeHTTP(w, r)
 	})
+}
+
+// GetValidatedClaims returns the validated claims from the request context.
+func GetValidatedClaims(ctx context.Context) (*validator.ValidatedClaims, bool) {
+	claim := ctx.Value(jwtmiddleware.ContextKey{})
+	if claim == nil {
+		return nil, false
+	}
+	validateClaim, ok := claim.(*validator.ValidatedClaims)
+	if !ok {
+		return nil, false
+	}
+	return validateClaim, true
 }
 
 // ErrorHandler is a custom error handler for the jwt middleware. It logs the error and then calls the default error handler.

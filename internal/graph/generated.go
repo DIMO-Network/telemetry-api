@@ -2256,8 +2256,6 @@ var sources = []*ast.Source{
 	{Name: "../../schema/attestation.graphqls", Input: `extend type Query {
   """
   attestations returns all attestations for a given vehicle token.
-
-  Required Privileges: [VEHICLE_RAW_DATA]
   """
   attestations(
     """
@@ -2271,7 +2269,6 @@ var sources = []*ast.Source{
     filter: AttestationFilter
   ): [Attestation]
     @requiresVehicleToken
-    @requiresAllOfPrivileges(privileges: [VEHICLE_RAW_DATA])
 }
 
 type Attestation {
@@ -7844,20 +7841,8 @@ func (ec *executionContext) _Query_attestations(ctx context.Context, field graph
 			}
 			return ec.directives.RequiresVehicleToken(ctx, nil, directive0)
 		}
-		directive2 := func(ctx context.Context) (any, error) {
-			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_RAW_DATA"})
-			if err != nil {
-				var zeroVal []*model.Attestation
-				return zeroVal, err
-			}
-			if ec.directives.RequiresAllOfPrivileges == nil {
-				var zeroVal []*model.Attestation
-				return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
-			}
-			return ec.directives.RequiresAllOfPrivileges(ctx, nil, directive1, privileges)
-		}
 
-		tmp, err := directive2(rctx)
+		tmp, err := directive1(rctx)
 		if err != nil {
 			return nil, graphql.ErrorOnPath(ctx, err)
 		}

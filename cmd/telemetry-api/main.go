@@ -50,8 +50,8 @@ func main() {
 
 	serveMonitoring(strconv.Itoa(cfg.MonPort), &logger, cfg.EnablePprof)
 	mux := http.NewServeMux()
-	mux.Handle("/", loggerMiddleware(panicRecoveryMiddleware(playground.Handler("GraphQL playground", "/query"))))
-	mux.Handle("/query", loggerMiddleware(panicRecoveryMiddleware(application.Handler)))
+	mux.Handle("/", app.LoggerMiddleware(app.PanicRecoveryMiddleware(playground.Handler("GraphQL playground", "/query"))))
+	mux.Handle("/query", application.Handler)
 
 	logger.Info().Msgf("Server started on port: %d", cfg.Port)
 	logger.Fatal().Err(http.ListenAndServe(fmt.Sprintf(":%d", cfg.Port), mux)).Msg("Server shut down.")
@@ -97,32 +97,4 @@ func serveMonitoring(port string, logger *zerolog.Logger, enablePprof bool) *fib
 	}()
 
 	return monApp
-}
-
-func loggerMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// get source ip from request could be cloudflare proxy
-		sourceIP := r.Header.Get("X-Forwarded-For")
-		if sourceIP == "" {
-			sourceIP = r.Header.Get("X-Real-IP")
-		}
-		if sourceIP == "" {
-			sourceIP = r.RemoteAddr
-		}
-		loggerCtx := zerolog.Ctx(r.Context()).With().Str("method", r.Method).Str("path", r.URL.Path).Str("sourceIp", sourceIP).Logger().WithContext(r.Context())
-		r = r.WithContext(loggerCtx)
-		next.ServeHTTP(w, r)
-	})
-}
-
-func panicRecoveryMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		defer func() {
-			if err := recover(); err != nil {
-				_, _ = fmt.Fprintf(os.Stderr, "panic: %v\n%s\n", err, debug.Stack())
-				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-			}
-		}()
-		next.ServeHTTP(w, r)
-	})
 }
