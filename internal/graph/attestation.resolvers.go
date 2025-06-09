@@ -12,5 +12,5 @@ import (
 
 // Attestations is the resolver for the attestations field.
 func (r *queryResolver) Attestations(ctx context.Context, tokenID int, filter *model.AttestationFilter) ([]*model.Attestation, error) {
-	return r.AttestationRepo.GetAttestations(ctx, uint32(tokenID), filter)
+	return r.AttestationRepo.GetAttestations(ctx, tokenID, filter)
 }

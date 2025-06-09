@@ -34,7 +34,7 @@ func New(indexService indexRepoService, chainID uint64, vehicleAddress common.Ad
 }
 
 // GetAttestations fetches attestations for the given vehicle.
-func (r *Repository) GetAttestations(ctx context.Context, vehicleTokenID uint32, filter *model.AttestationFilter) ([]*model.Attestation, error) {
+func (r *Repository) GetAttestations(ctx context.Context, vehicleTokenID int, filter *model.AttestationFilter) ([]*model.Attestation, error) {
 	vehicleDID := cloudevent.ERC721DID{
 		ChainID:         r.chainID,
 		ContractAddress: r.vehicleAddress,
@@ -69,6 +69,10 @@ func (r *Repository) GetAttestations(ctx context.Context, vehicleTokenID uint32,
 
 		if filter.Limit != nil {
 			limit = *filter.Limit
+		}
+
+		if filter.ID != nil {
+			opts.Id = &wrapperspb.StringValue{Value: *filter.ID}
 		}
 	}
 
