@@ -1,6 +1,6 @@
 module github.com/DIMO-Network/telemetry-api
 
-go 1.24
+go 1.24.0
 
 require (
 	github.com/99designs/gqlgen v0.17.73
@@ -8,9 +8,11 @@ require (
 	github.com/DIMO-Network/attestation-api v0.0.22
 	github.com/DIMO-Network/clickhouse-infra v0.0.3
 	github.com/DIMO-Network/cloudevent v0.1.0
+	github.com/DIMO-Network/credit-tracker v0.0.0-20250603213155-96e2e9965b01
 	github.com/DIMO-Network/fetch-api v0.0.12
 	github.com/DIMO-Network/model-garage v0.6.0
 	github.com/DIMO-Network/shared v1.0.3
+	github.com/DIMO-Network/token-exchange-api v0.3.0
 	github.com/Khan/genqlient v0.8.1
 	github.com/auth0/go-jwt-middleware/v2 v2.3.0
 	github.com/ethereum/go-ethereum v1.15.11
@@ -24,7 +26,8 @@ require (
 	github.com/vektah/gqlparser/v2 v2.5.27
 	github.com/volatiletech/sqlboiler/v4 v4.19.1
 	go.uber.org/mock v0.5.2
-	google.golang.org/grpc v1.72.1
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20250324211829-b45e905df463
+	google.golang.org/grpc v1.72.2
 	google.golang.org/protobuf v1.36.6
 )
 
@@ -121,8 +124,7 @@ require (
 	github.com/tklauser/numcpus v0.7.0 // indirect
 	github.com/urfave/cli/v2 v2.27.6 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
-	github.com/valyala/fasthttp v1.55.0 // indirect
-	github.com/valyala/tcplisten v1.0.0 // indirect
+	github.com/valyala/fasthttp v1.62.0 // indirect
 	github.com/volatiletech/inflect v0.0.1 // indirect
 	github.com/volatiletech/strmangle v0.0.7-0.20240503230658-86517898275a // indirect
 	github.com/xrash/smetrics v0.0.0-20240521201337-686a1a2994c1 // indirect
@@ -134,7 +136,6 @@ require (
 	go.opentelemetry.io/otel/trace v1.35.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/crypto v0.38.0 // indirect
-	golang.org/x/exp v0.0.0-20250506013437-ce4c2cf36ca6 // indirect
 	golang.org/x/mod v0.24.0 // indirect
 	golang.org/x/net v0.40.0 // indirect
 	golang.org/x/sync v0.14.0 // indirect
@@ -142,7 +143,6 @@ require (
 	golang.org/x/text v0.25.0 // indirect
 	golang.org/x/tools v0.33.0 // indirect
 	golang.org/x/xerrors v0.0.0-20240716161551-93cc26a95ae9 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20250324211829-b45e905df463 // indirect
 	gopkg.in/go-jose/go-jose.v2 v2.6.3 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

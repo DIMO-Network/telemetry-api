@@ -29,7 +29,7 @@ func TestPermission(t *testing.T) {
 				}
 			}`,
 			permissions: []int{},
-			expectedErr: `[{"message":"unauthorized: token id does not match","path":["signalsLatest"]}]`,
+			expectedErr: "unauthorized: token id does not match",
 		},
 		{
 			name:    "Token permissions",
@@ -53,7 +53,7 @@ func TestPermission(t *testing.T) {
 				}
 			}`,
 			permissions: []int{},
-			expectedErr: `[{"message":"unauthorized: missing required privilege(s) VEHICLE_NON_LOCATION_DATA","path":["signalsLatest","speed"]}]`,
+			expectedErr: "unauthorized: missing required privilege(s) VEHICLE_NON_LOCATION_DATA",
 		},
 		{
 			name:    "Non Location permissions",
@@ -120,7 +120,7 @@ func TestPermission(t *testing.T) {
 				}
 			}`,
 			permissions: []int{1},
-			expectedErr: `[{"message":"unauthorized: requires at least one of the following privileges [VEHICLE_APPROXIMATE_LOCATION VEHICLE_ALL_TIME_LOCATION]" ,"path":["signalsLatest","currentLocationApproximateLatitude"]}]`,
+			expectedErr: "unauthorized: requires at least one of the following privileges [VEHICLE_APPROXIMATE_LOCATION VEHICLE_ALL_TIME_LOCATION]",
 		},
 	}
 
@@ -132,7 +132,7 @@ func TestPermission(t *testing.T) {
 			err := telemetryClient.Post(tt.query, &result, WithToken(token))
 			if tt.expectedErr != "" {
 				require.Error(t, err)
-				require.JSONEq(t, tt.expectedErr, err.Error())
+				require.Contains(t, err.Error(), tt.expectedErr)
 				return
 			}
 			require.NoError(t, err)

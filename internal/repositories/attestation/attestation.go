@@ -3,15 +3,14 @@ package attestation
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"math/big"
 
 	"github.com/DIMO-Network/cloudevent"
 	"github.com/DIMO-Network/fetch-api/pkg/grpc"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
+	"github.com/DIMO-Network/telemetry-api/pkg/errorhandler"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/rs/zerolog"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
@@ -36,7 +35,6 @@ func New(indexService indexRepoService, chainID uint64, vehicleAddress common.Ad
 
 // GetAttestations fetches attestations for the given vehicle.
 func (r *Repository) GetAttestations(ctx context.Context, vehicleTokenID int, filter *model.AttestationFilter) ([]*model.Attestation, error) {
-	logger := r.getLogger(ctx, vehicleTokenID)
 	vehicleDID := cloudevent.ERC721DID{
 		ChainID:         r.chainID,
 		ContractAddress: r.vehicleAddress,
@@ -47,7 +45,6 @@ func (r *Repository) GetAttestations(ctx context.Context, vehicleTokenID int, fi
 		Subject: &wrapperspb.StringValue{Value: vehicleDID},
 	}
 
-	logger.Info().Msgf("fetching attestations: %s", vehicleDID)
 	limit := 10
 	if filter != nil {
 		if filter.Source != nil {
@@ -81,8 +78,7 @@ func (r *Repository) GetAttestations(ctx context.Context, vehicleTokenID int, fi
 
 	cloudEvents, err := r.indexService.GetAllCloudEvents(ctx, opts, int32(limit))
 	if err != nil {
-		logger.Error().Err(err).Msg("failed to get cloud events")
-		return nil, errors.New("internal error")
+		return nil, errorhandler.NewInternalErrorWithMsg(ctx, fmt.Errorf("failed to get cloud events: %w", err), "internal error")
 	}
 
 	tknID := int(vehicleTokenID)
@@ -104,8 +100,7 @@ func (r *Repository) GetAttestations(ctx context.Context, vehicleTokenID int, fi
 
 		signature, ok := ce.Extras["signature"].(string)
 		if !ok {
-			logger.Info().Str("id", attestation.ID).Str("source", attestation.Source.Hex()).Msg("failed to pull signature")
-			return nil, fmt.Errorf("invalid format: attestation signature missing")
+			return nil, errorhandler.NewBadRequestErrorWithMsg(ctx, fmt.Errorf("invalid signature from %s on attestation %s", attestation.ID, attestation.Source), "invalid signature")
 		}
 
 		attestation.Signature = signature
@@ -113,8 +108,4 @@ func (r *Repository) GetAttestations(ctx context.Context, vehicleTokenID int, fi
 	}
 
 	return attestations, nil
-}
-
-func (r *Repository) getLogger(ctx context.Context, vehicleTokenID int) zerolog.Logger {
-	return zerolog.Ctx(ctx).With().Str("component", "attestation").Int("vehicleTokenId", vehicleTokenID).Logger()
 }
