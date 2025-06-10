@@ -2,7 +2,6 @@ package auth
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"math/big"
 	"testing"
@@ -441,68 +440,5 @@ func TestRequiresOneOfPrivilegeCheck(t *testing.T) {
 				require.Equal(t, expectedReturn, next)
 			}
 		})
-	}
-}
-
-func TestGetAttestationClaimMap(t *testing.T) {
-
-	testCases := []struct {
-		name        string
-		getContext  func(context.Context) context.Context
-		expectedErr error
-	}{
-		{
-			name: "no claims found",
-			getContext: func(ctx context.Context) context.Context {
-				return ctx
-			},
-			expectedErr: errors.New("no cloudevent claims found"),
-		},
-		{
-			name: "no cloud events in claim",
-			getContext: func(ctx context.Context) context.Context {
-				var claims TelemetryClaim
-				return context.WithValue(ctx, TelemetryClaimContextKey{}, &claims)
-			},
-			expectedErr: errors.New("no cloudevent claims found"),
-		},
-		{
-			name: "no events, still valid",
-			getContext: func(ctx context.Context) context.Context {
-				var claims TelemetryClaim
-				claims.CloudEvents = &tokenclaims.CloudEvents{
-					Events: []tokenclaims.Event{},
-				}
-				return context.WithValue(ctx, TelemetryClaimContextKey{}, &claims)
-			},
-		},
-		{
-			name: "valid events set",
-			getContext: func(ctx context.Context) context.Context {
-				var claims TelemetryClaim
-				claims.CloudEvents = &tokenclaims.CloudEvents{
-					Events: []tokenclaims.Event{
-						{
-							EventType: tokenclaims.GlobalIdentifier,
-							Source:    tokenclaims.GlobalIdentifier,
-							IDs:       []string{tokenclaims.GlobalIdentifier},
-						},
-					},
-				}
-				return context.WithValue(ctx, TelemetryClaimContextKey{}, &claims)
-			},
-		},
-	}
-
-	for _, tc := range testCases {
-
-		ctx := context.Background()
-		ctx = tc.getContext(ctx)
-		_, err := GetAttestationClaimMap(ctx)
-		if tc.expectedErr != nil {
-			require.Equal(t, err.Error(), tc.expectedErr.Error())
-			continue
-		}
-		require.Nil(t, err)
 	}
 }

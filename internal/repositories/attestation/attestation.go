@@ -13,6 +13,7 @@ import (
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	"github.com/DIMO-Network/telemetry-api/pkg/errorhandler"
 	"github.com/DIMO-Network/token-exchange-api/pkg/tokenclaims"
+	jwtmiddleware "github.com/auth0/go-jwt-middleware/v2"
 	"github.com/ethereum/go-ethereum/common"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"google.golang.org/protobuf/types/known/wrapperspb"
@@ -38,9 +39,8 @@ func New(indexService indexRepoService, chainID uint64, vehicleAddress common.Ad
 
 // GetAttestations fetches attestations for the given vehicle.
 func (r *Repository) GetAttestations(ctx context.Context, vehicleTokenID int, filter *model.AttestationFilter) ([]*model.Attestation, error) {
-	claimMap, err := auth.GetAttestationClaimMap(ctx)
-	if err != nil {
-		return nil, errorhandler.NewInternalErrorWithMsg(ctx, fmt.Errorf("no claims found in jwt for vehicle token: %d", vehicleTokenID), "internal error")
+	if !auth.ValidAttestationClaim(ctx, filter) {
+		return nil, errorhandler.NewInternalErrorWithMsg(ctx, jwtmiddleware.ErrJWTInvalid, "invalid claims")
 	}
 	vehicleDID := cloudevent.ERC721DID{
 		ChainID:         r.chainID,
@@ -91,10 +91,6 @@ func (r *Repository) GetAttestations(ctx context.Context, vehicleTokenID int, fi
 	tknID := int(vehicleTokenID)
 	var attestations []*model.Attestation
 	for _, ce := range cloudEvents {
-		if !validClaim(claimMap, ce.Source, ce.ID) {
-			return nil, fmt.Errorf("no claim found for requested attestation: %s %s", ce.Source, ce.ID)
-		}
-
 		attestation := &model.Attestation{
 			ID:             ce.ID,
 			VehicleTokenID: tknID,

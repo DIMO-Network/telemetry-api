@@ -2,7 +2,7 @@ package auth
 
 import (
 	"context"
-	"errors"
+	"slices"
 
 	"github.com/DIMO-Network/cloudevent"
 	"github.com/DIMO-Network/shared/pkg/privileges"
@@ -54,22 +54,35 @@ func getTelemetryClaim(ctx context.Context) (*TelemetryClaim, error) {
 	return claim, nil
 }
 
-func GetAttestationClaimMap(ctx context.Context) (map[string]*set.StringSet, error) {
-	claims := map[string]*set.StringSet{}
-	claim, ok := ctx.Value(TelemetryClaimContextKey{}).(*TelemetryClaim)
-	if !ok || claim == nil || claim.CloudEvents == nil {
-		return nil, errors.New("no cloudevent claims found")
+func ValidAttestationClaim(ctx context.Context, filter *model.AttestationFilter) bool {
+	claim, err := getTelemetryClaim(ctx)
+	if err != nil || claim.CloudEvents == nil {
+		return false
 	}
+
+	source := tokenclaims.GlobalIdentifier
+	id := tokenclaims.GlobalIdentifier
+
+	if filter != nil {
+		if filter.Source != nil {
+			source = filter.Source.Hex()
+		}
+
+		if filter.ID != nil {
+			id = *filter.ID
+		}
+	}
+
+	var validClaim bool
 	for _, ce := range claim.CloudEvents.Events {
 		if ce.EventType == cloudevent.TypeAttestation || ce.EventType == tokenclaims.GlobalIdentifier {
-			if _, ok := claims[ce.Source]; !ok {
-				claims[ce.Source] = set.NewStringSet()
-			}
-
-			for _, id := range ce.IDs {
-				claims[ce.Source].Add(id)
+			if ce.Source == source || ce.Source == tokenclaims.GlobalIdentifier {
+				if slices.Contains(ce.IDs, id) || slices.Contains(ce.IDs, tokenclaims.GlobalIdentifier) {
+					validClaim = true
+				}
 			}
 		}
 	}
-	return claims, nil
+
+	return validClaim
 }
