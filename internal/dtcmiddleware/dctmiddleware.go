@@ -12,6 +12,7 @@ import (
 	"github.com/DIMO-Network/telemetry-api/internal/auth"
 	"github.com/DIMO-Network/telemetry-api/internal/service/credittracker"
 	"github.com/DIMO-Network/telemetry-api/pkg/errorhandler"
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/rs/zerolog"
 	"github.com/vektah/gqlparser/v2/gqlerror"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
@@ -52,6 +53,10 @@ func (d DCT) InterceptResponse(
 	ctx context.Context,
 	next graphql.ResponseHandler,
 ) *graphql.Response {
+	// Start timing the entire middleware operation
+	middlewareTimer := prometheus.NewTimer(MiddlewareLatency)
+	defer middlewareTimer.ObserveDuration()
+
 	if d.Tracker == nil {
 		zerolog.Ctx(ctx).Error().Msg("DCT is not enabled")
 		// return graphql.ErrorResponse(ctx, "DCT is not enabled")
@@ -77,8 +82,12 @@ func (d DCT) InterceptResponse(
 		return next(ctx)
 	}
 
+	// Start timing the DCT request
+	dctTimer := prometheus.NewTimer(DCTRequestLatency.WithLabelValues("deduct"))
 	// Deduct the credits
 	err := d.Tracker.DeductCredits(ctx, developerID, tokenID, credits)
+	dctTimer.ObserveDuration()
+
 	if err != nil {
 		gqlError := processDCTErrorToGraphqlError(ctx, err)
 		zerolog.Ctx(ctx).Error().Err(gqlError).Msg("Failed to deduct credits")
@@ -93,7 +102,11 @@ func (d DCT) InterceptResponse(
 
 	// If it's our fault the request failed, refund the credits
 	if errorhandler.HasInternalError(&response.Errors) {
+		// Start timing the refund operation
+		refundTimer := prometheus.NewTimer(DCTRequestLatency.WithLabelValues("refund"))
 		err := d.Tracker.RefundCredits(ctx, developerID, tokenID, credits)
+		refundTimer.ObserveDuration()
+
 		if err != nil {
 			zerolog.Ctx(ctx).Error().Err(err).Msg("Failed to refund credits")
 		}
