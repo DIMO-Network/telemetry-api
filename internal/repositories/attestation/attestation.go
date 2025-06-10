@@ -8,11 +8,9 @@ import (
 
 	"github.com/DIMO-Network/cloudevent"
 	"github.com/DIMO-Network/fetch-api/pkg/grpc"
-	"github.com/DIMO-Network/shared/pkg/set"
 	"github.com/DIMO-Network/telemetry-api/internal/auth"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	"github.com/DIMO-Network/telemetry-api/pkg/errorhandler"
-	"github.com/DIMO-Network/token-exchange-api/pkg/tokenclaims"
 	jwtmiddleware "github.com/auth0/go-jwt-middleware/v2"
 	"github.com/ethereum/go-ethereum/common"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -115,17 +113,4 @@ func (r *Repository) GetAttestations(ctx context.Context, vehicleTokenID int, fi
 	}
 
 	return attestations, nil
-}
-func validClaim(claims map[string]*set.StringSet, source, id string) bool {
-	accessBySource, ok := claims[source]
-	if !ok {
-		globalAccess, ok := claims[tokenclaims.GlobalIdentifier]
-		if !ok {
-			return false
-		}
-
-		return globalAccess.Contains(id) || globalAccess.Contains(tokenclaims.GlobalIdentifier)
-	}
-
-	return accessBySource.Contains(id) || accessBySource.Contains(tokenclaims.GlobalIdentifier)
 }
