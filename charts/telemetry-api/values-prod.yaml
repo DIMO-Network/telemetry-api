@@ -45,10 +45,10 @@ ingress:
 resources:
   limits:
     cpu: 2
-    memory: 32768Mi
+    memory: 32Gi
   requests:
     cpu: 1
-    memory: 10240Mi
+    memory: 5Gi
 autoscaling:
   enabled: false
   minReplicas: 1

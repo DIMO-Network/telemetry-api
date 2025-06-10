@@ -90,7 +90,7 @@ func (d DCT) InterceptResponse(
 
 	if err != nil {
 		gqlError := processDCTErrorToGraphqlError(ctx, err)
-		zerolog.Ctx(ctx).Error().Err(gqlError).Msg("Failed to deduct credits")
+		zerolog.Ctx(ctx).Error().Err(gqlError.Err).Msg("Failed to deduct credits")
 		// return &graphql.Response{
 		// 	Errors: gqlerror.List{gqlError},
 		// }
