@@ -278,7 +278,7 @@ func TestGetAttestations(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			// Set up the mock expectations
 			enrichedCtx := tt.mockSetup()
-			// Call the met
+			// Call the method
 			attestations, err := att.GetAttestations(enrichedCtx, tt.vehTknID, tt.filters)
 			if tt.err != nil {
 				require.Error(t, err)
