@@ -3,6 +3,7 @@ package attestation
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"math/big"
 
@@ -11,7 +12,6 @@ import (
 	"github.com/DIMO-Network/telemetry-api/internal/auth"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	"github.com/DIMO-Network/telemetry-api/pkg/errorhandler"
-	jwtmiddleware "github.com/auth0/go-jwt-middleware/v2"
 	"github.com/ethereum/go-ethereum/common"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"google.golang.org/protobuf/types/known/wrapperspb"
@@ -37,8 +37,8 @@ func New(indexService indexRepoService, chainID uint64, vehicleAddress common.Ad
 
 // GetAttestations fetches attestations for the given vehicle.
 func (r *Repository) GetAttestations(ctx context.Context, vehicleTokenID int, filter *model.AttestationFilter) ([]*model.Attestation, error) {
-	if !auth.ValidAttestationClaim(ctx, filter) {
-		return nil, errorhandler.NewInternalErrorWithMsg(ctx, jwtmiddleware.ErrJWTInvalid, "invalid claims")
+	if !auth.ValidRequest(ctx, filter) {
+		return nil, errorhandler.NewUnauthorizedError(ctx, errors.New("invalid claims"))
 	}
 	vehicleDID := cloudevent.ERC721DID{
 		ChainID:         r.chainID,

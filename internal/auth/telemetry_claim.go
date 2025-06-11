@@ -54,12 +54,16 @@ func getTelemetryClaim(ctx context.Context) (*TelemetryClaim, error) {
 	return claim, nil
 }
 
-func ValidAttestationClaim(ctx context.Context, filter *model.AttestationFilter) bool {
+func ValidRequest(ctx context.Context, filter *model.AttestationFilter) bool {
 	claim, err := getTelemetryClaim(ctx)
 	if err != nil || claim.CloudEvents == nil {
 		return false
 	}
 
+	return validCloudEventRequest(claim, cloudevent.TypeAttestation, filter)
+}
+
+func validCloudEventRequest(claim *TelemetryClaim, cloudEvtType string, filter *model.AttestationFilter) bool {
 	source := tokenclaims.GlobalIdentifier
 	id := tokenclaims.GlobalIdentifier
 
@@ -73,16 +77,15 @@ func ValidAttestationClaim(ctx context.Context, filter *model.AttestationFilter)
 		}
 	}
 
-	var validClaim bool
 	for _, ce := range claim.CloudEvents.Events {
-		if ce.EventType == cloudevent.TypeAttestation || ce.EventType == tokenclaims.GlobalIdentifier {
+		if ce.EventType == cloudEvtType || ce.EventType == tokenclaims.GlobalIdentifier {
 			if ce.Source == source || ce.Source == tokenclaims.GlobalIdentifier {
 				if slices.Contains(ce.IDs, id) || slices.Contains(ce.IDs, tokenclaims.GlobalIdentifier) {
-					validClaim = true
+					return true
 				}
 			}
 		}
 	}
 
-	return validClaim
+	return false
 }
