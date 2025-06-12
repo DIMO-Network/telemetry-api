@@ -1,8 +1,6 @@
 extend type Query {
   """
   attestations returns all attestations for a given vehicle token.
-
-  Required Privileges: [VEHICLE_RAW_DATA]
   """
   attestations(
     """
@@ -16,7 +14,6 @@ extend type Query {
     filter: AttestationFilter
   ): [Attestation]
     @requiresVehicleToken
-    @requiresAllOfPrivileges(privileges: [VEHICLE_RAW_DATA])
 }
 
 type Attestation {

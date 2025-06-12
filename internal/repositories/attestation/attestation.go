@@ -3,11 +3,13 @@ package attestation
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"math/big"
 
 	"github.com/DIMO-Network/cloudevent"
 	"github.com/DIMO-Network/fetch-api/pkg/grpc"
+	"github.com/DIMO-Network/telemetry-api/internal/auth"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	"github.com/DIMO-Network/telemetry-api/pkg/errorhandler"
 	"github.com/ethereum/go-ethereum/common"
@@ -35,6 +37,9 @@ func New(indexService indexRepoService, chainID uint64, vehicleAddress common.Ad
 
 // GetAttestations fetches attestations for the given vehicle.
 func (r *Repository) GetAttestations(ctx context.Context, vehicleTokenID int, filter *model.AttestationFilter) ([]*model.Attestation, error) {
+	if !auth.ValidRequest(ctx, filter) {
+		return nil, errorhandler.NewUnauthorizedError(ctx, errors.New("invalid claims"))
+	}
 	vehicleDID := cloudevent.ERC721DID{
 		ChainID:         r.chainID,
 		ContractAddress: r.vehicleAddress,

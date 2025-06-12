@@ -2,7 +2,9 @@ package auth
 
 import (
 	"context"
+	"slices"
 
+	"github.com/DIMO-Network/cloudevent"
 	"github.com/DIMO-Network/shared/pkg/privileges"
 	"github.com/DIMO-Network/shared/pkg/set"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
@@ -50,4 +52,40 @@ func getTelemetryClaim(ctx context.Context) (*TelemetryClaim, error) {
 		return nil, jwtmiddleware.ErrJWTMissing
 	}
 	return claim, nil
+}
+
+func ValidRequest(ctx context.Context, filter *model.AttestationFilter) bool {
+	claim, err := getTelemetryClaim(ctx)
+	if err != nil || claim.CloudEvents == nil {
+		return false
+	}
+
+	return validCloudEventRequest(claim, cloudevent.TypeAttestation, filter)
+}
+
+func validCloudEventRequest(claim *TelemetryClaim, cloudEvtType string, filter *model.AttestationFilter) bool {
+	source := tokenclaims.GlobalIdentifier
+	id := tokenclaims.GlobalIdentifier
+
+	if filter != nil {
+		if filter.Source != nil {
+			source = filter.Source.Hex()
+		}
+
+		if filter.ID != nil {
+			id = *filter.ID
+		}
+	}
+
+	for _, ce := range claim.CloudEvents.Events {
+		if ce.EventType == cloudEvtType || ce.EventType == tokenclaims.GlobalIdentifier {
+			if ce.Source == source || ce.Source == tokenclaims.GlobalIdentifier {
+				if slices.Contains(ce.IDs, id) || slices.Contains(ce.IDs, tokenclaims.GlobalIdentifier) {
+					return true
+				}
+			}
+		}
+	}
+
+	return false
 }

@@ -7,11 +7,13 @@ import (
 	"testing"
 
 	"github.com/99designs/gqlgen/graphql"
+	"github.com/DIMO-Network/cloudevent"
 	"github.com/DIMO-Network/shared/pkg/privileges"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	"github.com/DIMO-Network/telemetry-api/internal/service/identity"
 	"github.com/DIMO-Network/token-exchange-api/pkg/tokenclaims"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/segmentio/ksuid"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
 )
@@ -441,4 +443,113 @@ func TestRequiresOneOfPrivilegeCheck(t *testing.T) {
 			}
 		})
 	}
+}
+
+func Test_ValidCloudEventRequest(t *testing.T) {
+
+	user1 := common.BigToAddress(big.NewInt(1))
+	user2 := common.BigToAddress(big.NewInt(2))
+	id1 := ksuid.New().String()
+	id2 := ksuid.New().String()
+	id3 := ksuid.New().String()
+
+	for _, test := range []struct {
+		name          string
+		eventType     string
+		cloudEvtClaim *tokenclaims.CloudEvents
+		filter        *model.AttestationFilter
+		shouldPass    bool
+	}{
+		{
+			name:       "Success: Request single event id from granted set",
+			shouldPass: true,
+			eventType:  cloudevent.TypeAttestation,
+			cloudEvtClaim: &tokenclaims.CloudEvents{
+				Events: []tokenclaims.Event{
+					{
+						EventType: cloudevent.TypeAttestation,
+						Source:    user1.Hex(),
+						IDs:       []string{id1, id2, id3},
+					},
+				},
+			},
+			filter: &model.AttestationFilter{
+				ID:     &id1,
+				Source: &user1,
+			},
+		},
+		{
+			name:       "Success: Request single event id after global grant",
+			shouldPass: true,
+			eventType:  cloudevent.TypeAttestation,
+			cloudEvtClaim: &tokenclaims.CloudEvents{
+				Events: []tokenclaims.Event{
+					{
+						EventType: cloudevent.TypeAttestation,
+						Source:    user1.Hex(),
+						IDs:       []string{tokenclaims.GlobalIdentifier},
+					},
+				},
+			},
+			filter: &model.AttestationFilter{
+				ID:     &id1,
+				Source: &user1,
+			},
+		},
+		{
+			name:       "Success: omit event id after global grant",
+			shouldPass: true,
+			eventType:  cloudevent.TypeAttestation,
+			cloudEvtClaim: &tokenclaims.CloudEvents{
+				Events: []tokenclaims.Event{
+					{
+						EventType: cloudevent.TypeAttestation,
+						Source:    user1.Hex(),
+						IDs:       []string{tokenclaims.GlobalIdentifier},
+					},
+				},
+			},
+			filter: &model.AttestationFilter{
+				Source: &user1,
+			},
+		},
+		{
+			name:      "Fail: fail to specify id in filter, granted only subset",
+			eventType: cloudevent.TypeAttestation,
+			cloudEvtClaim: &tokenclaims.CloudEvents{
+				Events: []tokenclaims.Event{
+					{
+						EventType: cloudevent.TypeAttestation,
+						Source:    user1.Hex(),
+						IDs:       []string{id1, id2, id3},
+					},
+				},
+			},
+			filter: &model.AttestationFilter{
+				Source: &user1,
+			},
+		},
+		{
+			name:      "Fail: Invalid Attestation Request",
+			eventType: cloudevent.TypeAttestation,
+			cloudEvtClaim: &tokenclaims.CloudEvents{
+				Events: []tokenclaims.Event{
+					{
+						EventType: cloudevent.TypeAttestation,
+						Source:    user1.Hex(),
+						IDs:       []string{id1, id2, id3},
+					},
+				},
+			},
+			filter: &model.AttestationFilter{
+				ID:     &id1,
+				Source: &user2,
+			},
+		},
+	} {
+		var claim TelemetryClaim
+		claim.CloudEvents = test.cloudEvtClaim
+		require.Equal(t, test.shouldPass, validCloudEventRequest(&claim, test.eventType, test.filter), test.name)
+	}
+
 }
