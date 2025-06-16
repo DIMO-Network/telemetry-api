@@ -45,6 +45,11 @@ type Query {
   """
   availableSignals(tokenId: Int!, filter: SignalFilter): [String!]
     @requiresVehicleToken
+  events(
+    tokenID: Int!
+    from: Time!
+    to: Time!
+  ): [Event] @requiresVehicleToken
 }
 type SignalAggregations {
   """
@@ -177,4 +182,23 @@ input SignalFilter {
   available sources are: "autopi", "macaron", "ruptela", "smartcar", "tesla","compass"
   """
   source: String
+}
+
+
+type Event {
+  """
+  timestamp of when this event was observed, TODO(ae) confirm that this is a timestamp and not a range
+  """
+  timestamp: Time!
+
+  """
+  value is the value that triggered the event
+  """
+  value: Float!
+
+  """
+  count is the number of observations of this event during the time period TODO(ae) again, confirm if we're getting a range of time or a point in time
+  """
+  count: Int! 
+
 }

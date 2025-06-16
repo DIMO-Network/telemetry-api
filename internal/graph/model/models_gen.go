@@ -63,6 +63,16 @@ type DeviceActivity struct {
 	LastActive *time.Time `json:"lastActive,omitempty"`
 }
 
+type Event struct {
+	// timestamp of when this event was observed, TODO(ae) confirm that this is a timestamp and not a range
+	Timestamp time.Time `json:"timestamp"`
+	// value is the value that triggered the event
+	Value float64 `json:"value"`
+	// count is the number of observations of this event during the time period TODO(ae) again, confirm if we're getting a range of time or a point in time
+	Count         int `json:"count"`
+	HarshBreaking int `json:"harshBreaking"`
+}
+
 type Pomvc struct {
 	// vehicleTokenId is the token ID of the vehicle.
 	VehicleTokenID *int `json:"vehicleTokenId,omitempty"`

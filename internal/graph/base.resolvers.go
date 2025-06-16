@@ -34,6 +34,11 @@ func (r *queryResolver) AvailableSignals(ctx context.Context, tokenID int, filte
 	return r.GetAvailableSignals(ctx, uint32(tokenID), filter)
 }
 
+// Events is the resolver for the events field.
+func (r *queryResolver) Events(ctx context.Context, tokenID int, from time.Time, to time.Time) ([]*model.Event, error) {
+	return r.GetEvents(ctx, tokenID, from, to)
+}
+
 // CurrentLocationApproximateLatitude is the resolver for the CurrentLocationApproximateLatitude
 func (r *signalAggregationsResolver) CurrentLocationApproximateLatitude(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
 	latLng, ok := approximateLocationSignalAggregations(obj, agg)

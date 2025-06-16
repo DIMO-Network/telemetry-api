@@ -34,6 +34,7 @@ type CHService interface {
 	GetAggregatedSignals(ctx context.Context, aggArgs *model.AggregatedSignalArgs) ([]*model.AggSignal, error)
 	GetLatestSignals(ctx context.Context, latestArgs *model.LatestSignalsArgs) ([]*vss.Signal, error)
 	GetAvailableSignals(ctx context.Context, tokenID uint32, filter *model.SignalFilter) ([]string, error)
+	GetEvents(ctx context.Context, tokenID int, from time.Time, to time.Time) ([]*model.Event, error)
 }
 
 // Repository is the base repository for all repositories.
@@ -165,6 +166,11 @@ func (r *Repository) GetAvailableSignals(ctx context.Context, tokenID uint32, fi
 		}
 	}
 	return retSignals, nil
+}
+
+func (r *Repository) GetEvents(ctx context.Context, tokenID int, from time.Time, to time.Time) ([]*model.Event, error) {
+	var resp []*model.Event
+	return resp, nil
 }
 
 // handleDBError logs the error and returns a generic error message.
