@@ -16,6 +16,8 @@ github.com/DIMO-Network/attestation-api v0.0.22 h1:iQwiPCV1P/4rD1HkbGJPs8BfjzO9T
 github.com/DIMO-Network/attestation-api v0.0.22/go.mod h1:U6vAf/84o9jd6W+rZzLs+YjumSuzSskFLDp4SC1zJP4=
 github.com/DIMO-Network/clickhouse-infra v0.0.3 h1:B6/4IY9IxLcyydET14IjHUT+A5SDEis7p//DoFzrMk4=
 github.com/DIMO-Network/clickhouse-infra v0.0.3/go.mod h1:NtpQ1btkPzebDvpYYygeqiiBmJ/q5oJb/T/JWzUVRlk=
+github.com/DIMO-Network/clickhouse-infra v0.0.4-0.20250622180951-cbd98210a1fa h1:OrNYrvgrYHvl2zyAz3K6z8llWQFwlQt8w2LMtwfNGR4=
+github.com/DIMO-Network/clickhouse-infra v0.0.4-0.20250622180951-cbd98210a1fa/go.mod h1:NtpQ1btkPzebDvpYYygeqiiBmJ/q5oJb/T/JWzUVRlk=
 github.com/DIMO-Network/cloudevent v0.1.0 h1:ze0ngJQBXjSSyBnEAUO+YvClvkqM68kNko/czY3GfLo=
 github.com/DIMO-Network/cloudevent v0.1.0/go.mod h1:RS9Byb0ycb5b7OFe9y+xpF0nkR4pYYS6Om/ccs3N5Z4=
 github.com/DIMO-Network/credit-tracker v0.0.0-20250603213155-96e2e9965b01 h1:KW+yKmX+LreOfSKt0lqEitKN20PaUcMkThIxYLSJOsM=

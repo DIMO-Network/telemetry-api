@@ -6,7 +6,7 @@ require (
 	github.com/99designs/gqlgen v0.17.73
 	github.com/ClickHouse/clickhouse-go/v2 v2.35.0
 	github.com/DIMO-Network/attestation-api v0.0.22
-	github.com/DIMO-Network/clickhouse-infra v0.0.3
+	github.com/DIMO-Network/clickhouse-infra v0.0.4-0.20250622180951-cbd98210a1fa
 	github.com/DIMO-Network/cloudevent v0.1.0
 	github.com/DIMO-Network/credit-tracker v0.0.0-20250603213155-96e2e9965b01
 	github.com/DIMO-Network/fetch-api v0.0.12
