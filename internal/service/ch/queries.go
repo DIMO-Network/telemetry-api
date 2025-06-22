@@ -105,9 +105,6 @@ func withSource(source string) qm.QueryMod {
 }
 
 // selectInterval adds a SELECT clause to the query to select the interval group based on the given milliSeconds.
-// Normalize timestamps relative to a specific origin point (by subtracting it)
-// Round to interval boundaries using toStartOfInterval
-// Restore the original time reference (by adding the origin back).
 func selectInterval(milliSeconds int64, origin time.Time) qm.QueryMod {
 	// Newer version of toStartOfInterval with "origin".
 	// Requires ClickHouse Cloud 24.10.
