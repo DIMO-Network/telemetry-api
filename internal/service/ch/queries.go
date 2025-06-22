@@ -303,7 +303,8 @@ WHERE
     AND timestamp < toDateTime('2024-04-27 09:21:19')
 GROUP BY
     group_timestamp,
-    name
+    name,
+    agg
 ORDER BY
     group_timestamp ASC,
 	name ASC,
