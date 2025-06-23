@@ -105,11 +105,14 @@ func withSource(source string) qm.QueryMod {
 }
 
 // selectInterval adds a SELECT clause to the query to select the interval group based on the given milliSeconds.
-func selectInterval(milliSeconds int64, origin time.Time) qm.QueryMod {
+func selectInterval(microSeconds int64, origin time.Time) qm.QueryMod {
 	// Newer version of toStartOfInterval with "origin".
 	// Requires ClickHouse Cloud 24.10.
-	return qm.Select(fmt.Sprintf("toStartOfInterval(%s, toIntervalMillisecond(%d), fromUnixTimestamp64Micro(%d)) as %s",
-		vss.TimestampCol, milliSeconds, origin.UnixMicro(), IntervalGroup))
+	//
+	// Note that this new overload seems to have a bug when the interval
+	// is an IntervalMilliseconds.
+	return qm.Select(fmt.Sprintf("toStartOfInterval(%s, toIntervalMicrosecond(%d), fromUnixTimestamp64Micro(%d)) as %s",
+		vss.TimestampCol, microSeconds, origin.UnixMicro(), IntervalGroup))
 }
 
 func selectNumberAggs(numberAggs []model.FloatSignalArgs) qm.QueryMod {
