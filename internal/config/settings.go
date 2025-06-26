@@ -21,7 +21,7 @@ type Settings struct {
 	IdentityAPIURL               string          `yaml:"IDENTITY_API_URL"`
 	IdentityAPIReqTimeoutSeconds int             `yaml:"IDENTITY_API_REQUEST_TIMEOUT_SECONDS"`
 	DeviceLastSeenBinHrs         int64           `yaml:"DEVICE_LAST_SEEN_BIN_HOURS"`
-	ChainID                      int             `yaml:"DIMO_REGISTRY_CHAIN_ID"`
+	ChainID                      uint64          `yaml:"DIMO_REGISTRY_CHAIN_ID"`
 	FetchAPIGRPCEndpoint         string          `yaml:"FETCH_API_GRPC_ENDPOINT"`
 	CreditTrackerEndpoint        string          `yaml:"CREDIT_TRACKER_ENDPOINT"`
 }

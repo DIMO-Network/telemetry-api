@@ -24,32 +24,38 @@ type Client struct {
 	ctClient               ctgrpc.CreditTrackerClient
 	chainID                uint64
 	vehicleContractAddress common.Address
+	appName                string
 }
 
 // NewClient creates a new credit tracker client.
-func NewClient(settings *config.Settings) (*Client, error) {
+func NewClient(settings *config.Settings, appName string) (*Client, error) {
 	conn, err := grpc.NewClient(settings.CreditTrackerEndpoint, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		return nil, fmt.Errorf("failed to create credit tracker client: %w", err)
 	}
 	ctClient := ctgrpc.NewCreditTrackerClient(conn)
 	return &Client{
-		conn:           conn,
-		Endpoint:       settings.CreditTrackerEndpoint,
-		RequestTimeout: 3 * time.Second,
-		MaxRetries:     3,
-		RetryTimeout:   100 * time.Millisecond,
-		ctClient:       ctClient,
+		conn:                   conn,
+		Endpoint:               settings.CreditTrackerEndpoint,
+		RequestTimeout:         3 * time.Second,
+		MaxRetries:             3,
+		RetryTimeout:           100 * time.Millisecond,
+		ctClient:               ctClient,
+		appName:                appName,
+		chainID:                settings.ChainID,
+		vehicleContractAddress: settings.VehicleNFTAddress,
 	}, nil
 }
 
 // DeductCredits deducts credits from the given developer license and token.
-func (c *Client) DeductCredits(ctx context.Context, developerLicense string, tokenID *big.Int, amount int64) error {
+func (c *Client) DeductCredits(ctx context.Context, referenceID string, developerLicense string, tokenID *big.Int, amount uint64) error {
 	trackerCtx, cancel := context.WithTimeout(ctx, c.RequestTimeout)
 	defer cancel()
 
 	deductCredits := func() error {
 		_, err := c.ctClient.DeductCredits(trackerCtx, &ctgrpc.CreditDeductRequest{
+			ReferenceId:      referenceID,
+			AppName:          c.appName,
 			DeveloperLicense: developerLicense,
 			AssetDid: cloudevent.ERC721DID{
 				ChainID:         c.chainID,
@@ -71,19 +77,14 @@ func (c *Client) DeductCredits(ctx context.Context, developerLicense string, tok
 }
 
 // RefundCredits refunds credits from the given developer license and token.
-func (c *Client) RefundCredits(ctx context.Context, developerLicense string, tokenID *big.Int, amount int64) error {
+func (c *Client) RefundCredits(ctx context.Context, referenceID string) error {
 	trackerCtx, cancel := context.WithTimeout(ctx, c.RequestTimeout)
 	defer cancel()
 
 	refundCredits := func() error {
 		_, err := c.ctClient.RefundCredits(trackerCtx, &ctgrpc.RefundCreditsRequest{
-			DeveloperLicense: developerLicense,
-			AssetDid: cloudevent.ERC721DID{
-				ChainID:         c.chainID,
-				ContractAddress: c.vehicleContractAddress,
-				TokenID:         tokenID,
-			}.String(),
-			Amount: amount,
+			ReferenceId: referenceID,
+			AppName:     c.appName,
 		})
 		if err != nil {
 			return fmt.Errorf("failed to send refund request to credit tracker: %w", err)
@@ -109,6 +110,7 @@ func (c *Client) runWithRetry(ctx context.Context, f func() error) error {
 	var err error
 	for i := 0; i < c.MaxRetries; i++ {
 		if err = f(); err != nil {
+			//TODO: We can return early for specific errors
 			time.Sleep(c.RetryTimeout)
 			continue
 		}
