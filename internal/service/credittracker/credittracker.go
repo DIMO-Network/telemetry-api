@@ -35,13 +35,15 @@ func NewClient(settings *config.Settings, appName string) (*Client, error) {
 	}
 	ctClient := ctgrpc.NewCreditTrackerClient(conn)
 	return &Client{
-		conn:           conn,
-		Endpoint:       settings.CreditTrackerEndpoint,
-		RequestTimeout: 3 * time.Second,
-		MaxRetries:     3,
-		RetryTimeout:   100 * time.Millisecond,
-		ctClient:       ctClient,
-		appName:        appName,
+		conn:                   conn,
+		Endpoint:               settings.CreditTrackerEndpoint,
+		RequestTimeout:         3 * time.Second,
+		MaxRetries:             3,
+		RetryTimeout:           100 * time.Millisecond,
+		ctClient:               ctClient,
+		appName:                appName,
+		chainID:                settings.ChainID,
+		vehicleContractAddress: settings.VehicleNFTAddress,
 	}, nil
 }
 
