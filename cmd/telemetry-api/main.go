@@ -22,7 +22,7 @@ import (
 )
 
 func main() {
-	logger := zerolog.New(os.Stdout).With().Timestamp().Str("app", "telemetry-api").Logger()
+	logger := zerolog.New(os.Stdout).With().Timestamp().Str("app", app.AppName).Logger()
 	if info, ok := debug.ReadBuildInfo(); ok {
 		for _, s := range info.Settings {
 			if s.Key == "vcs.revision" && len(s.Value) == 40 {

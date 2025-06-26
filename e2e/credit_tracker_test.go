@@ -96,33 +96,33 @@ func (ts *mockCreditTrackerServer) SetResponse(method string, requestKey string,
 // getRequestKey generates a unique key for a request based on its parameters
 func getRequestKey(req any) string {
 	switch r := req.(type) {
-	case *ctgrpc.CreditCheckRequest:
+	case *ctgrpc.GetBalanceRequest:
 		return fmt.Sprintf("%s:%s", r.DeveloperLicense, r.AssetDid)
 	case *ctgrpc.CreditDeductRequest:
-		return fmt.Sprintf("%s:%s:%d", r.DeveloperLicense, r.AssetDid, r.Amount)
+		return fmt.Sprintf("%s:%s", r.GetReferenceId(), r.GetAppName())
 	case *ctgrpc.RefundCreditsRequest:
-		return fmt.Sprintf("%s:%s:%d:%s", r.DeveloperLicense, r.AssetDid, r.Amount, r.Reason)
+		return fmt.Sprintf("%s:%s", r.GetReferenceId(), r.GetAppName())
 	default:
 		return ""
 	}
 }
 
 // CheckCredits implements the gRPC CheckCredits method
-func (s *mockCreditTrackerServer) CheckCredits(ctx context.Context, req *ctgrpc.CreditCheckRequest) (*ctgrpc.CreditCheckResponse, error) {
+func (s *mockCreditTrackerServer) GetBalance(ctx context.Context, req *ctgrpc.GetBalanceRequest) (*ctgrpc.GetBalanceResponse, error) {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
 	requestKey := getRequestKey(req)
 	if responses, ok := s.responses["CheckCredits"]; ok {
 		if response, ok := responses[requestKey]; ok {
-			if resp, ok := response.(*ctgrpc.CreditCheckResponse); ok {
+			if resp, ok := response.(*ctgrpc.GetBalanceResponse); ok {
 				return resp, nil
 			}
 		}
 	}
 
 	// Default response if no custom response is set
-	return &ctgrpc.CreditCheckResponse{
+	return &ctgrpc.GetBalanceResponse{
 		RemainingCredits: 100,
 	}, nil
 }
@@ -142,9 +142,7 @@ func (s *mockCreditTrackerServer) DeductCredits(ctx context.Context, req *ctgrpc
 	}
 
 	// Default response if no custom response is set
-	return &ctgrpc.CreditDeductResponse{
-		RemainingCredits: 99,
-	}, nil
+	return &ctgrpc.CreditDeductResponse{}, nil
 }
 
 // RefundCredits implements the gRPC RefundCredits method
@@ -162,7 +160,5 @@ func (s *mockCreditTrackerServer) RefundCredits(ctx context.Context, req *ctgrpc
 	}
 
 	// Default response if no custom response is set
-	return &ctgrpc.RefundCreditsResponse{
-		RemainingCredits: 101,
-	}, nil
+	return &ctgrpc.RefundCreditsResponse{}, nil
 }

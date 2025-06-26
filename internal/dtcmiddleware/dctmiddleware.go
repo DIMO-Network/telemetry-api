@@ -14,12 +14,13 @@ import (
 	"github.com/DIMO-Network/telemetry-api/pkg/errorhandler"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/rs/zerolog"
+	"github.com/segmentio/ksuid"
 	"github.com/vektah/gqlparser/v2/gqlerror"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/status"
 )
 
-var defaultCreditAmount = int64(1)
+var defaultCreditAmount = uint64(1)
 
 // DCT provides a GraphQL middleware for the Developer Credit Tracker.
 type DCT struct {
@@ -65,7 +66,7 @@ func (d DCT) InterceptResponse(
 	// Determine who to charge
 	developerID, tokenID, gqlError := d.getSubjectAndTokenID(ctx)
 	if gqlError != nil {
-		zerolog.Ctx(ctx).Error().Err(gqlError).Msg("Failed to get subject and token ID")
+		zerolog.Ctx(ctx).Warn().Err(gqlError).Msg("Failed to get subject and token ID")
 		// return &graphql.Response{
 		// 	Errors: gqlerror.List{gqlError},
 		// }
@@ -75,7 +76,7 @@ func (d DCT) InterceptResponse(
 	// Determine how many credits to charge
 	credits, gqlError := d.calculateCredits(ctx)
 	if gqlError != nil {
-		zerolog.Ctx(ctx).Error().Err(gqlError).Msg("Failed to calculate credits")
+		zerolog.Ctx(ctx).Warn().Err(gqlError).Msg("Failed to calculate credits")
 		// return &graphql.Response{
 		// 	Errors: gqlerror.List{gqlError},
 		// }
@@ -85,12 +86,13 @@ func (d DCT) InterceptResponse(
 	// Start timing the DCT request
 	dctTimer := prometheus.NewTimer(DCTRequestLatency.WithLabelValues("deduct"))
 	// Deduct the credits
-	err := d.Tracker.DeductCredits(ctx, developerID, tokenID, credits)
+	referenceID := ksuid.New().String()
+	err := d.Tracker.DeductCredits(ctx, referenceID, developerID, tokenID, credits)
 	dctTimer.ObserveDuration()
 
 	if err != nil {
 		gqlError := processDCTErrorToGraphqlError(ctx, err)
-		zerolog.Ctx(ctx).Error().Err(gqlError.Err).Msg("Failed to deduct credits")
+		zerolog.Ctx(ctx).Warn().Err(gqlError.Err).Msg("Failed to deduct credits")
 		// return &graphql.Response{
 		// 	Errors: gqlerror.List{gqlError},
 		// }
@@ -104,11 +106,11 @@ func (d DCT) InterceptResponse(
 	if errorhandler.HasInternalError(&response.Errors) {
 		// Start timing the refund operation
 		refundTimer := prometheus.NewTimer(DCTRequestLatency.WithLabelValues("refund"))
-		err := d.Tracker.RefundCredits(ctx, developerID, tokenID, credits)
+		err := d.Tracker.RefundCredits(ctx, referenceID)
 		refundTimer.ObserveDuration()
 
 		if err != nil {
-			zerolog.Ctx(ctx).Error().Err(err).Msg("Failed to refund credits")
+			zerolog.Ctx(ctx).Warn().Err(err).Msg("Failed to refund credits")
 		}
 		return response
 	}
@@ -180,7 +182,7 @@ func (d DCT) getSubjectAndTokenID(ctx context.Context) (string, *big.Int, *gqler
 	return validateClaims.RegisteredClaims.Subject, tokenIDBig, nil
 }
 
-func (d DCT) calculateCredits(ctx context.Context) (int64, *gqlerror.Error) {
+func (d DCT) calculateCredits(ctx context.Context) (uint64, *gqlerror.Error) {
 	// TODO: We can add logic here to determine what the base cost for a given operations should be
 	return defaultCreditAmount, nil
 

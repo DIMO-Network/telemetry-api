@@ -39,6 +39,9 @@ type App struct {
 	cleanup func()
 }
 
+// AppName is the name of the application.
+var AppName = "telemetry-api"
+
 // New creates a new application.
 func New(settings config.Settings) (*App, error) {
 	idService := identity.NewService(settings.IdentityAPIURL, settings.IdentityAPIReqTimeoutSeconds)
@@ -59,7 +62,7 @@ func New(settings config.Settings) (*App, error) {
 		return nil, fmt.Errorf("failed to create attestation repository: %w", err)
 	}
 
-	ctClient, err := credittracker.NewClient(&settings)
+	ctClient, err := credittracker.NewClient(&settings, AppName)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create credit tracker client: %w", err)
 	}
