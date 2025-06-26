@@ -362,9 +362,9 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 		}
 
 		if i == 0 {
-			floatFilters = append(floatFilters, qm.Expr(floatFilters...))
+			floatFilters = append(floatFilters, qm.Expr(fieldFilters...))
 		} else {
-			floatFilters = append(floatFilters, qm.Or2(qm.Expr(floatFilters...)))
+			floatFilters = append(floatFilters, qm.Or2(qm.Expr(fieldFilters...)))
 		}
 	}
 
