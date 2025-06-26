@@ -146,7 +146,7 @@ func selectStringAggs(stringAggs []model.StringSignalArgs, ahm *AliasHandleMappe
 	// Add a CASE statement for each name and its corresponding aggregation function
 	caseStmts := make([]string, 0, len(stringAggs))
 	for _, agg := range stringAggs {
-		caseStmts = append(caseStmts, fmt.Sprintf("WHEN %s = '%s' AND %s = '%s' THEN %s", HandleCol, ahm.Handle(agg.Alias), getStringAgg(agg.Agg)))
+		caseStmts = append(caseStmts, fmt.Sprintf("WHEN %s = '%s' THEN %s", HandleCol, ahm.Handle(agg.Alias), getStringAgg(agg.Agg)))
 	}
 	caseStmt := fmt.Sprintf("CASE %s ELSE NULL END AS %s", strings.Join(caseStmts, " "), vss.ValueStringCol)
 	return qm.Select(caseStmt)
