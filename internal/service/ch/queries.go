@@ -11,12 +11,14 @@ import (
 	"github.com/volatiletech/sqlboiler/v4/drivers"
 	"github.com/volatiletech/sqlboiler/v4/queries"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
+	"github.com/volatiletech/sqlboiler/v4/queries/qmhelper"
 )
 
 const (
 	// IntervalGroup is the column alias for the interval group.
 	IntervalGroup = "group_timestamp"
 	AggCol        = "agg"
+	HandleCol     = "handle"
 	aggTableName  = "agg_table"
 	tokenIDWhere  = vss.TokenIDCol + " = ?"
 	nameIn        = vss.NameCol + " IN ?"
@@ -25,7 +27,7 @@ const (
 	sourceWhere   = vss.SourceCol + " = ?"
 	sourceIn      = vss.SourceCol + " IN ?"
 	groupAsc      = IntervalGroup + " ASC"
-	valueTableDef = "name String, agg String"
+	valueTableDef = vss.NameCol + " String, handle String"
 )
 
 // varibles for the last seen signal query.
@@ -131,7 +133,7 @@ func selectNumberAggs(numberAggs []model.FloatSignalArgs) qm.QueryMod {
 	// Add a CASE statement for each name and its corresponding aggregation function
 	caseStmts := make([]string, len(numberAggs))
 	for i := range numberAggs {
-		caseStmts[i] = fmt.Sprintf("WHEN %s = '%s' AND %s = '%s' THEN %s", vss.NameCol, numberAggs[i].Name, AggCol, numberAggs[i].Agg, getFloatAggFunc(numberAggs[i].Agg))
+		caseStmts[i] = fmt.Sprintf("WHEN %s = '%s' THEN %s", HandleCol, numberAggs[i].QueryHandle, getFloatAggFunc(numberAggs[i].Agg))
 	}
 	caseStmt := fmt.Sprintf("CASE %s ELSE NULL END AS %s", strings.Join(caseStmts, " "), vss.ValueNumberCol)
 	return qm.Select(caseStmt)
@@ -144,7 +146,7 @@ func selectStringAggs(stringAggs []model.StringSignalArgs) qm.QueryMod {
 	// Add a CASE statement for each name and its corresponding aggregation function
 	caseStmts := make([]string, len(stringAggs))
 	for i := range stringAggs {
-		caseStmts[i] = fmt.Sprintf("WHEN %s = '%s' AND %s = '%s' THEN %s", vss.NameCol, stringAggs[i].Name, AggCol, stringAggs[i].Agg, getStringAgg(stringAggs[i].Agg))
+		caseStmts[i] = fmt.Sprintf("WHEN %s = '%s' AND %s = '%s' THEN %s", HandleCol, stringAggs[i].QueryHandle, getStringAgg(stringAggs[i].Agg))
 	}
 	caseStmt := fmt.Sprintf("CASE %s ELSE NULL END AS %s", strings.Join(caseStmts, " "), vss.ValueStringCol)
 	return qm.Select(caseStmt)
@@ -321,10 +323,10 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 	}
 	floatArgs := make([]model.FloatSignalArgs, 0, len(aggArgs.FloatArgs))
 	stringArgs := make([]model.StringSignalArgs, 0, len(aggArgs.StringArgs))
-	for agg := range aggArgs.FloatArgs {
+	for _, agg := range aggArgs.FloatArgs {
 		floatArgs = append(floatArgs, agg)
 	}
-	for agg := range aggArgs.StringArgs {
+	for _, agg := range aggArgs.StringArgs {
 		stringArgs = append(stringArgs, agg)
 	}
 
@@ -333,16 +335,46 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 	// You can see the alternatives in the issue and they are ugly.
 	valuesArgs := make([]string, 0, numAggs)
 	for _, agg := range floatArgs {
-		valuesArgs = append(valuesArgs, fmt.Sprintf("('%s', '%s')", agg.Name, agg.Agg))
+		valuesArgs = append(valuesArgs, fmt.Sprintf("('%s', '%s')", agg.Name, agg.QueryHandle))
 	}
 	for _, agg := range stringArgs {
-		valuesArgs = append(valuesArgs, fmt.Sprintf("('%s', '%s')", agg.Name, agg.Agg))
+		valuesArgs = append(valuesArgs, fmt.Sprintf("('%s', '%s')", agg.Name, agg.QueryHandle))
 	}
 	valueTable := fmt.Sprintf("VALUES('%s', %s) as %s ON %s.%s = %s.%s", valueTableDef, strings.Join(valuesArgs, ", "), aggTableName, vss.TableName, vss.NameCol, aggTableName, vss.NameCol)
 
+	var floatFilters []qm.QueryMod
+
+	for i, agg := range floatArgs {
+		fieldFilters := []qm.QueryMod{qmhelper.Where(HandleCol, qmhelper.EQ, agg.QueryHandle)}
+		if fil := agg.Filter; fil != nil {
+			if fil.Gt != nil {
+				fieldFilters = append(fieldFilters, qmhelper.Where(vss.ValueNumberCol, qmhelper.GT, *fil.Gt))
+			}
+			if fil.Lt != nil {
+				fieldFilters = append(fieldFilters, qmhelper.Where(vss.ValueNumberCol, qmhelper.LT, *fil.Lt))
+			}
+			if fil.Gte != nil {
+				fieldFilters = append(fieldFilters, qmhelper.Where(vss.ValueNumberCol, qmhelper.GTE, *fil.Gte))
+			}
+			if fil.Lte != nil {
+				fieldFilters = append(fieldFilters, qmhelper.Where(vss.ValueNumberCol, qmhelper.LTE, *fil.Lte))
+			}
+		}
+
+		if i == 0 {
+			floatFilters = append(floatFilters, qm.Expr(floatFilters...))
+		} else {
+			floatFilters = append(floatFilters, qm.Or2(qm.Expr(floatFilters...)))
+		}
+	}
+
+	bigWhere := []qm.QueryMod{}
+	if len(floatArgs) == 0 {
+		bigWhere = append(bigWhere)
+	}
+
 	mods := []qm.QueryMod{
-		qm.Select(vss.NameCol),
-		qm.Select(AggCol),
+		qm.Select(HandleCol),
 		selectInterval(aggArgs.Interval, aggArgs.FromTS),
 		selectNumberAggs(floatArgs),
 		selectStringAggs(stringArgs),
@@ -357,6 +389,8 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 		qm.OrderBy(groupAsc),
 	}
 	mods = append(mods, getFilterMods(aggArgs.Filter)...)
+	mods = append(mods, floatFilters...)
+
 	stmt, args := newQuery(mods...)
 	return stmt, args, nil
 }

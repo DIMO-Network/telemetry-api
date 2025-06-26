@@ -139,7 +139,7 @@ func (s *Service) getAggSignals(ctx context.Context, stmt string, args []any) ([
 	signals := []*model.AggSignal{}
 	for rows.Next() {
 		var signal model.AggSignal
-		err := rows.Scan(&signal.Name, &signal.Agg, &signal.Timestamp, &signal.ValueNumber, &signal.ValueString)
+		err := rows.Scan(&signal.Handle, &signal.Timestamp, &signal.ValueNumber, &signal.ValueString)
 		if err != nil {
 			_ = rows.Close()
 			return nil, fmt.Errorf("failed scanning clickhouse row: %w", err)

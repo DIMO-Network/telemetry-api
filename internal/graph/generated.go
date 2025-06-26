@@ -89,84 +89,84 @@ type ComplexityRoot struct {
 	}
 
 	SignalAggregations struct {
-		AngularVelocityYaw                                        func(childComplexity int, agg model.FloatAggregation) int
-		CabinDoorRow1DriverSideIsOpen                             func(childComplexity int, agg model.FloatAggregation) int
-		CabinDoorRow1DriverSideWindowIsOpen                       func(childComplexity int, agg model.FloatAggregation) int
-		CabinDoorRow1PassengerSideIsOpen                          func(childComplexity int, agg model.FloatAggregation) int
-		CabinDoorRow1PassengerSideWindowIsOpen                    func(childComplexity int, agg model.FloatAggregation) int
-		CabinDoorRow2DriverSideIsOpen                             func(childComplexity int, agg model.FloatAggregation) int
-		CabinDoorRow2DriverSideWindowIsOpen                       func(childComplexity int, agg model.FloatAggregation) int
-		CabinDoorRow2PassengerSideIsOpen                          func(childComplexity int, agg model.FloatAggregation) int
-		CabinDoorRow2PassengerSideWindowIsOpen                    func(childComplexity int, agg model.FloatAggregation) int
-		ChassisAxleRow1WheelLeftSpeed                             func(childComplexity int, agg model.FloatAggregation) int
-		ChassisAxleRow1WheelLeftTirePressure                      func(childComplexity int, agg model.FloatAggregation) int
-		ChassisAxleRow1WheelRightSpeed                            func(childComplexity int, agg model.FloatAggregation) int
-		ChassisAxleRow1WheelRightTirePressure                     func(childComplexity int, agg model.FloatAggregation) int
-		ChassisAxleRow2WheelLeftTirePressure                      func(childComplexity int, agg model.FloatAggregation) int
-		ChassisAxleRow2WheelRightTirePressure                     func(childComplexity int, agg model.FloatAggregation) int
-		CurrentLocationAltitude                                   func(childComplexity int, agg model.FloatAggregation) int
+		AngularVelocityYaw                                        func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		CabinDoorRow1DriverSideIsOpen                             func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		CabinDoorRow1DriverSideWindowIsOpen                       func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		CabinDoorRow1PassengerSideIsOpen                          func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		CabinDoorRow1PassengerSideWindowIsOpen                    func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		CabinDoorRow2DriverSideIsOpen                             func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		CabinDoorRow2DriverSideWindowIsOpen                       func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		CabinDoorRow2PassengerSideIsOpen                          func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		CabinDoorRow2PassengerSideWindowIsOpen                    func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		ChassisAxleRow1WheelLeftSpeed                             func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		ChassisAxleRow1WheelLeftTirePressure                      func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		ChassisAxleRow1WheelRightSpeed                            func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		ChassisAxleRow1WheelRightTirePressure                     func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		ChassisAxleRow2WheelLeftTirePressure                      func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		ChassisAxleRow2WheelRightTirePressure                     func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		CurrentLocationAltitude                                   func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
 		CurrentLocationApproximateLatitude                        func(childComplexity int, agg model.FloatAggregation) int
 		CurrentLocationApproximateLongitude                       func(childComplexity int, agg model.FloatAggregation) int
-		CurrentLocationHeading                                    func(childComplexity int, agg model.FloatAggregation) int
-		CurrentLocationIsRedacted                                 func(childComplexity int, agg model.FloatAggregation) int
-		CurrentLocationLatitude                                   func(childComplexity int, agg model.FloatAggregation) int
-		CurrentLocationLongitude                                  func(childComplexity int, agg model.FloatAggregation) int
-		DimoAftermarketHdop                                       func(childComplexity int, agg model.FloatAggregation) int
-		DimoAftermarketNsat                                       func(childComplexity int, agg model.FloatAggregation) int
+		CurrentLocationHeading                                    func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		CurrentLocationIsRedacted                                 func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		CurrentLocationLatitude                                   func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		CurrentLocationLongitude                                  func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		DimoAftermarketHdop                                       func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		DimoAftermarketNsat                                       func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
 		DimoAftermarketSsid                                       func(childComplexity int, agg model.StringAggregation) int
 		DimoAftermarketWPAState                                   func(childComplexity int, agg model.StringAggregation) int
-		ExteriorAirTemperature                                    func(childComplexity int, agg model.FloatAggregation) int
-		IsIgnitionOn                                              func(childComplexity int, agg model.FloatAggregation) int
-		LowVoltageBatteryCurrentVoltage                           func(childComplexity int, agg model.FloatAggregation) int
-		ObdBarometricPressure                                     func(childComplexity int, agg model.FloatAggregation) int
-		ObdCommandedEgr                                           func(childComplexity int, agg model.FloatAggregation) int
-		ObdCommandedEvap                                          func(childComplexity int, agg model.FloatAggregation) int
+		ExteriorAirTemperature                                    func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		IsIgnitionOn                                              func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		LowVoltageBatteryCurrentVoltage                           func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		ObdBarometricPressure                                     func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		ObdCommandedEgr                                           func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		ObdCommandedEvap                                          func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
 		ObdDTCList                                                func(childComplexity int, agg model.StringAggregation) int
-		ObdDistanceSinceDTCClear                                  func(childComplexity int, agg model.FloatAggregation) int
-		ObdDistanceWithMil                                        func(childComplexity int, agg model.FloatAggregation) int
-		ObdEngineLoad                                             func(childComplexity int, agg model.FloatAggregation) int
-		ObdFuelPressure                                           func(childComplexity int, agg model.FloatAggregation) int
-		ObdIntakeTemp                                             func(childComplexity int, agg model.FloatAggregation) int
-		ObdLongTermFuelTrim1                                      func(childComplexity int, agg model.FloatAggregation) int
-		ObdMap                                                    func(childComplexity int, agg model.FloatAggregation) int
-		ObdO2WRSensor1Voltage                                     func(childComplexity int, agg model.FloatAggregation) int
-		ObdO2WRSensor2Voltage                                     func(childComplexity int, agg model.FloatAggregation) int
-		ObdRunTime                                                func(childComplexity int, agg model.FloatAggregation) int
-		ObdShortTermFuelTrim1                                     func(childComplexity int, agg model.FloatAggregation) int
-		ObdWarmupsSinceDTCClear                                   func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainCombustionEngineDieselExhaustFluidCapacity      func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainCombustionEngineDieselExhaustFluidLevel         func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainCombustionEngineEct                             func(childComplexity int, agg model.FloatAggregation) int
+		ObdDistanceSinceDTCClear                                  func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		ObdDistanceWithMil                                        func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		ObdEngineLoad                                             func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		ObdFuelPressure                                           func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		ObdIntakeTemp                                             func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		ObdLongTermFuelTrim1                                      func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		ObdMap                                                    func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		ObdO2WRSensor1Voltage                                     func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		ObdO2WRSensor2Voltage                                     func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		ObdRunTime                                                func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		ObdShortTermFuelTrim1                                     func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		ObdWarmupsSinceDTCClear                                   func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		PowertrainCombustionEngineDieselExhaustFluidCapacity      func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		PowertrainCombustionEngineDieselExhaustFluidLevel         func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		PowertrainCombustionEngineEct                             func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
 		PowertrainCombustionEngineEngineOilLevel                  func(childComplexity int, agg model.StringAggregation) int
-		PowertrainCombustionEngineEngineOilRelativeLevel          func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainCombustionEngineEop                             func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainCombustionEngineEot                             func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainCombustionEngineMaf                             func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainCombustionEngineSpeed                           func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainCombustionEngineTorque                          func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainCombustionEngineTps                             func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainFuelSystemAbsoluteLevel                         func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainFuelSystemRelativeLevel                         func(childComplexity int, agg model.FloatAggregation) int
+		PowertrainCombustionEngineEngineOilRelativeLevel          func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		PowertrainCombustionEngineEop                             func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		PowertrainCombustionEngineEot                             func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		PowertrainCombustionEngineMaf                             func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		PowertrainCombustionEngineSpeed                           func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		PowertrainCombustionEngineTorque                          func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		PowertrainCombustionEngineTps                             func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		PowertrainFuelSystemAbsoluteLevel                         func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		PowertrainFuelSystemRelativeLevel                         func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
 		PowertrainFuelSystemSupportedFuelTypes                    func(childComplexity int, agg model.StringAggregation) int
-		PowertrainRange                                           func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainTractionBatteryChargingAddedEnergy              func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainTractionBatteryChargingChargeCurrentAc          func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainTractionBatteryChargingChargeLimit              func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainTractionBatteryChargingChargeVoltageUnknownType func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainTractionBatteryChargingIsCharging               func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainTractionBatteryCurrentPower                     func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainTractionBatteryCurrentVoltage                   func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainTractionBatteryGrossCapacity                    func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainTractionBatteryRange                            func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainTractionBatteryStateOfChargeCurrent             func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainTractionBatteryStateOfChargeCurrentEnergy       func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainTractionBatteryTemperatureAverage               func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainTransmissionCurrentGear                         func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainTransmissionTemperature                         func(childComplexity int, agg model.FloatAggregation) int
-		PowertrainTransmissionTravelledDistance                   func(childComplexity int, agg model.FloatAggregation) int
+		PowertrainRange                                           func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		PowertrainTractionBatteryChargingAddedEnergy              func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		PowertrainTractionBatteryChargingChargeCurrentAc          func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		PowertrainTractionBatteryChargingChargeLimit              func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		PowertrainTractionBatteryChargingChargeVoltageUnknownType func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		PowertrainTractionBatteryChargingIsCharging               func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		PowertrainTractionBatteryCurrentPower                     func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		PowertrainTractionBatteryCurrentVoltage                   func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		PowertrainTractionBatteryGrossCapacity                    func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		PowertrainTractionBatteryRange                            func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		PowertrainTractionBatteryStateOfChargeCurrent             func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		PowertrainTractionBatteryStateOfChargeCurrentEnergy       func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		PowertrainTractionBatteryTemperatureAverage               func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		PowertrainTransmissionCurrentGear                         func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		PowertrainTransmissionTemperature                         func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		PowertrainTransmissionTravelledDistance                   func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
 		PowertrainType                                            func(childComplexity int, agg model.StringAggregation) int
-		ServiceDistanceToService                                  func(childComplexity int, agg model.FloatAggregation) int
-		Speed                                                     func(childComplexity int, agg model.FloatAggregation) int
+		ServiceDistanceToService                                  func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		Speed                                                     func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
 		Timestamp                                                 func(childComplexity int) int
 	}
 
@@ -287,82 +287,82 @@ type QueryResolver interface {
 type SignalAggregationsResolver interface {
 	CurrentLocationApproximateLatitude(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
 	CurrentLocationApproximateLongitude(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
-	AngularVelocityYaw(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
-	CabinDoorRow1DriverSideIsOpen(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
-	CabinDoorRow1DriverSideWindowIsOpen(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
-	CabinDoorRow1PassengerSideIsOpen(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
-	CabinDoorRow1PassengerSideWindowIsOpen(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
-	CabinDoorRow2DriverSideIsOpen(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
-	CabinDoorRow2DriverSideWindowIsOpen(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
-	CabinDoorRow2PassengerSideIsOpen(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
-	CabinDoorRow2PassengerSideWindowIsOpen(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
-	ChassisAxleRow1WheelLeftSpeed(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
-	ChassisAxleRow1WheelLeftTirePressure(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
-	ChassisAxleRow1WheelRightSpeed(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
-	ChassisAxleRow1WheelRightTirePressure(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
-	ChassisAxleRow2WheelLeftTirePressure(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
-	ChassisAxleRow2WheelRightTirePressure(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
-	CurrentLocationAltitude(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
-	CurrentLocationHeading(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
-	CurrentLocationIsRedacted(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
-	CurrentLocationLatitude(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
-	CurrentLocationLongitude(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
-	DimoAftermarketHdop(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
-	DimoAftermarketNsat(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
+	AngularVelocityYaw(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	CabinDoorRow1DriverSideIsOpen(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	CabinDoorRow1DriverSideWindowIsOpen(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	CabinDoorRow1PassengerSideIsOpen(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	CabinDoorRow1PassengerSideWindowIsOpen(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	CabinDoorRow2DriverSideIsOpen(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	CabinDoorRow2DriverSideWindowIsOpen(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	CabinDoorRow2PassengerSideIsOpen(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	CabinDoorRow2PassengerSideWindowIsOpen(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	ChassisAxleRow1WheelLeftSpeed(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	ChassisAxleRow1WheelLeftTirePressure(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	ChassisAxleRow1WheelRightSpeed(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	ChassisAxleRow1WheelRightTirePressure(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	ChassisAxleRow2WheelLeftTirePressure(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	ChassisAxleRow2WheelRightTirePressure(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	CurrentLocationAltitude(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	CurrentLocationHeading(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	CurrentLocationIsRedacted(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	CurrentLocationLatitude(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	CurrentLocationLongitude(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	DimoAftermarketHdop(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	DimoAftermarketNsat(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
 	DimoAftermarketSsid(ctx context.Context, obj *model.SignalAggregations, agg model.StringAggregation) (*string, error)
 	DimoAftermarketWPAState(ctx context.Context, obj *model.SignalAggregations, agg model.StringAggregation) (*string, error)
-	ExteriorAirTemperature(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
-	IsIgnitionOn(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
-	LowVoltageBatteryCurrentVoltage(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
-	ObdBarometricPressure(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
-	ObdCommandedEgr(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
-	ObdCommandedEvap(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
+	ExteriorAirTemperature(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	IsIgnitionOn(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	LowVoltageBatteryCurrentVoltage(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	ObdBarometricPressure(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	ObdCommandedEgr(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	ObdCommandedEvap(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
 	ObdDTCList(ctx context.Context, obj *model.SignalAggregations, agg model.StringAggregation) (*string, error)
-	ObdDistanceSinceDTCClear(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
-	ObdDistanceWithMil(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
-	ObdEngineLoad(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
-	ObdFuelPressure(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
-	ObdIntakeTemp(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
-	ObdLongTermFuelTrim1(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
-	ObdMap(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
-	ObdO2WRSensor1Voltage(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
-	ObdO2WRSensor2Voltage(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
-	ObdRunTime(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
-	ObdShortTermFuelTrim1(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
-	ObdWarmupsSinceDTCClear(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
-	PowertrainCombustionEngineDieselExhaustFluidCapacity(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
-	PowertrainCombustionEngineDieselExhaustFluidLevel(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
-	PowertrainCombustionEngineEct(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
-	PowertrainCombustionEngineEop(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
-	PowertrainCombustionEngineEot(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
+	ObdDistanceSinceDTCClear(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	ObdDistanceWithMil(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	ObdEngineLoad(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	ObdFuelPressure(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	ObdIntakeTemp(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	ObdLongTermFuelTrim1(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	ObdMap(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	ObdO2WRSensor1Voltage(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	ObdO2WRSensor2Voltage(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	ObdRunTime(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	ObdShortTermFuelTrim1(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	ObdWarmupsSinceDTCClear(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	PowertrainCombustionEngineDieselExhaustFluidCapacity(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	PowertrainCombustionEngineDieselExhaustFluidLevel(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	PowertrainCombustionEngineEct(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	PowertrainCombustionEngineEop(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	PowertrainCombustionEngineEot(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
 	PowertrainCombustionEngineEngineOilLevel(ctx context.Context, obj *model.SignalAggregations, agg model.StringAggregation) (*string, error)
-	PowertrainCombustionEngineEngineOilRelativeLevel(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
-	PowertrainCombustionEngineMaf(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
-	PowertrainCombustionEngineSpeed(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
-	PowertrainCombustionEngineTps(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
-	PowertrainCombustionEngineTorque(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
-	PowertrainFuelSystemAbsoluteLevel(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
-	PowertrainFuelSystemRelativeLevel(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
+	PowertrainCombustionEngineEngineOilRelativeLevel(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	PowertrainCombustionEngineMaf(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	PowertrainCombustionEngineSpeed(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	PowertrainCombustionEngineTps(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	PowertrainCombustionEngineTorque(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	PowertrainFuelSystemAbsoluteLevel(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	PowertrainFuelSystemRelativeLevel(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
 	PowertrainFuelSystemSupportedFuelTypes(ctx context.Context, obj *model.SignalAggregations, agg model.StringAggregation) (*string, error)
-	PowertrainRange(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
-	PowertrainTractionBatteryChargingAddedEnergy(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
-	PowertrainTractionBatteryChargingChargeCurrentAc(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
-	PowertrainTractionBatteryChargingChargeLimit(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
-	PowertrainTractionBatteryChargingChargeVoltageUnknownType(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
-	PowertrainTractionBatteryChargingIsCharging(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
-	PowertrainTractionBatteryCurrentPower(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
-	PowertrainTractionBatteryCurrentVoltage(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
-	PowertrainTractionBatteryGrossCapacity(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
-	PowertrainTractionBatteryRange(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
-	PowertrainTractionBatteryStateOfChargeCurrent(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
-	PowertrainTractionBatteryStateOfChargeCurrentEnergy(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
-	PowertrainTractionBatteryTemperatureAverage(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
-	PowertrainTransmissionCurrentGear(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
-	PowertrainTransmissionTemperature(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
-	PowertrainTransmissionTravelledDistance(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
+	PowertrainRange(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	PowertrainTractionBatteryChargingAddedEnergy(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	PowertrainTractionBatteryChargingChargeCurrentAc(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	PowertrainTractionBatteryChargingChargeLimit(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	PowertrainTractionBatteryChargingChargeVoltageUnknownType(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	PowertrainTractionBatteryChargingIsCharging(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	PowertrainTractionBatteryCurrentPower(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	PowertrainTractionBatteryCurrentVoltage(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	PowertrainTractionBatteryGrossCapacity(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	PowertrainTractionBatteryRange(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	PowertrainTractionBatteryStateOfChargeCurrent(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	PowertrainTractionBatteryStateOfChargeCurrentEnergy(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	PowertrainTractionBatteryTemperatureAverage(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	PowertrainTransmissionCurrentGear(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	PowertrainTransmissionTemperature(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	PowertrainTransmissionTravelledDistance(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
 	PowertrainType(ctx context.Context, obj *model.SignalAggregations, agg model.StringAggregation) (*string, error)
-	ServiceDistanceToService(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
-	Speed(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
+	ServiceDistanceToService(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	Speed(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
 }
 
 type executableSchema struct {
@@ -583,7 +583,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.AngularVelocityYaw(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.AngularVelocityYaw(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.cabinDoorRow1DriverSideIsOpen":
 		if e.complexity.SignalAggregations.CabinDoorRow1DriverSideIsOpen == nil {
@@ -595,7 +595,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.CabinDoorRow1DriverSideIsOpen(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.CabinDoorRow1DriverSideIsOpen(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.cabinDoorRow1DriverSideWindowIsOpen":
 		if e.complexity.SignalAggregations.CabinDoorRow1DriverSideWindowIsOpen == nil {
@@ -607,7 +607,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.CabinDoorRow1DriverSideWindowIsOpen(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.CabinDoorRow1DriverSideWindowIsOpen(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.cabinDoorRow1PassengerSideIsOpen":
 		if e.complexity.SignalAggregations.CabinDoorRow1PassengerSideIsOpen == nil {
@@ -619,7 +619,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.CabinDoorRow1PassengerSideIsOpen(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.CabinDoorRow1PassengerSideIsOpen(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.cabinDoorRow1PassengerSideWindowIsOpen":
 		if e.complexity.SignalAggregations.CabinDoorRow1PassengerSideWindowIsOpen == nil {
@@ -631,7 +631,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.CabinDoorRow1PassengerSideWindowIsOpen(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.CabinDoorRow1PassengerSideWindowIsOpen(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.cabinDoorRow2DriverSideIsOpen":
 		if e.complexity.SignalAggregations.CabinDoorRow2DriverSideIsOpen == nil {
@@ -643,7 +643,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.CabinDoorRow2DriverSideIsOpen(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.CabinDoorRow2DriverSideIsOpen(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.cabinDoorRow2DriverSideWindowIsOpen":
 		if e.complexity.SignalAggregations.CabinDoorRow2DriverSideWindowIsOpen == nil {
@@ -655,7 +655,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.CabinDoorRow2DriverSideWindowIsOpen(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.CabinDoorRow2DriverSideWindowIsOpen(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.cabinDoorRow2PassengerSideIsOpen":
 		if e.complexity.SignalAggregations.CabinDoorRow2PassengerSideIsOpen == nil {
@@ -667,7 +667,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.CabinDoorRow2PassengerSideIsOpen(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.CabinDoorRow2PassengerSideIsOpen(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.cabinDoorRow2PassengerSideWindowIsOpen":
 		if e.complexity.SignalAggregations.CabinDoorRow2PassengerSideWindowIsOpen == nil {
@@ -679,7 +679,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.CabinDoorRow2PassengerSideWindowIsOpen(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.CabinDoorRow2PassengerSideWindowIsOpen(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.chassisAxleRow1WheelLeftSpeed":
 		if e.complexity.SignalAggregations.ChassisAxleRow1WheelLeftSpeed == nil {
@@ -691,7 +691,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.ChassisAxleRow1WheelLeftSpeed(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.ChassisAxleRow1WheelLeftSpeed(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.chassisAxleRow1WheelLeftTirePressure":
 		if e.complexity.SignalAggregations.ChassisAxleRow1WheelLeftTirePressure == nil {
@@ -703,7 +703,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.ChassisAxleRow1WheelLeftTirePressure(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.ChassisAxleRow1WheelLeftTirePressure(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.chassisAxleRow1WheelRightSpeed":
 		if e.complexity.SignalAggregations.ChassisAxleRow1WheelRightSpeed == nil {
@@ -715,7 +715,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.ChassisAxleRow1WheelRightSpeed(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.ChassisAxleRow1WheelRightSpeed(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.chassisAxleRow1WheelRightTirePressure":
 		if e.complexity.SignalAggregations.ChassisAxleRow1WheelRightTirePressure == nil {
@@ -727,7 +727,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.ChassisAxleRow1WheelRightTirePressure(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.ChassisAxleRow1WheelRightTirePressure(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.chassisAxleRow2WheelLeftTirePressure":
 		if e.complexity.SignalAggregations.ChassisAxleRow2WheelLeftTirePressure == nil {
@@ -739,7 +739,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.ChassisAxleRow2WheelLeftTirePressure(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.ChassisAxleRow2WheelLeftTirePressure(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.chassisAxleRow2WheelRightTirePressure":
 		if e.complexity.SignalAggregations.ChassisAxleRow2WheelRightTirePressure == nil {
@@ -751,7 +751,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.ChassisAxleRow2WheelRightTirePressure(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.ChassisAxleRow2WheelRightTirePressure(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.currentLocationAltitude":
 		if e.complexity.SignalAggregations.CurrentLocationAltitude == nil {
@@ -763,7 +763,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.CurrentLocationAltitude(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.CurrentLocationAltitude(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.currentLocationApproximateLatitude":
 		if e.complexity.SignalAggregations.CurrentLocationApproximateLatitude == nil {
@@ -799,7 +799,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.CurrentLocationHeading(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.CurrentLocationHeading(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.currentLocationIsRedacted":
 		if e.complexity.SignalAggregations.CurrentLocationIsRedacted == nil {
@@ -811,7 +811,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.CurrentLocationIsRedacted(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.CurrentLocationIsRedacted(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.currentLocationLatitude":
 		if e.complexity.SignalAggregations.CurrentLocationLatitude == nil {
@@ -823,7 +823,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.CurrentLocationLatitude(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.CurrentLocationLatitude(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.currentLocationLongitude":
 		if e.complexity.SignalAggregations.CurrentLocationLongitude == nil {
@@ -835,7 +835,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.CurrentLocationLongitude(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.CurrentLocationLongitude(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.dimoAftermarketHDOP":
 		if e.complexity.SignalAggregations.DimoAftermarketHdop == nil {
@@ -847,7 +847,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.DimoAftermarketHdop(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.DimoAftermarketHdop(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.dimoAftermarketNSAT":
 		if e.complexity.SignalAggregations.DimoAftermarketNsat == nil {
@@ -859,7 +859,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.DimoAftermarketNsat(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.DimoAftermarketNsat(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.dimoAftermarketSSID":
 		if e.complexity.SignalAggregations.DimoAftermarketSsid == nil {
@@ -895,7 +895,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.ExteriorAirTemperature(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.ExteriorAirTemperature(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.isIgnitionOn":
 		if e.complexity.SignalAggregations.IsIgnitionOn == nil {
@@ -907,7 +907,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.IsIgnitionOn(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.IsIgnitionOn(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.lowVoltageBatteryCurrentVoltage":
 		if e.complexity.SignalAggregations.LowVoltageBatteryCurrentVoltage == nil {
@@ -919,7 +919,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.LowVoltageBatteryCurrentVoltage(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.LowVoltageBatteryCurrentVoltage(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.obdBarometricPressure":
 		if e.complexity.SignalAggregations.ObdBarometricPressure == nil {
@@ -931,7 +931,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.ObdBarometricPressure(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.ObdBarometricPressure(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.obdCommandedEGR":
 		if e.complexity.SignalAggregations.ObdCommandedEgr == nil {
@@ -943,7 +943,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.ObdCommandedEgr(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.ObdCommandedEgr(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.obdCommandedEVAP":
 		if e.complexity.SignalAggregations.ObdCommandedEvap == nil {
@@ -955,7 +955,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.ObdCommandedEvap(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.ObdCommandedEvap(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.obdDTCList":
 		if e.complexity.SignalAggregations.ObdDTCList == nil {
@@ -979,7 +979,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.ObdDistanceSinceDTCClear(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.ObdDistanceSinceDTCClear(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.obdDistanceWithMIL":
 		if e.complexity.SignalAggregations.ObdDistanceWithMil == nil {
@@ -991,7 +991,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.ObdDistanceWithMil(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.ObdDistanceWithMil(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.obdEngineLoad":
 		if e.complexity.SignalAggregations.ObdEngineLoad == nil {
@@ -1003,7 +1003,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.ObdEngineLoad(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.ObdEngineLoad(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.obdFuelPressure":
 		if e.complexity.SignalAggregations.ObdFuelPressure == nil {
@@ -1015,7 +1015,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.ObdFuelPressure(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.ObdFuelPressure(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.obdIntakeTemp":
 		if e.complexity.SignalAggregations.ObdIntakeTemp == nil {
@@ -1027,7 +1027,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.ObdIntakeTemp(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.ObdIntakeTemp(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.obdLongTermFuelTrim1":
 		if e.complexity.SignalAggregations.ObdLongTermFuelTrim1 == nil {
@@ -1039,7 +1039,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.ObdLongTermFuelTrim1(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.ObdLongTermFuelTrim1(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.obdMAP":
 		if e.complexity.SignalAggregations.ObdMap == nil {
@@ -1051,7 +1051,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.ObdMap(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.ObdMap(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.obdO2WRSensor1Voltage":
 		if e.complexity.SignalAggregations.ObdO2WRSensor1Voltage == nil {
@@ -1063,7 +1063,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.ObdO2WRSensor1Voltage(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.ObdO2WRSensor1Voltage(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.obdO2WRSensor2Voltage":
 		if e.complexity.SignalAggregations.ObdO2WRSensor2Voltage == nil {
@@ -1075,7 +1075,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.ObdO2WRSensor2Voltage(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.ObdO2WRSensor2Voltage(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.obdRunTime":
 		if e.complexity.SignalAggregations.ObdRunTime == nil {
@@ -1087,7 +1087,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.ObdRunTime(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.ObdRunTime(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.obdShortTermFuelTrim1":
 		if e.complexity.SignalAggregations.ObdShortTermFuelTrim1 == nil {
@@ -1099,7 +1099,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.ObdShortTermFuelTrim1(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.ObdShortTermFuelTrim1(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.obdWarmupsSinceDTCClear":
 		if e.complexity.SignalAggregations.ObdWarmupsSinceDTCClear == nil {
@@ -1111,7 +1111,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.ObdWarmupsSinceDTCClear(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.ObdWarmupsSinceDTCClear(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.powertrainCombustionEngineDieselExhaustFluidCapacity":
 		if e.complexity.SignalAggregations.PowertrainCombustionEngineDieselExhaustFluidCapacity == nil {
@@ -1123,7 +1123,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainCombustionEngineDieselExhaustFluidCapacity(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.PowertrainCombustionEngineDieselExhaustFluidCapacity(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.powertrainCombustionEngineDieselExhaustFluidLevel":
 		if e.complexity.SignalAggregations.PowertrainCombustionEngineDieselExhaustFluidLevel == nil {
@@ -1135,7 +1135,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainCombustionEngineDieselExhaustFluidLevel(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.PowertrainCombustionEngineDieselExhaustFluidLevel(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.powertrainCombustionEngineECT":
 		if e.complexity.SignalAggregations.PowertrainCombustionEngineEct == nil {
@@ -1147,7 +1147,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainCombustionEngineEct(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.PowertrainCombustionEngineEct(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.powertrainCombustionEngineEngineOilLevel":
 		if e.complexity.SignalAggregations.PowertrainCombustionEngineEngineOilLevel == nil {
@@ -1171,7 +1171,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainCombustionEngineEngineOilRelativeLevel(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.PowertrainCombustionEngineEngineOilRelativeLevel(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.powertrainCombustionEngineEOP":
 		if e.complexity.SignalAggregations.PowertrainCombustionEngineEop == nil {
@@ -1183,7 +1183,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainCombustionEngineEop(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.PowertrainCombustionEngineEop(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.powertrainCombustionEngineEOT":
 		if e.complexity.SignalAggregations.PowertrainCombustionEngineEot == nil {
@@ -1195,7 +1195,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainCombustionEngineEot(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.PowertrainCombustionEngineEot(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.powertrainCombustionEngineMAF":
 		if e.complexity.SignalAggregations.PowertrainCombustionEngineMaf == nil {
@@ -1207,7 +1207,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainCombustionEngineMaf(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.PowertrainCombustionEngineMaf(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.powertrainCombustionEngineSpeed":
 		if e.complexity.SignalAggregations.PowertrainCombustionEngineSpeed == nil {
@@ -1219,7 +1219,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainCombustionEngineSpeed(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.PowertrainCombustionEngineSpeed(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.powertrainCombustionEngineTorque":
 		if e.complexity.SignalAggregations.PowertrainCombustionEngineTorque == nil {
@@ -1231,7 +1231,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainCombustionEngineTorque(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.PowertrainCombustionEngineTorque(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.powertrainCombustionEngineTPS":
 		if e.complexity.SignalAggregations.PowertrainCombustionEngineTps == nil {
@@ -1243,7 +1243,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainCombustionEngineTps(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.PowertrainCombustionEngineTps(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.powertrainFuelSystemAbsoluteLevel":
 		if e.complexity.SignalAggregations.PowertrainFuelSystemAbsoluteLevel == nil {
@@ -1255,7 +1255,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainFuelSystemAbsoluteLevel(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.PowertrainFuelSystemAbsoluteLevel(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.powertrainFuelSystemRelativeLevel":
 		if e.complexity.SignalAggregations.PowertrainFuelSystemRelativeLevel == nil {
@@ -1267,7 +1267,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainFuelSystemRelativeLevel(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.PowertrainFuelSystemRelativeLevel(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.powertrainFuelSystemSupportedFuelTypes":
 		if e.complexity.SignalAggregations.PowertrainFuelSystemSupportedFuelTypes == nil {
@@ -1291,7 +1291,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainRange(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.PowertrainRange(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.powertrainTractionBatteryChargingAddedEnergy":
 		if e.complexity.SignalAggregations.PowertrainTractionBatteryChargingAddedEnergy == nil {
@@ -1303,7 +1303,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainTractionBatteryChargingAddedEnergy(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.PowertrainTractionBatteryChargingAddedEnergy(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.powertrainTractionBatteryChargingChargeCurrentAC":
 		if e.complexity.SignalAggregations.PowertrainTractionBatteryChargingChargeCurrentAc == nil {
@@ -1315,7 +1315,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainTractionBatteryChargingChargeCurrentAc(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.PowertrainTractionBatteryChargingChargeCurrentAc(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.powertrainTractionBatteryChargingChargeLimit":
 		if e.complexity.SignalAggregations.PowertrainTractionBatteryChargingChargeLimit == nil {
@@ -1327,7 +1327,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainTractionBatteryChargingChargeLimit(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.PowertrainTractionBatteryChargingChargeLimit(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.powertrainTractionBatteryChargingChargeVoltageUnknownType":
 		if e.complexity.SignalAggregations.PowertrainTractionBatteryChargingChargeVoltageUnknownType == nil {
@@ -1339,7 +1339,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainTractionBatteryChargingChargeVoltageUnknownType(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.PowertrainTractionBatteryChargingChargeVoltageUnknownType(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.powertrainTractionBatteryChargingIsCharging":
 		if e.complexity.SignalAggregations.PowertrainTractionBatteryChargingIsCharging == nil {
@@ -1351,7 +1351,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainTractionBatteryChargingIsCharging(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.PowertrainTractionBatteryChargingIsCharging(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.powertrainTractionBatteryCurrentPower":
 		if e.complexity.SignalAggregations.PowertrainTractionBatteryCurrentPower == nil {
@@ -1363,7 +1363,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainTractionBatteryCurrentPower(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.PowertrainTractionBatteryCurrentPower(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.powertrainTractionBatteryCurrentVoltage":
 		if e.complexity.SignalAggregations.PowertrainTractionBatteryCurrentVoltage == nil {
@@ -1375,7 +1375,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainTractionBatteryCurrentVoltage(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.PowertrainTractionBatteryCurrentVoltage(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.powertrainTractionBatteryGrossCapacity":
 		if e.complexity.SignalAggregations.PowertrainTractionBatteryGrossCapacity == nil {
@@ -1387,7 +1387,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainTractionBatteryGrossCapacity(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.PowertrainTractionBatteryGrossCapacity(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.powertrainTractionBatteryRange":
 		if e.complexity.SignalAggregations.PowertrainTractionBatteryRange == nil {
@@ -1399,7 +1399,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainTractionBatteryRange(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.PowertrainTractionBatteryRange(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.powertrainTractionBatteryStateOfChargeCurrent":
 		if e.complexity.SignalAggregations.PowertrainTractionBatteryStateOfChargeCurrent == nil {
@@ -1411,7 +1411,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainTractionBatteryStateOfChargeCurrent(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.PowertrainTractionBatteryStateOfChargeCurrent(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.powertrainTractionBatteryStateOfChargeCurrentEnergy":
 		if e.complexity.SignalAggregations.PowertrainTractionBatteryStateOfChargeCurrentEnergy == nil {
@@ -1423,7 +1423,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainTractionBatteryStateOfChargeCurrentEnergy(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.PowertrainTractionBatteryStateOfChargeCurrentEnergy(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.powertrainTractionBatteryTemperatureAverage":
 		if e.complexity.SignalAggregations.PowertrainTractionBatteryTemperatureAverage == nil {
@@ -1435,7 +1435,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainTractionBatteryTemperatureAverage(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.PowertrainTractionBatteryTemperatureAverage(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.powertrainTransmissionCurrentGear":
 		if e.complexity.SignalAggregations.PowertrainTransmissionCurrentGear == nil {
@@ -1447,7 +1447,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainTransmissionCurrentGear(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.PowertrainTransmissionCurrentGear(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.powertrainTransmissionTemperature":
 		if e.complexity.SignalAggregations.PowertrainTransmissionTemperature == nil {
@@ -1459,7 +1459,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainTransmissionTemperature(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.PowertrainTransmissionTemperature(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.powertrainTransmissionTravelledDistance":
 		if e.complexity.SignalAggregations.PowertrainTransmissionTravelledDistance == nil {
@@ -1471,7 +1471,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainTransmissionTravelledDistance(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.PowertrainTransmissionTravelledDistance(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.powertrainType":
 		if e.complexity.SignalAggregations.PowertrainType == nil {
@@ -1495,7 +1495,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.ServiceDistanceToService(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.ServiceDistanceToService(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.speed":
 		if e.complexity.SignalAggregations.Speed == nil {
@@ -1507,7 +1507,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.Speed(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.Speed(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.timestamp":
 		if e.complexity.SignalAggregations.Timestamp == nil {
@@ -2171,6 +2171,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputAftermarketDeviceBy,
 		ec.unmarshalInputAttestationFilter,
 		ec.unmarshalInputSignalFilter,
+		ec.unmarshalInputSignalFloatFilter,
 	)
 	first := true
 
@@ -2564,7 +2565,16 @@ input SignalFilter {
   """
   source: String
 }
-`, BuiltIn: false},
+
+# TODO(elffjs): Unsure about this exact name.
+# TODO(elffjs): Do we need more operators?
+# TODO(elffjs): Recursive "or" support.
+input SignalFloatFilter {
+  gt: Float
+  lt: Float
+  gte: Float
+  lte: Float
+}`, BuiltIn: false},
 	{Name: "../../schema/device_activity.graphqls", Input: `extend type Query {
   """
   DeviceActivity indicates when a given device last transmitted data. For privacy, ranges are used rather than exact timestamps.
@@ -2603,7 +2613,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   angularVelocityYaw(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "AngularVelocityYaw", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -2611,7 +2622,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   cabinDoorRow1DriverSideIsOpen(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "CabinDoorRow1DriverSideIsOpen", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -2619,7 +2631,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   cabinDoorRow1DriverSideWindowIsOpen(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "CabinDoorRow1DriverSideWindowIsOpen", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -2627,7 +2640,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   cabinDoorRow1PassengerSideIsOpen(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "CabinDoorRow1PassengerSideIsOpen", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -2635,7 +2649,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   cabinDoorRow1PassengerSideWindowIsOpen(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "CabinDoorRow1PassengerSideWindowIsOpen", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -2643,7 +2658,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   cabinDoorRow2DriverSideIsOpen(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "CabinDoorRow2DriverSideIsOpen", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -2651,7 +2667,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   cabinDoorRow2DriverSideWindowIsOpen(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "CabinDoorRow2DriverSideWindowIsOpen", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -2659,7 +2676,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   cabinDoorRow2PassengerSideIsOpen(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "CabinDoorRow2PassengerSideIsOpen", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -2667,7 +2685,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   cabinDoorRow2PassengerSideWindowIsOpen(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "CabinDoorRow2PassengerSideWindowIsOpen", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -2676,7 +2695,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   chassisAxleRow1WheelLeftSpeed(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisAxleRow1WheelLeftSpeed", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -2685,7 +2705,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   chassisAxleRow1WheelLeftTirePressure(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisAxleRow1WheelLeftTirePressure", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -2694,7 +2715,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   chassisAxleRow1WheelRightSpeed(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisAxleRow1WheelRightSpeed", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -2703,7 +2725,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   chassisAxleRow1WheelRightTirePressure(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisAxleRow1WheelRightTirePressure", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -2712,7 +2735,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   chassisAxleRow2WheelLeftTirePressure(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisAxleRow2WheelLeftTirePressure", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -2721,7 +2745,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   chassisAxleRow2WheelRightTirePressure(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisAxleRow2WheelRightTirePressure", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -2730,7 +2755,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
   """
   currentLocationAltitude(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationAltitude", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -2739,7 +2765,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
   """
   currentLocationHeading(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationHeading", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -2747,7 +2774,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
   """
   currentLocationIsRedacted(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationIsRedacted", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -2756,7 +2784,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
   """
   currentLocationLatitude(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationLatitude", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -2765,7 +2794,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
   """
   currentLocationLongitude(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationLongitude", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -2773,7 +2803,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   dimoAftermarketHDOP(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketHDOP", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -2781,7 +2812,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   dimoAftermarketNSAT(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketNSAT", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -2806,7 +2838,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   exteriorAirTemperature(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ExteriorAirTemperature", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -2814,7 +2847,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   isIgnitionOn(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "IsIgnitionOn", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -2823,7 +2857,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   lowVoltageBatteryCurrentVoltage(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "LowVoltageBatteryCurrentVoltage", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -2832,7 +2867,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   obdBarometricPressure(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDBarometricPressure", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -2841,7 +2877,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   obdCommandedEGR(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDCommandedEGR", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -2850,7 +2887,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   obdCommandedEVAP(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDCommandedEVAP", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -2867,7 +2905,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   obdDistanceSinceDTCClear(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDDistanceSinceDTCClear", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -2876,7 +2915,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   obdDistanceWithMIL(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDDistanceWithMIL", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -2885,7 +2925,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   obdEngineLoad(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDEngineLoad", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -2894,7 +2935,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   obdFuelPressure(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDFuelPressure", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -2903,7 +2945,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   obdIntakeTemp(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDIntakeTemp", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -2912,7 +2955,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   obdLongTermFuelTrim1(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDLongTermFuelTrim1", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -2921,7 +2965,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   obdMAP(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDMAP", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -2930,7 +2975,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   obdO2WRSensor1Voltage(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDO2WRSensor1Voltage", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -2939,7 +2985,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   obdO2WRSensor2Voltage(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDO2WRSensor2Voltage", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -2948,7 +2995,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   obdRunTime(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDRunTime", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -2957,7 +3005,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   obdShortTermFuelTrim1(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDShortTermFuelTrim1", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -2965,7 +3014,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   obdWarmupsSinceDTCClear(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDWarmupsSinceDTCClear", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -2974,7 +3024,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainCombustionEngineDieselExhaustFluidCapacity(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineDieselExhaustFluidCapacity", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -2983,7 +3034,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainCombustionEngineDieselExhaustFluidLevel(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineDieselExhaustFluidLevel", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -2992,7 +3044,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainCombustionEngineECT(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineECT", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -3001,7 +3054,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainCombustionEngineEOP(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineEOP", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -3010,7 +3064,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainCombustionEngineEOT(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineEOT", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -3027,7 +3082,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainCombustionEngineEngineOilRelativeLevel(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineEngineOilRelativeLevel", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -3036,7 +3092,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainCombustionEngineMAF(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineMAF", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -3045,7 +3102,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainCombustionEngineSpeed(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineSpeed", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -3054,7 +3112,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainCombustionEngineTPS(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineTPS", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -3063,7 +3122,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainCombustionEngineTorque(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineTorque", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -3072,7 +3132,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainFuelSystemAbsoluteLevel(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainFuelSystemAbsoluteLevel", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -3081,7 +3142,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainFuelSystemRelativeLevel(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainFuelSystemRelativeLevel", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -3098,7 +3160,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainRange(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainRange", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -3107,7 +3170,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainTractionBatteryChargingAddedEnergy(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryChargingAddedEnergy", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -3116,7 +3180,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainTractionBatteryChargingChargeCurrentAC(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryChargingChargeCurrentAC", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -3125,7 +3190,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainTractionBatteryChargingChargeLimit(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryChargingChargeLimit", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -3134,7 +3200,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainTractionBatteryChargingChargeVoltageUnknownType(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryChargingChargeVoltageUnknownType", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -3142,7 +3209,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainTractionBatteryChargingIsCharging(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryChargingIsCharging", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -3151,7 +3219,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainTractionBatteryCurrentPower(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryCurrentPower", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -3160,7 +3229,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainTractionBatteryCurrentVoltage(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryCurrentVoltage", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -3169,7 +3239,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainTractionBatteryGrossCapacity(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryGrossCapacity", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -3178,7 +3249,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainTractionBatteryRange(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryRange", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -3187,7 +3259,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainTractionBatteryStateOfChargeCurrent(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryStateOfChargeCurrent", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -3196,7 +3269,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainTractionBatteryStateOfChargeCurrentEnergy(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryStateOfChargeCurrentEnergy", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -3205,7 +3279,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainTractionBatteryTemperatureAverage(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryTemperatureAverage", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -3213,7 +3288,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainTransmissionCurrentGear(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTransmissionCurrentGear", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -3222,7 +3298,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainTransmissionTemperature(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTransmissionTemperature", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -3231,7 +3308,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainTransmissionTravelledDistance(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTransmissionTravelledDistance", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -3248,7 +3326,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   serviceDistanceToService(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ServiceDistanceToService", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -3257,7 +3336,8 @@ extend type SignalAggregations {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   speed(
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "Speed", forceResolver: true) @isSignal @hasAggregation
   
 }
@@ -4336,6 +4416,11 @@ func (ec *executionContext) field_SignalAggregations_angularVelocityYaw_args(ctx
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_angularVelocityYaw_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_angularVelocityYaw_argsAgg(
@@ -4356,6 +4441,24 @@ func (ec *executionContext) field_SignalAggregations_angularVelocityYaw_argsAgg(
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_angularVelocityYaw_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_cabinDoorRow1DriverSideIsOpen_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -4364,6 +4467,11 @@ func (ec *executionContext) field_SignalAggregations_cabinDoorRow1DriverSideIsOp
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_cabinDoorRow1DriverSideIsOpen_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_cabinDoorRow1DriverSideIsOpen_argsAgg(
@@ -4384,6 +4492,24 @@ func (ec *executionContext) field_SignalAggregations_cabinDoorRow1DriverSideIsOp
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_cabinDoorRow1DriverSideIsOpen_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_cabinDoorRow1DriverSideWindowIsOpen_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -4392,6 +4518,11 @@ func (ec *executionContext) field_SignalAggregations_cabinDoorRow1DriverSideWind
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_cabinDoorRow1DriverSideWindowIsOpen_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_cabinDoorRow1DriverSideWindowIsOpen_argsAgg(
@@ -4412,6 +4543,24 @@ func (ec *executionContext) field_SignalAggregations_cabinDoorRow1DriverSideWind
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_cabinDoorRow1DriverSideWindowIsOpen_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_cabinDoorRow1PassengerSideIsOpen_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -4420,6 +4569,11 @@ func (ec *executionContext) field_SignalAggregations_cabinDoorRow1PassengerSideI
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_cabinDoorRow1PassengerSideIsOpen_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_cabinDoorRow1PassengerSideIsOpen_argsAgg(
@@ -4440,6 +4594,24 @@ func (ec *executionContext) field_SignalAggregations_cabinDoorRow1PassengerSideI
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_cabinDoorRow1PassengerSideIsOpen_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_cabinDoorRow1PassengerSideWindowIsOpen_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -4448,6 +4620,11 @@ func (ec *executionContext) field_SignalAggregations_cabinDoorRow1PassengerSideW
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_cabinDoorRow1PassengerSideWindowIsOpen_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_cabinDoorRow1PassengerSideWindowIsOpen_argsAgg(
@@ -4468,6 +4645,24 @@ func (ec *executionContext) field_SignalAggregations_cabinDoorRow1PassengerSideW
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_cabinDoorRow1PassengerSideWindowIsOpen_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_cabinDoorRow2DriverSideIsOpen_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -4476,6 +4671,11 @@ func (ec *executionContext) field_SignalAggregations_cabinDoorRow2DriverSideIsOp
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_cabinDoorRow2DriverSideIsOpen_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_cabinDoorRow2DriverSideIsOpen_argsAgg(
@@ -4496,6 +4696,24 @@ func (ec *executionContext) field_SignalAggregations_cabinDoorRow2DriverSideIsOp
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_cabinDoorRow2DriverSideIsOpen_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_cabinDoorRow2DriverSideWindowIsOpen_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -4504,6 +4722,11 @@ func (ec *executionContext) field_SignalAggregations_cabinDoorRow2DriverSideWind
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_cabinDoorRow2DriverSideWindowIsOpen_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_cabinDoorRow2DriverSideWindowIsOpen_argsAgg(
@@ -4524,6 +4747,24 @@ func (ec *executionContext) field_SignalAggregations_cabinDoorRow2DriverSideWind
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_cabinDoorRow2DriverSideWindowIsOpen_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_cabinDoorRow2PassengerSideIsOpen_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -4532,6 +4773,11 @@ func (ec *executionContext) field_SignalAggregations_cabinDoorRow2PassengerSideI
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_cabinDoorRow2PassengerSideIsOpen_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_cabinDoorRow2PassengerSideIsOpen_argsAgg(
@@ -4552,6 +4798,24 @@ func (ec *executionContext) field_SignalAggregations_cabinDoorRow2PassengerSideI
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_cabinDoorRow2PassengerSideIsOpen_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_cabinDoorRow2PassengerSideWindowIsOpen_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -4560,6 +4824,11 @@ func (ec *executionContext) field_SignalAggregations_cabinDoorRow2PassengerSideW
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_cabinDoorRow2PassengerSideWindowIsOpen_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_cabinDoorRow2PassengerSideWindowIsOpen_argsAgg(
@@ -4580,6 +4849,24 @@ func (ec *executionContext) field_SignalAggregations_cabinDoorRow2PassengerSideW
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_cabinDoorRow2PassengerSideWindowIsOpen_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_chassisAxleRow1WheelLeftSpeed_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -4588,6 +4875,11 @@ func (ec *executionContext) field_SignalAggregations_chassisAxleRow1WheelLeftSpe
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_chassisAxleRow1WheelLeftSpeed_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_chassisAxleRow1WheelLeftSpeed_argsAgg(
@@ -4608,6 +4900,24 @@ func (ec *executionContext) field_SignalAggregations_chassisAxleRow1WheelLeftSpe
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_chassisAxleRow1WheelLeftSpeed_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_chassisAxleRow1WheelLeftTirePressure_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -4616,6 +4926,11 @@ func (ec *executionContext) field_SignalAggregations_chassisAxleRow1WheelLeftTir
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_chassisAxleRow1WheelLeftTirePressure_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_chassisAxleRow1WheelLeftTirePressure_argsAgg(
@@ -4636,6 +4951,24 @@ func (ec *executionContext) field_SignalAggregations_chassisAxleRow1WheelLeftTir
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_chassisAxleRow1WheelLeftTirePressure_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_chassisAxleRow1WheelRightSpeed_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -4644,6 +4977,11 @@ func (ec *executionContext) field_SignalAggregations_chassisAxleRow1WheelRightSp
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_chassisAxleRow1WheelRightSpeed_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_chassisAxleRow1WheelRightSpeed_argsAgg(
@@ -4664,6 +5002,24 @@ func (ec *executionContext) field_SignalAggregations_chassisAxleRow1WheelRightSp
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_chassisAxleRow1WheelRightSpeed_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_chassisAxleRow1WheelRightTirePressure_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -4672,6 +5028,11 @@ func (ec *executionContext) field_SignalAggregations_chassisAxleRow1WheelRightTi
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_chassisAxleRow1WheelRightTirePressure_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_chassisAxleRow1WheelRightTirePressure_argsAgg(
@@ -4692,6 +5053,24 @@ func (ec *executionContext) field_SignalAggregations_chassisAxleRow1WheelRightTi
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_chassisAxleRow1WheelRightTirePressure_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_chassisAxleRow2WheelLeftTirePressure_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -4700,6 +5079,11 @@ func (ec *executionContext) field_SignalAggregations_chassisAxleRow2WheelLeftTir
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_chassisAxleRow2WheelLeftTirePressure_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_chassisAxleRow2WheelLeftTirePressure_argsAgg(
@@ -4720,6 +5104,24 @@ func (ec *executionContext) field_SignalAggregations_chassisAxleRow2WheelLeftTir
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_chassisAxleRow2WheelLeftTirePressure_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_chassisAxleRow2WheelRightTirePressure_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -4728,6 +5130,11 @@ func (ec *executionContext) field_SignalAggregations_chassisAxleRow2WheelRightTi
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_chassisAxleRow2WheelRightTirePressure_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_chassisAxleRow2WheelRightTirePressure_argsAgg(
@@ -4748,6 +5155,24 @@ func (ec *executionContext) field_SignalAggregations_chassisAxleRow2WheelRightTi
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_chassisAxleRow2WheelRightTirePressure_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_currentLocationAltitude_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -4756,6 +5181,11 @@ func (ec *executionContext) field_SignalAggregations_currentLocationAltitude_arg
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_currentLocationAltitude_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_currentLocationAltitude_argsAgg(
@@ -4773,6 +5203,24 @@ func (ec *executionContext) field_SignalAggregations_currentLocationAltitude_arg
 	}
 
 	var zeroVal model.FloatAggregation
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_SignalAggregations_currentLocationAltitude_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
 	return zeroVal, nil
 }
 
@@ -4840,6 +5288,11 @@ func (ec *executionContext) field_SignalAggregations_currentLocationHeading_args
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_currentLocationHeading_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_currentLocationHeading_argsAgg(
@@ -4860,6 +5313,24 @@ func (ec *executionContext) field_SignalAggregations_currentLocationHeading_args
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_currentLocationHeading_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_currentLocationIsRedacted_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -4868,6 +5339,11 @@ func (ec *executionContext) field_SignalAggregations_currentLocationIsRedacted_a
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_currentLocationIsRedacted_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_currentLocationIsRedacted_argsAgg(
@@ -4888,6 +5364,24 @@ func (ec *executionContext) field_SignalAggregations_currentLocationIsRedacted_a
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_currentLocationIsRedacted_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_currentLocationLatitude_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -4896,6 +5390,11 @@ func (ec *executionContext) field_SignalAggregations_currentLocationLatitude_arg
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_currentLocationLatitude_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_currentLocationLatitude_argsAgg(
@@ -4916,6 +5415,24 @@ func (ec *executionContext) field_SignalAggregations_currentLocationLatitude_arg
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_currentLocationLatitude_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_currentLocationLongitude_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -4924,6 +5441,11 @@ func (ec *executionContext) field_SignalAggregations_currentLocationLongitude_ar
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_currentLocationLongitude_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_currentLocationLongitude_argsAgg(
@@ -4944,6 +5466,24 @@ func (ec *executionContext) field_SignalAggregations_currentLocationLongitude_ar
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_currentLocationLongitude_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_dimoAftermarketHDOP_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -4952,6 +5492,11 @@ func (ec *executionContext) field_SignalAggregations_dimoAftermarketHDOP_args(ct
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_dimoAftermarketHDOP_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_dimoAftermarketHDOP_argsAgg(
@@ -4972,6 +5517,24 @@ func (ec *executionContext) field_SignalAggregations_dimoAftermarketHDOP_argsAgg
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_dimoAftermarketHDOP_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_dimoAftermarketNSAT_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -4980,6 +5543,11 @@ func (ec *executionContext) field_SignalAggregations_dimoAftermarketNSAT_args(ct
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_dimoAftermarketNSAT_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_dimoAftermarketNSAT_argsAgg(
@@ -4997,6 +5565,24 @@ func (ec *executionContext) field_SignalAggregations_dimoAftermarketNSAT_argsAgg
 	}
 
 	var zeroVal model.FloatAggregation
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_SignalAggregations_dimoAftermarketNSAT_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
 	return zeroVal, nil
 }
 
@@ -5064,6 +5650,11 @@ func (ec *executionContext) field_SignalAggregations_exteriorAirTemperature_args
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_exteriorAirTemperature_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_exteriorAirTemperature_argsAgg(
@@ -5084,6 +5675,24 @@ func (ec *executionContext) field_SignalAggregations_exteriorAirTemperature_args
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_exteriorAirTemperature_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_isIgnitionOn_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -5092,6 +5701,11 @@ func (ec *executionContext) field_SignalAggregations_isIgnitionOn_args(ctx conte
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_isIgnitionOn_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_isIgnitionOn_argsAgg(
@@ -5112,6 +5726,24 @@ func (ec *executionContext) field_SignalAggregations_isIgnitionOn_argsAgg(
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_isIgnitionOn_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_lowVoltageBatteryCurrentVoltage_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -5120,6 +5752,11 @@ func (ec *executionContext) field_SignalAggregations_lowVoltageBatteryCurrentVol
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_lowVoltageBatteryCurrentVoltage_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_lowVoltageBatteryCurrentVoltage_argsAgg(
@@ -5140,6 +5777,24 @@ func (ec *executionContext) field_SignalAggregations_lowVoltageBatteryCurrentVol
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_lowVoltageBatteryCurrentVoltage_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_obdBarometricPressure_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -5148,6 +5803,11 @@ func (ec *executionContext) field_SignalAggregations_obdBarometricPressure_args(
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_obdBarometricPressure_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_obdBarometricPressure_argsAgg(
@@ -5168,6 +5828,24 @@ func (ec *executionContext) field_SignalAggregations_obdBarometricPressure_argsA
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_obdBarometricPressure_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_obdCommandedEGR_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -5176,6 +5854,11 @@ func (ec *executionContext) field_SignalAggregations_obdCommandedEGR_args(ctx co
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_obdCommandedEGR_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_obdCommandedEGR_argsAgg(
@@ -5196,6 +5879,24 @@ func (ec *executionContext) field_SignalAggregations_obdCommandedEGR_argsAgg(
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_obdCommandedEGR_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_obdCommandedEVAP_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -5204,6 +5905,11 @@ func (ec *executionContext) field_SignalAggregations_obdCommandedEVAP_args(ctx c
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_obdCommandedEVAP_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_obdCommandedEVAP_argsAgg(
@@ -5221,6 +5927,24 @@ func (ec *executionContext) field_SignalAggregations_obdCommandedEVAP_argsAgg(
 	}
 
 	var zeroVal model.FloatAggregation
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_SignalAggregations_obdCommandedEVAP_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
 	return zeroVal, nil
 }
 
@@ -5260,6 +5984,11 @@ func (ec *executionContext) field_SignalAggregations_obdDistanceSinceDTCClear_ar
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_obdDistanceSinceDTCClear_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_obdDistanceSinceDTCClear_argsAgg(
@@ -5280,6 +6009,24 @@ func (ec *executionContext) field_SignalAggregations_obdDistanceSinceDTCClear_ar
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_obdDistanceSinceDTCClear_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_obdDistanceWithMIL_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -5288,6 +6035,11 @@ func (ec *executionContext) field_SignalAggregations_obdDistanceWithMIL_args(ctx
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_obdDistanceWithMIL_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_obdDistanceWithMIL_argsAgg(
@@ -5308,6 +6060,24 @@ func (ec *executionContext) field_SignalAggregations_obdDistanceWithMIL_argsAgg(
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_obdDistanceWithMIL_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_obdEngineLoad_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -5316,6 +6086,11 @@ func (ec *executionContext) field_SignalAggregations_obdEngineLoad_args(ctx cont
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_obdEngineLoad_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_obdEngineLoad_argsAgg(
@@ -5336,6 +6111,24 @@ func (ec *executionContext) field_SignalAggregations_obdEngineLoad_argsAgg(
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_obdEngineLoad_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_obdFuelPressure_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -5344,6 +6137,11 @@ func (ec *executionContext) field_SignalAggregations_obdFuelPressure_args(ctx co
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_obdFuelPressure_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_obdFuelPressure_argsAgg(
@@ -5364,6 +6162,24 @@ func (ec *executionContext) field_SignalAggregations_obdFuelPressure_argsAgg(
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_obdFuelPressure_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_obdIntakeTemp_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -5372,6 +6188,11 @@ func (ec *executionContext) field_SignalAggregations_obdIntakeTemp_args(ctx cont
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_obdIntakeTemp_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_obdIntakeTemp_argsAgg(
@@ -5392,6 +6213,24 @@ func (ec *executionContext) field_SignalAggregations_obdIntakeTemp_argsAgg(
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_obdIntakeTemp_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_obdLongTermFuelTrim1_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -5400,6 +6239,11 @@ func (ec *executionContext) field_SignalAggregations_obdLongTermFuelTrim1_args(c
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_obdLongTermFuelTrim1_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_obdLongTermFuelTrim1_argsAgg(
@@ -5420,6 +6264,24 @@ func (ec *executionContext) field_SignalAggregations_obdLongTermFuelTrim1_argsAg
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_obdLongTermFuelTrim1_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_obdMAP_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -5428,6 +6290,11 @@ func (ec *executionContext) field_SignalAggregations_obdMAP_args(ctx context.Con
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_obdMAP_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_obdMAP_argsAgg(
@@ -5448,6 +6315,24 @@ func (ec *executionContext) field_SignalAggregations_obdMAP_argsAgg(
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_obdMAP_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_obdO2WRSensor1Voltage_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -5456,6 +6341,11 @@ func (ec *executionContext) field_SignalAggregations_obdO2WRSensor1Voltage_args(
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_obdO2WRSensor1Voltage_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_obdO2WRSensor1Voltage_argsAgg(
@@ -5476,6 +6366,24 @@ func (ec *executionContext) field_SignalAggregations_obdO2WRSensor1Voltage_argsA
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_obdO2WRSensor1Voltage_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_obdO2WRSensor2Voltage_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -5484,6 +6392,11 @@ func (ec *executionContext) field_SignalAggregations_obdO2WRSensor2Voltage_args(
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_obdO2WRSensor2Voltage_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_obdO2WRSensor2Voltage_argsAgg(
@@ -5504,6 +6417,24 @@ func (ec *executionContext) field_SignalAggregations_obdO2WRSensor2Voltage_argsA
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_obdO2WRSensor2Voltage_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_obdRunTime_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -5512,6 +6443,11 @@ func (ec *executionContext) field_SignalAggregations_obdRunTime_args(ctx context
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_obdRunTime_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_obdRunTime_argsAgg(
@@ -5532,6 +6468,24 @@ func (ec *executionContext) field_SignalAggregations_obdRunTime_argsAgg(
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_obdRunTime_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_obdShortTermFuelTrim1_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -5540,6 +6494,11 @@ func (ec *executionContext) field_SignalAggregations_obdShortTermFuelTrim1_args(
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_obdShortTermFuelTrim1_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_obdShortTermFuelTrim1_argsAgg(
@@ -5560,6 +6519,24 @@ func (ec *executionContext) field_SignalAggregations_obdShortTermFuelTrim1_argsA
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_obdShortTermFuelTrim1_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_obdWarmupsSinceDTCClear_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -5568,6 +6545,11 @@ func (ec *executionContext) field_SignalAggregations_obdWarmupsSinceDTCClear_arg
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_obdWarmupsSinceDTCClear_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_obdWarmupsSinceDTCClear_argsAgg(
@@ -5588,6 +6570,24 @@ func (ec *executionContext) field_SignalAggregations_obdWarmupsSinceDTCClear_arg
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_obdWarmupsSinceDTCClear_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineDieselExhaustFluidCapacity_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -5596,6 +6596,11 @@ func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineD
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_powertrainCombustionEngineDieselExhaustFluidCapacity_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineDieselExhaustFluidCapacity_argsAgg(
@@ -5616,6 +6621,24 @@ func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineD
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineDieselExhaustFluidCapacity_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineDieselExhaustFluidLevel_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -5624,6 +6647,11 @@ func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineD
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_powertrainCombustionEngineDieselExhaustFluidLevel_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineDieselExhaustFluidLevel_argsAgg(
@@ -5644,6 +6672,24 @@ func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineD
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineDieselExhaustFluidLevel_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineECT_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -5652,6 +6698,11 @@ func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineE
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_powertrainCombustionEngineECT_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineECT_argsAgg(
@@ -5672,6 +6723,24 @@ func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineE
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineECT_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineEOP_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -5680,6 +6749,11 @@ func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineE
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_powertrainCombustionEngineEOP_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineEOP_argsAgg(
@@ -5700,6 +6774,24 @@ func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineE
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineEOP_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineEOT_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -5708,6 +6800,11 @@ func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineE
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_powertrainCombustionEngineEOT_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineEOT_argsAgg(
@@ -5725,6 +6822,24 @@ func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineE
 	}
 
 	var zeroVal model.FloatAggregation
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineEOT_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
 	return zeroVal, nil
 }
 
@@ -5764,6 +6879,11 @@ func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineE
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_powertrainCombustionEngineEngineOilRelativeLevel_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineEngineOilRelativeLevel_argsAgg(
@@ -5784,6 +6904,24 @@ func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineE
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineEngineOilRelativeLevel_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineMAF_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -5792,6 +6930,11 @@ func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineM
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_powertrainCombustionEngineMAF_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineMAF_argsAgg(
@@ -5812,6 +6955,24 @@ func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineM
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineMAF_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineSpeed_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -5820,6 +6981,11 @@ func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineS
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_powertrainCombustionEngineSpeed_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineSpeed_argsAgg(
@@ -5840,6 +7006,24 @@ func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineS
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineSpeed_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineTPS_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -5848,6 +7032,11 @@ func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineT
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_powertrainCombustionEngineTPS_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineTPS_argsAgg(
@@ -5868,6 +7057,24 @@ func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineT
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineTPS_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineTorque_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -5876,6 +7083,11 @@ func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineT
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_powertrainCombustionEngineTorque_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineTorque_argsAgg(
@@ -5896,6 +7108,24 @@ func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineT
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineTorque_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_powertrainFuelSystemAbsoluteLevel_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -5904,6 +7134,11 @@ func (ec *executionContext) field_SignalAggregations_powertrainFuelSystemAbsolut
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_powertrainFuelSystemAbsoluteLevel_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_powertrainFuelSystemAbsoluteLevel_argsAgg(
@@ -5924,6 +7159,24 @@ func (ec *executionContext) field_SignalAggregations_powertrainFuelSystemAbsolut
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_powertrainFuelSystemAbsoluteLevel_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_powertrainFuelSystemRelativeLevel_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -5932,6 +7185,11 @@ func (ec *executionContext) field_SignalAggregations_powertrainFuelSystemRelativ
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_powertrainFuelSystemRelativeLevel_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_powertrainFuelSystemRelativeLevel_argsAgg(
@@ -5949,6 +7207,24 @@ func (ec *executionContext) field_SignalAggregations_powertrainFuelSystemRelativ
 	}
 
 	var zeroVal model.FloatAggregation
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_SignalAggregations_powertrainFuelSystemRelativeLevel_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
 	return zeroVal, nil
 }
 
@@ -5988,6 +7264,11 @@ func (ec *executionContext) field_SignalAggregations_powertrainRange_args(ctx co
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_powertrainRange_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_powertrainRange_argsAgg(
@@ -6008,6 +7289,24 @@ func (ec *executionContext) field_SignalAggregations_powertrainRange_argsAgg(
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_powertrainRange_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryChargingAddedEnergy_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -6016,6 +7315,11 @@ func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryCh
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_powertrainTractionBatteryChargingAddedEnergy_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryChargingAddedEnergy_argsAgg(
@@ -6036,6 +7340,24 @@ func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryCh
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryChargingAddedEnergy_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryChargingChargeCurrentAC_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -6044,6 +7366,11 @@ func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryCh
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_powertrainTractionBatteryChargingChargeCurrentAC_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryChargingChargeCurrentAC_argsAgg(
@@ -6064,6 +7391,24 @@ func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryCh
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryChargingChargeCurrentAC_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryChargingChargeLimit_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -6072,6 +7417,11 @@ func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryCh
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_powertrainTractionBatteryChargingChargeLimit_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryChargingChargeLimit_argsAgg(
@@ -6092,6 +7442,24 @@ func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryCh
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryChargingChargeLimit_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryChargingChargeVoltageUnknownType_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -6100,6 +7468,11 @@ func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryCh
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_powertrainTractionBatteryChargingChargeVoltageUnknownType_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryChargingChargeVoltageUnknownType_argsAgg(
@@ -6120,6 +7493,24 @@ func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryCh
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryChargingChargeVoltageUnknownType_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryChargingIsCharging_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -6128,6 +7519,11 @@ func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryCh
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_powertrainTractionBatteryChargingIsCharging_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryChargingIsCharging_argsAgg(
@@ -6148,6 +7544,24 @@ func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryCh
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryChargingIsCharging_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryCurrentPower_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -6156,6 +7570,11 @@ func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryCu
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_powertrainTractionBatteryCurrentPower_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryCurrentPower_argsAgg(
@@ -6176,6 +7595,24 @@ func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryCu
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryCurrentPower_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryCurrentVoltage_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -6184,6 +7621,11 @@ func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryCu
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_powertrainTractionBatteryCurrentVoltage_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryCurrentVoltage_argsAgg(
@@ -6204,6 +7646,24 @@ func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryCu
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryCurrentVoltage_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryGrossCapacity_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -6212,6 +7672,11 @@ func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryGr
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_powertrainTractionBatteryGrossCapacity_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryGrossCapacity_argsAgg(
@@ -6232,6 +7697,24 @@ func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryGr
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryGrossCapacity_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryRange_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -6240,6 +7723,11 @@ func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryRa
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_powertrainTractionBatteryRange_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryRange_argsAgg(
@@ -6260,6 +7748,24 @@ func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryRa
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryRange_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryStateOfChargeCurrentEnergy_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -6268,6 +7774,11 @@ func (ec *executionContext) field_SignalAggregations_powertrainTractionBatterySt
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_powertrainTractionBatteryStateOfChargeCurrentEnergy_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryStateOfChargeCurrentEnergy_argsAgg(
@@ -6288,6 +7799,24 @@ func (ec *executionContext) field_SignalAggregations_powertrainTractionBatterySt
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryStateOfChargeCurrentEnergy_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryStateOfChargeCurrent_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -6296,6 +7825,11 @@ func (ec *executionContext) field_SignalAggregations_powertrainTractionBatterySt
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_powertrainTractionBatteryStateOfChargeCurrent_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryStateOfChargeCurrent_argsAgg(
@@ -6316,6 +7850,24 @@ func (ec *executionContext) field_SignalAggregations_powertrainTractionBatterySt
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryStateOfChargeCurrent_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryTemperatureAverage_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -6324,6 +7876,11 @@ func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryTe
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_powertrainTractionBatteryTemperatureAverage_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryTemperatureAverage_argsAgg(
@@ -6344,6 +7901,24 @@ func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryTe
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryTemperatureAverage_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_powertrainTransmissionCurrentGear_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -6352,6 +7927,11 @@ func (ec *executionContext) field_SignalAggregations_powertrainTransmissionCurre
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_powertrainTransmissionCurrentGear_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_powertrainTransmissionCurrentGear_argsAgg(
@@ -6372,6 +7952,24 @@ func (ec *executionContext) field_SignalAggregations_powertrainTransmissionCurre
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_powertrainTransmissionCurrentGear_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_powertrainTransmissionTemperature_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -6380,6 +7978,11 @@ func (ec *executionContext) field_SignalAggregations_powertrainTransmissionTempe
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_powertrainTransmissionTemperature_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_powertrainTransmissionTemperature_argsAgg(
@@ -6400,6 +8003,24 @@ func (ec *executionContext) field_SignalAggregations_powertrainTransmissionTempe
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_powertrainTransmissionTemperature_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_powertrainTransmissionTravelledDistance_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -6408,6 +8029,11 @@ func (ec *executionContext) field_SignalAggregations_powertrainTransmissionTrave
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_powertrainTransmissionTravelledDistance_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_powertrainTransmissionTravelledDistance_argsAgg(
@@ -6425,6 +8051,24 @@ func (ec *executionContext) field_SignalAggregations_powertrainTransmissionTrave
 	}
 
 	var zeroVal model.FloatAggregation
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_SignalAggregations_powertrainTransmissionTravelledDistance_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
 	return zeroVal, nil
 }
 
@@ -6464,6 +8108,11 @@ func (ec *executionContext) field_SignalAggregations_serviceDistanceToService_ar
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_serviceDistanceToService_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_serviceDistanceToService_argsAgg(
@@ -6484,6 +8133,24 @@ func (ec *executionContext) field_SignalAggregations_serviceDistanceToService_ar
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_serviceDistanceToService_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_speed_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -6492,6 +8159,11 @@ func (ec *executionContext) field_SignalAggregations_speed_args(ctx context.Cont
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_speed_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_SignalAggregations_speed_argsAgg(
@@ -6509,6 +8181,24 @@ func (ec *executionContext) field_SignalAggregations_speed_argsAgg(
 	}
 
 	var zeroVal model.FloatAggregation
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_SignalAggregations_speed_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
 	return zeroVal, nil
 }
 
@@ -8580,7 +10270,7 @@ func (ec *executionContext) _SignalAggregations_angularVelocityYaw(ctx context.C
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().AngularVelocityYaw(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().AngularVelocityYaw(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -8673,7 +10363,7 @@ func (ec *executionContext) _SignalAggregations_cabinDoorRow1DriverSideIsOpen(ct
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().CabinDoorRow1DriverSideIsOpen(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().CabinDoorRow1DriverSideIsOpen(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -8766,7 +10456,7 @@ func (ec *executionContext) _SignalAggregations_cabinDoorRow1DriverSideWindowIsO
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().CabinDoorRow1DriverSideWindowIsOpen(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().CabinDoorRow1DriverSideWindowIsOpen(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -8859,7 +10549,7 @@ func (ec *executionContext) _SignalAggregations_cabinDoorRow1PassengerSideIsOpen
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().CabinDoorRow1PassengerSideIsOpen(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().CabinDoorRow1PassengerSideIsOpen(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -8952,7 +10642,7 @@ func (ec *executionContext) _SignalAggregations_cabinDoorRow1PassengerSideWindow
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().CabinDoorRow1PassengerSideWindowIsOpen(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().CabinDoorRow1PassengerSideWindowIsOpen(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -9045,7 +10735,7 @@ func (ec *executionContext) _SignalAggregations_cabinDoorRow2DriverSideIsOpen(ct
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().CabinDoorRow2DriverSideIsOpen(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().CabinDoorRow2DriverSideIsOpen(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -9138,7 +10828,7 @@ func (ec *executionContext) _SignalAggregations_cabinDoorRow2DriverSideWindowIsO
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().CabinDoorRow2DriverSideWindowIsOpen(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().CabinDoorRow2DriverSideWindowIsOpen(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -9231,7 +10921,7 @@ func (ec *executionContext) _SignalAggregations_cabinDoorRow2PassengerSideIsOpen
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().CabinDoorRow2PassengerSideIsOpen(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().CabinDoorRow2PassengerSideIsOpen(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -9324,7 +11014,7 @@ func (ec *executionContext) _SignalAggregations_cabinDoorRow2PassengerSideWindow
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().CabinDoorRow2PassengerSideWindowIsOpen(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().CabinDoorRow2PassengerSideWindowIsOpen(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -9417,7 +11107,7 @@ func (ec *executionContext) _SignalAggregations_chassisAxleRow1WheelLeftSpeed(ct
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().ChassisAxleRow1WheelLeftSpeed(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().ChassisAxleRow1WheelLeftSpeed(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -9510,7 +11200,7 @@ func (ec *executionContext) _SignalAggregations_chassisAxleRow1WheelLeftTirePres
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().ChassisAxleRow1WheelLeftTirePressure(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().ChassisAxleRow1WheelLeftTirePressure(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -9603,7 +11293,7 @@ func (ec *executionContext) _SignalAggregations_chassisAxleRow1WheelRightSpeed(c
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().ChassisAxleRow1WheelRightSpeed(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().ChassisAxleRow1WheelRightSpeed(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -9696,7 +11386,7 @@ func (ec *executionContext) _SignalAggregations_chassisAxleRow1WheelRightTirePre
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().ChassisAxleRow1WheelRightTirePressure(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().ChassisAxleRow1WheelRightTirePressure(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -9789,7 +11479,7 @@ func (ec *executionContext) _SignalAggregations_chassisAxleRow2WheelLeftTirePres
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().ChassisAxleRow2WheelLeftTirePressure(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().ChassisAxleRow2WheelLeftTirePressure(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -9882,7 +11572,7 @@ func (ec *executionContext) _SignalAggregations_chassisAxleRow2WheelRightTirePre
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().ChassisAxleRow2WheelRightTirePressure(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().ChassisAxleRow2WheelRightTirePressure(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -9975,7 +11665,7 @@ func (ec *executionContext) _SignalAggregations_currentLocationAltitude(ctx cont
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().CurrentLocationAltitude(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().CurrentLocationAltitude(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -10068,7 +11758,7 @@ func (ec *executionContext) _SignalAggregations_currentLocationHeading(ctx conte
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().CurrentLocationHeading(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().CurrentLocationHeading(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -10161,7 +11851,7 @@ func (ec *executionContext) _SignalAggregations_currentLocationIsRedacted(ctx co
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().CurrentLocationIsRedacted(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().CurrentLocationIsRedacted(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -10254,7 +11944,7 @@ func (ec *executionContext) _SignalAggregations_currentLocationLatitude(ctx cont
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().CurrentLocationLatitude(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().CurrentLocationLatitude(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -10347,7 +12037,7 @@ func (ec *executionContext) _SignalAggregations_currentLocationLongitude(ctx con
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().CurrentLocationLongitude(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().CurrentLocationLongitude(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -10440,7 +12130,7 @@ func (ec *executionContext) _SignalAggregations_dimoAftermarketHDOP(ctx context.
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().DimoAftermarketHdop(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().DimoAftermarketHdop(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -10533,7 +12223,7 @@ func (ec *executionContext) _SignalAggregations_dimoAftermarketNSAT(ctx context.
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().DimoAftermarketNsat(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().DimoAftermarketNsat(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -10812,7 +12502,7 @@ func (ec *executionContext) _SignalAggregations_exteriorAirTemperature(ctx conte
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().ExteriorAirTemperature(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().ExteriorAirTemperature(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -10905,7 +12595,7 @@ func (ec *executionContext) _SignalAggregations_isIgnitionOn(ctx context.Context
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().IsIgnitionOn(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().IsIgnitionOn(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -10998,7 +12688,7 @@ func (ec *executionContext) _SignalAggregations_lowVoltageBatteryCurrentVoltage(
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().LowVoltageBatteryCurrentVoltage(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().LowVoltageBatteryCurrentVoltage(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -11091,7 +12781,7 @@ func (ec *executionContext) _SignalAggregations_obdBarometricPressure(ctx contex
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().ObdBarometricPressure(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().ObdBarometricPressure(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -11184,7 +12874,7 @@ func (ec *executionContext) _SignalAggregations_obdCommandedEGR(ctx context.Cont
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().ObdCommandedEgr(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().ObdCommandedEgr(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -11277,7 +12967,7 @@ func (ec *executionContext) _SignalAggregations_obdCommandedEVAP(ctx context.Con
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().ObdCommandedEvap(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().ObdCommandedEvap(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -11463,7 +13153,7 @@ func (ec *executionContext) _SignalAggregations_obdDistanceSinceDTCClear(ctx con
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().ObdDistanceSinceDTCClear(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().ObdDistanceSinceDTCClear(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -11556,7 +13246,7 @@ func (ec *executionContext) _SignalAggregations_obdDistanceWithMIL(ctx context.C
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().ObdDistanceWithMil(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().ObdDistanceWithMil(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -11649,7 +13339,7 @@ func (ec *executionContext) _SignalAggregations_obdEngineLoad(ctx context.Contex
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().ObdEngineLoad(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().ObdEngineLoad(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -11742,7 +13432,7 @@ func (ec *executionContext) _SignalAggregations_obdFuelPressure(ctx context.Cont
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().ObdFuelPressure(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().ObdFuelPressure(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -11835,7 +13525,7 @@ func (ec *executionContext) _SignalAggregations_obdIntakeTemp(ctx context.Contex
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().ObdIntakeTemp(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().ObdIntakeTemp(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -11928,7 +13618,7 @@ func (ec *executionContext) _SignalAggregations_obdLongTermFuelTrim1(ctx context
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().ObdLongTermFuelTrim1(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().ObdLongTermFuelTrim1(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -12021,7 +13711,7 @@ func (ec *executionContext) _SignalAggregations_obdMAP(ctx context.Context, fiel
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().ObdMap(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().ObdMap(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -12114,7 +13804,7 @@ func (ec *executionContext) _SignalAggregations_obdO2WRSensor1Voltage(ctx contex
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().ObdO2WRSensor1Voltage(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().ObdO2WRSensor1Voltage(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -12207,7 +13897,7 @@ func (ec *executionContext) _SignalAggregations_obdO2WRSensor2Voltage(ctx contex
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().ObdO2WRSensor2Voltage(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().ObdO2WRSensor2Voltage(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -12300,7 +13990,7 @@ func (ec *executionContext) _SignalAggregations_obdRunTime(ctx context.Context, 
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().ObdRunTime(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().ObdRunTime(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -12393,7 +14083,7 @@ func (ec *executionContext) _SignalAggregations_obdShortTermFuelTrim1(ctx contex
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().ObdShortTermFuelTrim1(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().ObdShortTermFuelTrim1(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -12486,7 +14176,7 @@ func (ec *executionContext) _SignalAggregations_obdWarmupsSinceDTCClear(ctx cont
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().ObdWarmupsSinceDTCClear(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().ObdWarmupsSinceDTCClear(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -12579,7 +14269,7 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineDiesel
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().PowertrainCombustionEngineDieselExhaustFluidCapacity(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().PowertrainCombustionEngineDieselExhaustFluidCapacity(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -12672,7 +14362,7 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineDiesel
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().PowertrainCombustionEngineDieselExhaustFluidLevel(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().PowertrainCombustionEngineDieselExhaustFluidLevel(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -12765,7 +14455,7 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineECT(ct
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().PowertrainCombustionEngineEct(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().PowertrainCombustionEngineEct(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -12858,7 +14548,7 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineEOP(ct
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().PowertrainCombustionEngineEop(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().PowertrainCombustionEngineEop(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -12951,7 +14641,7 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineEOT(ct
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().PowertrainCombustionEngineEot(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().PowertrainCombustionEngineEot(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -13137,7 +14827,7 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineEngine
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().PowertrainCombustionEngineEngineOilRelativeLevel(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().PowertrainCombustionEngineEngineOilRelativeLevel(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -13230,7 +14920,7 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineMAF(ct
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().PowertrainCombustionEngineMaf(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().PowertrainCombustionEngineMaf(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -13323,7 +15013,7 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineSpeed(
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().PowertrainCombustionEngineSpeed(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().PowertrainCombustionEngineSpeed(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -13416,7 +15106,7 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineTPS(ct
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().PowertrainCombustionEngineTps(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().PowertrainCombustionEngineTps(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -13509,7 +15199,7 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineTorque
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().PowertrainCombustionEngineTorque(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().PowertrainCombustionEngineTorque(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -13602,7 +15292,7 @@ func (ec *executionContext) _SignalAggregations_powertrainFuelSystemAbsoluteLeve
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().PowertrainFuelSystemAbsoluteLevel(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().PowertrainFuelSystemAbsoluteLevel(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -13695,7 +15385,7 @@ func (ec *executionContext) _SignalAggregations_powertrainFuelSystemRelativeLeve
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().PowertrainFuelSystemRelativeLevel(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().PowertrainFuelSystemRelativeLevel(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -13881,7 +15571,7 @@ func (ec *executionContext) _SignalAggregations_powertrainRange(ctx context.Cont
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().PowertrainRange(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().PowertrainRange(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -13974,7 +15664,7 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryChargin
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryChargingAddedEnergy(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryChargingAddedEnergy(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -14067,7 +15757,7 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryChargin
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryChargingChargeCurrentAc(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryChargingChargeCurrentAc(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -14160,7 +15850,7 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryChargin
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryChargingChargeLimit(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryChargingChargeLimit(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -14253,7 +15943,7 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryChargin
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryChargingChargeVoltageUnknownType(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryChargingChargeVoltageUnknownType(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -14346,7 +16036,7 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryChargin
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryChargingIsCharging(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryChargingIsCharging(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -14439,7 +16129,7 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryCurrent
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryCurrentPower(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryCurrentPower(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -14532,7 +16222,7 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryCurrent
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryCurrentVoltage(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryCurrentVoltage(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -14625,7 +16315,7 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryGrossCa
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryGrossCapacity(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryGrossCapacity(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -14718,7 +16408,7 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryRange(c
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryRange(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryRange(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -14811,7 +16501,7 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryStateOf
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryStateOfChargeCurrent(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryStateOfChargeCurrent(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -14904,7 +16594,7 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryStateOf
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryStateOfChargeCurrentEnergy(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryStateOfChargeCurrentEnergy(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -14997,7 +16687,7 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryTempera
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryTemperatureAverage(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryTemperatureAverage(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -15090,7 +16780,7 @@ func (ec *executionContext) _SignalAggregations_powertrainTransmissionCurrentGea
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().PowertrainTransmissionCurrentGear(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().PowertrainTransmissionCurrentGear(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -15183,7 +16873,7 @@ func (ec *executionContext) _SignalAggregations_powertrainTransmissionTemperatur
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().PowertrainTransmissionTemperature(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().PowertrainTransmissionTemperature(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -15276,7 +16966,7 @@ func (ec *executionContext) _SignalAggregations_powertrainTransmissionTravelledD
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().PowertrainTransmissionTravelledDistance(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().PowertrainTransmissionTravelledDistance(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -15462,7 +17152,7 @@ func (ec *executionContext) _SignalAggregations_serviceDistanceToService(ctx con
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().ServiceDistanceToService(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().ServiceDistanceToService(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -15555,7 +17245,7 @@ func (ec *executionContext) _SignalAggregations_speed(ctx context.Context, field
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().Speed(rctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().Speed(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -24628,6 +26318,54 @@ func (ec *executionContext) unmarshalInputSignalFilter(ctx context.Context, obj 
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputSignalFloatFilter(ctx context.Context, obj any) (model.SignalFloatFilter, error) {
+	var it model.SignalFloatFilter
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"gt", "lt", "gte", "lte"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "gt":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gt"))
+			data, err := ec.unmarshalOFloat2ᚖfloat64(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Gt = data
+		case "lt":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lt"))
+			data, err := ec.unmarshalOFloat2ᚖfloat64(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Lt = data
+		case "gte":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gte"))
+			data, err := ec.unmarshalOFloat2ᚖfloat64(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Gte = data
+		case "lte":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lte"))
+			data, err := ec.unmarshalOFloat2ᚖfloat64(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Lte = data
+		}
+	}
+
+	return it, nil
+}
+
 // endregion **************************** input.gotpl *****************************
 
 // region    ************************** interface.gotpl ***************************
@@ -28934,6 +30672,14 @@ func (ec *executionContext) marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetwork
 		return graphql.Null
 	}
 	return ec._SignalFloat(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx context.Context, v any) (*model.SignalFloatFilter, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputSignalFloatFilter(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalOSignalString2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalString(ctx context.Context, sel ast.SelectionSet, v *model.SignalString) graphql.Marshaler {

@@ -25,12 +25,16 @@ func aggregationArgsFromContext(ctx context.Context, tokenID int, interval strin
 		FromTS:     from,
 		ToTS:       to,
 		Interval:   intervalInt,
-		FloatArgs:  map[model.FloatSignalArgs]struct{}{},
-		StringArgs: map[model.StringSignalArgs]struct{}{},
+		FloatArgs:  make(map[string]model.FloatSignalArgs),
+		StringArgs: make(map[string]model.StringSignalArgs),
 	}
 
 	fields := graphql.CollectFieldsCtx(ctx, nil)
 	parentCtx := graphql.GetFieldContext(ctx)
+
+	floatIndex := 0
+	stringIndex := 0
+
 	for _, field := range fields {
 		if !isSignal(field) || !hasAggregations(field) {
 			continue
@@ -40,42 +44,34 @@ func aggregationArgsFromContext(ctx context.Context, tokenID int, interval strin
 			return nil, fmt.Errorf("failed to get child field: %w", err)
 		}
 
-		// check for approximate location fields and force pull the latitude and longitude
-		if field.Name == model.ApproximateLatField || field.Name == model.ApproximateLongField {
-			if err := addSignalAggregation(&aggArgs, child, vss.FieldCurrentLocationLatitude); err != nil {
-				return nil, err
+		agg := child.Args["agg"]
+		alias := child.Field.Alias
+		switch typedAgg := agg.(type) {
+		case model.FloatAggregation:
+			handle := fmt.Sprintf("float%d", floatIndex)
+			filter := child.Args["filter"].(*model.SignalFloatFilter)
+			aggArgs.FloatArgs[child.Field.Alias] = model.FloatSignalArgs{
+				Name:        child.Field.Name,
+				Agg:         typedAgg,
+				Filter:      filter,
+				QueryHandle: handle,
 			}
-			if err := addSignalAggregation(&aggArgs, child, vss.FieldCurrentLocationLongitude); err != nil {
-				return nil, err
+			aggArgs.AliasToHandle[alias] = handle
+			floatIndex++
+		case model.StringAggregation:
+			handle := fmt.Sprintf("string%d", floatIndex)
+			aggArgs.StringArgs[child.Field.Alias] = model.StringSignalArgs{
+				Name:        child.Field.Name,
+				Agg:         typedAgg,
+				QueryHandle: handle,
 			}
-			continue
-		}
-
-		if err := addSignalAggregation(&aggArgs, child, child.Field.Name); err != nil {
-			return nil, err
+			aggArgs.AliasToHandle[alias] = handle
+			stringIndex++
+		default:
+			return nil, fmt.Errorf("unknown aggregation type: %T", agg)
 		}
 	}
 	return &aggArgs, nil
-}
-
-// addSignalAggregation gets the aggregation arguments from the child field and adds them to the aggregated signal arguments as eiter a float or string aggregation.
-func addSignalAggregation(aggArgs *model.AggregatedSignalArgs, child *graphql.FieldContext, name string) error {
-	agg := child.Args["agg"]
-	switch typedAgg := agg.(type) {
-	case model.FloatAggregation:
-		aggArgs.FloatArgs[model.FloatSignalArgs{
-			Name: name,
-			Agg:  typedAgg,
-		}] = struct{}{}
-	case model.StringAggregation:
-		aggArgs.StringArgs[model.StringSignalArgs{
-			Name: name,
-			Agg:  typedAgg,
-		}] = struct{}{}
-	default:
-		return fmt.Errorf("unknown aggregation type: %T", agg)
-	}
-	return nil
 }
 
 // latestArgsFromContext creates a latest signals arguments from the context and the provided arguments.

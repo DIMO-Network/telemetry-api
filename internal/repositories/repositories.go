@@ -85,8 +85,9 @@ func (r *Repository) GetSignal(ctx context.Context, aggArgs *model.AggregatedSig
 			lastTS = signal.Timestamp
 			currAggs = &model.SignalAggregations{
 				Timestamp:    signal.Timestamp,
-				ValueNumbers: make(map[model.AliasKey]float64),
-				ValueStrings: make(map[model.AliasKey]string),
+				ValueNumbers: make(map[string]float64),
+				ValueStrings: make(map[string]string),
+				SignalArgs:   aggArgs,
 			}
 			allAggs = append(allAggs, currAggs)
 		}

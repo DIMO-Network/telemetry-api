@@ -40,17 +40,25 @@ type AggregatedSignalArgs struct {
 	// Interval in which the data is aggregated in milliseconds.
 	Interval int64
 	// FloatArgs represents arguments for each float signal.
-	FloatArgs map[FloatSignalArgs]struct{}
+	// Handle -> Args
+	FloatArgs map[string]FloatSignalArgs
 	// StringArgs represents arguments for each string signal.
-	StringArgs map[StringSignalArgs]struct{}
+	// Handle -> Args
+	StringArgs map[string]StringSignalArgs
+
+	AliasToHandle map[string]string
 }
 
 // FloatSignalArgs is the arguments for querying a float signals.
 type FloatSignalArgs struct {
-	// Name is the signal name.
+	// Name is the signal name. This is the field name in the API.
 	Name string
 	// Agg is the aggregation type.
 	Agg FloatAggregation
+
+	QueryHandle string
+
+	Filter *SignalFloatFilter
 }
 
 // StringSignalArgs is the arguments for querying a string signals.
@@ -59,4 +67,6 @@ type StringSignalArgs struct {
 	Name string
 	// Agg is the aggregation type.
 	Agg StringAggregation
+
+	QueryHandle string
 }

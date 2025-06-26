@@ -15,16 +15,23 @@ type AliasKey struct {
 type SignalAggregations struct {
 	Timestamp time.Time `json:"timestamp"`
 
-	ValueNumbers map[AliasKey]float64 `json:"-"`
-	ValueStrings map[AliasKey]string  `json:"-"`
+	// Alias to value
+	ValueNumbers map[string]float64 `json:"-"`
+	ValueStrings map[string]string  `json:"-"`
+
+	SignalArgs *AggregatedSignalArgs `json:"-"`
+}
+
+type FieldInfo struct {
+	Alias string
+	Name  string
 }
 
 // AggSignal holds the value of an aggregation for a signal in a certain
 // time bucket. Only one of ValueNumber and ValueString contains a meaningful
 // value, determined by Name.
 type AggSignal struct {
-	Name        string
-	Agg         string
+	Handle      string
 	Timestamp   time.Time
 	ValueNumber float64
 	ValueString string
