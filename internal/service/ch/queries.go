@@ -27,7 +27,7 @@ const (
 	sourceWhere   = vss.SourceCol + " = ?"
 	sourceIn      = vss.SourceCol + " IN ?"
 	groupAsc      = IntervalGroup + " ASC"
-	valueTableDef = vss.NameCol + " String, handle String"
+	valueTableDef = "handle String, " + vss.NameCol + " String"
 )
 
 // varibles for the last seen signal query.
@@ -126,27 +126,27 @@ func selectInterval(milliSeconds int64, origin time.Time) qm.QueryMod {
 		vss.TimestampCol, origin.UnixMicro(), milliSeconds, origin.UnixMicro(), IntervalGroup))
 }
 
-func selectNumberAggs(numberAggs []model.FloatSignalArgs) qm.QueryMod {
+func selectNumberAggs(numberAggs []model.FloatSignalArgs, ahm *AliasHandleMapper) qm.QueryMod {
 	if len(numberAggs) == 0 {
 		return qm.Select("NULL AS " + vss.ValueNumberCol)
 	}
 	// Add a CASE statement for each name and its corresponding aggregation function
-	caseStmts := make([]string, len(numberAggs))
-	for i := range numberAggs {
-		caseStmts[i] = fmt.Sprintf("WHEN %s = '%s' THEN %s", HandleCol, numberAggs[i].QueryHandle, getFloatAggFunc(numberAggs[i].Agg))
+	caseStmts := make([]string, 0, len(numberAggs))
+	for _, agg := range numberAggs {
+		caseStmts = append(caseStmts, fmt.Sprintf("WHEN %s = '%s' THEN %s", HandleCol, ahm.Handle(agg.Alias), getFloatAggFunc(agg.Agg)))
 	}
 	caseStmt := fmt.Sprintf("CASE %s ELSE NULL END AS %s", strings.Join(caseStmts, " "), vss.ValueNumberCol)
 	return qm.Select(caseStmt)
 }
 
-func selectStringAggs(stringAggs []model.StringSignalArgs) qm.QueryMod {
+func selectStringAggs(stringAggs []model.StringSignalArgs, ahm *AliasHandleMapper) qm.QueryMod {
 	if len(stringAggs) == 0 {
 		return qm.Select("NULL AS " + vss.ValueStringCol)
 	}
 	// Add a CASE statement for each name and its corresponding aggregation function
-	caseStmts := make([]string, len(stringAggs))
-	for i := range stringAggs {
-		caseStmts[i] = fmt.Sprintf("WHEN %s = '%s' AND %s = '%s' THEN %s", HandleCol, stringAggs[i].QueryHandle, getStringAgg(stringAggs[i].Agg))
+	caseStmts := make([]string, 0, len(stringAggs))
+	for _, agg := range stringAggs {
+		caseStmts = append(caseStmts, fmt.Sprintf("WHEN %s = '%s' AND %s = '%s' THEN %s", HandleCol, ahm.Handle(agg.Alias), getStringAgg(agg.Agg)))
 	}
 	caseStmt := fmt.Sprintf("CASE %s ELSE NULL END AS %s", strings.Join(caseStmts, " "), vss.ValueStringCol)
 	return qm.Select(caseStmt)
@@ -312,7 +312,7 @@ ORDER BY
 	name ASC,
 	agg ASC;
 */
-func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
+func getAggQuery(aggArgs *model.AggregatedSignalArgs, ahm *AliasHandleMapper) (string, []any, error) {
 	if aggArgs == nil {
 		return "", nil, nil
 	}
@@ -321,31 +321,25 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 	if numAggs == 0 {
 		return "", nil, errors.New("no aggregations requested")
 	}
-	floatArgs := make([]model.FloatSignalArgs, 0, len(aggArgs.FloatArgs))
-	stringArgs := make([]model.StringSignalArgs, 0, len(aggArgs.StringArgs))
-	for _, agg := range aggArgs.FloatArgs {
-		floatArgs = append(floatArgs, agg)
-	}
-	for _, agg := range aggArgs.StringArgs {
-		stringArgs = append(stringArgs, agg)
-	}
 
 	// I can't find documentation for this VALUES syntax anywhere besides GitHub
 	// https://github.com/ClickHouse/ClickHouse/issues/5984#issuecomment-513411725
 	// You can see the alternatives in the issue and they are ugly.
 	valuesArgs := make([]string, 0, numAggs)
-	for _, agg := range floatArgs {
-		valuesArgs = append(valuesArgs, fmt.Sprintf("('%s', '%s')", agg.Name, agg.QueryHandle))
+	for _, agg := range aggArgs.FloatArgs {
+		valuesArgs = append(valuesArgs, fmt.Sprintf("('%s', '%s')", ahm.Handle(agg.Alias), agg.Name))
 	}
-	for _, agg := range stringArgs {
-		valuesArgs = append(valuesArgs, fmt.Sprintf("('%s', '%s')", agg.Name, agg.QueryHandle))
+	for _, agg := range aggArgs.StringArgs {
+		valuesArgs = append(valuesArgs, fmt.Sprintf("('%s', '%s')", ahm.Handle(agg.Alias), agg.Name))
 	}
 	valueTable := fmt.Sprintf("VALUES('%s', %s) as %s ON %s.%s = %s.%s", valueTableDef, strings.Join(valuesArgs, ", "), aggTableName, vss.TableName, vss.NameCol, aggTableName, vss.NameCol)
 
 	var floatFilters []qm.QueryMod
 
-	for i, agg := range floatArgs {
-		fieldFilters := []qm.QueryMod{qmhelper.Where(HandleCol, qmhelper.EQ, agg.QueryHandle)}
+	i := 0
+
+	for _, agg := range aggArgs.FloatArgs {
+		fieldFilters := []qm.QueryMod{qmhelper.Where(HandleCol, qmhelper.EQ, ahm.Handle(agg.Alias))}
 		if fil := agg.Filter; fil != nil {
 			if fil.Gt != nil {
 				fieldFilters = append(fieldFilters, qmhelper.Where(vss.ValueNumberCol, qmhelper.GT, *fil.Gt))
@@ -366,13 +360,14 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 		} else {
 			floatFilters = append(floatFilters, qm.Or2(qm.Expr(fieldFilters...)))
 		}
+		i++
 	}
 
 	mods := []qm.QueryMod{
 		qm.Select(HandleCol),
 		selectInterval(aggArgs.Interval, aggArgs.FromTS),
-		selectNumberAggs(floatArgs),
-		selectStringAggs(stringArgs),
+		selectNumberAggs(aggArgs.FloatArgs, ahm),
+		selectStringAggs(aggArgs.StringArgs, ahm),
 		qm.Where(tokenIDWhere, aggArgs.TokenID),
 		qm.Where(timestampFrom, aggArgs.FromTS),
 		qm.Where(timestampTo, aggArgs.ToTS),

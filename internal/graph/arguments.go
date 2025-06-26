@@ -22,18 +22,14 @@ func aggregationArgsFromContext(ctx context.Context, tokenID int, interval strin
 			TokenID: uint32(tokenID),
 			Filter:  filter,
 		},
-		FromTS:     from,
-		ToTS:       to,
-		Interval:   intervalInt,
-		FloatArgs:  make(map[string]model.FloatSignalArgs),
-		StringArgs: make(map[string]model.StringSignalArgs),
+		FromTS:      from,
+		ToTS:        to,
+		Interval:    intervalInt,
+		AliasToName: make(map[string]string),
 	}
 
 	fields := graphql.CollectFieldsCtx(ctx, nil)
 	parentCtx := graphql.GetFieldContext(ctx)
-
-	floatIndex := 0
-	stringIndex := 0
 
 	for _, field := range fields {
 		if !isSignal(field) || !hasAggregations(field) {
@@ -46,27 +42,23 @@ func aggregationArgsFromContext(ctx context.Context, tokenID int, interval strin
 
 		agg := child.Args["agg"]
 		alias := child.Field.Alias
+		name := child.Field.Name
+		aggArgs.AliasToName[alias] = name
 		switch typedAgg := agg.(type) {
 		case model.FloatAggregation:
-			handle := fmt.Sprintf("float%d", floatIndex)
 			filter := child.Args["filter"].(*model.SignalFloatFilter)
-			aggArgs.FloatArgs[child.Field.Alias] = model.FloatSignalArgs{
-				Name:        child.Field.Name,
-				Agg:         typedAgg,
-				Filter:      filter,
-				QueryHandle: handle,
-			}
-			aggArgs.AliasToHandle[alias] = handle
-			floatIndex++
+			aggArgs.FloatArgs = append(aggArgs.FloatArgs, model.FloatSignalArgs{
+				Name:   name,
+				Agg:    typedAgg,
+				Alias:  alias,
+				Filter: filter,
+			})
 		case model.StringAggregation:
-			handle := fmt.Sprintf("string%d", floatIndex)
-			aggArgs.StringArgs[child.Field.Alias] = model.StringSignalArgs{
-				Name:        child.Field.Name,
-				Agg:         typedAgg,
-				QueryHandle: handle,
-			}
-			aggArgs.AliasToHandle[alias] = handle
-			stringIndex++
+			aggArgs.StringArgs = append(aggArgs.StringArgs, model.StringSignalArgs{
+				Name:  name,
+				Agg:   typedAgg,
+				Alias: alias,
+			})
 		default:
 			return nil, fmt.Errorf("unknown aggregation type: %T", agg)
 		}

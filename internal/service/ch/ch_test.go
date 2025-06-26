@@ -93,19 +93,18 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 				FromTS:   c.dataStartTime,
 				ToTS:     endTs,
 				Interval: day.Milliseconds(),
-				FloatArgs: map[model.FloatSignalArgs]struct{}{
-					{
+				FloatArgs: map[string]model.FloatSignalArgs{
+					"float0": {
 						Name: vss.FieldSpeed,
 						Agg:  model.FloatAggregationAvg,
-					}: {},
+					},
 				},
 			},
 			expected: []model.AggSignal{
 				{
-					Name:        vss.FieldSpeed,
+					Handle:      "float0",
 					Timestamp:   c.dataStartTime,
 					ValueNumber: 4.5,
-					Agg:         model.FloatAggregationAvg.String(),
 				},
 			},
 		},
@@ -118,29 +117,27 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 				FromTS:   c.dataStartTime,
 				ToTS:     endTs,
 				Interval: day.Milliseconds(),
-				FloatArgs: map[model.FloatSignalArgs]struct{}{
-					{
+				FloatArgs: map[string]model.FloatSignalArgs{
+					"float0": {
 						Name: vss.FieldSpeed,
 						Agg:  model.FloatAggregationMax,
-					}: {},
-					{
+					},
+					"float1": {
 						Name: vss.FieldSpeed,
 						Agg:  model.FloatAggregationMin,
-					}: {},
+					},
 				},
 			},
 			expected: []model.AggSignal{
 				{
-					Name:        vss.FieldSpeed,
+					Handle:      "float0",
 					Timestamp:   c.dataStartTime,
 					ValueNumber: 9,
-					Agg:         model.FloatAggregationMax.String(),
 				},
 				{
-					Name:        vss.FieldSpeed,
+					Handle:      "float1",
 					Timestamp:   c.dataStartTime,
 					ValueNumber: 0,
-					Agg:         model.FloatAggregationMin.String(),
 				},
 			},
 		},

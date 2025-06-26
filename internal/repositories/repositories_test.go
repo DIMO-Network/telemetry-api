@@ -57,7 +57,7 @@ func TestGetSignal(t *testing.T) {
 			aggArgs: defaultArgs,
 			mockSetup: func(m *Mocks) {
 				signals := []*model.AggSignal{
-					{Timestamp: time.Date(2024, 6, 11, 0, 0, 0, 0, time.UTC), Name: vss.FieldSpeed, ValueNumber: 1.0},
+					{Timestamp: time.Date(2024, 6, 11, 0, 0, 0, 0, time.UTC), Handle: "float0", ValueNumber: 1.0},
 				}
 				m.CHService.EXPECT().
 					GetAggregatedSignals(gomock.Any(), defaultArgs).
@@ -75,9 +75,9 @@ func TestGetSignal(t *testing.T) {
 			aggArgs: defaultArgs,
 			mockSetup: func(m *Mocks) {
 				signals := []*model.AggSignal{
-					{Timestamp: time.Date(2024, 6, 11, 0, 0, 0, 0, time.UTC), Name: vss.FieldSpeed, ValueNumber: 1.0},
-					{Timestamp: time.Date(2024, 6, 11, 0, 0, 0, 0, time.UTC), Name: vss.FieldSpeed, ValueNumber: 2.0},
-					{Timestamp: time.Date(2024, 6, 11, 1, 0, 0, 0, time.UTC), Name: vss.FieldSpeed, ValueNumber: 3.0},
+					{Timestamp: time.Date(2024, 6, 11, 0, 0, 0, 0, time.UTC), Handle: "float0", ValueNumber: 1.0},
+					{Timestamp: time.Date(2024, 6, 11, 0, 0, 0, 0, time.UTC), Handle: "float0", ValueNumber: 2.0},
+					{Timestamp: time.Date(2024, 6, 11, 1, 0, 0, 0, time.UTC), Handle: "float0", ValueNumber: 3.0},
 				}
 				m.CHService.EXPECT().
 					GetAggregatedSignals(gomock.Any(), defaultArgs).
@@ -98,9 +98,9 @@ func TestGetSignal(t *testing.T) {
 			aggArgs: defaultArgs,
 			mockSetup: func(m *Mocks) {
 				signals := []*model.AggSignal{
-					{Timestamp: time.Date(2024, 6, 11, 0, 0, 0, 0, time.UTC), Name: vss.FieldSpeed, ValueNumber: 1.0},
-					{Timestamp: time.Date(2024, 6, 11, 0, 0, 0, 0, time.UTC), Name: vss.FieldSpeed, ValueNumber: 2.0},
-					{Timestamp: time.Date(2024, 6, 11, 0, 0, 0, 0, time.UTC), Name: vss.FieldSpeed, ValueNumber: 3.0},
+					{Timestamp: time.Date(2024, 6, 11, 0, 0, 0, 0, time.UTC), Handle: "float0", ValueNumber: 1.0},
+					{Timestamp: time.Date(2024, 6, 11, 0, 0, 0, 0, time.UTC), Handle: "float0", ValueNumber: 2.0},
+					{Timestamp: time.Date(2024, 6, 11, 0, 0, 0, 0, time.UTC), Handle: "float0", ValueNumber: 3.0},
 				}
 				m.CHService.EXPECT().
 					GetAggregatedSignals(gomock.Any(), defaultArgs).
@@ -118,9 +118,9 @@ func TestGetSignal(t *testing.T) {
 			aggArgs: defaultArgs,
 			mockSetup: func(m *Mocks) {
 				signals := []*model.AggSignal{
-					{Timestamp: time.Date(2024, 6, 11, 0, 0, 0, 0, time.UTC), Name: vss.FieldSpeed, ValueNumber: 1.0},
-					{Timestamp: time.Date(2024, 6, 11, 1, 0, 0, 0, time.UTC), Name: vss.FieldSpeed, ValueNumber: 2.0},
-					{Timestamp: time.Date(2024, 6, 11, 1, 0, 0, 0, time.UTC), Name: vss.FieldSpeed, ValueNumber: 3.0},
+					{Timestamp: time.Date(2024, 6, 11, 0, 0, 0, 0, time.UTC), Handle: "float0", ValueNumber: 1.0},
+					{Timestamp: time.Date(2024, 6, 11, 1, 0, 0, 0, time.UTC), Handle: "float0", ValueNumber: 2.0},
+					{Timestamp: time.Date(2024, 6, 11, 1, 0, 0, 0, time.UTC), Handle: "float0", ValueNumber: 3.0},
 				}
 				m.CHService.EXPECT().
 					GetAggregatedSignals(gomock.Any(), defaultArgs).

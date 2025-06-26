@@ -87,6 +87,30 @@ func (s *Service) GetLatestSignals(ctx context.Context, latestArgs *model.Latest
 	return signals, nil
 }
 
+type AliasHandleMapper struct {
+	aliasToHandle, handleToAlias map[string]string
+}
+
+func NewAliasHandleMapper() *AliasHandleMapper {
+	return &AliasHandleMapper{
+		aliasToHandle: make(map[string]string),
+		handleToAlias: make(map[string]string),
+	}
+}
+
+func (m *AliasHandleMapper) Add(alias, handle string) {
+	m.aliasToHandle[alias] = handle
+	m.handleToAlias[handle] = alias
+}
+
+func (m *AliasHandleMapper) Handle(alias string) string {
+	return m.aliasToHandle[alias]
+}
+
+func (m *AliasHandleMapper) Alias(handle string) string {
+	return m.handleToAlias[handle]
+}
+
 // GetAggregatedSignals returns a slice of aggregated signals based on the provided arguments from the ClickHouse database.
 // The signals are sorted by timestamp in ascending order.
 // The timestamp on each signal is for the start of the interval.
@@ -95,12 +119,22 @@ func (s *Service) GetAggregatedSignals(ctx context.Context, aggArgs *model.Aggre
 		return []*model.AggSignal{}, nil
 	}
 
-	stmt, args, err := getAggQuery(aggArgs)
+	ahm := NewAliasHandleMapper()
+
+	for i, arg := range aggArgs.FloatArgs {
+		ahm.Add(arg.Alias, fmt.Sprintf("float%d", i))
+	}
+
+	for i, arg := range aggArgs.StringArgs {
+		ahm.Add(arg.Alias, fmt.Sprintf("string%d", i))
+	}
+
+	stmt, args, err := getAggQuery(aggArgs, ahm)
 	if err != nil {
 		return nil, err
 	}
 
-	signals, err := s.getAggSignals(ctx, stmt, args)
+	signals, err := s.getAggSignals(ctx, stmt, args, ahm)
 	if err != nil {
 		return nil, err
 	}
@@ -131,7 +165,7 @@ func (s *Service) getSignals(ctx context.Context, stmt string, args []any) ([]*v
 }
 
 // TODO(elffjs): Ugly duplication.
-func (s *Service) getAggSignals(ctx context.Context, stmt string, args []any) ([]*model.AggSignal, error) {
+func (s *Service) getAggSignals(ctx context.Context, stmt string, args []any, ahm *AliasHandleMapper) ([]*model.AggSignal, error) {
 	rows, err := s.conn.Query(ctx, stmt, args...)
 	if err != nil {
 		return nil, fmt.Errorf("failed querying clickhouse: %w", err)
@@ -139,11 +173,13 @@ func (s *Service) getAggSignals(ctx context.Context, stmt string, args []any) ([
 	signals := []*model.AggSignal{}
 	for rows.Next() {
 		var signal model.AggSignal
-		err := rows.Scan(&signal.Handle, &signal.Timestamp, &signal.ValueNumber, &signal.ValueString)
+		var handle string
+		err := rows.Scan(&handle, &signal.Timestamp, &signal.ValueNumber, &signal.ValueString)
 		if err != nil {
 			_ = rows.Close()
 			return nil, fmt.Errorf("failed scanning clickhouse row: %w", err)
 		}
+		signal.Alias = ahm.Alias(handle)
 		signals = append(signals, &signal)
 	}
 	_ = rows.Close()

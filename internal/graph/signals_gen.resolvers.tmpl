@@ -13,7 +13,7 @@ import (
 {{- if eq .GQLType "Float" }}
 func (r *signalAggregationsResolver) {{ GQLGenResolverName .JSONName }}(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
 	fieldCtx := graphql.GetFieldContext(ctx)
-	vn, ok := obj.ValueNumbers[obj.SignalArgs.AliasToHandle[fieldCtx.Field.Alias]]
+	vn, ok := obj.ValueNumbers[fieldCtx.Field.Alias]
 	if !ok {
 		return nil, nil
 	}
@@ -22,7 +22,7 @@ func (r *signalAggregationsResolver) {{ GQLGenResolverName .JSONName }}(ctx cont
 {{ else }}
 func (r *signalAggregationsResolver) {{ GQLGenResolverName .JSONName }}(ctx context.Context, obj *model.SignalAggregations, agg model.StringAggregation) (*string, error) {
 	fieldCtx := graphql.GetFieldContext(ctx)
-	vs, ok := obj.ValueStrings[obj.SignalArgs.AliasToHandle[fieldCtx.Field.Alias]]
+	vs, ok := obj.ValueStrings[fieldCtx.Field.Alias]
 	if !ok {
 		return nil, nil
 	}

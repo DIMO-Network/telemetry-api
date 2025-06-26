@@ -87,12 +87,11 @@ func (r *Repository) GetSignal(ctx context.Context, aggArgs *model.AggregatedSig
 				Timestamp:    signal.Timestamp,
 				ValueNumbers: make(map[string]float64),
 				ValueStrings: make(map[string]string),
-				SignalArgs:   aggArgs,
 			}
 			allAggs = append(allAggs, currAggs)
 		}
 
-		model.SetAggregationField(currAggs, signal)
+		model.SetAggregationField(currAggs, signal, aggArgs.AliasToName)
 	}
 
 	return allAggs, nil
