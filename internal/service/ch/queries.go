@@ -368,11 +368,6 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 		}
 	}
 
-	bigWhere := []qm.QueryMod{}
-	if len(floatArgs) == 0 {
-		bigWhere = append(bigWhere)
-	}
-
 	mods := []qm.QueryMod{
 		qm.Select(HandleCol),
 		selectInterval(aggArgs.Interval, aggArgs.FromTS),
