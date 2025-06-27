@@ -10,8 +10,11 @@ import (
 	ctgrpc "github.com/DIMO-Network/credit-tracker/pkg/grpc"
 	"github.com/DIMO-Network/telemetry-api/internal/config"
 	"github.com/ethereum/go-ethereum/common"
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/status"
 )
 
 // Client implements the Client interface.
@@ -110,11 +113,41 @@ func (c *Client) runWithRetry(ctx context.Context, f func() error) error {
 	var err error
 	for i := 0; i < c.MaxRetries; i++ {
 		if err = f(); err != nil {
-			//TODO: We can return early for specific errors
+			// Check if this is a bad request error that shouldn't be retried
+			if isBadRequestError(err) {
+				return err
+			}
 			time.Sleep(c.RetryTimeout)
 			continue
 		}
 		return nil
 	}
 	return err
+}
+
+// isBadRequestError checks if the error is a bad request that shouldn't be retried
+func isBadRequestError(err error) bool {
+	st, ok := status.FromError(err)
+	if !ok {
+		return false
+	}
+
+	// Check gRPC status code for bad request errors
+	if st.Code() == codes.InvalidArgument || st.Code() == codes.NotFound || st.Code() == codes.PermissionDenied {
+		return true
+	}
+
+	// Check error details for specific bad request reasons
+	for _, detail := range st.Details() {
+		if errorInfo, ok := detail.(*errdetails.ErrorInfo); ok {
+			switch errorInfo.Reason {
+			case ctgrpc.ErrorReason_ERROR_REASON_INVALID_ASSET_DID.String():
+				return true
+			case ctgrpc.ErrorReason_ERROR_REASON_INSUFFICIENT_CREDITS.String():
+				return true
+			}
+		}
+	}
+
+	return false
 }
