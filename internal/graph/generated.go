@@ -2570,12 +2570,14 @@ input SignalFilter {
 # TODO(elffjs): Do we need more operators?
 # TODO(elffjs): Recursive "or" support.
 input SignalFloatFilter {
+  eq: Float
+  neq: Float
   gt: Float
   lt: Float
   gte: Float
   lte: Float
-  neq: Float
   notIn: [Float!]
+  in: [Float!]
 }
 `, BuiltIn: false},
 	{Name: "../../schema/device_activity.graphqls", Input: `extend type Query {
@@ -26328,13 +26330,27 @@ func (ec *executionContext) unmarshalInputSignalFloatFilter(ctx context.Context,
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"gt", "lt", "gte", "lte", "neq", "notIn"}
+	fieldsInOrder := [...]string{"eq", "neq", "gt", "lt", "gte", "lte", "notIn", "in"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
+		case "eq":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("eq"))
+			data, err := ec.unmarshalOFloat2ᚖfloat64(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Eq = data
+		case "neq":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("neq"))
+			data, err := ec.unmarshalOFloat2ᚖfloat64(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Neq = data
 		case "gt":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gt"))
 			data, err := ec.unmarshalOFloat2ᚖfloat64(ctx, v)
@@ -26363,13 +26379,6 @@ func (ec *executionContext) unmarshalInputSignalFloatFilter(ctx context.Context,
 				return it, err
 			}
 			it.Lte = data
-		case "neq":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("neq"))
-			data, err := ec.unmarshalOFloat2ᚖfloat64(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.Neq = data
 		case "notIn":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("notIn"))
 			data, err := ec.unmarshalOFloat2ᚕfloat64ᚄ(ctx, v)
@@ -26377,6 +26386,13 @@ func (ec *executionContext) unmarshalInputSignalFloatFilter(ctx context.Context,
 				return it, err
 			}
 			it.NotIn = data
+		case "in":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("in"))
+			data, err := ec.unmarshalOFloat2ᚕfloat64ᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.In = data
 		}
 	}
 

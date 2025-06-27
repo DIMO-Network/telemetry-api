@@ -342,6 +342,12 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs, ahm *AliasHandleMapper) (s
 	for _, agg := range aggArgs.FloatArgs {
 		fieldFilters := []qm.QueryMod{qmhelper.Where(HandleCol, qmhelper.EQ, ahm.Handle(agg.Alias))}
 		if fil := agg.Filter; fil != nil {
+			if fil.Eq != nil {
+				fieldFilters = append(fieldFilters, qmhelper.Where(vss.ValueNumberCol, qmhelper.EQ, *fil.Eq))
+			}
+			if fil.Neq != nil {
+				fieldFilters = append(fieldFilters, qmhelper.Where(vss.ValueNumberCol, qmhelper.NEQ, *fil.Neq))
+			}
 			if fil.Gt != nil {
 				fieldFilters = append(fieldFilters, qmhelper.Where(vss.ValueNumberCol, qmhelper.GT, *fil.Gt))
 			}
@@ -354,11 +360,11 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs, ahm *AliasHandleMapper) (s
 			if fil.Lte != nil {
 				fieldFilters = append(fieldFilters, qmhelper.Where(vss.ValueNumberCol, qmhelper.LTE, *fil.Lte))
 			}
-			if fil.Neq != nil {
-				fieldFilters = append(fieldFilters, qmhelper.Where(vss.ValueNumberCol, qmhelper.NEQ, *fil.Neq))
-			}
 			if len(fil.NotIn) != 0 {
 				fieldFilters = append(fieldFilters, qm.WhereNotIn(vss.ValueNumberCol+" NOT IN ?", fil.NotIn))
+			}
+			if len(fil.In) != 0 {
+				fieldFilters = append(fieldFilters, qm.WhereNotIn(vss.ValueNumberCol+" IN ?", fil.In))
 			}
 		}
 

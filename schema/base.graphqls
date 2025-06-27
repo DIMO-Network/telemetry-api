@@ -183,10 +183,12 @@ input SignalFilter {
 # TODO(elffjs): Do we need more operators?
 # TODO(elffjs): Recursive "or" support.
 input SignalFloatFilter {
+  eq: Float
+  neq: Float
   gt: Float
   lt: Float
   gte: Float
   lte: Float
-  neq: Float
   notIn: [Float!]
+  in: [Float!]
 }
