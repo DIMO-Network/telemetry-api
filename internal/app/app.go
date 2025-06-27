@@ -12,6 +12,7 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/handler/extension"
 	"github.com/99designs/gqlgen/graphql/handler/transport"
+	"github.com/DIMO-Network/server-garage/pkg/gql/errorhandler"
 	"github.com/DIMO-Network/telemetry-api/internal/auth"
 	"github.com/DIMO-Network/telemetry-api/internal/config"
 	"github.com/DIMO-Network/telemetry-api/internal/dtcmiddleware"
@@ -25,7 +26,6 @@ import (
 	"github.com/DIMO-Network/telemetry-api/internal/service/credittracker"
 	"github.com/DIMO-Network/telemetry-api/internal/service/fetchapi"
 	"github.com/DIMO-Network/telemetry-api/internal/service/identity"
-	"github.com/DIMO-Network/telemetry-api/pkg/errorhandler"
 	"github.com/rs/zerolog"
 )
 
