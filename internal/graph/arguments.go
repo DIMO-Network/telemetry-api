@@ -30,7 +30,6 @@ func aggregationArgsFromContext(ctx context.Context, tokenID int, interval strin
 
 	fields := graphql.CollectFieldsCtx(ctx, nil)
 	parentCtx := graphql.GetFieldContext(ctx)
-
 	for _, field := range fields {
 		if !isSignal(field) || !hasAggregations(field) {
 			continue
