@@ -1,7 +1,7 @@
 dario.cat/mergo v1.0.1 h1:Ra4+bf83h2ztPIQYNP99R6m+Y7KfnARDfID+a+vLl4s=
 dario.cat/mergo v1.0.1/go.mod h1:uNxQE+84aUszobStD9th8a29P2fMDhsBdgRYvZOxGmk=
-github.com/99designs/gqlgen v0.17.73 h1:A3Ki+rHWqKbAOlg5fxiZBnz6OjW3nwupDHEG15gEsrg=
-github.com/99designs/gqlgen v0.17.73/go.mod h1:2RyGWjy2k7W9jxrs8MOQthXGkD3L3oGr0jXW3Pu8lGg=
+github.com/99designs/gqlgen v0.17.74 h1:1FuVtkXxOc87xpKio3f6sohREmec+Jvy86PcYOuwgWo=
+github.com/99designs/gqlgen v0.17.74/go.mod h1:a+iR6mfRLNRp++kDpooFHiPWYiWX3Yu1BIilQRHgh10=
 github.com/AdaLogics/go-fuzz-headers v0.0.0-20240806141605-e8a1dd7889d6 h1:He8afgbRMd7mFxO99hRNu+6tazq8nFF9lIwo9JFroBk=
 github.com/AdaLogics/go-fuzz-headers v0.0.0-20240806141605-e8a1dd7889d6/go.mod h1:8o94RPi1/7XTJvwPpRSzSUedZrtlirdB3r9Z20bi2f8=
 github.com/Azure/go-ansiterm v0.0.0-20230124172434-306776ec8161 h1:L/gRVlceqvL25UVaW/CKtUDjefjrs0SPonmDGUVOYP0=
@@ -24,6 +24,8 @@ github.com/DIMO-Network/fetch-api v0.0.12 h1:pLUekaYNWHKmguoGAni+BtTWl1j1yOdpowN
 github.com/DIMO-Network/fetch-api v0.0.12/go.mod h1:9FtpOZR6kChy9x8cXN1z/0002ATh7R6yDo40pABAyNw=
 github.com/DIMO-Network/model-garage v0.6.0 h1:VtRjcEljCTffeDQbq5k8LP1Y01FBt5OpgwXRrH5QiPY=
 github.com/DIMO-Network/model-garage v0.6.0/go.mod h1:5xrWBU0Gr6l3szBtfwM76KbsQlT6GTX2XI+4s/ZD9O0=
+github.com/DIMO-Network/server-garage v0.0.0-20250627170051-1dc7bd099e3c h1:y80ouOKHHrKZxcUdVjapMukcT6nD2aNB2Kfnkp049jc=
+github.com/DIMO-Network/server-garage v0.0.0-20250627170051-1dc7bd099e3c/go.mod h1:wB2nqPudkAePkR+Ix84rSDaqme2S3OMkB2mFJqLhgFA=
 github.com/DIMO-Network/shared v1.0.4 h1:lQ16TRFT9Bi9/17iNYdUeZ4DGNMD6ocODfw6aEXGk40=
 github.com/DIMO-Network/shared v1.0.4/go.mod h1:lDHUKwwT2LW6Zvd42Nb33dXklRNTmfyOlbUNx2dQfGY=
 github.com/DIMO-Network/token-exchange-api v0.3.0 h1:w6BCp0Vscq2lBa0jxYH7BGp8RFUGIIBYk2tdv2RF8KY=

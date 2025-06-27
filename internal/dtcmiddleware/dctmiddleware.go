@@ -9,9 +9,9 @@ import (
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/DIMO-Network/credit-tracker/pkg/grpc"
+	"github.com/DIMO-Network/server-garage/pkg/gql/errorhandler"
 	"github.com/DIMO-Network/telemetry-api/internal/auth"
 	"github.com/DIMO-Network/telemetry-api/internal/service/credittracker"
-	"github.com/DIMO-Network/telemetry-api/pkg/errorhandler"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/rs/zerolog"
 	"github.com/segmentio/ksuid"
@@ -103,7 +103,7 @@ func (d DCT) InterceptResponse(
 	response := next(ctx)
 
 	// If it's our fault the request failed, refund the credits
-	if errorhandler.HasInternalError(&response.Errors) {
+	if errorhandler.HasErrCode(&response.Errors, errorhandler.CodeInternalServerError) {
 		// Start timing the refund operation
 		refundTimer := prometheus.NewTimer(DCTRequestLatency.WithLabelValues("refund"))
 		err := d.Tracker.RefundCredits(ctx, referenceID)

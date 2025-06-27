@@ -9,10 +9,10 @@ import (
 	"time"
 
 	cloudevent "github.com/DIMO-Network/cloudevent"
+	"github.com/DIMO-Network/server-garage/pkg/gql/errorhandler"
 	"github.com/DIMO-Network/telemetry-api/internal/auth"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	"github.com/DIMO-Network/telemetry-api/internal/repositories/attestation"
-	"github.com/DIMO-Network/telemetry-api/pkg/errorhandler"
 	"github.com/DIMO-Network/token-exchange-api/pkg/tokenclaims"
 	jwtmiddleware "github.com/auth0/go-jwt-middleware/v2"
 	"github.com/ethereum/go-ethereum/common"

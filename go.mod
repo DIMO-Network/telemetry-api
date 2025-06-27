@@ -3,7 +3,7 @@ module github.com/DIMO-Network/telemetry-api
 go 1.24.0
 
 require (
-	github.com/99designs/gqlgen v0.17.73
+	github.com/99designs/gqlgen v0.17.74
 	github.com/ClickHouse/clickhouse-go/v2 v2.35.0
 	github.com/DIMO-Network/attestation-api v0.0.22
 	github.com/DIMO-Network/clickhouse-infra v0.0.3
@@ -11,6 +11,7 @@ require (
 	github.com/DIMO-Network/credit-tracker v0.0.3
 	github.com/DIMO-Network/fetch-api v0.0.12
 	github.com/DIMO-Network/model-garage v0.6.0
+	github.com/DIMO-Network/server-garage v0.0.0-20250627170051-1dc7bd099e3c
 	github.com/DIMO-Network/shared v1.0.4
 	github.com/DIMO-Network/token-exchange-api v0.3.0
 	github.com/Khan/genqlient v0.8.1
