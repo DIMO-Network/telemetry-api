@@ -17,7 +17,8 @@ import (
 const (
 	// IntervalGroup is the column alias for the interval group.
 	IntervalGroup = "group_timestamp"
-	AggCol        = "agg"
+	AggNumberCol  = "agg_number"
+	AggStringCol  = "agg_string"
 	HandleCol     = "handle"
 	aggTableName  = "agg_table"
 	tokenIDWhere  = vss.TokenIDCol + " = ?"
@@ -135,7 +136,7 @@ func selectNumberAggs(numberAggs []model.FloatSignalArgs, ahm *AliasHandleMapper
 	for _, agg := range numberAggs {
 		caseStmts = append(caseStmts, fmt.Sprintf("WHEN %s = '%s' THEN %s", HandleCol, ahm.Handle(agg.Alias), getFloatAggFunc(agg.Agg)))
 	}
-	caseStmt := fmt.Sprintf("CASE %s ELSE NULL END AS %s", strings.Join(caseStmts, " "), vss.ValueNumberCol)
+	caseStmt := fmt.Sprintf("CASE %s ELSE NULL END AS %s", strings.Join(caseStmts, " "), AggNumberCol)
 	return qm.Select(caseStmt)
 }
 
@@ -148,7 +149,7 @@ func selectStringAggs(stringAggs []model.StringSignalArgs, ahm *AliasHandleMappe
 	for _, agg := range stringAggs {
 		caseStmts = append(caseStmts, fmt.Sprintf("WHEN %s = '%s' THEN %s", HandleCol, ahm.Handle(agg.Alias), getStringAgg(agg.Agg)))
 	}
-	caseStmt := fmt.Sprintf("CASE %s ELSE NULL END AS %s", strings.Join(caseStmts, " "), vss.ValueStringCol)
+	caseStmt := fmt.Sprintf("CASE %s ELSE NULL END AS %s", strings.Join(caseStmts, " "), AggStringCol)
 	return qm.Select(caseStmt)
 }
 
@@ -374,8 +375,7 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs, ahm *AliasHandleMapper) (s
 		qm.From(vss.TableName),
 		qm.InnerJoin(valueTable),
 		qm.GroupBy(IntervalGroup),
-		qm.GroupBy(vss.NameCol),
-		qm.GroupBy(AggCol),
+		qm.GroupBy(HandleCol),
 		qm.OrderBy(groupAsc),
 	}
 	mods = append(mods, getFilterMods(aggArgs.Filter)...)
