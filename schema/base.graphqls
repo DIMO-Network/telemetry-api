@@ -187,4 +187,6 @@ input SignalFloatFilter {
   lt: Float
   gte: Float
   lte: Float
+  neq: Float
+  notIn: [Float!]
 }

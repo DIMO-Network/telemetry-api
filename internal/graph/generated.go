@@ -2574,6 +2574,8 @@ input SignalFloatFilter {
   lt: Float
   gte: Float
   lte: Float
+  neq: Float
+  notIn: [Float!]
 }
 `, BuiltIn: false},
 	{Name: "../../schema/device_activity.graphqls", Input: `extend type Query {
@@ -26326,7 +26328,7 @@ func (ec *executionContext) unmarshalInputSignalFloatFilter(ctx context.Context,
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"gt", "lt", "gte", "lte"}
+	fieldsInOrder := [...]string{"gt", "lt", "gte", "lte", "neq", "notIn"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -26361,6 +26363,20 @@ func (ec *executionContext) unmarshalInputSignalFloatFilter(ctx context.Context,
 				return it, err
 			}
 			it.Lte = data
+		case "neq":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("neq"))
+			data, err := ec.unmarshalOFloat2ᚖfloat64(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Neq = data
+		case "notIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("notIn"))
+			data, err := ec.unmarshalOFloat2ᚕfloat64ᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.NotIn = data
 		}
 	}
 
@@ -30562,6 +30578,42 @@ func (ec *executionContext) marshalODeviceActivity2ᚖgithubᚗcomᚋDIMOᚑNetw
 		return graphql.Null
 	}
 	return ec._DeviceActivity(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOFloat2ᚕfloat64ᚄ(ctx context.Context, v any) ([]float64, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []any
+	vSlice = graphql.CoerceList(v)
+	var err error
+	res := make([]float64, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNFloat2float64(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalOFloat2ᚕfloat64ᚄ(ctx context.Context, sel ast.SelectionSet, v []float64) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	for i := range v {
+		ret[i] = ec.marshalNFloat2float64(ctx, sel, v[i])
+	}
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
 }
 
 func (ec *executionContext) unmarshalOFloat2ᚖfloat64(ctx context.Context, v any) (*float64, error) {

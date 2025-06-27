@@ -354,6 +354,12 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs, ahm *AliasHandleMapper) (s
 			if fil.Lte != nil {
 				fieldFilters = append(fieldFilters, qmhelper.Where(vss.ValueNumberCol, qmhelper.LTE, *fil.Lte))
 			}
+			if fil.Neq != nil {
+				fieldFilters = append(fieldFilters, qmhelper.Where(vss.ValueNumberCol, qmhelper.NEQ, *fil.Neq))
+			}
+			if len(fil.NotIn) != 0 {
+				fieldFilters = append(fieldFilters, qm.WhereNotIn(vss.ValueNumberCol+" NOT IN ?", fil.NotIn))
+			}
 		}
 
 		if i == 0 {

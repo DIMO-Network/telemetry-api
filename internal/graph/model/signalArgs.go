@@ -43,7 +43,7 @@ type AggregatedSignalArgs struct {
 	FloatArgs []FloatSignalArgs
 	// StringArgs represents arguments for each string signal.
 	StringArgs []StringSignalArgs
-	// AliasToName maps a GraphQL alias to a normal field name.
+	// AliasToName maps each GraphQL alias to a normal field name.
 	AliasToName map[string]string
 }
 
@@ -53,11 +53,10 @@ type FloatSignalArgs struct {
 	Name string
 	// Agg is the aggregation type.
 	Agg FloatAggregation
-
 	// Alias is the GraphQL field alias. If the client doesn't specify
 	// an alias then this will be the same as Name.
 	Alias string
-
+	// Filter is an optional set of float value filters.
 	Filter *SignalFloatFilter
 }
 
