@@ -195,7 +195,7 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 			},
 			expected: []AggSignal{
 				{
-					SignalType:  FloatType,
+					SignalType:  StringType,
 					SignalIndex: 0,
 					Timestamp:   c.dataStartTime,
 					ValueString: "value10,value3,value2,value9,value7,value5,value4,value8,value1,value6",
