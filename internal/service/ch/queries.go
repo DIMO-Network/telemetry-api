@@ -362,7 +362,7 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 		valuesArgs = append(valuesArgs, fmt.Sprintf("(%d, %d, '%s')", FloatType, i, agg.Name))
 	}
 	for i, agg := range aggArgs.StringArgs {
-		valuesArgs = append(valuesArgs, fmt.Sprintf("(%d', %d, '%s')", StringType, i, agg.Name))
+		valuesArgs = append(valuesArgs, fmt.Sprintf("(%d, %d, '%s')", StringType, i, agg.Name))
 	}
 	for i, agg := range model.AllFloatAggregation {
 		if _, ok := aggArgs.ApproxLocArgs[agg]; ok {
