@@ -2567,7 +2567,6 @@ input SignalFilter {
 }
 
 # TODO(elffjs): Unsure about this exact name.
-# TODO(elffjs): Do we need more operators?
 # TODO(elffjs): Recursive "or" support.
 input SignalFloatFilter {
   eq: Float
