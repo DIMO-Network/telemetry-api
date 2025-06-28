@@ -93,22 +93,30 @@ func (r *Repository) GetSignal(ctx context.Context, aggArgs *model.AggregatedSig
 
 		switch signal.SignalType {
 		case ch.FloatType:
+			if len(aggArgs.FloatArgs) <= int(signal.SignalIndex) {
+				return nil, fmt.Errorf("only %d float signal requests, but the query returned index %d", len(aggArgs.FloatArgs), signal.SignalIndex)
+			}
 			currAggs.ValueNumbers[aggArgs.FloatArgs[signal.SignalIndex].Alias] = signal.ValueNumber
 		case ch.StringType:
+			if len(aggArgs.StringArgs) <= int(signal.SignalIndex) {
+				return nil, fmt.Errorf("only %d string signal requests, but the query returned index %d", len(aggArgs.FloatArgs), signal.SignalIndex)
+			}
 			currAggs.ValueStrings[aggArgs.StringArgs[signal.SignalIndex].Alias] = signal.ValueString
 		case ch.AppLocType:
-			var name string
-			if signal.SignalIndex%2 == 0 {
-				name = vss.FieldCurrentLocationLongitude
-			} else {
-				name = vss.FieldCurrentLocationLatitude
+			aggIndex, aggParity := signal.SignalIndex/2, signal.SignalIndex%2
+			if int(aggIndex) >= len(model.AllFloatAggregation) {
+				return nil, fmt.Errorf("scanned an approximate location row with aggregation index %d, but there are only %d types", signal.SignalIndex, len(model.AllFloatAggregation))
 			}
-			currAggs.AppLocNumbers[model.AppLocKey{Aggregation: model.AllFloatAggregation[signal.SignalIndex/2], Name: name}] = signal.ValueNumber
+			name := parityToLocationSignalName[aggParity]
+			agg := model.AllFloatAggregation[aggIndex]
+			currAggs.AppLocNumbers[model.AppLocKey{Aggregation: agg, Name: name}] = signal.ValueNumber
 		}
 	}
 
 	return allAggs, nil
 }
+
+var parityToLocationSignalName = [2]string{vss.FieldCurrentLocationLongitude, vss.FieldCurrentLocationLatitude}
 
 // GetSignalLatest returns the latest signals for the given tokenID and filter.
 func (r *Repository) GetSignalLatest(ctx context.Context, latestArgs *model.LatestSignalsArgs) (*model.SignalCollection, error) {
