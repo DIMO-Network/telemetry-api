@@ -9,6 +9,7 @@ import (
 	"github.com/DIMO-Network/model-garage/pkg/vss"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	"github.com/DIMO-Network/telemetry-api/internal/repositories"
+	"github.com/DIMO-Network/telemetry-api/internal/service/ch"
 	"github.com/stretchr/testify/require"
 	gomock "go.uber.org/mock/gomock"
 )
@@ -47,7 +48,7 @@ func TestGetSignal(t *testing.T) {
 			mockSetup: func(m *Mocks) {
 				m.CHService.EXPECT().
 					GetAggregatedSignals(gomock.Any(), defaultArgs).
-					Return([]*model.AggSignal{}, nil)
+					Return([]*ch.AggSignal{}, nil)
 			},
 			expectedResult: []*model.SignalAggregations{},
 			expectError:    false,
@@ -56,8 +57,8 @@ func TestGetSignal(t *testing.T) {
 			name:    "Success case - One signal",
 			aggArgs: defaultArgs,
 			mockSetup: func(m *Mocks) {
-				signals := []*model.AggSignal{
-					{Timestamp: time.Date(2024, 6, 11, 0, 0, 0, 0, time.UTC), Handle: "float0", ValueNumber: 1.0},
+				signals := []*ch.AggSignal{
+					{SignalType: ch.FloatType, SignalIndex: 0, Timestamp: time.Date(2024, 6, 11, 0, 0, 0, 0, time.UTC), ValueNumber: 1.0},
 				}
 				m.CHService.EXPECT().
 					GetAggregatedSignals(gomock.Any(), defaultArgs).
@@ -74,10 +75,10 @@ func TestGetSignal(t *testing.T) {
 			name:    "Success case - Combine signals last signal has different timestamp",
 			aggArgs: defaultArgs,
 			mockSetup: func(m *Mocks) {
-				signals := []*model.AggSignal{
-					{Timestamp: time.Date(2024, 6, 11, 0, 0, 0, 0, time.UTC), Handle: "float0", ValueNumber: 1.0},
-					{Timestamp: time.Date(2024, 6, 11, 0, 0, 0, 0, time.UTC), Handle: "float0", ValueNumber: 2.0},
-					{Timestamp: time.Date(2024, 6, 11, 1, 0, 0, 0, time.UTC), Handle: "float0", ValueNumber: 3.0},
+				signals := []*ch.AggSignal{
+					{SignalType: ch.FloatType, SignalIndex: 0, Timestamp: time.Date(2024, 6, 11, 0, 0, 0, 0, time.UTC), ValueNumber: 1.0},
+					{SignalType: ch.FloatType, SignalIndex: 0, Timestamp: time.Date(2024, 6, 11, 0, 0, 0, 0, time.UTC), ValueNumber: 2.0},
+					{SignalType: ch.FloatType, SignalIndex: 0, Timestamp: time.Date(2024, 6, 11, 1, 0, 0, 0, time.UTC), ValueNumber: 3.0},
 				}
 				m.CHService.EXPECT().
 					GetAggregatedSignals(gomock.Any(), defaultArgs).
@@ -97,10 +98,10 @@ func TestGetSignal(t *testing.T) {
 			name:    "Success case - Combine signals all signal have the same timestamp",
 			aggArgs: defaultArgs,
 			mockSetup: func(m *Mocks) {
-				signals := []*model.AggSignal{
-					{Timestamp: time.Date(2024, 6, 11, 0, 0, 0, 0, time.UTC), Handle: "float0", ValueNumber: 1.0},
-					{Timestamp: time.Date(2024, 6, 11, 0, 0, 0, 0, time.UTC), Handle: "float0", ValueNumber: 2.0},
-					{Timestamp: time.Date(2024, 6, 11, 0, 0, 0, 0, time.UTC), Handle: "float0", ValueNumber: 3.0},
+				signals := []*ch.AggSignal{
+					{SignalType: ch.FloatType, SignalIndex: 0, Timestamp: time.Date(2024, 6, 11, 0, 0, 0, 0, time.UTC), ValueNumber: 1.0},
+					{SignalType: ch.FloatType, SignalIndex: 0, Timestamp: time.Date(2024, 6, 11, 0, 0, 0, 0, time.UTC), ValueNumber: 2.0},
+					{SignalType: ch.FloatType, SignalIndex: 0, Timestamp: time.Date(2024, 6, 11, 0, 0, 0, 0, time.UTC), ValueNumber: 3.0},
 				}
 				m.CHService.EXPECT().
 					GetAggregatedSignals(gomock.Any(), defaultArgs).
@@ -117,10 +118,10 @@ func TestGetSignal(t *testing.T) {
 			name:    "Success case - Combine signals first signal has different timestamp",
 			aggArgs: defaultArgs,
 			mockSetup: func(m *Mocks) {
-				signals := []*model.AggSignal{
-					{Timestamp: time.Date(2024, 6, 11, 0, 0, 0, 0, time.UTC), Handle: "float0", ValueNumber: 1.0},
-					{Timestamp: time.Date(2024, 6, 11, 1, 0, 0, 0, time.UTC), Handle: "float0", ValueNumber: 2.0},
-					{Timestamp: time.Date(2024, 6, 11, 1, 0, 0, 0, time.UTC), Handle: "float0", ValueNumber: 3.0},
+				signals := []*ch.AggSignal{
+					{SignalType: ch.FloatType, SignalIndex: 0, Timestamp: time.Date(2024, 6, 11, 0, 0, 0, 0, time.UTC), ValueNumber: 1.0},
+					{SignalType: ch.FloatType, SignalIndex: 0, Timestamp: time.Date(2024, 6, 11, 1, 0, 0, 0, time.UTC), ValueNumber: 2.0},
+					{SignalType: ch.FloatType, SignalIndex: 0, Timestamp: time.Date(2024, 6, 11, 1, 0, 0, 0, time.UTC), ValueNumber: 3.0},
 				}
 				m.CHService.EXPECT().
 					GetAggregatedSignals(gomock.Any(), defaultArgs).
