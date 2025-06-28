@@ -3,6 +3,7 @@ package ch
 
 import (
 	"context"
+	"crypto/tls"
 	"fmt"
 	"time"
 
@@ -39,9 +40,9 @@ func NewService(settings config.Settings) (*Service, error) {
 			Password: settings.Clickhouse.Password,
 			Database: settings.Clickhouse.Database,
 		},
-		// TLS: &tls.Config{
-		// 	RootCAs: settings.Clickhouse.RootCAs,
-		// },
+		TLS: &tls.Config{
+			RootCAs: settings.Clickhouse.RootCAs,
+		},
 		Settings: map[string]any{
 			// ClickHouse will interrupt a query if the projected execution time exceeds the specified max_execution_time.
 			// The estimated execution time is calculated after `timeout_before_checking_execution_speed`
