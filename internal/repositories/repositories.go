@@ -110,6 +110,8 @@ func (r *Repository) GetSignal(ctx context.Context, aggArgs *model.AggregatedSig
 			name := parityToLocationSignalName[aggParity]
 			agg := model.AllFloatAggregation[aggIndex]
 			currAggs.AppLocNumbers[model.AppLocKey{Aggregation: agg, Name: name}] = signal.ValueNumber
+		default:
+			return nil, fmt.Errorf("scanned a row with unrecognized type number %d", signal.SignalType)
 		}
 	}
 
