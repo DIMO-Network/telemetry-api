@@ -412,7 +412,6 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 		} else {
 			floatFilters = append(floatFilters, qm.Or2(qm.Expr(fieldFilters...)))
 		}
-		i++
 	}
 
 	mods := []qm.QueryMod{
