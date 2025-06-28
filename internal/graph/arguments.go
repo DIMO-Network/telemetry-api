@@ -39,16 +39,22 @@ func aggregationArgsFromContext(ctx context.Context, tokenID int, interval strin
 			return nil, fmt.Errorf("failed to get child field: %w", err)
 		}
 
-		agg := child.Args["agg"]
-		alias := child.Field.Alias
-		name := child.Field.Name
-		switch typedAgg := agg.(type) {
-		case model.FloatAggregation:
-			if name == model.ApproximateLongField || name == model.ApproximateLatField {
-				aggArgs.ApproxLocArgs[typedAgg] = struct{}{}
-				continue
-			}
+		if err := addSignalAggregation(&aggArgs, child, child.Field.Name); err != nil {
+			return nil, err
+		}
+	}
+	return &aggArgs, nil
+}
 
+// addSignalAggregation gets the aggregation arguments from the child field and adds them to the aggregated signal arguments as eiter a float or string aggregation.
+func addSignalAggregation(aggArgs *model.AggregatedSignalArgs, child *graphql.FieldContext, name string) error {
+	agg := child.Args["agg"]
+	alias := child.Field.Alias
+	switch typedAgg := agg.(type) {
+	case model.FloatAggregation:
+		if name == model.ApproximateLongField || name == model.ApproximateLatField {
+			aggArgs.ApproxLocArgs[typedAgg] = struct{}{}
+		} else {
 			filter, _ := child.Args["filter"].(*model.SignalFloatFilter)
 			aggArgs.FloatArgs = append(aggArgs.FloatArgs, model.FloatSignalArgs{
 				Name:   name,
@@ -56,17 +62,17 @@ func aggregationArgsFromContext(ctx context.Context, tokenID int, interval strin
 				Alias:  alias,
 				Filter: filter,
 			})
-		case model.StringAggregation:
-			aggArgs.StringArgs = append(aggArgs.StringArgs, model.StringSignalArgs{
-				Name:  name,
-				Agg:   typedAgg,
-				Alias: alias,
-			})
-		default:
-			return nil, fmt.Errorf("unknown aggregation type: %T", agg)
 		}
+	case model.StringAggregation:
+		aggArgs.StringArgs = append(aggArgs.StringArgs, model.StringSignalArgs{
+			Name:  name,
+			Agg:   typedAgg,
+			Alias: alias,
+		})
+	default:
+		return fmt.Errorf("unknown aggregation type: %T", agg)
 	}
-	return &aggArgs, nil
+	return nil
 }
 
 // latestArgsFromContext creates a latest signals arguments from the context and the provided arguments.
