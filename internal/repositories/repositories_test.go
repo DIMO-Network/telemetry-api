@@ -33,6 +33,13 @@ func TestGetSignal(t *testing.T) {
 		FromTS:   time.Now(),
 		ToTS:     time.Now().Add(time.Hour),
 		Interval: 1,
+		FloatArgs: []model.FloatSignalArgs{
+			{
+				Name:  vss.FieldSpeed,
+				Agg:   model.FloatAggregationAvg,
+				Alias: vss.FieldSpeed,
+			},
+		},
 	}
 
 	tests := []struct {
