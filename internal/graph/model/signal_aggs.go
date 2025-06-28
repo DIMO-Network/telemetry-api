@@ -17,20 +17,14 @@ type SignalAggregations struct {
 
 	// Alias to value
 	ValueNumbers map[string]float64 `json:"-"`
-	ValueStrings map[string]string  `json:"-"`
+	// Alias to value
+	ValueStrings map[string]string `json:"-"`
+
+	// Alias to value
+	AppLocNumbers map[AppLocKey]float64 `json:"-"`
 }
 
-type FieldInfo struct {
-	Alias string
-	Name  string
-}
-
-// AggSignal holds the value of an aggregation for a signal in a certain
-// time bucket. Only one of ValueNumber and ValueString contains a meaningful
-// value.
-type AggSignal struct {
-	Alias       string
-	Timestamp   time.Time
-	ValueNumber float64
-	ValueString string
+type AppLocKey struct {
+	Aggregation FloatAggregation
+	Name        string
 }

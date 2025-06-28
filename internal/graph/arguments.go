@@ -22,10 +22,10 @@ func aggregationArgsFromContext(ctx context.Context, tokenID int, interval strin
 			TokenID: uint32(tokenID),
 			Filter:  filter,
 		},
-		FromTS:      from,
-		ToTS:        to,
-		Interval:    intervalInt,
-		AliasToName: make(map[string]string),
+		FromTS:        from,
+		ToTS:          to,
+		Interval:      intervalInt,
+		ApproxLocArgs: make(map[model.FloatAggregation]struct{}),
 	}
 
 	fields := graphql.CollectFieldsCtx(ctx, nil)
@@ -42,10 +42,14 @@ func aggregationArgsFromContext(ctx context.Context, tokenID int, interval strin
 		agg := child.Args["agg"]
 		alias := child.Field.Alias
 		name := child.Field.Name
-		aggArgs.AliasToName[alias] = name
 		switch typedAgg := agg.(type) {
 		case model.FloatAggregation:
-			filter := child.Args["filter"].(*model.SignalFloatFilter)
+			if name == model.ApproximateLongField || name == model.ApproximateLatField {
+				aggArgs.ApproxLocArgs[typedAgg] = struct{}{}
+				continue
+			}
+
+			filter, _ := child.Args["filter"].(*model.SignalFloatFilter)
 			aggArgs.FloatArgs = append(aggArgs.FloatArgs, model.FloatSignalArgs{
 				Name:   name,
 				Agg:    typedAgg,

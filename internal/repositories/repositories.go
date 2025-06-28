@@ -31,7 +31,7 @@ var ManufacturerSourceTranslations = map[string]string{
 //
 //go:generate go tool mockgen -source=./repositories.go -destination=repositories_mocks_test.go -package=repositories_test
 type CHService interface {
-	GetAggregatedSignals(ctx context.Context, aggArgs *model.AggregatedSignalArgs) ([]*model.AggSignal, error)
+	GetAggregatedSignals(ctx context.Context, aggArgs *model.AggregatedSignalArgs) ([]*ch.AggSignal, error)
 	GetLatestSignals(ctx context.Context, latestArgs *model.LatestSignalsArgs) ([]*vss.Signal, error)
 	GetAvailableSignals(ctx context.Context, tokenID uint32, filter *model.SignalFilter) ([]string, error)
 }
@@ -91,7 +91,20 @@ func (r *Repository) GetSignal(ctx context.Context, aggArgs *model.AggregatedSig
 			allAggs = append(allAggs, currAggs)
 		}
 
-		model.SetAggregationField(currAggs, signal, aggArgs.AliasToName)
+		switch signal.SignalType {
+		case ch.FloatType:
+			currAggs.ValueNumbers[aggArgs.FloatArgs[signal.SignalIndex].Alias] = signal.ValueNumber
+		case ch.StringType:
+			currAggs.ValueStrings[aggArgs.StringArgs[signal.SignalIndex].Alias] = signal.ValueString
+		case ch.AppLocType:
+			var name string
+			if signal.SignalIndex%2 == 0 {
+				name = vss.FieldCurrentLocationLongitude
+			} else {
+				name = vss.FieldCurrentLocationLatitude
+			}
+			currAggs.AppLocNumbers[model.AppLocKey{Aggregation: model.AllFloatAggregation[signal.SignalIndex/2], Name: name}] = signal.ValueNumber
+		}
 	}
 
 	return allAggs, nil

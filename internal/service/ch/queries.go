@@ -16,19 +16,21 @@ import (
 
 const (
 	// IntervalGroup is the column alias for the interval group.
-	IntervalGroup = "group_timestamp"
-	AggNumberCol  = "agg_number"
-	AggStringCol  = "agg_string"
-	HandleCol     = "handle"
-	aggTableName  = "agg_table"
-	tokenIDWhere  = vss.TokenIDCol + " = ?"
-	nameIn        = vss.NameCol + " IN ?"
-	timestampFrom = vss.TimestampCol + " >= ?"
-	timestampTo   = vss.TimestampCol + " < ?"
-	sourceWhere   = vss.SourceCol + " = ?"
-	sourceIn      = vss.SourceCol + " IN ?"
-	groupAsc      = IntervalGroup + " ASC"
-	valueTableDef = "handle String, " + vss.NameCol + " String"
+	IntervalGroup  = "group_timestamp"
+	AggNumberCol   = "agg_number"
+	AggStringCol   = "agg_string"
+	aggTableName   = "agg_table"
+	tokenIDWhere   = vss.TokenIDCol + " = ?"
+	nameIn         = vss.NameCol + " IN ?"
+	timestampFrom  = vss.TimestampCol + " >= ?"
+	timestampTo    = vss.TimestampCol + " < ?"
+	sourceWhere    = vss.SourceCol + " = ?"
+	sourceIn       = vss.SourceCol + " IN ?"
+	groupAsc       = IntervalGroup + " ASC"
+	signalTypeCol  = "signal_type"
+	signalIndexCol = "signal_index"
+
+	valueTableDef = signalTypeCol + " UInt8, " + signalIndexCol + " UInt8," + vss.NameCol + " String"
 )
 
 // varibles for the last seen signal query.
@@ -75,6 +77,28 @@ var SourceTranslations = map[string][]string{
 	"compass":  {"0x55BF1c27d468314Ea119CF74979E2b59F962295c"},
 	"motorq":   {"0x5879B43D88Fa93CE8072d6612cBc8dE93E98CE5d"},
 }
+
+type FieldType uint8
+
+func (t *FieldType) Scan(value any) error {
+	w, ok := value.(uint8)
+	if !ok {
+		return fmt.Errorf("expected value of type uint8, but got type %T", value)
+	}
+
+	if w == 0 || w > 3 {
+		return fmt.Errorf("invalid value %d for field type", w)
+	}
+
+	*t = FieldType(w)
+	return nil
+}
+
+const (
+	FloatType  FieldType = 1
+	StringType FieldType = 2
+	AppLocType FieldType = 3
+)
 
 var dialect = drivers.Dialect{
 	LQ: '`',
@@ -127,27 +151,34 @@ func selectInterval(milliSeconds int64, origin time.Time) qm.QueryMod {
 		vss.TimestampCol, origin.UnixMicro(), milliSeconds, origin.UnixMicro(), IntervalGroup))
 }
 
-func selectNumberAggs(numberAggs []model.FloatSignalArgs, ahm *AliasHandleMapper) qm.QueryMod {
+func selectNumberAggs(numberAggs []model.FloatSignalArgs, appLocAggs map[model.FloatAggregation]struct{}) qm.QueryMod {
 	if len(numberAggs) == 0 {
 		return qm.Select("NULL AS " + vss.ValueNumberCol)
 	}
 	// Add a CASE statement for each name and its corresponding aggregation function
-	caseStmts := make([]string, 0, len(numberAggs))
-	for _, agg := range numberAggs {
-		caseStmts = append(caseStmts, fmt.Sprintf("WHEN %s = '%s' THEN %s", HandleCol, ahm.Handle(agg.Alias), getFloatAggFunc(agg.Agg)))
+	caseStmts := make([]string, 0, len(numberAggs)+2*len(appLocAggs))
+	for i, agg := range numberAggs {
+		caseStmts = append(caseStmts, fmt.Sprintf("WHEN %s = %d AND %s = %d THEN %s", signalTypeCol, FloatType, signalIndexCol, i, getFloatAggFunc(agg.Agg)))
+	}
+	for i, agg := range model.AllFloatAggregation {
+		if _, ok := appLocAggs[agg]; ok {
+			caseStmts = append(caseStmts,
+				fmt.Sprintf("WHEN %s = %d AND %s = %d THEN %s", signalTypeCol, AppLocType, signalIndexCol, 2*i, getFloatAggFunc(agg)),
+				fmt.Sprintf("WHEN %s = %d AND %s = %d THEN %s", signalTypeCol, AppLocType, signalIndexCol, 2*i+1, getFloatAggFunc(agg)))
+		}
 	}
 	caseStmt := fmt.Sprintf("CASE %s ELSE NULL END AS %s", strings.Join(caseStmts, " "), AggNumberCol)
 	return qm.Select(caseStmt)
 }
 
-func selectStringAggs(stringAggs []model.StringSignalArgs, ahm *AliasHandleMapper) qm.QueryMod {
+func selectStringAggs(stringAggs []model.StringSignalArgs) qm.QueryMod {
 	if len(stringAggs) == 0 {
 		return qm.Select("NULL AS " + vss.ValueStringCol)
 	}
 	// Add a CASE statement for each name and its corresponding aggregation function
 	caseStmts := make([]string, 0, len(stringAggs))
-	for _, agg := range stringAggs {
-		caseStmts = append(caseStmts, fmt.Sprintf("WHEN %s = '%s' THEN %s", HandleCol, ahm.Handle(agg.Alias), getStringAgg(agg.Agg)))
+	for i, agg := range stringAggs {
+		caseStmts = append(caseStmts, fmt.Sprintf("WHEN %s = %d AND %s = %d THEN %s", signalTypeCol, StringType, signalIndexCol, i, getStringAgg(agg.Agg)))
 	}
 	caseStmt := fmt.Sprintf("CASE %s ELSE NULL END AS %s", strings.Join(caseStmts, " "), AggStringCol)
 	return qm.Select(caseStmt)
@@ -313,12 +344,12 @@ ORDER BY
 	name ASC,
 	agg ASC;
 */
-func getAggQuery(aggArgs *model.AggregatedSignalArgs, ahm *AliasHandleMapper) (string, []any, error) {
+func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 	if aggArgs == nil {
 		return "", nil, nil
 	}
 
-	numAggs := len(aggArgs.FloatArgs) + len(aggArgs.StringArgs)
+	numAggs := len(aggArgs.FloatArgs) + len(aggArgs.StringArgs) + 2*len(aggArgs.ApproxLocArgs)
 	if numAggs == 0 {
 		return "", nil, errors.New("no aggregations requested")
 	}
@@ -327,20 +358,28 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs, ahm *AliasHandleMapper) (s
 	// https://github.com/ClickHouse/ClickHouse/issues/5984#issuecomment-513411725
 	// You can see the alternatives in the issue and they are ugly.
 	valuesArgs := make([]string, 0, numAggs)
-	for _, agg := range aggArgs.FloatArgs {
-		valuesArgs = append(valuesArgs, fmt.Sprintf("('%s', '%s')", ahm.Handle(agg.Alias), agg.Name))
+	for i, agg := range aggArgs.FloatArgs {
+		valuesArgs = append(valuesArgs, fmt.Sprintf("(%d, %d, '%s')", FloatType, i, agg.Name))
 	}
-	for _, agg := range aggArgs.StringArgs {
-		valuesArgs = append(valuesArgs, fmt.Sprintf("('%s', '%s')", ahm.Handle(agg.Alias), agg.Name))
+	for i, agg := range aggArgs.StringArgs {
+		valuesArgs = append(valuesArgs, fmt.Sprintf("(%d', %d, '%s')", StringType, i, agg.Name))
+	}
+	for i, agg := range model.AllFloatAggregation {
+		if _, ok := aggArgs.ApproxLocArgs[agg]; ok {
+			valuesArgs = append(valuesArgs,
+				fmt.Sprintf("(%d, %d, %s)", AppLocType, 2*i, vss.FieldCurrentLocationLongitude),
+				fmt.Sprintf("(%d, %d, %s)", AppLocType, 2*i+1, vss.FieldCurrentLocationLatitude))
+		}
 	}
 	valueTable := fmt.Sprintf("VALUES('%s', %s) as %s ON %s.%s = %s.%s", valueTableDef, strings.Join(valuesArgs, ", "), aggTableName, vss.TableName, vss.NameCol, aggTableName, vss.NameCol)
 
 	var floatFilters []qm.QueryMod
 
-	i := 0
-
-	for _, agg := range aggArgs.FloatArgs {
-		fieldFilters := []qm.QueryMod{qmhelper.Where(HandleCol, qmhelper.EQ, ahm.Handle(agg.Alias))}
+	for i, agg := range aggArgs.FloatArgs {
+		fieldFilters := []qm.QueryMod{
+			qmhelper.Where(signalTypeCol, qmhelper.EQ, FloatType),
+			qmhelper.Where(signalIndexCol, qmhelper.EQ, i),
+		}
 		if fil := agg.Filter; fil != nil {
 			if fil.Eq != nil {
 				fieldFilters = append(fieldFilters, qmhelper.Where(vss.ValueNumberCol, qmhelper.EQ, *fil.Eq))
@@ -377,17 +416,19 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs, ahm *AliasHandleMapper) (s
 	}
 
 	mods := []qm.QueryMod{
-		qm.Select(HandleCol),
+		qm.Select(signalTypeCol),
+		qm.Select(signalIndexCol),
 		selectInterval(aggArgs.Interval, aggArgs.FromTS),
-		selectNumberAggs(aggArgs.FloatArgs, ahm),
-		selectStringAggs(aggArgs.StringArgs, ahm),
+		selectNumberAggs(aggArgs.FloatArgs, aggArgs.ApproxLocArgs),
+		selectStringAggs(aggArgs.StringArgs),
 		qm.Where(tokenIDWhere, aggArgs.TokenID),
 		qm.Where(timestampFrom, aggArgs.FromTS),
 		qm.Where(timestampTo, aggArgs.ToTS),
 		qm.From(vss.TableName),
 		qm.InnerJoin(valueTable),
 		qm.GroupBy(IntervalGroup),
-		qm.GroupBy(HandleCol),
+		qm.GroupBy(signalTypeCol),
+		qm.GroupBy(signalIndexCol),
 		qm.OrderBy(groupAsc),
 	}
 	mods = append(mods, getFilterMods(aggArgs.Filter)...)

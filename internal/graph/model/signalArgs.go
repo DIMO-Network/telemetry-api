@@ -43,8 +43,8 @@ type AggregatedSignalArgs struct {
 	FloatArgs []FloatSignalArgs
 	// StringArgs represents arguments for each string signal.
 	StringArgs []StringSignalArgs
-	// AliasToName maps each GraphQL alias to a normal field name.
-	AliasToName map[string]string
+	// ApproxLocArgs
+	ApproxLocArgs map[FloatAggregation]struct{}
 }
 
 // FloatSignalArgs is the arguments for querying a float signals.

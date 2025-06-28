@@ -3,7 +3,6 @@ package ch
 
 import (
 	"context"
-	"crypto/tls"
 	"fmt"
 	"time"
 
@@ -40,9 +39,9 @@ func NewService(settings config.Settings) (*Service, error) {
 			Password: settings.Clickhouse.Password,
 			Database: settings.Clickhouse.Database,
 		},
-		TLS: &tls.Config{
-			RootCAs: settings.Clickhouse.RootCAs,
-		},
+		// TLS: &tls.Config{
+		// 	RootCAs: settings.Clickhouse.RootCAs,
+		// },
 		Settings: map[string]any{
 			// ClickHouse will interrupt a query if the projected execution time exceeds the specified max_execution_time.
 			// The estimated execution time is calculated after `timeout_before_checking_execution_speed`
@@ -114,27 +113,17 @@ func (m *AliasHandleMapper) Alias(handle string) string {
 // GetAggregatedSignals returns a slice of aggregated signals based on the provided arguments from the ClickHouse database.
 // The signals are sorted by timestamp in ascending order.
 // The timestamp on each signal is for the start of the interval.
-func (s *Service) GetAggregatedSignals(ctx context.Context, aggArgs *model.AggregatedSignalArgs) ([]*model.AggSignal, error) {
-	if len(aggArgs.FloatArgs) == 0 && len(aggArgs.StringArgs) == 0 {
-		return []*model.AggSignal{}, nil
+func (s *Service) GetAggregatedSignals(ctx context.Context, aggArgs *model.AggregatedSignalArgs) ([]*AggSignal, error) {
+	if len(aggArgs.FloatArgs) == 0 && len(aggArgs.StringArgs) == 0 && len(aggArgs.ApproxLocArgs) == 0 {
+		return []*AggSignal{}, nil
 	}
 
-	ahm := NewAliasHandleMapper()
-
-	for i, arg := range aggArgs.FloatArgs {
-		ahm.Add(arg.Alias, fmt.Sprintf("float%d", i))
-	}
-
-	for i, arg := range aggArgs.StringArgs {
-		ahm.Add(arg.Alias, fmt.Sprintf("string%d", i))
-	}
-
-	stmt, args, err := getAggQuery(aggArgs, ahm)
+	stmt, args, err := getAggQuery(aggArgs)
 	if err != nil {
 		return nil, err
 	}
 
-	signals, err := s.getAggSignals(ctx, stmt, args, ahm)
+	signals, err := s.getAggSignals(ctx, stmt, args)
 	if err != nil {
 		return nil, err
 	}
@@ -164,22 +153,28 @@ func (s *Service) getSignals(ctx context.Context, stmt string, args []any) ([]*v
 	return signals, nil
 }
 
+type AggSignal struct {
+	SignalType  FieldType
+	SignalIndex uint8
+	Timestamp   time.Time
+	ValueNumber float64
+	ValueString string
+}
+
 // TODO(elffjs): Ugly duplication.
-func (s *Service) getAggSignals(ctx context.Context, stmt string, args []any, ahm *AliasHandleMapper) ([]*model.AggSignal, error) {
+func (s *Service) getAggSignals(ctx context.Context, stmt string, args []any) ([]*AggSignal, error) {
 	rows, err := s.conn.Query(ctx, stmt, args...)
 	if err != nil {
 		return nil, fmt.Errorf("failed querying clickhouse: %w", err)
 	}
-	signals := []*model.AggSignal{}
+	signals := []*AggSignal{}
 	for rows.Next() {
-		var signal model.AggSignal
-		var handle string
-		err := rows.Scan(&handle, &signal.Timestamp, &signal.ValueNumber, &signal.ValueString)
+		var signal AggSignal
+		err := rows.Scan(&signal.SignalType, &signal.SignalIndex, &signal.Timestamp, &signal.ValueNumber, &signal.ValueString)
 		if err != nil {
 			_ = rows.Close()
 			return nil, fmt.Errorf("failed scanning clickhouse row: %w", err)
 		}
-		signal.Alias = ahm.Alias(handle)
 		signals = append(signals, &signal)
 	}
 	_ = rows.Close()
