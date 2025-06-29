@@ -373,7 +373,9 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 	}
 	valueTable := fmt.Sprintf("VALUES('%s', %s) as %s ON %s.%s = %s.%s", valueTableDef, strings.Join(valuesArgs, ", "), aggTableName, vss.TableName, vss.NameCol, aggTableName, vss.NameCol)
 
-	var floatFilters []qm.QueryMod
+	floatFilters := []qm.QueryMod{
+		qmhelper.Where(signalTypeCol, qmhelper.NEQ, FloatType),
+	}
 
 	for i, agg := range aggArgs.FloatArgs {
 		fieldFilters := []qm.QueryMod{
@@ -407,11 +409,7 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 			}
 		}
 
-		if i == 0 {
-			floatFilters = append(floatFilters, qm.Expr(fieldFilters...))
-		} else {
-			floatFilters = append(floatFilters, qm.Or2(qm.Expr(fieldFilters...)))
-		}
+		floatFilters = append(floatFilters, qm.Or2(qm.Expr(fieldFilters...)))
 	}
 
 	mods := []qm.QueryMod{
@@ -431,7 +429,7 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 		qm.OrderBy(groupAsc),
 	}
 	mods = append(mods, getFilterMods(aggArgs.Filter)...)
-	mods = append(mods, floatFilters...)
+	mods = append(mods, qm.Expr(floatFilters...))
 
 	stmt, args := newQuery(mods...)
 	return stmt, args, nil
