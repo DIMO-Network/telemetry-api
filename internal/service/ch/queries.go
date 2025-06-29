@@ -30,7 +30,7 @@ const (
 	signalTypeCol  = "signal_type"
 	signalIndexCol = "signal_index"
 
-	valueTableDef = signalTypeCol + " UInt8, " + signalIndexCol + " UInt8," + vss.NameCol + " String"
+	valueTableDef = signalTypeCol + " UInt8, " + signalIndexCol + " UInt8, " + vss.NameCol + " String"
 )
 
 // varibles for the last seen signal query.
@@ -152,7 +152,7 @@ func selectInterval(milliSeconds int64, origin time.Time) qm.QueryMod {
 }
 
 func selectNumberAggs(numberAggs []model.FloatSignalArgs, appLocAggs map[model.FloatAggregation]struct{}) qm.QueryMod {
-	if len(numberAggs) == 0 {
+	if len(numberAggs) == 0 && len(appLocAggs) == 0 {
 		return qm.Select("NULL AS " + vss.ValueNumberCol)
 	}
 	// Add a CASE statement for each name and its corresponding aggregation function
@@ -359,16 +359,16 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 	// You can see the alternatives in the issue and they are ugly.
 	valuesArgs := make([]string, 0, numAggs)
 	for i, agg := range aggArgs.FloatArgs {
-		valuesArgs = append(valuesArgs, fmt.Sprintf("(%d, %d, '%s')", FloatType, i, agg.Name))
+		valuesArgs = append(valuesArgs, aggTableEntry(FloatType, i, agg.Name))
 	}
 	for i, agg := range aggArgs.StringArgs {
-		valuesArgs = append(valuesArgs, fmt.Sprintf("(%d, %d, '%s')", StringType, i, agg.Name))
+		valuesArgs = append(valuesArgs, aggTableEntry(StringType, i, agg.Name))
 	}
 	for i, agg := range model.AllFloatAggregation {
 		if _, ok := aggArgs.ApproxLocArgs[agg]; ok {
 			valuesArgs = append(valuesArgs,
-				fmt.Sprintf("(%d, %d, %s)", AppLocType, 2*i, vss.FieldCurrentLocationLongitude),
-				fmt.Sprintf("(%d, %d, %s)", AppLocType, 2*i+1, vss.FieldCurrentLocationLatitude))
+				aggTableEntry(AppLocType, 2*i, vss.FieldCurrentLocationLongitude),
+				aggTableEntry(AppLocType, 2*i+1, vss.FieldCurrentLocationLatitude))
 		}
 	}
 	valueTable := fmt.Sprintf("VALUES('%s', %s) as %s ON %s.%s = %s.%s", valueTableDef, strings.Join(valuesArgs, ", "), aggTableName, vss.TableName, vss.NameCol, aggTableName, vss.NameCol)
@@ -435,6 +435,10 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 
 	stmt, args := newQuery(mods...)
 	return stmt, args, nil
+}
+
+func aggTableEntry(ft FieldType, index int, name string) string {
+	return fmt.Sprintf("(%d, %d, '%s')", ft, index, name)
 }
 
 func getDistinctQuery(tokenId uint32, filter *model.SignalFilter) (string, []any) {
