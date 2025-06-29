@@ -15,6 +15,7 @@ import (
 
 	vss "github.com/DIMO-Network/model-garage/pkg/vss"
 	model "github.com/DIMO-Network/telemetry-api/internal/graph/model"
+	ch "github.com/DIMO-Network/telemetry-api/internal/service/ch"
 	gomock "go.uber.org/mock/gomock"
 )
 
@@ -43,10 +44,10 @@ func (m *MockCHService) EXPECT() *MockCHServiceMockRecorder {
 }
 
 // GetAggregatedSignals mocks base method.
-func (m *MockCHService) GetAggregatedSignals(ctx context.Context, aggArgs *model.AggregatedSignalArgs) ([]*model.AggSignal, error) {
+func (m *MockCHService) GetAggregatedSignals(ctx context.Context, aggArgs *model.AggregatedSignalArgs) ([]*ch.AggSignal, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetAggregatedSignals", ctx, aggArgs)
-	ret0, _ := ret[0].([]*model.AggSignal)
+	ret0, _ := ret[0].([]*ch.AggSignal)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

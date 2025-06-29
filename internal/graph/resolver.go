@@ -22,13 +22,14 @@ type Resolver struct {
 }
 
 func approximateLocationSignalAggregations(obj *model.SignalAggregations, agg model.FloatAggregation) (*h3.LatLng, bool) {
-	latVal, ok := obj.ValueNumbers[model.AliasKey{Name: vss.FieldCurrentLocationLatitude, Agg: agg.String()}]
+	lngVal, ok := obj.AppLocNumbers[model.AppLocKey{Aggregation: agg, Name: vss.FieldCurrentLocationLongitude}]
 	if !ok {
 		return nil, false
 	}
-	lngVal, ok := obj.ValueNumbers[model.AliasKey{Name: vss.FieldCurrentLocationLongitude, Agg: agg.String()}]
+	latVal, ok := obj.AppLocNumbers[model.AppLocKey{Aggregation: agg, Name: vss.FieldCurrentLocationLatitude}]
 	if !ok {
 		return nil, false
 	}
+
 	return repositories.GetApproximateLoc(latVal, lngVal), true
 }
