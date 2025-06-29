@@ -14,8 +14,8 @@ github.com/DATA-DOG/go-sqlmock v1.4.1 h1:ThlnYciV1iM/V0OSF/dtkqWb6xo5qITT1TJBG1M
 github.com/DATA-DOG/go-sqlmock v1.4.1/go.mod h1:f/Ixk793poVmq4qj/V1dPUg2JEAKC73Q5eFN3EC/SaM=
 github.com/DIMO-Network/attestation-api v0.0.22 h1:iQwiPCV1P/4rD1HkbGJPs8BfjzO9TIOAA7mgbBvQOeU=
 github.com/DIMO-Network/attestation-api v0.0.22/go.mod h1:U6vAf/84o9jd6W+rZzLs+YjumSuzSskFLDp4SC1zJP4=
-github.com/DIMO-Network/clickhouse-infra v0.0.3 h1:B6/4IY9IxLcyydET14IjHUT+A5SDEis7p//DoFzrMk4=
-github.com/DIMO-Network/clickhouse-infra v0.0.3/go.mod h1:NtpQ1btkPzebDvpYYygeqiiBmJ/q5oJb/T/JWzUVRlk=
+github.com/DIMO-Network/clickhouse-infra v0.0.4-0.20250622180951-cbd98210a1fa h1:OrNYrvgrYHvl2zyAz3K6z8llWQFwlQt8w2LMtwfNGR4=
+github.com/DIMO-Network/clickhouse-infra v0.0.4-0.20250622180951-cbd98210a1fa/go.mod h1:NtpQ1btkPzebDvpYYygeqiiBmJ/q5oJb/T/JWzUVRlk=
 github.com/DIMO-Network/cloudevent v0.1.0 h1:ze0ngJQBXjSSyBnEAUO+YvClvkqM68kNko/czY3GfLo=
 github.com/DIMO-Network/cloudevent v0.1.0/go.mod h1:RS9Byb0ycb5b7OFe9y+xpF0nkR4pYYS6Om/ccs3N5Z4=
 github.com/DIMO-Network/credit-tracker v0.0.3 h1:vsRUzk0vGiLOYKO0r/o8dSmqULGgJv5zVc5Co56wV3Y=

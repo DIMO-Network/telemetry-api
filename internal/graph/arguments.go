@@ -13,7 +13,7 @@ import (
 // aggregationArgsFromContext creates an aggregated signals arguments from the context and the provided arguments.
 func aggregationArgsFromContext(ctx context.Context, tokenID int, interval string, from time.Time, to time.Time, filter *model.SignalFilter) (*model.AggregatedSignalArgs, error) {
 	// 1h 1s
-	intervalInt, err := getIntervalMS(interval)
+	intervalInt, err := getIntervalMicroseconds(interval)
 	if err != nil {
 		return nil, err
 	}
@@ -105,13 +105,17 @@ func latestArgsFromContext(ctx context.Context, tokenID int, filter *model.Signa
 	return &latestArgs, nil
 }
 
-// getIntervalMS parses the interval string and returns the milliseconds.
-func getIntervalMS(interval string) (int64, error) {
+// getIntervalMicroseconds parses the interval string and returns the number
+// of microseconds the interval contains.
+//
+// We use microseconds because the ClickHouse column is DateTime64(6, 'UTC').
+// Go stores durations in nanoseconds, so we do lose some precision.
+func getIntervalMicroseconds(interval string) (int64, error) {
 	dur, err := time.ParseDuration(interval)
 	if err != nil {
 		return 0, fmt.Errorf("failed parsing interval: %w", err)
 	}
-	return dur.Milliseconds(), nil
+	return dur.Microseconds(), nil
 }
 
 // isSignal checks if the field has the isSignal directive.
