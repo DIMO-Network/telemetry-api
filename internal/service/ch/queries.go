@@ -298,27 +298,28 @@ func unionAll(allStatements []string, allArgs [][]any) (string, []any) {
 // This function returns an error if no aggregations are provided.
 /*
 SELECT
-    `name`,
-    toStartOfInterval(timestamp, toIntervalMillisecond(30000)) AS group_timestamp,
+    signal_type,
+	signal_id,
+	toStartOfInterval(timestamp, toIntervalMicrosecond(60000000), fromUnixTimestamp64Micro(1751274600000000)) AS group_timestamp,
     CASE
-        WHEN name = 'speed' AND agg = 'MAX' THEN max(value_number)
-        WHEN name = 'obdRunTime' AND agg = 'MEDIAN' THEN median(value_number)
+        WHEN signal_type = 1 AND signal_index = 0 THEN max(value_number)
+        WHEN signal_type = 1 AND signal_index = 1 THEN median(value_number)
         ELSE NULL
     END AS value_number,
     CASE
-        WHEN name = 'powertrainType' AND agg = 'UNIQUE' THEN arrayStringConcat(groupUniqArray(value_string),',')
-        WHEN name = 'powertrainFuelSystemSupportedFuelTypes' AND agg = 'RAND' THEN groupArraySample(1, 1716404995385)(value_string)[1]
+        WHEN signal_type = 2 AND signal_index = 0 THEN arrayStringConcat(groupUniqArray(value_string),',')
+        WHEN signal_type = 2 AND signal_index = 1 THEN groupArraySample(1, 1716404995385)(value_string)[1]
         ELSE NULL
     END AS value_string
 FROM
-    `signal`
+    signal
 JOIN
 	VALUES(
-		'name String, agg String',
-		('speed, 'MAX'),
-		('obdRunTime', 'MEDIAN'),
-		('powertrainType', 'UNIQUE'),
-		('powertrainFuelSystemSupportedFuelTypes', 'RAND')
+		'signal_type UInt8, signal_index UInt8, name String',
+		(1, 0, 'speed'),
+		(1, 1, 'obdRunTime'),
+		(2, 0, 'powertrainType'),
+		(2, 1, 'powertrainFuelSystemSupportedFuelTypes')
 	) AS agg_table
 ON
 	signal.name = agg_table.name
@@ -328,12 +329,12 @@ WHERE
     AND timestamp < toDateTime('2024-04-27 09:21:19')
 GROUP BY
     group_timestamp,
-    name,
-    agg
+    signal_type,
+    signal_index
 ORDER BY
     group_timestamp ASC,
-	name ASC,
-	agg ASC;
+	signal_type ASC,
+	signal_index ASC;
 */
 func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 	if aggArgs == nil {
