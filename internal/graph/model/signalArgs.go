@@ -37,7 +37,7 @@ type AggregatedSignalArgs struct {
 	FromTS time.Time
 	// ToTS is the end timestamp for the data range.
 	ToTS time.Time
-	// Interval in which the data is aggregated in milliseconds.
+	// Interval in which the data is aggregated in microseconds.
 	Interval int64
 	// FloatArgs represents arguments for each float signal.
 	FloatArgs map[FloatSignalArgs]struct{}

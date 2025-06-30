@@ -80,7 +80,7 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 				},
 				FromTS:   c.dataStartTime,
 				ToTS:     endTs,
-				Interval: day.Milliseconds(),
+				Interval: day.Microseconds(),
 			},
 			expected: []model.AggSignal{},
 		},
@@ -92,7 +92,7 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 				},
 				FromTS:   c.dataStartTime,
 				ToTS:     endTs,
-				Interval: day.Milliseconds(),
+				Interval: day.Microseconds(),
 				FloatArgs: map[model.FloatSignalArgs]struct{}{
 					{
 						Name: vss.FieldSpeed,
@@ -117,7 +117,7 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 				},
 				FromTS:   c.dataStartTime,
 				ToTS:     endTs,
-				Interval: day.Milliseconds(),
+				Interval: day.Microseconds(),
 				FloatArgs: map[model.FloatSignalArgs]struct{}{
 					{
 						Name: vss.FieldSpeed,
@@ -155,7 +155,7 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 				},
 				FromTS:   c.dataStartTime,
 				ToTS:     endTs,
-				Interval: day.Milliseconds(),
+				Interval: day.Microseconds(),
 				FloatArgs: map[model.FloatSignalArgs]struct{}{
 					{
 						Name: vss.FieldSpeed,
@@ -180,7 +180,7 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 				},
 				FromTS:   c.dataStartTime,
 				ToTS:     endTs,
-				Interval: day.Milliseconds(),
+				Interval: day.Microseconds(),
 				StringArgs: map[model.StringSignalArgs]struct{}{
 					{
 						Name: vss.FieldPowertrainType,
@@ -208,7 +208,7 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 				},
 				FromTS:   c.dataStartTime,
 				ToTS:     c.dataStartTime.Add(time.Hour),
-				Interval: day.Milliseconds(),
+				Interval: day.Microseconds(),
 				StringArgs: map[model.StringSignalArgs]struct{}{
 					{
 						Name: vss.FieldPowertrainType,
@@ -233,7 +233,7 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 				},
 				FromTS:   c.dataStartTime,
 				ToTS:     endTs,
-				Interval: day.Milliseconds(),
+				Interval: day.Microseconds(),
 				FloatArgs: map[model.FloatSignalArgs]struct{}{
 					{
 						Name: vss.FieldSpeed,
@@ -258,7 +258,7 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 				},
 				FromTS:   c.dataStartTime,
 				ToTS:     endTs,
-				Interval: day.Milliseconds(),
+				Interval: day.Microseconds(),
 				FloatArgs: map[model.FloatSignalArgs]struct{}{
 					{
 						Name: vss.FieldSpeed,
@@ -283,7 +283,7 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 				},
 				FromTS:   c.dataStartTime,
 				ToTS:     endTs,
-				Interval: day.Milliseconds(),
+				Interval: day.Microseconds(),
 				StringArgs: map[model.StringSignalArgs]struct{}{
 					{
 						Name: vss.FieldPowertrainType,
@@ -308,7 +308,7 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 				},
 				FromTS:   c.dataStartTime,
 				ToTS:     endTs,
-				Interval: day.Milliseconds(),
+				Interval: day.Microseconds(),
 				StringArgs: map[model.StringSignalArgs]struct{}{
 					{
 						Name: vss.FieldPowertrainType,
@@ -512,7 +512,7 @@ func (c *CHServiceTestSuite) TestOrginGrouping() {
 		},
 		FromTS:   startTime,
 		ToTS:     endTime,
-		Interval: 28 * day.Milliseconds(),
+		Interval: 28 * day.Microseconds(),
 		FloatArgs: map[model.FloatSignalArgs]struct{}{
 			{
 				Name: vss.FieldSpeed,
