@@ -155,10 +155,24 @@ func (s *Service) getSignals(ctx context.Context, stmt string, args []any) ([]*v
 }
 
 type AggSignal struct {
-	SignalType  FieldType
-	SignalIndex uint8
-	Timestamp   time.Time
+	// SignalType describes the type of values in the aggregation:
+	// float, string, or approximate location.
+	SignalType FieldType
+	// SignalIndex is an identifier for the aggregation within its
+	// type.
+	//
+	// For float and string aggregations this is simply an index
+	// into the corresponding argument array. For approximate location,
+	// we imagine expanding the slice model.AllFloatAggregation into
+	// two: first the longitude and then the latitude.
+	SignalIndex uint16
+	// Timestamp is the timestamp for the bucket, the leftmost point.
+	Timestamp time.Time
+	// ValueNumber is the value for this row if it is of float or
+	// approximate location type.
 	ValueNumber float64
+	// ValueNumber is the value for this row if it is of float or
+	// approximate location type.
 	ValueString string
 }
 

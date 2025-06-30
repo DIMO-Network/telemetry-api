@@ -30,7 +30,7 @@ const (
 	signalTypeCol  = "signal_type"
 	signalIndexCol = "signal_index"
 
-	valueTableDef = signalTypeCol + " UInt8, " + signalIndexCol + " UInt8, " + vss.NameCol + " String"
+	valueTableDef = signalTypeCol + " UInt8, " + signalIndexCol + " UInt16, " + vss.NameCol + " String"
 )
 
 // varibles for the last seen signal query.
@@ -78,7 +78,22 @@ var SourceTranslations = map[string][]string{
 	"motorq":   {"0x5879B43D88Fa93CE8072d6612cBc8dE93E98CE5d"},
 }
 
+// FieldType indicates the type of values in the aggregation. Currently
+// there are three types: normal float values, string values, and
+// "approximate location" values that are computed from the precise
+// location values, in Go.
 type FieldType uint8
+
+const (
+	// FloatType is the type for rows with numeric values that are in
+	// the VSS spec.
+	FloatType FieldType = 1
+	// StringType is the type for rows with string values.
+	StringType FieldType = 2
+	// AppLocType is the type for rows needed to compute approximate
+	// locations.
+	AppLocType FieldType = 3
+)
 
 func (t *FieldType) Scan(value any) error {
 	w, ok := value.(uint8)
@@ -93,12 +108,6 @@ func (t *FieldType) Scan(value any) error {
 	*t = FieldType(w)
 	return nil
 }
-
-const (
-	FloatType  FieldType = 1
-	StringType FieldType = 2
-	AppLocType FieldType = 3
-)
 
 var dialect = drivers.Dialect{
 	LQ: '`',
