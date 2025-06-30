@@ -132,23 +132,14 @@ func withSource(source string) qm.QueryMod {
 }
 
 // selectInterval adds a SELECT clause to the query to select the interval group based on the given milliSeconds.
-// Normalize timestamps relative to a specific origin point (by subtracting it)
-// Round to interval boundaries using toStartOfInterval
-// Restore the original time reference (by adding the origin back).
-func selectInterval(milliSeconds int64, origin time.Time) qm.QueryMod {
-	// TODO (Kevin): Replace this function with simpler toStartOfInterval once ClickHouse prod server is >= v24.9
-	// return qm.Select(fmt.Sprintf("toStartOfInterval(%s, toIntervalMillisecond(%d), fromUnixTimestamp64Micro(%d)) as %s", vss.TimestampCol, milliSeconds, origin.UnixMicro(), intervalGroup))
-	// https://github.com/ClickHouse/ClickHouse/commit/2c35d53bf67cd80edb4389feac11bcff67233eeb
-	return qm.Select(fmt.Sprintf(`
-	fromUnixTimestamp64Micro(
-		toUnixTimestamp64Micro(
-			toStartOfInterval(
-				fromUnixTimestamp64Micro(toUnixTimestamp64Micro(%s) - %d),
-				toIntervalMillisecond(%d)
-			)
-		) + %d
-	) as %s`,
-		vss.TimestampCol, origin.UnixMicro(), milliSeconds, origin.UnixMicro(), IntervalGroup))
+func selectInterval(microSeconds int64, origin time.Time) qm.QueryMod {
+	// Newer version of toStartOfInterval with "origin".
+	// Requires ClickHouse Cloud 24.10.
+	//
+	// Note that this new overload seems to have a bug when the interval
+	// is an IntervalMilliseconds.
+	return qm.Select(fmt.Sprintf("toStartOfInterval(%s, toIntervalMicrosecond(%d), fromUnixTimestamp64Micro(%d)) as %s",
+		vss.TimestampCol, microSeconds, origin.UnixMicro(), IntervalGroup))
 }
 
 func selectNumberAggs(numberAggs []model.FloatSignalArgs, appLocAggs map[model.FloatAggregation]struct{}) qm.QueryMod {
