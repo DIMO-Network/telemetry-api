@@ -159,12 +159,20 @@ type AggSignal struct {
 	// float, string, or approximate location.
 	SignalType FieldType
 	// SignalIndex is an identifier for the aggregation within its
-	// type.
+	// SignalType.
 	//
 	// For float and string aggregations this is simply an index
-	// into the corresponding argument array. For approximate location,
-	// we imagine expanding the slice model.AllFloatAggregation into
-	// two: first the longitude and then the latitude.
+	// into the corresponding argument array.
+	//
+	// For approximate location, we imagine expanding each element of
+	// the slice model.AllFloatAggregation into two: first the
+	// longitude and then the latitude. So, for example, SignalType = 3
+	// and SignalIndex = 3 means latitude for the 1-th float
+	// aggregation.
+	//
+	// We could get away with a single number, since we know how many
+	// arguments of each type there are, but it appears to us that this
+	// would make adding new types riskier.
 	SignalIndex uint16
 	// Timestamp is the timestamp for the bucket, the leftmost point.
 	Timestamp time.Time
@@ -176,7 +184,6 @@ type AggSignal struct {
 	ValueString string
 }
 
-// TODO(elffjs): Ugly duplication.
 func (s *Service) getAggSignals(ctx context.Context, stmt string, args []any) ([]*AggSignal, error) {
 	rows, err := s.conn.Query(ctx, stmt, args...)
 	if err != nil {
