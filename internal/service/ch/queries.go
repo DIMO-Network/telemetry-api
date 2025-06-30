@@ -375,10 +375,13 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 	valueTable := fmt.Sprintf("VALUES('%s', %s) as %s ON %s.%s = %s.%s", valueTableDef, strings.Join(valuesArgs, ", "), aggTableName, vss.TableName, vss.NameCol, aggTableName, vss.NameCol)
 
 	floatFilters := []qm.QueryMod{
+		// Make sure non-float rows can still get returned.
 		qmhelper.Where(signalTypeCol, qmhelper.NEQ, FloatType),
 	}
 
 	for i, agg := range aggArgs.FloatArgs {
+		// TODO(elffjs): Some duplication here. Also a bit wasteful if
+		// there are no filters at all.
 		fieldFilters := []qm.QueryMod{
 			qmhelper.Where(signalTypeCol, qmhelper.EQ, FloatType),
 			qmhelper.Where(signalIndexCol, qmhelper.EQ, i),
