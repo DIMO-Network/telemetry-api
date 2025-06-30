@@ -395,14 +395,15 @@ type SignalFloat struct {
 }
 
 type SignalFloatFilter struct {
-	Eq    *float64  `json:"eq,omitempty"`
-	Neq   *float64  `json:"neq,omitempty"`
-	Gt    *float64  `json:"gt,omitempty"`
-	Lt    *float64  `json:"lt,omitempty"`
-	Gte   *float64  `json:"gte,omitempty"`
-	Lte   *float64  `json:"lte,omitempty"`
-	NotIn []float64 `json:"notIn,omitempty"`
-	In    []float64 `json:"in,omitempty"`
+	Eq    *float64             `json:"eq,omitempty"`
+	Neq   *float64             `json:"neq,omitempty"`
+	Gt    *float64             `json:"gt,omitempty"`
+	Lt    *float64             `json:"lt,omitempty"`
+	Gte   *float64             `json:"gte,omitempty"`
+	Lte   *float64             `json:"lte,omitempty"`
+	NotIn []float64            `json:"notIn,omitempty"`
+	In    []float64            `json:"in,omitempty"`
+	Or    []*SignalFloatFilter `json:"or,omitempty"`
 }
 
 type SignalString struct {
