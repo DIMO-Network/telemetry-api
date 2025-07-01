@@ -10,7 +10,7 @@ require (
 	github.com/DIMO-Network/cloudevent v0.1.0
 	github.com/DIMO-Network/credit-tracker v0.0.3
 	github.com/DIMO-Network/fetch-api v0.0.12
-	github.com/DIMO-Network/model-garage v0.6.0
+	github.com/DIMO-Network/model-garage v0.6.1
 	github.com/DIMO-Network/shared v1.0.4
 	github.com/DIMO-Network/token-exchange-api v0.3.0
 	github.com/Khan/genqlient v0.8.1
