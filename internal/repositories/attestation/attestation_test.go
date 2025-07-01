@@ -80,8 +80,7 @@ func TestGetAttestations(t *testing.T) {
 	defaultEvent.Time = time.Now()
 	defaultEvent.Source = validSigner.Hex()
 	defaultEvent.Subject = vehicleDID
-	defaultEvent.Extras = make(map[string]any)
-	defaultEvent.Extras["signature"] = "signature"
+	defaultEvent.Signature = "signature"
 	time := time.Now()
 	id := ksuid.New().String()
 	producer := "did:nft:153:0xbA5738a18d83D41847dfFbDC6101d37C69c9B0cF_123"

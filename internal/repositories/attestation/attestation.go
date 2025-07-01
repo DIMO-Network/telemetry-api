@@ -103,12 +103,7 @@ func (r *Repository) GetAttestations(ctx context.Context, vehicleTokenID int, fi
 			attestation.Producer = &ce.Producer
 		}
 
-		signature, ok := ce.Extras["signature"].(string)
-		if !ok {
-			return nil, errorhandler.NewBadRequestErrorWithMsg(ctx, fmt.Errorf("invalid signature from %s on attestation %s", attestation.ID, attestation.Source), "invalid signature")
-		}
-
-		attestation.Signature = signature
+		attestation.Signature = ce.Signature
 		attestations = append(attestations, attestation)
 	}
 
