@@ -24,8 +24,8 @@ github.com/DIMO-Network/fetch-api v0.0.12 h1:pLUekaYNWHKmguoGAni+BtTWl1j1yOdpowN
 github.com/DIMO-Network/fetch-api v0.0.12/go.mod h1:9FtpOZR6kChy9x8cXN1z/0002ATh7R6yDo40pABAyNw=
 github.com/DIMO-Network/model-garage v0.6.0 h1:VtRjcEljCTffeDQbq5k8LP1Y01FBt5OpgwXRrH5QiPY=
 github.com/DIMO-Network/model-garage v0.6.0/go.mod h1:5xrWBU0Gr6l3szBtfwM76KbsQlT6GTX2XI+4s/ZD9O0=
-github.com/DIMO-Network/server-garage v0.0.1 h1:U6KfNrKzLtfYePkAWWtd0/F3sg0dqTL6iZiLxaUFuEs=
-github.com/DIMO-Network/server-garage v0.0.1/go.mod h1:wB2nqPudkAePkR+Ix84rSDaqme2S3OMkB2mFJqLhgFA=
+github.com/DIMO-Network/server-garage v0.0.2 h1:myiYZB2cwaj1I5LWT9xOMLu6pqr6PhOYhzSQlRRyO08=
+github.com/DIMO-Network/server-garage v0.0.2/go.mod h1:3Go/1frM5asHyNsA/ruCYSIg0z+mho1/FdnqFVOirKg=
 github.com/DIMO-Network/shared v1.0.4 h1:lQ16TRFT9Bi9/17iNYdUeZ4DGNMD6ocODfw6aEXGk40=
 github.com/DIMO-Network/shared v1.0.4/go.mod h1:lDHUKwwT2LW6Zvd42Nb33dXklRNTmfyOlbUNx2dQfGY=
 github.com/DIMO-Network/token-exchange-api v0.3.0 h1:w6BCp0Vscq2lBa0jxYH7BGp8RFUGIIBYk2tdv2RF8KY=
