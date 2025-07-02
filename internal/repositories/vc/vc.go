@@ -7,7 +7,7 @@ import (
 	"math/big"
 	"time"
 
-	"github.com/DIMO-Network/attestation-api/pkg/verifiable"
+	"github.com/DIMO-Network/attestation-api/pkg/types"
 	"github.com/DIMO-Network/cloudevent"
 	"github.com/DIMO-Network/fetch-api/pkg/grpc"
 	"github.com/DIMO-Network/server-garage/pkg/gql/errorhandler"
@@ -59,20 +59,20 @@ func (r *Repository) GetLatestVINVC(ctx context.Context, vehicleTokenID uint32) 
 		}
 		return nil, errorhandler.NewInternalErrorWithMsg(ctx, fmt.Errorf("failed to get latest VIN VC data: %w", err), "internal errors")
 	}
-	cred := verifiable.Credential{}
+	cred := types.Credential{}
 	if err := json.Unmarshal(dataObj.Data, &cred); err != nil {
 		return nil, errorhandler.NewInternalErrorWithMsg(ctx, fmt.Errorf("failed to unmarshal VIN VC: %w", err), "internal error")
 	}
 
 	var expiresAt *time.Time
-	if expirationDate, err := time.Parse(time.RFC3339, cred.ValidTo); err == nil {
-		expiresAt = &expirationDate
+	if !cred.ValidTo.IsZero() {
+		expiresAt = &cred.ValidTo
 	}
 	var createdAt *time.Time
-	if issuanceDate, err := time.Parse(time.RFC3339, cred.ValidFrom); err == nil {
-		createdAt = &issuanceDate
+	if !cred.ValidFrom.IsZero() {
+		createdAt = &cred.ValidFrom
 	}
-	credSubject := verifiable.VINSubject{}
+	credSubject := types.VINSubject{}
 	if err := json.Unmarshal(cred.CredentialSubject, &credSubject); err != nil {
 		return nil, errorhandler.NewInternalErrorWithMsg(ctx, fmt.Errorf("failed to unmarshal VIN credential subject: %w", err), "internal error")
 	}
@@ -133,16 +133,17 @@ func (r *Repository) GetLatestPOMVC(ctx context.Context, vehicleTokenID uint32) 
 		}
 		return nil, errorhandler.NewInternalErrorWithMsg(ctx, fmt.Errorf("failed to get latest POM VC data: %w", err), "internal errors")
 	}
-	cred := verifiable.Credential{}
+	cred := types.Credential{}
 	if err := json.Unmarshal(dataObj.Data, &cred); err != nil {
 		return nil, errorhandler.NewInternalErrorWithMsg(ctx, fmt.Errorf("failed to unmarshal POM VC: %w", err), "internal error")
 	}
 
 	var createdAt *time.Time
-	if issuanceDate, err := time.Parse(time.RFC3339, cred.ValidFrom); err == nil {
-		createdAt = &issuanceDate
+	if !cred.ValidFrom.IsZero() {
+		createdAt = &cred.ValidFrom
 	}
-	credSubject := verifiable.POMSubject{}
+
+	credSubject := types.POMSubject{}
 	if err := json.Unmarshal(cred.CredentialSubject, &credSubject); err != nil {
 		return nil, errorhandler.NewInternalErrorWithMsg(ctx, fmt.Errorf("failed to unmarshal POM credential subject: %w", err), "internal error")
 	}

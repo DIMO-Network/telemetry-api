@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/DIMO-Network/attestation-api/pkg/verifiable"
+	"github.com/DIMO-Network/attestation-api/pkg/types"
 	"github.com/DIMO-Network/cloudevent"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	"github.com/DIMO-Network/telemetry-api/internal/repositories/vc"
@@ -63,9 +63,9 @@ func TestGetLatestVC(t *testing.T) {
 	// Initialize the service with mock dependencies
 	svc := vc.New(mockService, bucketName, dataVersion, chainID, vehicleAddress)
 
-	defaultVC := verifiable.Credential{
-		ValidTo:   time.Now().Add(24 * time.Hour).Format(time.RFC3339),
-		ValidFrom: time.Now().Add(-24 * time.Hour).Format(time.RFC3339),
+	defaultVC := types.Credential{
+		ValidTo:   time.Now().Add(24 * time.Hour),
+		ValidFrom: time.Now().Add(-24 * time.Hour),
 		CredentialSubject: json.RawMessage(`{
 			"vehicleIdentificationNumber": "VIN123",
 			"recordedBy": "Recorder",

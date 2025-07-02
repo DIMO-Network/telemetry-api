@@ -2,6 +2,8 @@ module github.com/DIMO-Network/telemetry-api
 
 go 1.24.0
 
+replace github.com/DIMO-Network/attestation-api => ../attestation-api
+
 require (
 	github.com/99designs/gqlgen v0.17.76
 	github.com/ClickHouse/clickhouse-go/v2 v2.37.2
