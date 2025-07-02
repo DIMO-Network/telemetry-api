@@ -31,7 +31,7 @@ var ManufacturerSourceTranslations = map[string]string{
 //
 //go:generate go tool mockgen -source=./repositories.go -destination=repositories_mocks_test.go -package=repositories_test
 type CHService interface {
-	GetAggregatedSignals(ctx context.Context, aggArgs *model.AggregatedSignalArgs) ([]*model.AggSignal, error)
+	GetAggregatedSignals(ctx context.Context, aggArgs *model.AggregatedSignalArgs) ([]*ch.AggSignal, error)
 	GetLatestSignals(ctx context.Context, latestArgs *model.LatestSignalsArgs) ([]*vss.Signal, error)
 	GetAvailableSignals(ctx context.Context, tokenID uint32, filter *model.SignalFilter) ([]string, error)
 }
@@ -84,18 +84,42 @@ func (r *Repository) GetSignal(ctx context.Context, aggArgs *model.AggregatedSig
 		if !lastTS.Equal(signal.Timestamp) {
 			lastTS = signal.Timestamp
 			currAggs = &model.SignalAggregations{
-				Timestamp:    signal.Timestamp,
-				ValueNumbers: make(map[model.AliasKey]float64),
-				ValueStrings: make(map[model.AliasKey]string),
+				Timestamp:     signal.Timestamp,
+				ValueNumbers:  make(map[string]float64),
+				ValueStrings:  make(map[string]string),
+				AppLocNumbers: make(map[model.AppLocKey]float64),
 			}
 			allAggs = append(allAggs, currAggs)
 		}
 
-		model.SetAggregationField(currAggs, signal)
+		switch signal.SignalType {
+		case ch.FloatType:
+			if len(aggArgs.FloatArgs) <= int(signal.SignalIndex) {
+				return nil, fmt.Errorf("only %d float signal requests, but the query returned index %d", len(aggArgs.FloatArgs), signal.SignalIndex)
+			}
+			currAggs.ValueNumbers[aggArgs.FloatArgs[signal.SignalIndex].Alias] = signal.ValueNumber
+		case ch.StringType:
+			if len(aggArgs.StringArgs) <= int(signal.SignalIndex) {
+				return nil, fmt.Errorf("only %d string signal requests, but the query returned index %d", len(aggArgs.FloatArgs), signal.SignalIndex)
+			}
+			currAggs.ValueStrings[aggArgs.StringArgs[signal.SignalIndex].Alias] = signal.ValueString
+		case ch.AppLocType:
+			aggIndex, aggParity := signal.SignalIndex/2, signal.SignalIndex%2
+			if int(aggIndex) >= len(model.AllFloatAggregation) {
+				return nil, fmt.Errorf("scanned an approximate location row with aggregation index %d, but there are only %d types", signal.SignalIndex, len(model.AllFloatAggregation))
+			}
+			name := parityToLocationSignalName[aggParity]
+			agg := model.AllFloatAggregation[aggIndex]
+			currAggs.AppLocNumbers[model.AppLocKey{Aggregation: agg, Name: name}] = signal.ValueNumber
+		default:
+			return nil, fmt.Errorf("scanned a row with unrecognized type number %d", signal.SignalType)
+		}
 	}
 
 	return allAggs, nil
 }
+
+var parityToLocationSignalName = [2]string{vss.FieldCurrentLocationLongitude, vss.FieldCurrentLocationLatitude}
 
 // GetSignalLatest returns the latest signals for the given tokenID and filter.
 func (r *Repository) GetSignalLatest(ctx context.Context, latestArgs *model.LatestSignalsArgs) (*model.SignalCollection, error) {

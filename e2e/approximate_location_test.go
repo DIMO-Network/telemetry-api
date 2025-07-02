@@ -128,6 +128,7 @@ func TestApproximateLocation(t *testing.T) {
 	assert.Equal(t, expectedEndLatLong.Lng, result.SignalLatest.ApproxLong.Value)
 	assert.Nil(t, result.SignalLatest.Lat)
 	assert.Nil(t, result.SignalLatest.Long)
+
 	fromTime := "2024-11-19T09:21:19Z"
 	fromtTimePlus24 := "2024-11-20T09:21:19Z"
 	query = fmt.Sprintf(`query {

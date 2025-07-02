@@ -178,3 +178,16 @@ input SignalFilter {
   """
   source: String
 }
+
+# TODO(elffjs): Unsure about this exact name.
+# TODO(elffjs): Recursive "or" support.
+input SignalFloatFilter {
+  eq: Float
+  neq: Float
+  gt: Float
+  lt: Float
+  gte: Float
+  lte: Float
+  notIn: [Float!]
+  in: [Float!]
+}
