@@ -16,8 +16,8 @@ github.com/DIMO-Network/attestation-api v0.0.23-0.20250703135248-fe7ac92844e8 h1
 github.com/DIMO-Network/attestation-api v0.0.23-0.20250703135248-fe7ac92844e8/go.mod h1:eB0ib5mtLD9QA2WWKaamP6amfbxixpghLv8uDiFy89A=
 github.com/DIMO-Network/clickhouse-infra v0.0.4-0.20250622180951-cbd98210a1fa h1:OrNYrvgrYHvl2zyAz3K6z8llWQFwlQt8w2LMtwfNGR4=
 github.com/DIMO-Network/clickhouse-infra v0.0.4-0.20250622180951-cbd98210a1fa/go.mod h1:NtpQ1btkPzebDvpYYygeqiiBmJ/q5oJb/T/JWzUVRlk=
-github.com/DIMO-Network/cloudevent v0.1.1 h1:RH66Bzs4uD59ZS5thlginHj+4FlY//zuMPnWclJoRsI=
-github.com/DIMO-Network/cloudevent v0.1.1/go.mod h1:0+bmPJ/SXRYX1QFYJrusjJGtIiHXvBxIPout7vFapjg=
+github.com/DIMO-Network/cloudevent v0.1.2 h1:6T62P5EKj0IAtN4Z8GQ1tRucmoco29jzyzKAzSrW0cY=
+github.com/DIMO-Network/cloudevent v0.1.2/go.mod h1:HM9vpx4EmJv3Dh8GIXmNhmvHFLGZHpmlv1LXo98oM5w=
 github.com/DIMO-Network/credit-tracker v0.0.4 h1:CATSx4x3gjo/5e19GD/OZXGmwtH+z7RkOG0YFPQPplo=
 github.com/DIMO-Network/credit-tracker v0.0.4/go.mod h1:FdTBzueEypfajDijbXY3dRQ8+vQohm67VRWmOTEzXHA=
 github.com/DIMO-Network/fetch-api v0.0.12 h1:pLUekaYNWHKmguoGAni+BtTWl1j1yOdpowN5T6bWZuo=
@@ -26,8 +26,8 @@ github.com/DIMO-Network/model-garage v0.6.1 h1:WDOhtA1fpsHXeYcOpMtivrSxAq1LdEme2
 github.com/DIMO-Network/model-garage v0.6.1/go.mod h1:+OsLhiJR/PzthlYFT/+2cl3h0KJZAQO11+xxUJTUK28=
 github.com/DIMO-Network/server-garage v0.0.2 h1:myiYZB2cwaj1I5LWT9xOMLu6pqr6PhOYhzSQlRRyO08=
 github.com/DIMO-Network/server-garage v0.0.2/go.mod h1:3Go/1frM5asHyNsA/ruCYSIg0z+mho1/FdnqFVOirKg=
-github.com/DIMO-Network/shared v1.0.5 h1:Hm2IXIi+XsaqrdL4fQMURQ1/0yhfFB8km1EJYY7qVBw=
-github.com/DIMO-Network/shared v1.0.5/go.mod h1:lDHUKwwT2LW6Zvd42Nb33dXklRNTmfyOlbUNx2dQfGY=
+github.com/DIMO-Network/shared v1.0.6 h1:hUCxB7WFL4+VAFQMjtvZ6O2UrtF1PgA1OQwl0Ilm3h4=
+github.com/DIMO-Network/shared v1.0.6/go.mod h1:lDHUKwwT2LW6Zvd42Nb33dXklRNTmfyOlbUNx2dQfGY=
 github.com/DIMO-Network/token-exchange-api v0.3.2 h1:ZbbKAPtGHGX5y7j/mCRfwnLXIBc059g24Gj9W5hyI24=
 github.com/DIMO-Network/token-exchange-api v0.3.2/go.mod h1:YRIroBGQzezkVKfLow8WuK3r/GJXwm9bp6VS/ZbxE+w=
 github.com/DIMO-Network/yaml v0.1.0 h1:KQ3oKHUZETchR6Pxbmmol3e4ewrPv/q8cEwqxfwyZbU=
@@ -95,8 +95,8 @@ github.com/dustin/go-humanize v1.0.1 h1:GzkhY7T5VNhEkwH0PVJgjz+fX1rhBrR7pRT3mDkp
 github.com/dustin/go-humanize v1.0.1/go.mod h1:Mu1zIs6XwVuF/gI1OepvI0qD18qycQx+mFykh5fBlto=
 github.com/ebitengine/purego v0.8.2 h1:jPPGWs2sZ1UgOSgD2bClL0MJIqu58nOmIcBuXr62z1I=
 github.com/ebitengine/purego v0.8.2/go.mod h1:iIjxzd6CiRiOG0UyXP+V1+jWqUXVjPKLAI0mRfJZTmQ=
-github.com/ethereum/go-ethereum v1.16.0 h1:Acf8FlRmcSWEJm3lGjlnKTdNgFvF9/l28oQ8Q6HDj1o=
-github.com/ethereum/go-ethereum v1.16.0/go.mod h1:ngYIvmMAYdo4sGW9cGzLvSsPGhDOOzL0jK5S5iXpj0g=
+github.com/ethereum/go-ethereum v1.16.1 h1:7684NfKCb1+IChudzdKyZJ12l1Tq4ybPZOITiCDXqCk=
+github.com/ethereum/go-ethereum v1.16.1/go.mod h1:ngYIvmMAYdo4sGW9cGzLvSsPGhDOOzL0jK5S5iXpj0g=
 github.com/felixge/httpsnoop v1.0.4 h1:NFTV2Zj1bL4mc9sqWACXbQFVBBg2W3GPvqp8/ESS2Wg=
 github.com/felixge/httpsnoop v1.0.4/go.mod h1:m8KPJKqk1gH5J9DgRY2ASl2lWCfGKXixSwevea8zH2U=
 github.com/frankban/quicktest v1.14.6 h1:7Xjx+VpznH+oBnejlPUj8oUpdxnVs4f8XU8WnHkI4W8=

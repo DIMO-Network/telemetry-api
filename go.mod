@@ -7,16 +7,16 @@ require (
 	github.com/ClickHouse/clickhouse-go/v2 v2.37.2
 	github.com/DIMO-Network/attestation-api v0.0.23-0.20250703135248-fe7ac92844e8
 	github.com/DIMO-Network/clickhouse-infra v0.0.4-0.20250622180951-cbd98210a1fa
-	github.com/DIMO-Network/cloudevent v0.1.1
+	github.com/DIMO-Network/cloudevent v0.1.2
 	github.com/DIMO-Network/credit-tracker v0.0.4
 	github.com/DIMO-Network/fetch-api v0.0.12
 	github.com/DIMO-Network/model-garage v0.6.1
 	github.com/DIMO-Network/server-garage v0.0.2
-	github.com/DIMO-Network/shared v1.0.5
+	github.com/DIMO-Network/shared v1.0.6
 	github.com/DIMO-Network/token-exchange-api v0.3.2
 	github.com/Khan/genqlient v0.8.1
 	github.com/auth0/go-jwt-middleware/v2 v2.3.0
-	github.com/ethereum/go-ethereum v1.16.0
+	github.com/ethereum/go-ethereum v1.16.1
 	github.com/go-jose/go-jose/v4 v4.1.1
 	github.com/prometheus/client_golang v1.22.0
 	github.com/rs/zerolog v1.34.0
