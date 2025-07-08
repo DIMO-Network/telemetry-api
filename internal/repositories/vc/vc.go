@@ -23,12 +23,12 @@ type indexRepoService interface {
 	GetLatestCloudEvent(ctx context.Context, filter *grpc.SearchOptions) (cloudevent.CloudEvent[json.RawMessage], error)
 }
 type Repository struct {
-	indexService      indexRepoService
-	vinDataVersion    string
-	pomVCDataVersion  string
-	chainID           uint64
-	vehicleAddress    common.Address
-	storageNodeSource common.Address
+	indexService          indexRepoService
+	vinDataVersion        string
+	pomVCDataVersion      string
+	chainID               uint64
+	vehicleAddress        common.Address
+	storageNodeDevLicense common.Address
 
 	vinVCDataVersion string
 }
@@ -36,13 +36,13 @@ type Repository struct {
 // New creates a new instance of Service.
 func New(indexService indexRepoService, settings config.Settings) *Repository {
 	return &Repository{
-		indexService:      indexService,
-		vinDataVersion:    settings.VINDataVersion,
-		pomVCDataVersion:  settings.POMVCDataVersion,
-		chainID:           settings.ChainID,
-		vehicleAddress:    settings.VehicleNFTAddress,
-		storageNodeSource: settings.StorageNodeDevLicense,
-		vinVCDataVersion:  settings.VINVCDataVersion,
+		indexService:          indexService,
+		vinDataVersion:        settings.VINDataVersion,
+		pomVCDataVersion:      settings.POMVCDataVersion,
+		chainID:               settings.ChainID,
+		vehicleAddress:        settings.VehicleNFTAddress,
+		storageNodeDevLicense: settings.StorageNodeDevLicense,
+		vinVCDataVersion:      settings.VINVCDataVersion,
 	}
 }
 
@@ -58,7 +58,7 @@ func (r *Repository) GetLatestVINVC(ctx context.Context, vehicleTokenID uint32) 
 		if status.Code(err) == codes.NotFound {
 			return nil, nil //nolint // we nil is a valid response
 		}
-		return nil, errorhandler.NewInternalErrorWithMsg(ctx, err, "internal errors")
+		return nil, errorhandler.NewInternalErrorWithMsg(ctx, err, "internal error")
 	}
 
 	cred := types.Credential{}
@@ -173,7 +173,7 @@ func (r *Repository) getVINVC(ctx context.Context, vehicleDID string) (cloudeven
 		DataVersion: &wrapperspb.StringValue{Value: r.vinDataVersion},
 		Type:        &wrapperspb.StringValue{Value: cloudevent.TypeAttestation},
 		Subject:     &wrapperspb.StringValue{Value: vehicleDID},
-		Source:      &wrapperspb.StringValue{Value: r.storageNodeSource.Hex()},
+		Source:      &wrapperspb.StringValue{Value: r.storageNodeDevLicense.Hex()},
 	}
 	dataObj, err := r.indexService.GetLatestCloudEvent(ctx, opts)
 	if err == nil {
