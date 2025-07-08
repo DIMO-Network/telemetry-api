@@ -15,7 +15,6 @@ type Settings struct {
 	TokenExchangeIssuer          string          `yaml:"TOKEN_EXCHANGE_ISSUER_URL"`
 	VehicleNFTAddress            common.Address  `yaml:"VEHICLE_NFT_ADDRESS"`
 	MaxRequestDuration           string          `yaml:"MAX_REQUEST_DURATION"`
-	VINVCDataVersion             string          `yaml:"VINVC_DATA_VERSION"`
 	POMVCDataVersion             string          `yaml:"POMVC_DATA_VERSION"`
 	ManufacturerNFTAddress       common.Address  `yaml:"MANUFACTURER_NFT_ADDRESS"`
 	IdentityAPIURL               string          `yaml:"IDENTITY_API_URL"`
@@ -24,4 +23,9 @@ type Settings struct {
 	ChainID                      uint64          `yaml:"DIMO_REGISTRY_CHAIN_ID"`
 	FetchAPIGRPCEndpoint         string          `yaml:"FETCH_API_GRPC_ENDPOINT"`
 	CreditTrackerEndpoint        string          `yaml:"CREDIT_TRACKER_ENDPOINT"`
+	StorageNodeDevLicense        common.Address  `yaml:"STORAGE_NODE_DEV_LICENSE"`
+	VINDataVersion               string          `yaml:"VIN_DATA_VERSION"`
+
+	// TODO: remove these once manual vinvc are migrated to attestation
+	VINVCDataVersion string `yaml:"VINVC_DATA_VERSION"`
 }

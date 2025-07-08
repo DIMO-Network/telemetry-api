@@ -128,7 +128,7 @@ func newAttestationServiceFromSettings(settings config.Settings) (*attestation.R
 
 func newVinVCServiceFromSettings(settings config.Settings) (*vc.Repository, error) {
 	fetchapiSvc := fetchapi.New(&settings)
-	return vc.New(fetchapiSvc, settings.VINVCDataVersion, settings.POMVCDataVersion, uint64(settings.ChainID), settings.VehicleNFTAddress), nil
+	return vc.New(fetchapiSvc, settings), nil
 }
 
 func newServer(es graphql.ExecutableSchema) *handler.Server {
