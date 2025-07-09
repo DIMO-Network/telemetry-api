@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"fmt"
+	"math"
 
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	"github.com/DIMO-Network/telemetry-api/internal/service/ch"
@@ -30,6 +31,14 @@ func validateAggSigArgs(args *model.AggregatedSignalArgs) error {
 	if args.Interval < 1 {
 		return ValidationError("interval is not a positive integer")
 	}
+
+	if len(args.FloatArgs) > math.MaxUint16 {
+		return ValidationError("too many float aggregations")
+	}
+	if len(args.StringArgs) > math.MaxUint16 {
+		return ValidationError("too many string aggregations, maximum is ")
+	}
+
 	return validateSignalArgs(&args.SignalArgs)
 }
 
