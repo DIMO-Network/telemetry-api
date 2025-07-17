@@ -46,15 +46,15 @@ ingress:
 resources:
   limits:
     cpu: 2
-    memory: 32Gi
+    memory: 8Gi
   requests:
-    cpu: 1
-    memory: 5Gi
+    cpu: .5
+    memory: 2Gi
 autoscaling:
-  enabled: false
-  minReplicas: 1
-  maxReplicas: 100
-  targetCPUUtilizationPercentage: 80
+  enabled: true
+  minReplicas: 8
+  maxReplicas: 32
+  targetMemoryUtilizationPercentage: 80
 nodeSelector: {}
 tolerations: []
 affinity: {}
