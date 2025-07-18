@@ -1,4 +1,4 @@
-replicaCount: 8
+replicaCount: 2
 image:
   repository: dimozone/telemetry-api
   pullPolicy: IfNotPresent
@@ -48,13 +48,14 @@ resources:
     cpu: 2
     memory: 8Gi
   requests:
-    cpu: .5
-    memory: 2Gi
+    cpu: .25
+    memory: 4Gi
 autoscaling:
   enabled: true
-  minReplicas: 8
-  maxReplicas: 32
-  targetMemoryUtilizationPercentage: 80
+  minReplicas: 2
+  maxReplicas: 64
+  targetMemoryUtilizationPercentage: 100
+  targetCPUUtilizationPercentage: 600
 nodeSelector: {}
 tolerations: []
 affinity: {}
