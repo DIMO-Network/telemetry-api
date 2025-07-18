@@ -144,6 +144,7 @@ func newServer(es graphql.ExecutableSchema) *handler.Server {
 	srv.Use(extension.FixedComplexityLimit(100))
 	srv.Use(extension.Introspection{})
 	srv.Use(metrics.Tracer{})
+	// srv.SetQueryCache(graphql.NoCache[*ast.QueryDocument]{})
 	srv.SetErrorPresenter(errorhandler.ErrorPresenter)
 
 	return srv
