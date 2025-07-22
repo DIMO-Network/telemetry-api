@@ -22,11 +22,10 @@ func aggregationArgsFromContext(ctx context.Context, tokenID int, interval strin
 			TokenID: uint32(tokenID),
 			Filter:  filter,
 		},
-		FromTS:     from,
-		ToTS:       to,
-		Interval:   intervalInt,
-		FloatArgs:  map[model.FloatSignalArgs]struct{}{},
-		StringArgs: map[model.StringSignalArgs]struct{}{},
+		FromTS:        from,
+		ToTS:          to,
+		Interval:      intervalInt,
+		ApproxLocArgs: make(map[model.FloatAggregation]struct{}),
 	}
 
 	fields := graphql.CollectFieldsCtx(ctx, nil)
@@ -40,17 +39,6 @@ func aggregationArgsFromContext(ctx context.Context, tokenID int, interval strin
 			return nil, fmt.Errorf("failed to get child field: %w", err)
 		}
 
-		// check for approximate location fields and force pull the latitude and longitude
-		if field.Name == model.ApproximateLatField || field.Name == model.ApproximateLongField {
-			if err := addSignalAggregation(&aggArgs, child, vss.FieldCurrentLocationLatitude); err != nil {
-				return nil, err
-			}
-			if err := addSignalAggregation(&aggArgs, child, vss.FieldCurrentLocationLongitude); err != nil {
-				return nil, err
-			}
-			continue
-		}
-
 		if err := addSignalAggregation(&aggArgs, child, child.Field.Name); err != nil {
 			return nil, err
 		}
@@ -61,17 +49,26 @@ func aggregationArgsFromContext(ctx context.Context, tokenID int, interval strin
 // addSignalAggregation gets the aggregation arguments from the child field and adds them to the aggregated signal arguments as eiter a float or string aggregation.
 func addSignalAggregation(aggArgs *model.AggregatedSignalArgs, child *graphql.FieldContext, name string) error {
 	agg := child.Args["agg"]
+	alias := child.Field.Alias
 	switch typedAgg := agg.(type) {
 	case model.FloatAggregation:
-		aggArgs.FloatArgs[model.FloatSignalArgs{
-			Name: name,
-			Agg:  typedAgg,
-		}] = struct{}{}
+		if name == model.ApproximateLongField || name == model.ApproximateLatField {
+			aggArgs.ApproxLocArgs[typedAgg] = struct{}{}
+		} else {
+			filter, _ := child.Args["filter"].(*model.SignalFloatFilter)
+			aggArgs.FloatArgs = append(aggArgs.FloatArgs, model.FloatSignalArgs{
+				Name:   name,
+				Agg:    typedAgg,
+				Alias:  alias,
+				Filter: filter,
+			})
+		}
 	case model.StringAggregation:
-		aggArgs.StringArgs[model.StringSignalArgs{
-			Name: name,
-			Agg:  typedAgg,
-		}] = struct{}{}
+		aggArgs.StringArgs = append(aggArgs.StringArgs, model.StringSignalArgs{
+			Name:  name,
+			Agg:   typedAgg,
+			Alias: alias,
+		})
 	default:
 		return fmt.Errorf("unknown aggregation type: %T", agg)
 	}

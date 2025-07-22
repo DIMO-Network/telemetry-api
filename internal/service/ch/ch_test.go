@@ -70,7 +70,7 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 	testCases := []struct {
 		name     string
 		aggArgs  model.AggregatedSignalArgs
-		expected []model.AggSignal
+		expected []AggSignal
 	}{
 		{
 			name: "no aggs",
@@ -82,7 +82,7 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 				ToTS:     endTs,
 				Interval: day.Microseconds(),
 			},
-			expected: []model.AggSignal{},
+			expected: []AggSignal{},
 		},
 		{
 			name: "average",
@@ -93,19 +93,20 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 				FromTS:   c.dataStartTime,
 				ToTS:     endTs,
 				Interval: day.Microseconds(),
-				FloatArgs: map[model.FloatSignalArgs]struct{}{
+				FloatArgs: []model.FloatSignalArgs{
 					{
-						Name: vss.FieldSpeed,
-						Agg:  model.FloatAggregationAvg,
-					}: {},
+						Name:  vss.FieldSpeed,
+						Agg:   model.FloatAggregationAvg,
+						Alias: vss.FieldSpeed,
+					},
 				},
 			},
-			expected: []model.AggSignal{
+			expected: []AggSignal{
 				{
-					Name:        vss.FieldSpeed,
+					SignalType:  FloatType,
+					SignalIndex: 0,
 					Timestamp:   c.dataStartTime,
 					ValueNumber: 4.5,
-					Agg:         model.FloatAggregationAvg.String(),
 				},
 			},
 		},
@@ -118,29 +119,31 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 				FromTS:   c.dataStartTime,
 				ToTS:     endTs,
 				Interval: day.Microseconds(),
-				FloatArgs: map[model.FloatSignalArgs]struct{}{
+				FloatArgs: []model.FloatSignalArgs{
 					{
-						Name: vss.FieldSpeed,
-						Agg:  model.FloatAggregationMax,
-					}: {},
+						Name:  vss.FieldSpeed,
+						Agg:   model.FloatAggregationMax,
+						Alias: vss.FieldSpeed,
+					},
 					{
-						Name: vss.FieldSpeed,
-						Agg:  model.FloatAggregationMin,
-					}: {},
+						Name:  vss.FieldSpeed,
+						Agg:   model.FloatAggregationMin,
+						Alias: vss.FieldSpeed,
+					},
 				},
 			},
-			expected: []model.AggSignal{
+			expected: []AggSignal{
 				{
-					Name:        vss.FieldSpeed,
+					SignalType:  FloatType,
+					SignalIndex: 0,
 					Timestamp:   c.dataStartTime,
 					ValueNumber: 9,
-					Agg:         model.FloatAggregationMax.String(),
 				},
 				{
-					Name:        vss.FieldSpeed,
+					SignalType:  FloatType,
+					SignalIndex: 1,
 					Timestamp:   c.dataStartTime,
 					ValueNumber: 0,
-					Agg:         model.FloatAggregationMin.String(),
 				},
 			},
 		},
@@ -156,19 +159,20 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 				FromTS:   c.dataStartTime,
 				ToTS:     endTs,
 				Interval: day.Microseconds(),
-				FloatArgs: map[model.FloatSignalArgs]struct{}{
+				FloatArgs: []model.FloatSignalArgs{
 					{
-						Name: vss.FieldSpeed,
-						Agg:  model.FloatAggregationMax,
-					}: {},
+						Name:  vss.FieldSpeed,
+						Agg:   model.FloatAggregationMax,
+						Alias: vss.FieldSpeed,
+					},
 				},
 			},
-			expected: []model.AggSignal{
+			expected: []AggSignal{
 				{
-					Name:        vss.FieldSpeed,
+					SignalType:  FloatType,
+					SignalIndex: 0,
 					Timestamp:   c.dataStartTime,
 					ValueNumber: 8.0,
-					Agg:         model.FloatAggregationMax.String(),
 				},
 			},
 		},
@@ -181,19 +185,20 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 				FromTS:   c.dataStartTime,
 				ToTS:     endTs,
 				Interval: day.Microseconds(),
-				StringArgs: map[model.StringSignalArgs]struct{}{
+				StringArgs: []model.StringSignalArgs{
 					{
-						Name: vss.FieldPowertrainType,
-						Agg:  model.StringAggregationUnique,
-					}: {},
+						Name:  vss.FieldPowertrainType,
+						Agg:   model.StringAggregationUnique,
+						Alias: vss.FieldPowertrainType,
+					},
 				},
 			},
-			expected: []model.AggSignal{
+			expected: []AggSignal{
 				{
-					Name:        vss.FieldPowertrainType,
+					SignalType:  StringType,
+					SignalIndex: 0,
 					Timestamp:   c.dataStartTime,
 					ValueString: "value10,value3,value2,value9,value7,value5,value4,value8,value1,value6",
-					Agg:         model.StringAggregationUnique.String(),
 				},
 			},
 		},
@@ -209,19 +214,20 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 				FromTS:   c.dataStartTime,
 				ToTS:     c.dataStartTime.Add(time.Hour),
 				Interval: day.Microseconds(),
-				StringArgs: map[model.StringSignalArgs]struct{}{
+				StringArgs: []model.StringSignalArgs{
 					{
-						Name: vss.FieldPowertrainType,
-						Agg:  model.StringAggregationTop,
-					}: {},
+						Name:  vss.FieldPowertrainType,
+						Agg:   model.StringAggregationTop,
+						Alias: vss.FieldPowertrainType,
+					},
 				},
 			},
-			expected: []model.AggSignal{
+			expected: []AggSignal{
 				{
-					Name:        vss.FieldPowertrainType,
+					SignalType:  StringType,
+					SignalIndex: 0,
 					Timestamp:   c.dataStartTime,
 					ValueString: "value2",
-					Agg:         model.StringAggregationTop.String(),
 				},
 			},
 		},
@@ -234,19 +240,20 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 				FromTS:   c.dataStartTime,
 				ToTS:     endTs,
 				Interval: day.Microseconds(),
-				FloatArgs: map[model.FloatSignalArgs]struct{}{
+				FloatArgs: []model.FloatSignalArgs{
 					{
-						Name: vss.FieldSpeed,
-						Agg:  model.FloatAggregationFirst,
-					}: {},
+						Name:  vss.FieldSpeed,
+						Agg:   model.FloatAggregationFirst,
+						Alias: vss.FieldSpeed,
+					},
 				},
 			},
-			expected: []model.AggSignal{
+			expected: []AggSignal{
 				{
-					Name:        vss.FieldSpeed,
+					SignalType:  FloatType,
+					SignalIndex: 0,
 					Timestamp:   c.dataStartTime,
 					ValueNumber: 0,
-					Agg:         model.FloatAggregationFirst.String(),
 				},
 			},
 		},
@@ -259,19 +266,78 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 				FromTS:   c.dataStartTime,
 				ToTS:     endTs,
 				Interval: day.Microseconds(),
-				FloatArgs: map[model.FloatSignalArgs]struct{}{
+				FloatArgs: []model.FloatSignalArgs{
 					{
-						Name: vss.FieldSpeed,
-						Agg:  model.FloatAggregationLast,
-					}: {},
+						Name:  vss.FieldSpeed,
+						Agg:   model.FloatAggregationLast,
+						Alias: vss.FieldSpeed,
+					},
 				},
 			},
-			expected: []model.AggSignal{
+			expected: []AggSignal{
 				{
-					Name:        vss.FieldSpeed,
+					SignalType:  FloatType,
+					SignalIndex: 0,
 					Timestamp:   c.dataStartTime,
 					ValueNumber: dataPoints - 1,
-					Agg:         model.FloatAggregationLast.String(),
+				},
+			},
+		},
+		{
+			name: "lt filter",
+			aggArgs: model.AggregatedSignalArgs{
+				SignalArgs: model.SignalArgs{
+					TokenID: 1,
+				},
+				FromTS:   c.dataStartTime,
+				ToTS:     endTs,
+				Interval: day.Microseconds(),
+				FloatArgs: []model.FloatSignalArgs{
+					{
+						Name:  vss.FieldSpeed,
+						Agg:   model.FloatAggregationAvg,
+						Alias: vss.FieldSpeed,
+						Filter: &model.SignalFloatFilter{
+							Lt: ref(float64(5)),
+						},
+					},
+				},
+			},
+			expected: []AggSignal{
+				{
+					SignalType:  FloatType,
+					SignalIndex: 0,
+					Timestamp:   c.dataStartTime,
+					ValueNumber: 2,
+				},
+			},
+		},
+		{
+			name: "gte filter",
+			aggArgs: model.AggregatedSignalArgs{
+				SignalArgs: model.SignalArgs{
+					TokenID: 1,
+				},
+				FromTS:   c.dataStartTime,
+				ToTS:     endTs,
+				Interval: day.Microseconds(),
+				FloatArgs: []model.FloatSignalArgs{
+					{
+						Name:  vss.FieldSpeed,
+						Agg:   model.FloatAggregationAvg,
+						Alias: vss.FieldSpeed,
+						Filter: &model.SignalFloatFilter{
+							Gte: ref(float64(5)),
+						},
+					},
+				},
+			},
+			expected: []AggSignal{
+				{
+					SignalType:  FloatType,
+					SignalIndex: 0,
+					Timestamp:   c.dataStartTime,
+					ValueNumber: 7,
 				},
 			},
 		},
@@ -284,19 +350,20 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 				FromTS:   c.dataStartTime,
 				ToTS:     endTs,
 				Interval: day.Microseconds(),
-				StringArgs: map[model.StringSignalArgs]struct{}{
+				StringArgs: []model.StringSignalArgs{
 					{
-						Name: vss.FieldPowertrainType,
-						Agg:  model.StringAggregationFirst,
-					}: {},
+						Name:  vss.FieldPowertrainType,
+						Agg:   model.StringAggregationFirst,
+						Alias: vss.FieldPowertrainType,
+					},
 				},
 			},
-			expected: []model.AggSignal{
+			expected: []AggSignal{
 				{
-					Name:        vss.FieldPowertrainType,
+					SignalType:  StringType,
+					SignalIndex: 0,
 					Timestamp:   c.dataStartTime,
 					ValueString: "value1",
-					Agg:         model.StringAggregationFirst.String(),
 				},
 			},
 		},
@@ -309,19 +376,20 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 				FromTS:   c.dataStartTime,
 				ToTS:     endTs,
 				Interval: day.Microseconds(),
-				StringArgs: map[model.StringSignalArgs]struct{}{
+				StringArgs: []model.StringSignalArgs{
 					{
-						Name: vss.FieldPowertrainType,
-						Agg:  model.StringAggregationLast,
-					}: {},
+						Name:  vss.FieldPowertrainType,
+						Agg:   model.StringAggregationLast,
+						Alias: vss.FieldPowertrainType,
+					},
 				},
 			},
-			expected: []model.AggSignal{
+			expected: []AggSignal{
 				{
-					Name:        vss.FieldPowertrainType,
+					SignalType:  StringType,
+					SignalIndex: 0,
 					Timestamp:   c.dataStartTime,
 					ValueString: fmt.Sprintf("value%d", dataPoints),
-					Agg:         model.StringAggregationLast.String(),
 				},
 			},
 		},
@@ -333,11 +401,8 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 
 			c.Require().Len(result, len(tc.expected))
 
-			slices.SortFunc(result, func(a, b *model.AggSignal) int {
-				if cmpName := cmp.Compare(a.Name, b.Name); cmpName != 0 {
-					return cmpName
-				}
-				return cmp.Compare(a.Agg, b.Agg)
+			slices.SortFunc(result, func(a, b *AggSignal) int {
+				return cmp.Or(cmp.Compare(a.SignalType, b.SignalType), cmp.Compare(a.SignalIndex, b.SignalIndex))
 			})
 
 			for i, sig := range result {
@@ -513,11 +578,12 @@ func (c *CHServiceTestSuite) TestOrginGrouping() {
 		FromTS:   startTime,
 		ToTS:     endTime,
 		Interval: 28 * day.Microseconds(),
-		FloatArgs: map[model.FloatSignalArgs]struct{}{
+		FloatArgs: []model.FloatSignalArgs{
 			{
-				Name: vss.FieldSpeed,
-				Agg:  model.FloatAggregationAvg,
-			}: {},
+				Name:  vss.FieldSpeed,
+				Agg:   model.FloatAggregationAvg,
+				Alias: vss.FieldSpeed,
+			},
 		},
 	}
 

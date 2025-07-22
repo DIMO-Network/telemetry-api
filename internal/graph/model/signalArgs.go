@@ -40,17 +40,24 @@ type AggregatedSignalArgs struct {
 	// Interval in which the data is aggregated in microseconds.
 	Interval int64
 	// FloatArgs represents arguments for each float signal.
-	FloatArgs map[FloatSignalArgs]struct{}
+	FloatArgs []FloatSignalArgs
 	// StringArgs represents arguments for each string signal.
-	StringArgs map[StringSignalArgs]struct{}
+	StringArgs []StringSignalArgs
+	// ApproxLocArgs
+	ApproxLocArgs map[FloatAggregation]struct{}
 }
 
 // FloatSignalArgs is the arguments for querying a float signals.
 type FloatSignalArgs struct {
-	// Name is the signal name.
+	// Name is the signal name. This is the field name in the API.
 	Name string
 	// Agg is the aggregation type.
 	Agg FloatAggregation
+	// Alias is the GraphQL field alias. If the client doesn't specify
+	// an alias then this will be the same as Name.
+	Alias string
+	// Filter is an optional set of float value filters.
+	Filter *SignalFloatFilter
 }
 
 // StringSignalArgs is the arguments for querying a string signals.
@@ -59,4 +66,7 @@ type StringSignalArgs struct {
 	Name string
 	// Agg is the aggregation type.
 	Agg StringAggregation
+	// Alias is the GraphQL field alias. If the client doesn't specify
+	// an alias then this will be the same as Name.
+	Alias string
 }

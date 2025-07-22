@@ -10,7 +10,8 @@ extend type SignalAggregations {
   """
   {{ .JSONName }}(
   {{- if eq .GQLType "Float" }}
-    agg: FloatAggregation!
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
   ):  Float
   {{- else }}
     agg: StringAggregation!

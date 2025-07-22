@@ -23,19 +23,3 @@ func SetCollectionField(collection *SignalCollection, signal *vss.Signal) {
 {{- end }}
     }
 }
-// SetAggregationField find the matching field based on the signal name and set the value based on the signal value.
-func SetAggregationField(aggregations *SignalAggregations, signal *AggSignal) {
-    if aggregations == nil || signal == nil {
-        return
-    }
-    switch signal.Name {
-{{- range .Signals }}
-    case "{{ .JSONName }}":
-        {{- if eq .GQLType "Float" }}
-        aggregations.ValueNumbers[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueNumber
-        {{- else }}
-        aggregations.ValueStrings[AliasKey{Name: signal.Name, Agg: signal.Agg}] = signal.ValueString
-        {{- end }}
-{{- end }}
-    }
-}
