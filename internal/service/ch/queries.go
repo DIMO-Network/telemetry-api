@@ -409,7 +409,7 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 				fieldFilters = append(fieldFilters, qm.WhereNotIn(vss.ValueNumberCol+" NOT IN ?", fil.NotIn))
 			}
 			if len(fil.In) != 0 {
-				fieldFilters = append(fieldFilters, qm.WhereNotIn(vss.ValueNumberCol+" IN ?", fil.In))
+				fieldFilters = append(fieldFilters, qm.WhereIn(vss.ValueNumberCol+" IN ?", fil.In))
 			}
 		}
 
