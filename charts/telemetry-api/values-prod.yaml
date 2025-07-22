@@ -1,8 +1,8 @@
-replicaCount: 8
+replicaCount: 2
 image:
   repository: dimozone/telemetry-api
   pullPolicy: IfNotPresent
-  tag: 0.1.17
+  tag: 0.1.18
 cronJob:
   enabled: false
   schedule: 0 0 * * 0
@@ -26,6 +26,7 @@ env:
   IDENTITY_API_REQUEST_TIMEOUT_SECONDS: 5
   DEVICE_LAST_SEEN_BIN_HOURS: 3
   DIMO_REGISTRY_CHAIN_ID: 137
+  STORAGE_NODE_DEV_LICENSE: '0x49eAf63eD94FEf3d40692862Eee2C8dB416B1a5f'
 ingress:
   enabled: true
   className: nginx
@@ -45,15 +46,16 @@ ingress:
 resources:
   limits:
     cpu: 2
-    memory: 32Gi
+    memory: 8Gi
   requests:
-    cpu: 1
-    memory: 5Gi
+    cpu: .25
+    memory: 4Gi
 autoscaling:
-  enabled: false
-  minReplicas: 1
-  maxReplicas: 100
-  targetCPUUtilizationPercentage: 80
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 64
+  targetMemoryUtilizationPercentage: 100
+  targetCPUUtilizationPercentage: 600
 nodeSelector: {}
 tolerations: []
 affinity: {}

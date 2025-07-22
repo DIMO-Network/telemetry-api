@@ -12,12 +12,13 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/handler/extension"
 	"github.com/99designs/gqlgen/graphql/handler/transport"
+	"github.com/DIMO-Network/server-garage/pkg/gql/errorhandler"
+	"github.com/DIMO-Network/server-garage/pkg/gql/metrics"
 	"github.com/DIMO-Network/telemetry-api/internal/auth"
 	"github.com/DIMO-Network/telemetry-api/internal/config"
 	"github.com/DIMO-Network/telemetry-api/internal/dtcmiddleware"
 	"github.com/DIMO-Network/telemetry-api/internal/graph"
 	"github.com/DIMO-Network/telemetry-api/internal/limits"
-	"github.com/DIMO-Network/telemetry-api/internal/metrics"
 	"github.com/DIMO-Network/telemetry-api/internal/repositories"
 	"github.com/DIMO-Network/telemetry-api/internal/repositories/attestation"
 	"github.com/DIMO-Network/telemetry-api/internal/repositories/vc"
@@ -25,13 +26,8 @@ import (
 	"github.com/DIMO-Network/telemetry-api/internal/service/credittracker"
 	"github.com/DIMO-Network/telemetry-api/internal/service/fetchapi"
 	"github.com/DIMO-Network/telemetry-api/internal/service/identity"
-	"github.com/DIMO-Network/telemetry-api/pkg/errorhandler"
 	"github.com/rs/zerolog"
 )
-
-func init() {
-	metrics.Register()
-}
 
 // App is the main application for the telemetry API.
 type App struct {
@@ -132,7 +128,7 @@ func newAttestationServiceFromSettings(settings config.Settings) (*attestation.R
 
 func newVinVCServiceFromSettings(settings config.Settings) (*vc.Repository, error) {
 	fetchapiSvc := fetchapi.New(&settings)
-	return vc.New(fetchapiSvc, settings.VINVCDataVersion, settings.POMVCDataVersion, uint64(settings.ChainID), settings.VehicleNFTAddress), nil
+	return vc.New(fetchapiSvc, settings), nil
 }
 
 func newServer(es graphql.ExecutableSchema) *handler.Server {
@@ -148,6 +144,7 @@ func newServer(es graphql.ExecutableSchema) *handler.Server {
 	srv.Use(extension.FixedComplexityLimit(100))
 	srv.Use(extension.Introspection{})
 	srv.Use(metrics.Tracer{})
+	// srv.SetQueryCache(graphql.NoCache[*ast.QueryDocument]{})
 	srv.SetErrorPresenter(errorhandler.ErrorPresenter)
 
 	return srv

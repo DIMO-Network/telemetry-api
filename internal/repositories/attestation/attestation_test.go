@@ -9,10 +9,10 @@ import (
 	"time"
 
 	cloudevent "github.com/DIMO-Network/cloudevent"
+	"github.com/DIMO-Network/server-garage/pkg/gql/errorhandler"
 	"github.com/DIMO-Network/telemetry-api/internal/auth"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	"github.com/DIMO-Network/telemetry-api/internal/repositories/attestation"
-	"github.com/DIMO-Network/telemetry-api/pkg/errorhandler"
 	"github.com/DIMO-Network/token-exchange-api/pkg/tokenclaims"
 	jwtmiddleware "github.com/auth0/go-jwt-middleware/v2"
 	"github.com/ethereum/go-ethereum/common"
@@ -80,8 +80,7 @@ func TestGetAttestations(t *testing.T) {
 	defaultEvent.Time = time.Now()
 	defaultEvent.Source = validSigner.Hex()
 	defaultEvent.Subject = vehicleDID
-	defaultEvent.Extras = make(map[string]any)
-	defaultEvent.Extras["signature"] = "signature"
+	defaultEvent.Signature = "signature"
 	time := time.Now()
 	id := ksuid.New().String()
 	producer := "did:nft:153:0xbA5738a18d83D41847dfFbDC6101d37C69c9B0cF_123"

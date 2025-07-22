@@ -2,7 +2,7 @@ replicaCount: 1
 image:
   repository: dimozone/telemetry-api
   pullPolicy: IfNotPresent
-  tag: ea2a843
+  tag: e0e6e02
 imagePullSecrets: []
 nameOverride: ''
 fullnameOverride: ''
@@ -34,7 +34,6 @@ env:
   VEHICLE_NFT_ADDRESS: '0x45fbCD3ef7361d156e8b16F5538AE36DEdf61Da8'
   MANUFACTURER_NFT_ADDRESS: '0xA4ad0F9c722588910791A9BAC63ADbB365614Bc7'
   MAX_REQUEST_DURATION: 5s
-  VINVC_DATA_VERSION: VINVCv1.0
   POMVC_DATA_VERSION: POMVCv1.0
   FETCH_API_GRPC_ENDPOINT: fetch-api-dev:8086
   CREDIT_TRACKER_ENDPOINT: credit-tracker-dev:8086
@@ -42,6 +41,9 @@ env:
   IDENTITY_API_REQUEST_TIMEOUT_SECONDS: 5
   DEVICE_LAST_SEEN_BIN_HOURS: 3
   DIMO_REGISTRY_CHAIN_ID: 80002
+  STORAGE_NODE_DEV_LICENSE: '0x52fD9Dc294066792785CcD85eFB9A0Bd48DE01E4'
+  VIN_DATA_VERSION: vin/v1.0
+  VINVC_DATA_VERSION: VINVCv1.0
 service:
   type: ClusterIP
   ports:
@@ -85,9 +87,6 @@ resources:
     memory: 192Mi
 autoscaling:
   enabled: false
-  minReplicas: 1
-  maxReplicas: 100
-  targetCPUUtilizationPercentage: 80
 nodeSelector: {}
 tolerations: []
 affinity: {}

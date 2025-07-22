@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/DIMO-Network/telemetry-api/pkg/errorhandler"
+	"github.com/DIMO-Network/server-garage/pkg/gql/errorhandler"
 	"github.com/Khan/genqlient/graphql"
 	"github.com/ethereum/go-ethereum/common"
 )

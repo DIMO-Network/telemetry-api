@@ -9,9 +9,9 @@ import (
 
 	"github.com/DIMO-Network/cloudevent"
 	"github.com/DIMO-Network/fetch-api/pkg/grpc"
+	"github.com/DIMO-Network/server-garage/pkg/gql/errorhandler"
 	"github.com/DIMO-Network/telemetry-api/internal/auth"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
-	"github.com/DIMO-Network/telemetry-api/pkg/errorhandler"
 	"github.com/ethereum/go-ethereum/common"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"google.golang.org/protobuf/types/known/wrapperspb"
@@ -103,12 +103,7 @@ func (r *Repository) GetAttestations(ctx context.Context, vehicleTokenID int, fi
 			attestation.Producer = &ce.Producer
 		}
 
-		signature, ok := ce.Extras["signature"].(string)
-		if !ok {
-			return nil, errorhandler.NewBadRequestErrorWithMsg(ctx, fmt.Errorf("invalid signature from %s on attestation %s", attestation.ID, attestation.Source), "invalid signature")
-		}
-
-		attestation.Signature = signature
+		attestation.Signature = ce.Signature
 		attestations = append(attestations, attestation)
 	}
 

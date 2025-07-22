@@ -5,11 +5,14 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"testing"
 	"time"
 
-	"github.com/DIMO-Network/attestation-api/pkg/verifiable"
+	"github.com/DIMO-Network/attestation-api/pkg/types"
 	"github.com/DIMO-Network/cloudevent"
+	"github.com/DIMO-Network/fetch-api/pkg/grpc"
+	"github.com/DIMO-Network/telemetry-api/internal/config"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	"github.com/DIMO-Network/telemetry-api/internal/repositories/vc"
 	"github.com/ethereum/go-ethereum/common"
@@ -17,6 +20,7 @@ import (
 	"go.uber.org/mock/gomock"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
 // MockRow implements sql.Row and returns a string when scanned.
@@ -49,8 +53,6 @@ func TestGetLatestVC(t *testing.T) {
 	// Initialize variables
 	ctx := context.Background()
 	vehicleTokenID := uint32(123)
-	dataVersion := "vinvc"
-	bucketName := "bucket-name"
 
 	// Create mock controller
 	ctrl := gomock.NewController(t)
@@ -58,14 +60,22 @@ func TestGetLatestVC(t *testing.T) {
 
 	// Create mock services
 	mockService := NewMockindexRepoService(ctrl)
-	vehicleAddress := common.HexToAddress("0x123")
+	vehicleAddress := common.HexToAddress("0xfEDCBA0987654321FeDcbA0987654321fedCBA09")
 	chainID := uint64(3)
 	// Initialize the service with mock dependencies
-	svc := vc.New(mockService, bucketName, dataVersion, chainID, vehicleAddress)
+	settings := config.Settings{
+		VINDataVersion:        "vin_data_version",
+		POMVCDataVersion:      "pomvc_data_version",
+		ChainID:               chainID,
+		VehicleNFTAddress:     vehicleAddress,
+		StorageNodeDevLicense: common.HexToAddress("0x123"),
+		VINVCDataVersion:      "vinvc_data_version",
+	}
+	svc := vc.New(mockService, settings)
 
-	defaultVC := verifiable.Credential{
-		ValidTo:   time.Now().Add(24 * time.Hour).Format(time.RFC3339),
-		ValidFrom: time.Now().Add(-24 * time.Hour).Format(time.RFC3339),
+	legacyVC := types.Credential{
+		ValidTo:   time.Now().Add(24 * time.Hour),
+		ValidFrom: time.Now().Add(-24 * time.Hour),
 		CredentialSubject: json.RawMessage(`{
 			"vehicleIdentificationNumber": "VIN123",
 			"recordedBy": "Recorder",
@@ -75,15 +85,33 @@ func TestGetLatestVC(t *testing.T) {
 			"vehicleTokenID": 123
 		}`),
 	}
-	credData, err := json.Marshal(defaultVC)
-	require.NoError(t, err, "failed to marshal defaultVC")
-	defaultEvent := cloudevent.CloudEvent[json.RawMessage]{
+	credData, err := json.Marshal(legacyVC)
+	require.NoError(t, err, "failed to marshal legacyVC")
+	legacyEvent := cloudevent.CloudEvent[json.RawMessage]{
 		Data: credData,
 	}
-	defaultData, err := json.Marshal(defaultEvent)
-	require.NoError(t, err, "failed to marshal defaultVC")
+	legacyData, err := json.Marshal(legacyEvent)
+	require.NoError(t, err, "failed to marshal legacyVC")
 
-	emptyEvent := cloudevent.CloudEvent[json.RawMessage]{}
+	attestationCredData := []byte(`{
+    "validFrom": "2025-01-15T10:30:00.000000Z",
+    "validTo": "2025-01-20T00:00:00Z",
+    "credentialSubject": {
+      "id": "did:erc721:80002:0xfEDCBA0987654321FeDcbA0987654321fedCBA09:456",
+      "vehicleTokenId": 456,
+	  "countryCode": "US",
+      "vehicleContractAddress": "eth:0xfEDCBA0987654321FeDcbA0987654321fedCBA09",
+      "vehicleIdentificationNumber": "TEST12345678901234",
+      "recordedBy": "did:erc721:80002:0xabcdef1234567890abcdef1234567890abcdef12:123",
+      "recordedAt": "2025-01-14T15:45:30.000Z"
+    }
+  }`)
+	attestationEvent := cloudevent.CloudEvent[json.RawMessage]{
+		Data: attestationCredData,
+	}
+	attestationData, err := json.Marshal(attestationEvent)
+	require.NoError(t, err, "failed to marshal attestationVC")
+
 	// Test cases
 	tests := []struct {
 		name        string
@@ -92,10 +120,21 @@ func TestGetLatestVC(t *testing.T) {
 		expectedErr bool
 	}{
 		{
-			name: "Success",
+			name: "Success_legacy_vc",
 			mockSetup: func() {
 				// Create a mock verifiable credential
-				mockService.EXPECT().GetLatestCloudEvent(gomock.Any(), gomock.Any()).Return(defaultEvent, nil)
+				mockService.EXPECT().GetLatestCloudEvent(gomock.Any(), matchOpts(&grpc.SearchOptions{
+					DataVersion: &wrapperspb.StringValue{Value: settings.VINDataVersion},
+					Type:        &wrapperspb.StringValue{Value: cloudevent.TypeAttestation},
+					Subject:     &wrapperspb.StringValue{Value: "did:erc721:3:0xfEDCBA0987654321FeDcbA0987654321fedCBA09:123"},
+					Source:      &wrapperspb.StringValue{Value: common.HexToAddress("0x123").Hex()},
+				})).Return(cloudevent.RawEvent{}, status.Error(codes.NotFound, "no data found"))
+				mockService.EXPECT().GetLatestCloudEvent(gomock.Any(), matchOpts(&grpc.SearchOptions{
+					DataVersion: &wrapperspb.StringValue{Value: settings.VINVCDataVersion},
+					Type:        &wrapperspb.StringValue{Value: cloudevent.TypeVerifableCredential},
+					Subject:     &wrapperspb.StringValue{Value: "did:erc721:3:0xfEDCBA0987654321FeDcbA0987654321fedCBA09:123"},
+				})).Return(legacyEvent, nil)
+
 			},
 			expectedVC: &model.Vinvc{
 				Vin:                    ref("VIN123"),
@@ -104,20 +143,41 @@ func TestGetLatestVC(t *testing.T) {
 				CountryCode:            ref("US"),
 				VehicleContractAddress: ref("0xAddress"),
 				VehicleTokenID:         ref(123),
-				RawVc:                  string(defaultData),
+				RawVc:                  string(legacyData),
+			},
+		},
+		{
+			name: "Success_attestation",
+			mockSetup: func() {
+				mockService.EXPECT().GetLatestCloudEvent(gomock.Any(), matchOpts(&grpc.SearchOptions{
+					DataVersion: &wrapperspb.StringValue{Value: settings.VINDataVersion},
+					Type:        &wrapperspb.StringValue{Value: cloudevent.TypeAttestation},
+					Subject:     &wrapperspb.StringValue{Value: "did:erc721:3:0xfEDCBA0987654321FeDcbA0987654321fedCBA09:123"},
+					Source:      &wrapperspb.StringValue{Value: common.HexToAddress("0x123").Hex()},
+				})).Return(attestationEvent, nil)
+			},
+			expectedVC: &model.Vinvc{
+				Vin:                    ref("TEST12345678901234"),
+				RecordedBy:             ref("did:erc721:80002:0xabcdef1234567890abcdef1234567890abcdef12:123"),
+				RecordedAt:             ref(time.Date(2025, 1, 14, 15, 45, 30, 0, time.UTC)),
+				CountryCode:            ref("US"),
+				VehicleContractAddress: ref("eth:0xfEDCBA0987654321FeDcbA0987654321fedCBA09"),
+				VehicleTokenID:         ref(456),
+				RawVc:                  string(attestationData),
 			},
 		},
 		{
 			name: "No data found",
 			mockSetup: func() {
-				mockService.EXPECT().GetLatestCloudEvent(gomock.Any(), gomock.Any()).Return(emptyEvent, status.Error(codes.NotFound, "no data found"))
+				mockService.EXPECT().GetLatestCloudEvent(gomock.Any(), gomock.Any()).Return(cloudevent.RawEvent{}, status.Error(codes.NotFound, "no data found"))
+				mockService.EXPECT().GetLatestCloudEvent(gomock.Any(), gomock.Any()).Return(cloudevent.RawEvent{}, status.Error(codes.NotFound, "no data found"))
 			},
 			expectedVC: nil,
 		},
 		{
 			name: "Internal error",
 			mockSetup: func() {
-				mockService.EXPECT().GetLatestCloudEvent(gomock.Any(), gomock.Any()).Return(emptyEvent, errors.New("internal error"))
+				mockService.EXPECT().GetLatestCloudEvent(gomock.Any(), gomock.Any()).Return(cloudevent.RawEvent{}, errors.New("internal error"))
 			},
 			expectedVC:  nil,
 			expectedErr: true,
@@ -163,4 +223,36 @@ func TestGetLatestVC(t *testing.T) {
 
 func ref[T any](v T) *T {
 	return &v
+}
+
+type optsMatcher struct {
+	opts *grpc.SearchOptions
+}
+
+func (m *optsMatcher) Matches(x interface{}) bool {
+	opts, ok := x.(*grpc.SearchOptions)
+	if !ok {
+		return false
+	}
+	if m.opts == nil {
+		return opts == nil
+	}
+	return opts.GetAfter().AsTime().Equal(m.opts.GetAfter().AsTime()) &&
+		opts.GetBefore().AsTime().Equal(m.opts.GetBefore().AsTime()) &&
+		opts.GetTimestampAsc().GetValue() == m.opts.GetTimestampAsc().GetValue() &&
+		opts.GetType().GetValue() == m.opts.GetType().GetValue() &&
+		opts.GetDataVersion().GetValue() == m.opts.GetDataVersion().GetValue() &&
+		opts.GetSubject().GetValue() == m.opts.GetSubject().GetValue() &&
+		opts.GetSource().GetValue() == m.opts.GetSource().GetValue() &&
+		opts.GetProducer().GetValue() == m.opts.GetProducer().GetValue() &&
+		opts.GetExtras().GetValue() == m.opts.GetExtras().GetValue() &&
+		opts.GetId().GetValue() == m.opts.GetId().GetValue()
+}
+
+func (m *optsMatcher) String() string {
+	return fmt.Sprintf("opts: %+v", m.opts)
+}
+
+func matchOpts(opts *grpc.SearchOptions) gomock.Matcher {
+	return &optsMatcher{opts: opts}
 }
