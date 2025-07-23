@@ -105,7 +105,7 @@ func TestEvents(t *testing.T) {
 	telemetryClient := NewGraphQLServer(t, services.Settings)
 
 	// Create auth token for vehicle
-	token := services.Auth.CreateVehicleToken(t, "39718", []int{1})
+	token := services.Auth.CreateVehicleToken(t, "39718", []int{1, 4})
 
 	t.Run("Basic events query without filter", func(t *testing.T) {
 		query := `

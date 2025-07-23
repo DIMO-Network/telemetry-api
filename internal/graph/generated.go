@@ -2689,7 +2689,11 @@ input AftermarketDeviceBy @oneOf {
     filter is the filter to apply to the events.
     """
     filter: EventFilter
-  ): [Event!] @requiresVehicleToken
+  ): [Event!]
+    @requiresVehicleToken
+    @requiresAllOfPrivileges(
+      privileges: [VEHICLE_NON_LOCATION_DATA, VEHICLE_ALL_TIME_LOCATION]
+    )
 }
 
 type Event {
@@ -10157,8 +10161,20 @@ func (ec *executionContext) _Query_events(ctx context.Context, field graphql.Col
 			}
 			return ec.directives.RequiresVehicleToken(ctx, nil, directive0)
 		}
+		directive2 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA", "VEHICLE_ALL_TIME_LOCATION"})
+			if err != nil {
+				var zeroVal []*model.Event
+				return zeroVal, err
+			}
+			if ec.directives.RequiresAllOfPrivileges == nil {
+				var zeroVal []*model.Event
+				return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
+			}
+			return ec.directives.RequiresAllOfPrivileges(ctx, nil, directive1, privileges)
+		}
 
-		tmp, err := directive1(rctx)
+		tmp, err := directive2(rctx)
 		if err != nil {
 			return nil, graphql.ErrorOnPath(ctx, err)
 		}

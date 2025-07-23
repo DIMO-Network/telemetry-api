@@ -19,7 +19,11 @@ extend type Query {
     filter is the filter to apply to the events.
     """
     filter: EventFilter
-  ): [Event!] @requiresVehicleToken
+  ): [Event!]
+    @requiresVehicleToken
+    @requiresAllOfPrivileges(
+      privileges: [VEHICLE_NON_LOCATION_DATA, VEHICLE_ALL_TIME_LOCATION]
+    )
 }
 
 type Event {
