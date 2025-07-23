@@ -12,6 +12,7 @@ package repositories_test
 import (
 	context "context"
 	reflect "reflect"
+	time "time"
 
 	vss "github.com/DIMO-Network/model-garage/pkg/vss"
 	model "github.com/DIMO-Network/telemetry-api/internal/graph/model"
@@ -71,6 +72,21 @@ func (m *MockCHService) GetAvailableSignals(ctx context.Context, tokenID uint32,
 func (mr *MockCHServiceMockRecorder) GetAvailableSignals(ctx, tokenID, filter any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAvailableSignals", reflect.TypeOf((*MockCHService)(nil).GetAvailableSignals), ctx, tokenID, filter)
+}
+
+// GetEvents mocks base method.
+func (m *MockCHService) GetEvents(ctx context.Context, subject string, from, to time.Time, filter *model.EventFilter) ([]*vss.Event, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetEvents", ctx, subject, from, to, filter)
+	ret0, _ := ret[0].([]*vss.Event)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetEvents indicates an expected call of GetEvents.
+func (mr *MockCHServiceMockRecorder) GetEvents(ctx, subject, from, to, filter any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetEvents", reflect.TypeOf((*MockCHService)(nil).GetEvents), ctx, subject, from, to, filter)
 }
 
 // GetLatestSignals mocks base method.

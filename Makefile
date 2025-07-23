@@ -65,9 +65,9 @@ gql-model: ## Generate gqlgen data model.
 
 gql: gql-model gqlgen ## Generate all gql code.
 
-generate: gql ## Runs all code generators for the repository.
+generate: gql generate-go ## Runs all code generators for the repository.
+generate-go: ## Generate go code.
 	@go generate ./...
-
 
 tools-golangci-lint: ## install golangci-lint tool
 	@mkdir -p $(PATHINSTBIN)

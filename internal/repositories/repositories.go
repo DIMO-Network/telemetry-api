@@ -4,15 +4,19 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"math/big"
 	"strings"
 	"time"
 
 	"github.com/ClickHouse/clickhouse-go/v2/lib/proto"
+	"github.com/DIMO-Network/cloudevent"
 	"github.com/DIMO-Network/model-garage/pkg/schema"
 	"github.com/DIMO-Network/model-garage/pkg/vss"
 	"github.com/DIMO-Network/server-garage/pkg/gql/errorhandler"
+	"github.com/DIMO-Network/telemetry-api/internal/config"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	"github.com/DIMO-Network/telemetry-api/internal/service/ch"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/uber/h3-go/v4"
 )
 
@@ -28,12 +32,11 @@ var ManufacturerSourceTranslations = map[string]string{
 }
 
 // CHService is the interface for the ClickHouse service.
-//
-//go:generate go tool mockgen -source=./repositories.go -destination=repositories_mocks_test.go -package=repositories_test
 type CHService interface {
 	GetAggregatedSignals(ctx context.Context, aggArgs *model.AggregatedSignalArgs) ([]*ch.AggSignal, error)
 	GetLatestSignals(ctx context.Context, latestArgs *model.LatestSignalsArgs) ([]*vss.Signal, error)
 	GetAvailableSignals(ctx context.Context, tokenID uint32, filter *model.SignalFilter) ([]string, error)
+	GetEvents(ctx context.Context, subject string, from, to time.Time, filter *model.EventFilter) ([]*vss.Event, error)
 }
 
 // Repository is the base repository for all repositories.
@@ -41,11 +44,13 @@ type Repository struct {
 	queryableSignals map[string]struct{}
 	chService        CHService
 	lastSeenBin      time.Duration
+	chainID          uint64
+	vehicleAddress   common.Address
 }
 
 // NewRepository creates a new base repository.
 // clientCAs is optional and can be nil.
-func NewRepository(chService CHService, lastSeenBin int64) (*Repository, error) {
+func NewRepository(chService CHService, settings config.Settings) (*Repository, error) {
 	definitions, err := schema.LoadDefinitionFile(strings.NewReader(schema.DefaultDefinitionsYAML()))
 	if err != nil {
 		return nil, fmt.Errorf("error reading definition file: %w", err)
@@ -58,7 +63,9 @@ func NewRepository(chService CHService, lastSeenBin int64) (*Repository, error) 
 	return &Repository{
 		chService:        chService,
 		queryableSignals: queryableSignals,
-		lastSeenBin:      time.Duration(lastSeenBin) * time.Hour,
+		lastSeenBin:      time.Duration(settings.DeviceLastSeenBinHrs) * time.Hour,
+		chainID:          settings.ChainID,
+		vehicleAddress:   settings.VehicleNFTAddress,
 	}, nil
 
 }
@@ -189,6 +196,35 @@ func (r *Repository) GetAvailableSignals(ctx context.Context, tokenID uint32, fi
 		}
 	}
 	return retSignals, nil
+}
+
+// GetEvents returns the events for the given tokenID, from, to and filter.
+func (r *Repository) GetEvents(ctx context.Context, tokenID int, from, to time.Time, filter *model.EventFilter) ([]*model.Event, error) {
+	if err := validateEventArgs(tokenID, from, to, filter); err != nil {
+		return nil, errorhandler.NewBadRequestError(ctx, err)
+	}
+	subject := cloudevent.ERC721DID{
+		ChainID:         r.chainID,
+		ContractAddress: r.vehicleAddress,
+		TokenID:         big.NewInt(int64(tokenID)),
+	}.String()
+	allEvents, err := r.chService.GetEvents(ctx, subject, from, to, filter)
+	if err != nil {
+		return nil, handleDBError(ctx, err)
+	}
+	retEvents := make([]*model.Event, len(allEvents))
+	for i, event := range allEvents {
+		retEvents[i] = &model.Event{
+			Timestamp:  event.Timestamp,
+			Name:       event.Name,
+			Source:     event.Source,
+			DurationNs: int(event.DurationNs),
+		}
+		if event.Metadata != "" {
+			retEvents[i].Metadata = &event.Metadata
+		}
+	}
+	return retEvents, nil
 }
 
 // handleDBError logs the error and returns a generic error message.

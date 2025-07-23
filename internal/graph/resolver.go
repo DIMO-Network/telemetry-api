@@ -15,7 +15,7 @@ import (
 // It serves as dependency injection for your app, add any dependencies you require here.
 
 type Resolver struct {
-	*repositories.Repository
+	BaseRepo        *repositories.Repository
 	IdentityService *identity.APIClient
 	VCRepo          *vc.Repository
 	AttestationRepo *attestation.Repository

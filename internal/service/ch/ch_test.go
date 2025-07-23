@@ -601,6 +601,158 @@ func (c *CHServiceTestSuite) TestOrginGrouping() {
 	c.Require().Equal(100.0, result[0].ValueNumber, "Unexpected average value")
 }
 
+func (c *CHServiceTestSuite) TestGetEvents() {
+	ctx := context.Background()
+	conn, err := c.container.GetClickHouseAsConn()
+	c.Require().NoError(err, "Failed to get clickhouse connection")
+
+	subject := "did:erc721:1:0x0000000000000000000000000000000000000001:42"
+	baseTime := time.Date(2024, 6, 12, 12, 0, 0, 0, time.UTC)
+	events := []vss.Event{
+		{
+			Name:       "event.a",
+			Source:     "source1",
+			Timestamp:  baseTime,
+			DurationNs: 1000,
+			Subject:    subject,
+			Metadata:   `{"foo":"bar"}`,
+		},
+		{
+			Name:       "event.b",
+			Source:     "source2",
+			Timestamp:  baseTime.Add(5 * time.Minute),
+			DurationNs: 2000,
+			Subject:    subject,
+			Metadata:   "",
+		},
+		{
+			Name:       "event.a",
+			Source:     "source2",
+			Timestamp:  baseTime.Add(10 * time.Minute),
+			DurationNs: 3000,
+			Subject:    subject,
+			Metadata:   `{"baz":123}`,
+		},
+		// Event for a different subject (should not be returned)
+		{
+			Name:       "event.a",
+			Source:     "source1",
+			Timestamp:  baseTime,
+			DurationNs: 999,
+			Subject:    "did:erc721:1:0x0000000000000000000000000000000000000001:99",
+			Metadata:   `{"should":"not_appear"}`,
+		},
+	}
+
+	batch, err := conn.PrepareBatch(ctx, "INSERT INTO "+vss.EventTableName)
+	c.Require().NoError(err, "Failed to prepare batch")
+	for _, event := range events {
+		err := batch.AppendStruct(&event)
+		c.Require().NoError(err, "Failed to append event struct")
+	}
+	err = batch.Send()
+	c.Require().NoError(err, "Failed to send batch")
+
+	from := baseTime.Add(-time.Minute)
+	to := baseTime.Add(15 * time.Minute)
+
+	c.Run("all events for subject and time range", func() {
+		result, err := c.chService.GetEvents(ctx, subject, from, to, nil)
+		c.Require().NoError(err)
+		c.Require().Len(result, 3)
+		// Should be ordered by timestamp DESC
+		c.Require().Equal("event.a", result[0].Name)
+		c.Require().Equal(baseTime.Add(10*time.Minute), result[0].Timestamp)
+		c.Require().Equal("source2", result[0].Source)
+		c.Require().Equal(uint64(3000), result[0].DurationNs)
+		c.Require().Equal(`{"baz":123}`, result[0].Metadata)
+
+		c.Require().Equal("event.b", result[1].Name)
+		c.Require().Equal(baseTime.Add(5*time.Minute), result[1].Timestamp)
+		c.Require().Equal("source2", result[1].Source)
+		c.Require().Equal(uint64(2000), result[1].DurationNs)
+		c.Require().Equal("", result[1].Metadata)
+
+		c.Require().Equal("event.a", result[2].Name)
+		c.Require().Equal(baseTime, result[2].Timestamp)
+		c.Require().Equal("source1", result[2].Source)
+		c.Require().Equal(uint64(1000), result[2].DurationNs)
+		c.Require().Equal(`{"foo":"bar"}`, result[2].Metadata)
+	})
+
+	c.Run("filter by name", func() {
+		filter := &model.EventFilter{Name: &model.StringValueFilter{Eq: ref("event.a")}}
+		result, err := c.chService.GetEvents(ctx, subject, from, to, filter)
+		c.Require().NoError(err)
+		c.Require().Len(result, 2)
+		for _, ev := range result {
+			c.Require().Equal("event.a", ev.Name)
+		}
+	})
+
+	c.Run("filter by source", func() {
+		filter := &model.EventFilter{Source: &model.StringValueFilter{Eq: ref("source2")}}
+		result, err := c.chService.GetEvents(ctx, subject, from, to, filter)
+		c.Require().NoError(err)
+		c.Require().Len(result, 2)
+		for _, ev := range result {
+			c.Require().Equal("source2", ev.Source)
+		}
+	})
+
+	c.Run("no events in range", func() {
+		result, err := c.chService.GetEvents(ctx, subject, baseTime.Add(-2*time.Hour), baseTime.Add(-time.Hour), nil)
+		c.Require().NoError(err)
+		c.Require().Len(result, 0)
+	})
+
+	c.Run("filter by name neq", func() {
+		filter := &model.EventFilter{Name: &model.StringValueFilter{Neq: ref("event.a")}}
+		result, err := c.chService.GetEvents(ctx, subject, from, to, filter)
+		c.Require().NoError(err)
+		c.Require().Len(result, 1)
+		c.Require().Equal("event.b", result[0].Name)
+	})
+
+	c.Run("filter by name in", func() {
+		filter := &model.EventFilter{Name: &model.StringValueFilter{In: []string{"event.a", "event.b"}}}
+		result, err := c.chService.GetEvents(ctx, subject, from, to, filter)
+		c.Require().NoError(err)
+		c.Require().Len(result, 3)
+	})
+
+	c.Run("filter by name notin", func() {
+		filter := &model.EventFilter{Name: &model.StringValueFilter{NotIn: []string{"event.a"}}}
+		result, err := c.chService.GetEvents(ctx, subject, from, to, filter)
+		c.Require().NoError(err)
+		c.Require().Len(result, 1)
+		c.Require().Equal("event.b", result[0].Name)
+	})
+
+	c.Run("filter by source neq", func() {
+		filter := &model.EventFilter{Source: &model.StringValueFilter{Neq: ref("source2")}}
+		result, err := c.chService.GetEvents(ctx, subject, from, to, filter)
+		c.Require().NoError(err)
+		c.Require().Len(result, 1)
+		c.Require().Equal("source1", result[0].Source)
+	})
+
+	c.Run("filter by source in", func() {
+		filter := &model.EventFilter{Source: &model.StringValueFilter{In: []string{"source1", "source2"}}}
+		result, err := c.chService.GetEvents(ctx, subject, from, to, filter)
+		c.Require().NoError(err)
+		c.Require().Len(result, 3)
+	})
+
+	c.Run("filter by source notin", func() {
+		filter := &model.EventFilter{Source: &model.StringValueFilter{NotIn: []string{"source2"}}}
+		result, err := c.chService.GetEvents(ctx, subject, from, to, filter)
+		c.Require().NoError(err)
+		c.Require().Len(result, 1)
+		c.Require().Equal("source1", result[0].Source)
+	})
+}
+
 // insertTestData inserts test data into the clickhouse database.
 // it loops for 10 iterations and inserts a 2 signals  with each iteration that have a value of i and a powertrain type of "value"+ n%3+1
 // The source is selected from a list of sources in a round robin fashion of sources[i%3].
