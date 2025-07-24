@@ -431,6 +431,16 @@ func (r *signalAggregationsResolver) ObdShortTermFuelTrim1(ctx context.Context, 
 	return &vn, nil
 }
 
+// ObdStatusDTCCount is the resolver for the obdStatusDTCCount
+func (r *signalAggregationsResolver) ObdStatusDTCCount(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error) {
+	fieldCtx := graphql.GetFieldContext(ctx)
+	vn, ok := obj.ValueNumbers[fieldCtx.Field.Alias]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
 // ObdWarmupsSinceDTCClear is the resolver for the obdWarmupsSinceDTCClear
 func (r *signalAggregationsResolver) ObdWarmupsSinceDTCClear(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error) {
 	fieldCtx := graphql.GetFieldContext(ctx)
