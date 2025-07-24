@@ -443,7 +443,7 @@ func buildConditionList(fil *model.SignalFloatFilter) []qm.QueryMod {
 		mods = append(mods, qm.WhereNotIn(vss.ValueNumberCol+" NOT IN ?", fil.NotIn))
 	}
 	if len(fil.In) != 0 {
-		mods = append(mods, qm.WhereNotIn(vss.ValueNumberCol+" IN ?", fil.In))
+		mods = append(mods, qm.WhereIn(vss.ValueNumberCol+" IN ?", fil.In))
 	}
 
 	var orMods []qm.QueryMod
