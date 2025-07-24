@@ -1,0 +1,68 @@
+extend type Query {
+  """
+  events returns a list of events for a given token in a given time range.
+  """
+  events(
+    """
+    tokenId is the id of the token to get events for.
+    """
+    tokenId: Int!
+    """
+    from is the start time of the event.
+    """
+    from: Time!
+    """
+    to is the end time of the event.
+    """
+    to: Time!
+    """
+    filter is the filter to apply to the events.
+    """
+    filter: EventFilter
+  ): [Event!]
+    @requiresVehicleToken
+    @requiresAllOfPrivileges(
+      privileges: [VEHICLE_NON_LOCATION_DATA, VEHICLE_ALL_TIME_LOCATION]
+    )
+}
+
+type Event {
+  """
+  timestamp is the time the event occurred.
+  """
+  timestamp: Time!
+  """
+  name is the name of the event.
+  """
+  name: String!
+  """
+  source is the name of the source connection that created the event.
+  """
+  source: String!
+  """
+  durationNs is the duration of the event in nanoseconds.
+  """
+  durationNs: Int!
+  """
+  metadata is the metadata of the event.
+  """
+  metadata: String
+}
+
+input EventFilter {
+  """
+  name is the name of the event.
+  """
+  name: StringValueFilter
+  """
+  source is the name of the source connection that created the event.
+  """
+  source: StringValueFilter
+}
+
+input StringValueFilter {
+  eq: String
+  neq: String
+  notIn: [String!]
+  in: [String!]
+}

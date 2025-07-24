@@ -1,18 +1,29 @@
+//go:generate go tool mockgen -source=./repositories.go -destination=repositories_mocks_test.go -package=repositories_test
 package repositories_test
 
 import (
 	"context"
 	"errors"
+	"math/big"
 	"testing"
 	"time"
 
+	"github.com/DIMO-Network/cloudevent"
 	"github.com/DIMO-Network/model-garage/pkg/vss"
+	"github.com/DIMO-Network/telemetry-api/internal/config"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	"github.com/DIMO-Network/telemetry-api/internal/repositories"
 	"github.com/DIMO-Network/telemetry-api/internal/service/ch"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/require"
 	gomock "go.uber.org/mock/gomock"
 )
+
+var baseSettings = config.Settings{
+	DeviceLastSeenBinHrs: 3,
+	ChainID:              80002,
+	VehicleNFTAddress:    common.HexToAddress("0x1234567890123456789012345678901234567890"),
+}
 
 type Mocks struct {
 	CHService *MockCHService
@@ -174,7 +185,7 @@ func TestGetSignal(t *testing.T) {
 				tt.mockSetup(mocks)
 			}
 
-			repo, err := repositories.NewRepository(mocks.CHService, 3)
+			repo, err := repositories.NewRepository(mocks.CHService, baseSettings)
 			require.NoError(t, err)
 			result, err := repo.GetSignal(context.Background(), tt.aggArgs)
 			if tt.expectError {
@@ -297,7 +308,7 @@ func TestGetSignalLatest(t *testing.T) {
 				tt.mockSetup(mocks)
 			}
 
-			repo, err := repositories.NewRepository(mocks.CHService, 2)
+			repo, err := repositories.NewRepository(mocks.CHService, baseSettings)
 			require.NoError(t, err)
 			result, err := repo.GetSignalLatest(context.Background(), tt.latestArgs)
 			if tt.expectError {
@@ -378,7 +389,7 @@ func TestDeviceActivity(t *testing.T) {
 				tt.mockSetup(mocks)
 			}
 
-			repo, err := repositories.NewRepository(mocks.CHService, 3)
+			repo, err := repositories.NewRepository(mocks.CHService, baseSettings)
 			require.NoError(t, err)
 			result, err := repo.GetDeviceActivity(context.Background(), int(vehicleTokenID), tt.manufacturer)
 			if tt.expectError {
@@ -480,7 +491,7 @@ func TestGetAvailableSignals(t *testing.T) {
 				tt.mockSetup(mocks)
 			}
 
-			repo, err := repositories.NewRepository(mocks.CHService, 2)
+			repo, err := repositories.NewRepository(mocks.CHService, baseSettings)
 			require.NoError(t, err)
 			result, err := repo.GetAvailableSignals(context.Background(), 1, nil)
 			if tt.expectError {
@@ -492,6 +503,72 @@ func TestGetAvailableSignals(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestGetEvents(t *testing.T) {
+	tokenID := 12345
+	from := time.Date(2024, 6, 12, 0, 0, 0, 0, time.UTC)
+	to := from.Add(1 * time.Hour)
+	filter := &model.EventFilter{
+		Name:   nil,
+		Source: nil,
+	}
+	subject := cloudevent.ERC721DID{
+		ChainID:         baseSettings.ChainID,
+		ContractAddress: baseSettings.VehicleNFTAddress,
+		TokenID:         big.NewInt(int64(tokenID)),
+	}.String()
+
+	eventMeta := "{\"foo\":\"bar\"}"
+	vssEvents := []*vss.Event{
+		{
+			Timestamp:  from.Add(10 * time.Minute),
+			Name:       "event1",
+			Source:     "source1",
+			DurationNs: 123,
+			Metadata:   eventMeta,
+		},
+		{
+			Timestamp:  from.Add(20 * time.Minute),
+			Name:       "event2",
+			Source:     "source2",
+			DurationNs: 456,
+			Metadata:   "",
+		},
+	}
+
+	mocks := setupMocks(t)
+	repo, err := repositories.NewRepository(mocks.CHService, baseSettings)
+	require.NoError(t, err)
+
+	t.Run("success", func(t *testing.T) {
+		mocks.CHService.EXPECT().
+			GetEvents(gomock.Any(), subject, from, to, filter).
+			Return(vssEvents, nil)
+		result, err := repo.GetEvents(context.Background(), tokenID, from, to, filter)
+		require.NoError(t, err)
+		require.Len(t, result, 2)
+		require.Equal(t, vssEvents[0].Name, result[0].Name)
+		require.Equal(t, vssEvents[0].Source, result[0].Source)
+		require.Equal(t, vssEvents[0].Timestamp, result[0].Timestamp)
+		require.Equal(t, int(vssEvents[0].DurationNs), result[0].DurationNs)
+		if vssEvents[0].Metadata != "" {
+			require.NotNil(t, result[0].Metadata)
+			require.Equal(t, vssEvents[0].Metadata, *result[0].Metadata)
+		} else {
+			require.Nil(t, result[0].Metadata)
+		}
+	})
+
+	t.Run("error from service", func(t *testing.T) {
+		mocks.CHService.EXPECT().
+			GetEvents(gomock.Any(), subject, from, to, filter).
+			Return(nil, errors.New("service error"))
+		result, err := repo.GetEvents(context.Background(), tokenID, from, to, filter)
+		require.Error(t, err)
+		require.Nil(t, result)
+	})
+
 }
 
 func ref[T any](t T) *T {

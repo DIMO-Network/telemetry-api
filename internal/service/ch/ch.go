@@ -11,6 +11,7 @@ import (
 	"github.com/DIMO-Network/model-garage/pkg/vss"
 	"github.com/DIMO-Network/telemetry-api/internal/config"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
+	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 )
 
 const (
@@ -230,4 +231,37 @@ func (s *Service) GetAvailableSignals(ctx context.Context, tokenId uint32, filte
 		return nil, fmt.Errorf("clickhouse row error: %w", rows.Err())
 	}
 	return signals, nil
+}
+
+func (s *Service) GetEvents(ctx context.Context, subject string, from, to time.Time, filter *model.EventFilter) ([]*vss.Event, error) {
+	mods := []qm.QueryMod{
+		qm.Select(vss.EventNameCol, vss.EventSourceCol, vss.EventTimestampCol, vss.DurationNsCol, vss.MetadataCol),
+		qm.From(vss.EventTableName),
+		qm.Where(subjectWhere, subject),
+		qm.Where(timestampFrom, from),
+		qm.Where(timestampTo, to),
+		qm.OrderBy(vss.EventTimestampCol + " DESC"),
+	}
+	mods = appendEventFilterMods(mods, filter)
+	stmt, args := newQuery(mods...)
+
+	rows, err := s.conn.Query(ctx, stmt, args...)
+	if err != nil {
+		return nil, fmt.Errorf("failed querying clickhouse for events: %w", err)
+	}
+	events := []*vss.Event{}
+	for rows.Next() {
+		var event vss.Event
+		err := rows.Scan(&event.Name, &event.Source, &event.Timestamp, &event.DurationNs, &event.Metadata)
+		if err != nil {
+			_ = rows.Close()
+			return nil, fmt.Errorf("failed scanning clickhouse event row: %w", err)
+		}
+		events = append(events, &event)
+	}
+	_ = rows.Close()
+	if rows.Err() != nil {
+		return nil, fmt.Errorf("clickhouse event row error: %w", rows.Err())
+	}
+	return events, nil
 }

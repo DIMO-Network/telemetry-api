@@ -3,6 +3,7 @@ package repositories
 import (
 	"fmt"
 	"math"
+	"time"
 
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	"github.com/DIMO-Network/telemetry-api/internal/service/ch"
@@ -69,6 +70,22 @@ func validateFilter(filter *model.SignalFilter) error {
 		if _, ok := ch.SourceTranslations[*filter.Source]; !ok {
 			return ValidationError(fmt.Sprintf("source '%s', is not a valid value", *filter.Source))
 		}
+	}
+	return nil
+}
+
+func validateEventArgs(tokenID int, from, to time.Time, filter *model.EventFilter) error {
+	if tokenID < 1 {
+		return ValidationError("tokenID is not a positive integer")
+	}
+	if from.IsZero() {
+		return ValidationError("from timestamp is zero")
+	}
+	if to.IsZero() {
+		return ValidationError("to timestamp is zero")
+	}
+	if from.After(to) {
+		return ValidationError("from timestamp is after to timestamp")
 	}
 	return nil
 }
