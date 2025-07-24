@@ -142,6 +142,7 @@ type ComplexityRoot struct {
 		ObdO2WRSensor2Voltage                                     func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
 		ObdRunTime                                                func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
 		ObdShortTermFuelTrim1                                     func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		ObdStatusDTCCount                                         func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
 		ObdWarmupsSinceDTCClear                                   func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
 		PowertrainCombustionEngineDieselExhaustFluidCapacity      func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
 		PowertrainCombustionEngineDieselExhaustFluidLevel         func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
@@ -225,6 +226,7 @@ type ComplexityRoot struct {
 		OBDO2WRSensor2Voltage                                     func(childComplexity int) int
 		OBDRunTime                                                func(childComplexity int) int
 		OBDShortTermFuelTrim1                                     func(childComplexity int) int
+		OBDStatusDTCCount                                         func(childComplexity int) int
 		OBDWarmupsSinceDTCClear                                   func(childComplexity int) int
 		PowertrainCombustionEngineDieselExhaustFluidCapacity      func(childComplexity int) int
 		PowertrainCombustionEngineDieselExhaustFluidLevel         func(childComplexity int) int
@@ -339,6 +341,7 @@ type SignalAggregationsResolver interface {
 	ObdO2WRSensor2Voltage(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
 	ObdRunTime(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
 	ObdShortTermFuelTrim1(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	ObdStatusDTCCount(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
 	ObdWarmupsSinceDTCClear(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
 	PowertrainCombustionEngineDieselExhaustFluidCapacity(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
 	PowertrainCombustionEngineDieselExhaustFluidLevel(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
@@ -1158,6 +1161,18 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.SignalAggregations.ObdShortTermFuelTrim1(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
+	case "SignalAggregations.obdStatusDTCCount":
+		if e.complexity.SignalAggregations.ObdStatusDTCCount == nil {
+			break
+		}
+
+		args, err := ec.field_SignalAggregations_obdStatusDTCCount_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.SignalAggregations.ObdStatusDTCCount(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+
 	case "SignalAggregations.obdWarmupsSinceDTCClear":
 		if e.complexity.SignalAggregations.ObdWarmupsSinceDTCClear == nil {
 			break
@@ -1887,6 +1902,13 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.SignalCollection.OBDShortTermFuelTrim1(childComplexity), true
+
+	case "SignalCollection.obdStatusDTCCount":
+		if e.complexity.SignalCollection.OBDStatusDTCCount == nil {
+			break
+		}
+
+		return e.complexity.SignalCollection.OBDStatusDTCCount(childComplexity), true
 
 	case "SignalCollection.obdWarmupsSinceDTCClear":
 		if e.complexity.SignalCollection.OBDWarmupsSinceDTCClear == nil {
@@ -3142,6 +3164,15 @@ extend type SignalAggregations {
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDShortTermFuelTrim1", forceResolver: true) @isSignal @hasAggregation
   
   """
+  Number of Diagnostic Trouble Codes (DTC)
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  obdStatusDTCCount(
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDStatusDTCCount", forceResolver: true) @isSignal @hasAggregation
+  
+  """
   PID 30 - Number of warm-ups since codes cleared
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
@@ -3753,6 +3784,12 @@ extend type SignalCollection {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   obdShortTermFuelTrim1: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDShortTermFuelTrim1") @isSignal
+  
+  """
+  Number of Diagnostic Trouble Codes (DTC)
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  obdStatusDTCCount: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDStatusDTCCount") @isSignal
   
   """
   PID 30 - Number of warm-ups since codes cleared
@@ -6766,6 +6803,57 @@ func (ec *executionContext) field_SignalAggregations_obdShortTermFuelTrim1_argsF
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_SignalAggregations_obdStatusDTCCount_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field_SignalAggregations_obdStatusDTCCount_argsAgg(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["agg"] = arg0
+	arg1, err := ec.field_SignalAggregations_obdStatusDTCCount_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
+	return args, nil
+}
+func (ec *executionContext) field_SignalAggregations_obdStatusDTCCount_argsAgg(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (model.FloatAggregation, error) {
+	if _, ok := rawArgs["agg"]; !ok {
+		var zeroVal model.FloatAggregation
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
+	if tmp, ok := rawArgs["agg"]; ok {
+		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
+	}
+
+	var zeroVal model.FloatAggregation
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_SignalAggregations_obdStatusDTCCount_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.SignalFloatFilter, error) {
+	if _, ok := rawArgs["filter"]; !ok {
+		var zeroVal *model.SignalFloatFilter
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.SignalFloatFilter
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_SignalAggregations_obdWarmupsSinceDTCClear_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -9558,6 +9646,8 @@ func (ec *executionContext) fieldContext_Query_signals(ctx context.Context, fiel
 				return ec.fieldContext_SignalAggregations_obdRunTime(ctx, field)
 			case "obdShortTermFuelTrim1":
 				return ec.fieldContext_SignalAggregations_obdShortTermFuelTrim1(ctx, field)
+			case "obdStatusDTCCount":
+				return ec.fieldContext_SignalAggregations_obdStatusDTCCount(ctx, field)
 			case "obdWarmupsSinceDTCClear":
 				return ec.fieldContext_SignalAggregations_obdWarmupsSinceDTCClear(ctx, field)
 			case "powertrainCombustionEngineDieselExhaustFluidCapacity":
@@ -9792,6 +9882,8 @@ func (ec *executionContext) fieldContext_Query_signalsLatest(ctx context.Context
 				return ec.fieldContext_SignalCollection_obdRunTime(ctx, field)
 			case "obdShortTermFuelTrim1":
 				return ec.fieldContext_SignalCollection_obdShortTermFuelTrim1(ctx, field)
+			case "obdStatusDTCCount":
+				return ec.fieldContext_SignalCollection_obdStatusDTCCount(ctx, field)
 			case "obdWarmupsSinceDTCClear":
 				return ec.fieldContext_SignalCollection_obdWarmupsSinceDTCClear(ctx, field)
 			case "powertrainCombustionEngineDieselExhaustFluidCapacity":
@@ -14699,6 +14791,99 @@ func (ec *executionContext) fieldContext_SignalAggregations_obdShortTermFuelTrim
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_SignalAggregations_obdShortTermFuelTrim1_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SignalAggregations_obdStatusDTCCount(ctx context.Context, field graphql.CollectedField, obj *model.SignalAggregations) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignalAggregations_obdStatusDTCCount(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.SignalAggregations().ObdStatusDTCCount(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		}
+
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+			if err != nil {
+				var zeroVal *float64
+				return zeroVal, err
+			}
+			if ec.directives.RequiresAllOfPrivileges == nil {
+				var zeroVal *float64
+				return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
+			}
+			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+		}
+		directive2 := func(ctx context.Context) (any, error) {
+			if ec.directives.IsSignal == nil {
+				var zeroVal *float64
+				return zeroVal, errors.New("directive isSignal is not implemented")
+			}
+			return ec.directives.IsSignal(ctx, obj, directive1)
+		}
+		directive3 := func(ctx context.Context) (any, error) {
+			if ec.directives.HasAggregation == nil {
+				var zeroVal *float64
+				return zeroVal, errors.New("directive hasAggregation is not implemented")
+			}
+			return ec.directives.HasAggregation(ctx, obj, directive2)
+		}
+
+		tmp, err := directive3(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*float64); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*float64)
+	fc.Result = res
+	return ec.marshalOFloat2ᚖfloat64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SignalAggregations_obdStatusDTCCount(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignalAggregations",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_SignalAggregations_obdStatusDTCCount_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -21454,6 +21639,87 @@ func (ec *executionContext) _SignalCollection_obdShortTermFuelTrim1(ctx context.
 }
 
 func (ec *executionContext) fieldContext_SignalCollection_obdShortTermFuelTrim1(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignalCollection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "timestamp":
+				return ec.fieldContext_SignalFloat_timestamp(ctx, field)
+			case "value":
+				return ec.fieldContext_SignalFloat_value(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SignalFloat", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SignalCollection_obdStatusDTCCount(ctx context.Context, field graphql.CollectedField, obj *model.SignalCollection) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignalCollection_obdStatusDTCCount(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
+			ctx = rctx // use context from middleware stack in children
+			return obj.OBDStatusDTCCount, nil
+		}
+
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+			if err != nil {
+				var zeroVal *model.SignalFloat
+				return zeroVal, err
+			}
+			if ec.directives.RequiresAllOfPrivileges == nil {
+				var zeroVal *model.SignalFloat
+				return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
+			}
+			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+		}
+		directive2 := func(ctx context.Context) (any, error) {
+			if ec.directives.IsSignal == nil {
+				var zeroVal *model.SignalFloat
+				return zeroVal, errors.New("directive isSignal is not implemented")
+			}
+			return ec.directives.IsSignal(ctx, obj, directive1)
+		}
+
+		tmp, err := directive2(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*model.SignalFloat); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.SignalFloat)
+	fc.Result = res
+	return ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SignalCollection_obdStatusDTCCount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalCollection",
 		Field:      field,
@@ -28913,6 +29179,39 @@ func (ec *executionContext) _SignalAggregations(ctx context.Context, sel ast.Sel
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "obdStatusDTCCount":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._SignalAggregations_obdStatusDTCCount(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "obdWarmupsSinceDTCClear":
 			field := field
 
@@ -30159,6 +30458,8 @@ func (ec *executionContext) _SignalCollection(ctx context.Context, sel ast.Selec
 			out.Values[i] = ec._SignalCollection_obdRunTime(ctx, field, obj)
 		case "obdShortTermFuelTrim1":
 			out.Values[i] = ec._SignalCollection_obdShortTermFuelTrim1(ctx, field, obj)
+		case "obdStatusDTCCount":
+			out.Values[i] = ec._SignalCollection_obdStatusDTCCount(ctx, field, obj)
 		case "obdWarmupsSinceDTCClear":
 			out.Values[i] = ec._SignalCollection_obdWarmupsSinceDTCClear(ctx, field, obj)
 		case "powertrainCombustionEngineDieselExhaustFluidCapacity":

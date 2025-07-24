@@ -268,6 +268,9 @@ type SignalCollection struct {
 	// Unit: 'percent'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	OBDShortTermFuelTrim1 *SignalFloat `json:"obdShortTermFuelTrim1,omitempty"`
+	// Number of Diagnostic Trouble Codes (DTC)
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	OBDStatusDTCCount *SignalFloat `json:"obdStatusDTCCount,omitempty"`
 	// PID 30 - Number of warm-ups since codes cleared
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	OBDWarmupsSinceDTCClear *SignalFloat `json:"obdWarmupsSinceDTCClear,omitempty"`
