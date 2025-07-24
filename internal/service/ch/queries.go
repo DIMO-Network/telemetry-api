@@ -387,32 +387,7 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 			qmhelper.Where(signalTypeCol, qmhelper.EQ, FloatType),
 			qmhelper.Where(signalIndexCol, qmhelper.EQ, i),
 		}
-		if fil := agg.Filter; fil != nil {
-			if fil.Eq != nil {
-				fieldFilters = append(fieldFilters, qmhelper.Where(vss.ValueNumberCol, qmhelper.EQ, *fil.Eq))
-			}
-			if fil.Neq != nil {
-				fieldFilters = append(fieldFilters, qmhelper.Where(vss.ValueNumberCol, qmhelper.NEQ, *fil.Neq))
-			}
-			if fil.Gt != nil {
-				fieldFilters = append(fieldFilters, qmhelper.Where(vss.ValueNumberCol, qmhelper.GT, *fil.Gt))
-			}
-			if fil.Lt != nil {
-				fieldFilters = append(fieldFilters, qmhelper.Where(vss.ValueNumberCol, qmhelper.LT, *fil.Lt))
-			}
-			if fil.Gte != nil {
-				fieldFilters = append(fieldFilters, qmhelper.Where(vss.ValueNumberCol, qmhelper.GTE, *fil.Gte))
-			}
-			if fil.Lte != nil {
-				fieldFilters = append(fieldFilters, qmhelper.Where(vss.ValueNumberCol, qmhelper.LTE, *fil.Lte))
-			}
-			if len(fil.NotIn) != 0 {
-				fieldFilters = append(fieldFilters, qm.WhereNotIn(vss.ValueNumberCol+" NOT IN ?", fil.NotIn))
-			}
-			if len(fil.In) != 0 {
-				fieldFilters = append(fieldFilters, qm.WhereIn(vss.ValueNumberCol+" IN ?", fil.In))
-			}
-		}
+		fieldFilters = append(fieldFilters, buildConditionList(agg.Filter)...)
 
 		floatFilters = append(floatFilters, qm.Or2(qm.Expr(fieldFilters...)))
 	}
@@ -438,6 +413,56 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 
 	stmt, args := newQuery(mods...)
 	return stmt, args, nil
+}
+
+func buildConditionList(fil *model.SignalFloatFilter) []qm.QueryMod {
+	if fil == nil {
+		return nil
+	}
+
+	var mods []qm.QueryMod
+
+	if fil.Eq != nil {
+		mods = append(mods, qmhelper.Where(vss.ValueNumberCol, qmhelper.EQ, *fil.Eq))
+	}
+	if fil.Neq != nil {
+		mods = append(mods, qmhelper.Where(vss.ValueNumberCol, qmhelper.NEQ, *fil.Neq))
+	}
+	if fil.Gt != nil {
+		mods = append(mods, qmhelper.Where(vss.ValueNumberCol, qmhelper.GT, *fil.Gt))
+	}
+	if fil.Lt != nil {
+		mods = append(mods, qmhelper.Where(vss.ValueNumberCol, qmhelper.LT, *fil.Lt))
+	}
+	if fil.Gte != nil {
+		mods = append(mods, qmhelper.Where(vss.ValueNumberCol, qmhelper.GTE, *fil.Gte))
+	}
+	if fil.Lte != nil {
+		mods = append(mods, qmhelper.Where(vss.ValueNumberCol, qmhelper.LTE, *fil.Lte))
+	}
+	if len(fil.NotIn) != 0 {
+		mods = append(mods, qm.WhereNotIn(vss.ValueNumberCol+" NOT IN ?", fil.NotIn))
+	}
+	if len(fil.In) != 0 {
+		mods = append(mods, qm.WhereIn(vss.ValueNumberCol+" IN ?", fil.In))
+	}
+
+	var orMods []qm.QueryMod
+	for _, cond := range fil.Or {
+		clauseMods := buildConditionList(cond)
+		if len(clauseMods) != 0 {
+			if len(orMods) == 0 {
+				orMods = append(orMods, qm.Expr(clauseMods...))
+			} else {
+				orMods = append(orMods, qm.Or2(qm.Expr(clauseMods...)))
+			}
+		}
+	}
+	if len(orMods) != 0 {
+		mods = append(mods, qm.Expr(orMods...))
+	}
+
+	return mods
 }
 
 func aggTableEntry(ft FieldType, index int, name string) string {
