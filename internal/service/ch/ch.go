@@ -235,9 +235,9 @@ func (s *Service) GetAvailableSignals(ctx context.Context, tokenId uint32, filte
 
 func (s *Service) GetEvents(ctx context.Context, subject string, from, to time.Time, filter *model.EventFilter) ([]*vss.Event, error) {
 	mods := []qm.QueryMod{
-		qm.Select(vss.EventNameCol, vss.EventSourceCol, vss.EventTimestampCol, vss.DurationNsCol, vss.MetadataCol),
+		qm.Select(vss.EventNameCol, vss.EventSourceCol, vss.EventTimestampCol, vss.EventDurationNsCol, vss.EventMetadataCol),
 		qm.From(vss.EventTableName),
-		qm.Where(subjectWhere, subject),
+		qm.Where(eventSubjectWhere, subject),
 		qm.Where(timestampFrom, from),
 		qm.Where(timestampTo, to),
 		qm.OrderBy(vss.EventTimestampCol + " DESC"),
