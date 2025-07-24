@@ -16,20 +16,21 @@ import (
 
 const (
 	// IntervalGroup is the column alias for the interval group.
-	IntervalGroup  = "group_timestamp"
-	AggNumberCol   = "agg_number"
-	AggStringCol   = "agg_string"
-	AggLocationCol = "agg_location"
-	aggTableName   = "agg_table"
-	tokenIDWhere   = vss.TokenIDCol + " = ?"
-	nameIn         = vss.NameCol + " IN ?"
-	timestampFrom  = vss.TimestampCol + " >= ?"
-	timestampTo    = vss.TimestampCol + " < ?"
-	sourceWhere    = vss.SourceCol + " = ?"
-	sourceIn       = vss.SourceCol + " IN ?"
-	groupAsc       = IntervalGroup + " ASC"
-	signalTypeCol  = "signal_type"
-	signalIndexCol = "signal_index"
+	IntervalGroup     = "group_timestamp"
+	AggNumberCol      = "agg_number"
+	AggStringCol      = "agg_string"
+	AggLocationCol    = "agg_location"
+	aggTableName      = "agg_table"
+	tokenIDWhere      = vss.TokenIDCol + " = ?"
+	eventSubjectWhere = vss.EventSubjectCol + " = ?"
+	nameIn            = vss.NameCol + " IN ?"
+	timestampFrom     = vss.TimestampCol + " >= ?"
+	timestampTo       = vss.TimestampCol + " < ?"
+	sourceWhere       = vss.SourceCol + " = ?"
+	sourceIn          = vss.SourceCol + " IN ?"
+	groupAsc          = IntervalGroup + " ASC"
+	signalTypeCol     = "signal_type"
+	signalIndexCol    = "signal_index"
 
 	valueTableDef = signalTypeCol + " UInt8, " + signalIndexCol + " UInt16, " + vss.NameCol + " String"
 )
@@ -527,6 +528,38 @@ func getFilterMods(filter *model.SignalFilter) []qm.QueryMod {
 	var mods []qm.QueryMod
 	if filter.Source != nil {
 		mods = append(mods, withSource(*filter.Source))
+	}
+	return mods
+}
+
+func appendEventFilterMods(mods []qm.QueryMod, filter *model.EventFilter) []qm.QueryMod {
+	if filter == nil {
+		return mods
+	}
+	if filter.Name != nil {
+		mods = appendStringFilterMod(mods, vss.EventNameCol, filter.Name)
+	}
+	if filter.Source != nil {
+		mods = appendStringFilterMod(mods, vss.EventSourceCol, filter.Source)
+	}
+	return mods
+}
+
+func appendStringFilterMod(mods []qm.QueryMod, field string, filter *model.StringValueFilter) []qm.QueryMod {
+	if filter == nil {
+		return mods
+	}
+	if filter.Eq != nil {
+		mods = append(mods, qm.Where(field+" = ?", *filter.Eq))
+	}
+	if filter.Neq != nil {
+		mods = append(mods, qm.Where(field+" != ?", *filter.Neq))
+	}
+	if filter.NotIn != nil {
+		mods = append(mods, qm.WhereNotIn(field+" NOT IN (?)", filter.NotIn))
+	}
+	if filter.In != nil {
+		mods = append(mods, qm.WhereIn(field+" IN (?)", filter.In))
 	}
 	return mods
 }

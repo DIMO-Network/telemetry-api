@@ -45,7 +45,7 @@ func New(settings config.Settings) (*App, error) {
 	if err != nil {
 		return nil, fmt.Errorf("couldn't create ClickHouse service: %w", err)
 	}
-	baseRepo, err := repositories.NewRepository(chService, settings.DeviceLastSeenBinHrs)
+	baseRepo, err := repositories.NewRepository(chService, settings)
 	if err != nil {
 		return nil, fmt.Errorf("couldn't create base repository: %w", err)
 	}
@@ -64,7 +64,7 @@ func New(settings config.Settings) (*App, error) {
 	}
 
 	resolver := &graph.Resolver{
-		Repository:      baseRepo,
+		BaseRepo:        baseRepo,
 		IdentityService: idService,
 		VCRepo:          vcRepo,
 		AttestationRepo: attRepo,

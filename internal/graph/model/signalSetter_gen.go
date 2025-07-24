@@ -219,6 +219,11 @@ func SetCollectionField(collection *SignalCollection, signal *vss.Signal) {
 			Timestamp: signal.Timestamp,
 			Value:     signal.ValueNumber,
 		}
+	case "obdStatusDTCCount":
+		collection.OBDStatusDTCCount = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
 	case "obdWarmupsSinceDTCClear":
 		collection.OBDWarmupsSinceDTCClear = &SignalFloat{
 			Timestamp: signal.Timestamp,

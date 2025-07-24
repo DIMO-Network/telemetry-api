@@ -403,6 +403,15 @@ extend type SignalAggregations {
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDShortTermFuelTrim1", forceResolver: true) @isSignal @hasAggregation
   
   """
+  Number of Diagnostic Trouble Codes (DTC)
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  obdStatusDTCCount(
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDStatusDTCCount", forceResolver: true) @isSignal @hasAggregation
+  
+  """
   PID 30 - Number of warm-ups since codes cleared
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
@@ -1014,6 +1023,12 @@ extend type SignalCollection {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   obdShortTermFuelTrim1: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDShortTermFuelTrim1") @isSignal
+  
+  """
+  Number of Diagnostic Trouble Codes (DTC)
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  obdStatusDTCCount: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDStatusDTCCount") @isSignal
   
   """
   PID 30 - Number of warm-ups since codes cleared

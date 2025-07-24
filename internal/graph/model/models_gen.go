@@ -68,6 +68,26 @@ type DeviceActivity struct {
 	LastActive *time.Time `json:"lastActive,omitempty"`
 }
 
+type Event struct {
+	// timestamp is the time the event occurred.
+	Timestamp time.Time `json:"timestamp"`
+	// name is the name of the event.
+	Name string `json:"name"`
+	// source is the name of the source connection that created the event.
+	Source string `json:"source"`
+	// durationNs is the duration of the event in nanoseconds.
+	DurationNs int `json:"durationNs"`
+	// metadata is the metadata of the event.
+	Metadata *string `json:"metadata,omitempty"`
+}
+
+type EventFilter struct {
+	// name is the name of the event.
+	Name *StringValueFilter `json:"name,omitempty"`
+	// source is the name of the source connection that created the event.
+	Source *StringValueFilter `json:"source,omitempty"`
+}
+
 type Location struct {
 	Latitude  float64 `json:"latitude"`
 	Longitude float64 `json:"longitude"`
@@ -259,6 +279,9 @@ type SignalCollection struct {
 	// Unit: 'percent'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	OBDShortTermFuelTrim1 *SignalFloat `json:"obdShortTermFuelTrim1,omitempty"`
+	// Number of Diagnostic Trouble Codes (DTC)
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	OBDStatusDTCCount *SignalFloat `json:"obdStatusDTCCount,omitempty"`
 	// PID 30 - Number of warm-ups since codes cleared
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	OBDWarmupsSinceDTCClear *SignalFloat `json:"obdWarmupsSinceDTCClear,omitempty"`
@@ -431,6 +454,13 @@ type SignalString struct {
 	Timestamp time.Time `json:"timestamp"`
 	// value of the signal
 	Value string `json:"value"`
+}
+
+type StringValueFilter struct {
+	Eq    *string  `json:"eq,omitempty"`
+	Neq   *string  `json:"neq,omitempty"`
+	NotIn []string `json:"notIn,omitempty"`
+	In    []string `json:"in,omitempty"`
 }
 
 type Vinvc struct {

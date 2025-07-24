@@ -50,3 +50,20 @@ func insertSignal(t *testing.T, ch *container.Container, signals []vss.Signal) {
 	err = batch.Send()
 	require.NoError(t, err, "Failed to send batch")
 }
+
+// insertEvent inserts test events into Clickhouse
+func insertEvent(t *testing.T, ch *container.Container, events []vss.Event) {
+	t.Helper()
+
+	conn, err := ch.GetClickHouseAsConn()
+	require.NoError(t, err)
+	batch, err := conn.PrepareBatch(context.Background(), fmt.Sprintf("INSERT INTO %s", vss.EventTableName))
+	require.NoError(t, err)
+
+	for _, event := range events {
+		err := batch.AppendStruct(&event)
+		require.NoError(t, err, "Failed to append event to batch")
+	}
+	err = batch.Send()
+	require.NoError(t, err, "Failed to send batch")
+}
