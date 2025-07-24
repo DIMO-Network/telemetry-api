@@ -548,8 +548,8 @@ extend type SignalAggregations {
   ):  String @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainFuelSystemSupportedFuelTypes", forceResolver: true) @isSignal @hasAggregation
   
   """
-  Remaining range in meters using all energy sources available in the vehicle.
-  Unit: 'm'
+  Remaining range in kilometers using all energy sources available in the vehicle.
+  Unit: 'km'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainRange(
@@ -637,8 +637,8 @@ extend type SignalAggregations {
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryGrossCapacity", forceResolver: true) @isSignal @hasAggregation
   
   """
-  Remaining range in meters using only battery.
-  Unit: 'm'
+  Remaining range in kilometers using only battery.
+  Unit: 'km'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainTractionBatteryRange(
@@ -1118,8 +1118,8 @@ extend type SignalCollection {
   powertrainFuelSystemSupportedFuelTypes: SignalString @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainFuelSystemSupportedFuelTypes") @isSignal
   
   """
-  Remaining range in meters using all energy sources available in the vehicle.
-  Unit: 'm'
+  Remaining range in kilometers using all energy sources available in the vehicle.
+  Unit: 'km'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainRange: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainRange") @isSignal
@@ -1180,8 +1180,8 @@ extend type SignalCollection {
   powertrainTractionBatteryGrossCapacity: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryGrossCapacity") @isSignal
   
   """
-  Remaining range in meters using only battery.
-  Unit: 'm'
+  Remaining range in kilometers using only battery.
+  Unit: 'km'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainTractionBatteryRange: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryRange") @isSignal

@@ -19,6 +19,7 @@ const (
 	IntervalGroup  = "group_timestamp"
 	AggNumberCol   = "agg_number"
 	AggStringCol   = "agg_string"
+	AggLocationCol = "agg_location"
 	aggTableName   = "agg_table"
 	tokenIDWhere   = vss.TokenIDCol + " = ?"
 	nameIn         = vss.NameCol + " IN ?"
@@ -93,6 +94,8 @@ const (
 	// AppLocType is the type for rows needed to compute approximate
 	// locations.
 	AppLocType FieldType = 3
+	// LocType is the type for rows with location tuple values.
+	LocType FieldType = 4
 )
 
 func (t *FieldType) Scan(value any) error {
@@ -101,7 +104,7 @@ func (t *FieldType) Scan(value any) error {
 		return fmt.Errorf("expected value of type uint8, but got type %T", value)
 	}
 
-	if w == 0 || w > 3 {
+	if w == 0 || w > 4 {
 		return fmt.Errorf("invalid value %d for field type", w)
 	}
 
@@ -168,6 +171,19 @@ func selectNumberAggs(numberAggs []model.FloatSignalArgs, appLocAggs map[model.F
 		}
 	}
 	caseStmt := fmt.Sprintf("CASE %s ELSE NULL END AS %s", strings.Join(caseStmts, " "), AggNumberCol)
+	return qm.Select(caseStmt)
+}
+
+func selectLocationAggs(locAggs []model.LocationSignalArgs) qm.QueryMod {
+	if len(locAggs) == 0 {
+		return qm.Select("NULL AS " + vss.ValueLocationCol)
+	}
+	// Add a CASE statement for each name and its corresponding aggregation function
+	caseStmts := make([]string, 0, len(locAggs))
+	for i := range locAggs { // Only one aggregation, so skip this.
+		caseStmts = append(caseStmts, fmt.Sprintf("WHEN %s = %d AND %s = %d THEN %s", signalTypeCol, LocType, signalIndexCol, i, "argMin(value_location, timestamp)"))
+	}
+	caseStmt := fmt.Sprintf("CASE %s ELSE CAST((0, 0, 0) AS Tuple(latitude Float64, longitude Float64, hdop Float64)) END AS %s", strings.Join(caseStmts, " "), AggLocationCol)
 	return qm.Select(caseStmt)
 }
 
@@ -350,7 +366,7 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 		return "", nil, nil
 	}
 
-	numAggs := len(aggArgs.FloatArgs) + len(aggArgs.StringArgs) + 2*len(aggArgs.ApproxLocArgs)
+	numAggs := len(aggArgs.FloatArgs) + len(aggArgs.StringArgs) + 2*len(aggArgs.ApproxLocArgs) + len(aggArgs.LocationArgs)
 	if numAggs == 0 {
 		return "", nil, errors.New("no aggregations requested")
 	}
@@ -372,6 +388,9 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 				aggTableEntry(AppLocType, 2*i+1, vss.FieldCurrentLocationLatitude))
 		}
 	}
+	for i, agg := range aggArgs.LocationArgs {
+		valuesArgs = append(valuesArgs, aggTableEntry(LocType, i, agg.Name))
+	}
 	valueTable := fmt.Sprintf("VALUES('%s', %s) as %s ON %s.%s = %s.%s", valueTableDef, strings.Join(valuesArgs, ", "), aggTableName, vss.TableName, vss.NameCol, aggTableName, vss.NameCol)
 
 	floatFilters := []qm.QueryMod{
@@ -391,12 +410,32 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 		floatFilters = append(floatFilters, qm.Or2(qm.Expr(fieldFilters...)))
 	}
 
+	locFilters := []qm.QueryMod{
+		qmhelper.Where(signalTypeCol, qmhelper.NEQ, LocType),
+	}
+
+	for i, agg := range aggArgs.LocationArgs {
+		fieldFilters := []qm.QueryMod{
+			qmhelper.Where(signalTypeCol, qmhelper.EQ, LocType),
+			qmhelper.Where(signalIndexCol, qmhelper.EQ, i),
+		}
+
+		if agg.Filter != nil && agg.Filter.InCircle != nil {
+			fieldFilters = append(fieldFilters,
+				qm.Where("greatCircleDistance(value_location.longitude, value_location.latitude, ?, ?) < ?", agg.Filter.InCircle.Center.Longitude, agg.Filter.InCircle.Center.Latitude, agg.Filter.InCircle.Radius),
+			)
+		}
+
+		locFilters = append(locFilters, qm.Or2(qm.Expr(fieldFilters...)))
+	}
+
 	mods := []qm.QueryMod{
 		qm.Select(signalTypeCol),
 		qm.Select(signalIndexCol),
 		selectInterval(aggArgs.Interval, aggArgs.FromTS),
 		selectNumberAggs(aggArgs.FloatArgs, aggArgs.ApproxLocArgs),
 		selectStringAggs(aggArgs.StringArgs),
+		selectLocationAggs(aggArgs.LocationArgs),
 		qm.Where(tokenIDWhere, aggArgs.TokenID),
 		qm.Where(timestampFrom, aggArgs.FromTS),
 		qm.Where(timestampTo, aggArgs.ToTS),
@@ -408,7 +447,7 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 		qm.OrderBy(groupAsc),
 	}
 	mods = append(mods, getFilterMods(aggArgs.Filter)...)
-	mods = append(mods, qm.Expr(floatFilters...))
+	mods = append(mods, qm.Expr(floatFilters...), qm.Expr(locFilters...))
 
 	stmt, args := newQuery(mods...)
 	return stmt, args, nil

@@ -58,9 +58,20 @@ type AttestationFilter struct {
 	Limit *int `json:"limit,omitempty"`
 }
 
+type CircleCenter struct {
+	Latitude  float64 `json:"latitude"`
+	Longitude float64 `json:"longitude"`
+}
+
 type DeviceActivity struct {
 	// lastActive indicates the start of a 3 hour block during which the device was last active.
 	LastActive *time.Time `json:"lastActive,omitempty"`
+}
+
+type Location struct {
+	Latitude  float64 `json:"latitude"`
+	Longitude float64 `json:"longitude"`
+	Hdop      float64 `json:"hdop"`
 }
 
 type Pomvc struct {
@@ -305,8 +316,8 @@ type SignalCollection struct {
 	// High level information of fuel types supported
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainFuelSystemSupportedFuelTypes *SignalString `json:"powertrainFuelSystemSupportedFuelTypes,omitempty"`
-	// Remaining range in meters using all energy sources available in the vehicle.
-	// Unit: 'm'
+	// Remaining range in kilometers using all energy sources available in the vehicle.
+	// Unit: 'km'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainRange *SignalFloat `json:"powertrainRange,omitempty"`
 	// Amount of charge added to the high voltage battery during the current charging session, expressed in kilowatt-hours.
@@ -340,8 +351,8 @@ type SignalCollection struct {
 	// Unit: 'kWh'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainTractionBatteryGrossCapacity *SignalFloat `json:"powertrainTractionBatteryGrossCapacity,omitempty"`
-	// Remaining range in meters using only battery.
-	// Unit: 'm'
+	// Remaining range in kilometers using only battery.
+	// Unit: 'km'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainTractionBatteryRange *SignalFloat `json:"powertrainTractionBatteryRange,omitempty"`
 	// Physical state of charge of the high voltage battery, relative to net capacity. This is not necessarily the state of charge being displayed to the customer.
@@ -404,6 +415,15 @@ type SignalFloatFilter struct {
 	NotIn []float64            `json:"notIn,omitempty"`
 	In    []float64            `json:"in,omitempty"`
 	Or    []*SignalFloatFilter `json:"or,omitempty"`
+}
+
+type SignalLocationCircleFilter struct {
+	Center *CircleCenter `json:"center"`
+	Radius float64       `json:"radius"`
+}
+
+type SignalLocationFilter struct {
+	InCircle *SignalLocationCircleFilter `json:"inCircle,omitempty"`
 }
 
 type SignalString struct {
@@ -494,6 +514,59 @@ func (e *FloatAggregation) UnmarshalJSON(b []byte) error {
 }
 
 func (e FloatAggregation) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type LocationAggregation string
+
+const (
+	LocationAggregationFirst LocationAggregation = "FIRST"
+)
+
+var AllLocationAggregation = []LocationAggregation{
+	LocationAggregationFirst,
+}
+
+func (e LocationAggregation) IsValid() bool {
+	switch e {
+	case LocationAggregationFirst:
+		return true
+	}
+	return false
+}
+
+func (e LocationAggregation) String() string {
+	return string(e)
+}
+
+func (e *LocationAggregation) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = LocationAggregation(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid LocationAggregation", str)
+	}
+	return nil
+}
+
+func (e LocationAggregation) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *LocationAggregation) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e LocationAggregation) MarshalJSON() ([]byte, error) {
 	var buf bytes.Buffer
 	e.MarshalGQL(&buf)
 	return buf.Bytes(), nil

@@ -84,10 +84,11 @@ func (r *Repository) GetSignal(ctx context.Context, aggArgs *model.AggregatedSig
 		if !lastTS.Equal(signal.Timestamp) {
 			lastTS = signal.Timestamp
 			currAggs = &model.SignalAggregations{
-				Timestamp:     signal.Timestamp,
-				ValueNumbers:  make(map[string]float64),
-				ValueStrings:  make(map[string]string),
-				AppLocNumbers: make(map[model.AppLocKey]float64),
+				Timestamp:      signal.Timestamp,
+				ValueNumbers:   make(map[string]float64),
+				ValueStrings:   make(map[string]string),
+				ValueLocations: make(map[string]model.Location),
+				AppLocNumbers:  make(map[model.AppLocKey]float64),
 			}
 			allAggs = append(allAggs, currAggs)
 		}
@@ -111,6 +112,15 @@ func (r *Repository) GetSignal(ctx context.Context, aggArgs *model.AggregatedSig
 			name := parityToLocationSignalName[aggParity]
 			agg := model.AllFloatAggregation[aggIndex]
 			currAggs.AppLocNumbers[model.AppLocKey{Aggregation: agg, Name: name}] = signal.ValueNumber
+		case ch.LocType:
+			if len(aggArgs.LocationArgs) <= int(signal.SignalIndex) {
+				return nil, fmt.Errorf("only %d location signal requests, but the query returned index %d", len(aggArgs.LocationArgs), signal.SignalIndex)
+			}
+			currAggs.ValueLocations[aggArgs.LocationArgs[signal.SignalIndex].Alias] = model.Location{
+				Latitude:  signal.ValueLocation.Latitude,
+				Longitude: signal.ValueLocation.Longitude,
+				Hdop:      signal.ValueLocation.HDOP,
+			}
 		default:
 			return nil, fmt.Errorf("scanned a row with unrecognized type number %d", signal.SignalType)
 		}
