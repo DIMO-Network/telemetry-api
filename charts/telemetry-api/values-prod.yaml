@@ -2,7 +2,7 @@ replicaCount: 2
 image:
   repository: dimozone/telemetry-api
   pullPolicy: IfNotPresent
-  tag: 0.1.18
+  tag: 0.1.19
 cronJob:
   enabled: false
   schedule: 0 0 * * 0
@@ -48,7 +48,7 @@ resources:
     cpu: 2
     memory: 8Gi
   requests:
-    cpu: .25
+    cpu: 0.25
     memory: 4Gi
 autoscaling:
   enabled: true
