@@ -3,7 +3,6 @@ package ch
 
 import (
 	"context"
-	"crypto/tls"
 	"fmt"
 	"time"
 
@@ -41,9 +40,9 @@ func NewService(settings config.Settings) (*Service, error) {
 			Password: settings.Clickhouse.Password,
 			Database: settings.Clickhouse.Database,
 		},
-		TLS: &tls.Config{
-			RootCAs: settings.Clickhouse.RootCAs,
-		},
+		// TLS: &tls.Config{
+		// 	RootCAs: settings.Clickhouse.RootCAs,
+		// },
 		Settings: map[string]any{
 			// ClickHouse will interrupt a query if the projected execution time exceeds the specified max_execution_time.
 			// The estimated execution time is calculated after `timeout_before_checking_execution_speed`
@@ -116,7 +115,7 @@ func (m *AliasHandleMapper) Alias(handle string) string {
 // The signals are sorted by timestamp in ascending order.
 // The timestamp on each signal is for the start of the interval.
 func (s *Service) GetAggregatedSignals(ctx context.Context, aggArgs *model.AggregatedSignalArgs) ([]*AggSignal, error) {
-	if len(aggArgs.FloatArgs) == 0 && len(aggArgs.StringArgs) == 0 && len(aggArgs.ApproxLocArgs) == 0 {
+	if len(aggArgs.FloatArgs) == 0 && len(aggArgs.StringArgs) == 0 && len(aggArgs.ApproxLocArgs) == 0 && len(aggArgs.LocationArgs) == 0 {
 		return []*AggSignal{}, nil
 	}
 
@@ -183,6 +182,8 @@ type AggSignal struct {
 	// ValueNumber is the value for this row if it is of float or
 	// approximate location type.
 	ValueString string
+	// ValueLocation is the value for this row if it is of location type.
+	ValueLocation vss.Location
 }
 
 func (s *Service) getAggSignals(ctx context.Context, stmt string, args []any) ([]*AggSignal, error) {
@@ -190,10 +191,16 @@ func (s *Service) getAggSignals(ctx context.Context, stmt string, args []any) ([
 	if err != nil {
 		return nil, fmt.Errorf("failed querying clickhouse: %w", err)
 	}
+
+	rows, err = s.conn.Query(ctx, stmt, args...)
+	if err != nil {
+		return nil, fmt.Errorf("failed querying clickhouse: %w", err)
+	}
+
 	signals := []*AggSignal{}
 	for rows.Next() {
 		var signal AggSignal
-		err := rows.Scan(&signal.SignalType, &signal.SignalIndex, &signal.Timestamp, &signal.ValueNumber, &signal.ValueString)
+		err := rows.Scan(&signal.SignalType, &signal.SignalIndex, &signal.Timestamp, &signal.ValueNumber, &signal.ValueString, &signal.ValueLocation)
 		if err != nil {
 			_ = rows.Close()
 			return nil, fmt.Errorf("failed scanning clickhouse row: %w", err)

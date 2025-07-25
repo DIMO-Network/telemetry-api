@@ -1,0 +1,32 @@
+extend type SignalAggregations {
+  currentLocation(
+    agg: LocationAggregation!,
+    filter: SignalLocationFilter
+  ): Location @requiresAllOfPrivileges(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocation", forceResolver: true) @isSignal @hasAggregation
+}
+
+type Location {
+  latitude: Float!
+  longitude: Float!
+  hdop: Float!
+}
+
+# It's tempting to do all of the float aggregations here, but anything
+# involving ordering seems tough.
+enum LocationAggregation {
+  FIRST
+}
+
+input SignalLocationFilter {
+  inCircle: SignalLocationCircleFilter
+}
+
+input SignalLocationCircleFilter {
+  center: CircleCenter!
+  radius: Float!
+}
+
+input CircleCenter {
+  latitude: Float!
+  longitude: Float!
+}

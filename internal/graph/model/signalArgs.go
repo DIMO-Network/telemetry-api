@@ -43,6 +43,8 @@ type AggregatedSignalArgs struct {
 	FloatArgs []FloatSignalArgs
 	// StringArgs represents arguments for each string signal.
 	StringArgs []StringSignalArgs
+	// LocationArgs represents arguments for each location signal.
+	LocationArgs []LocationSignalArgs
 	// ApproxLocArgs
 	ApproxLocArgs map[FloatAggregation]struct{}
 }
@@ -69,4 +71,17 @@ type StringSignalArgs struct {
 	// Alias is the GraphQL field alias. If the client doesn't specify
 	// an alias then this will be the same as Name.
 	Alias string
+}
+
+// LocationSignalArgs is the arguments for querying location signals.
+type LocationSignalArgs struct {
+	// Name is the signal name.
+	Name string
+	// Agg is the aggregation type.
+	Agg LocationAggregation
+	// Alias is the GraphQL field alias. If the client doesn't specify
+	// an alias then this will be the same as Name.
+	Alias string
+	// Filter is an optional set of geographic filters.
+	Filter *SignalLocationFilter
 }
