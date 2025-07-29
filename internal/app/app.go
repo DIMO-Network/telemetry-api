@@ -19,6 +19,7 @@ import (
 	"github.com/DIMO-Network/telemetry-api/internal/dtcmiddleware"
 	"github.com/DIMO-Network/telemetry-api/internal/graph"
 	"github.com/DIMO-Network/telemetry-api/internal/limits"
+	"github.com/DIMO-Network/telemetry-api/internal/queryRecorder"
 	"github.com/DIMO-Network/telemetry-api/internal/repositories"
 	"github.com/DIMO-Network/telemetry-api/internal/repositories/attestation"
 	"github.com/DIMO-Network/telemetry-api/internal/repositories/vc"
@@ -31,8 +32,9 @@ import (
 
 // App is the main application for the telemetry API.
 type App struct {
-	Handler http.Handler
-	cleanup func()
+	Handler       http.Handler
+	QueryRecorder *queryRecorder.QueryRecorder
+	cleanup       func()
 }
 
 // AppName is the name of the application.
@@ -63,6 +65,9 @@ func New(settings config.Settings) (*App, error) {
 		return nil, fmt.Errorf("failed to create credit tracker client: %w", err)
 	}
 
+	// Create query recorder
+	queryRec := queryRecorder.New()
+
 	resolver := &graph.Resolver{
 		BaseRepo:        baseRepo,
 		IdentityService: idService,
@@ -80,6 +85,9 @@ func New(settings config.Settings) (*App, error) {
 
 	server := newServer(graph.NewExecutableSchema(cfg))
 	server.Use(dtcmiddleware.NewDCT(ctClient))
+
+	// Add query recording middleware
+	server.Use(queryRecorder.QueryRecordingExtension{Recorder: queryRec})
 
 	authMiddleware, err := auth.NewJWTMiddleware(settings.TokenExchangeIssuer, settings.TokenExchangeJWTKeySetURL)
 	if err != nil {
@@ -104,7 +112,8 @@ func New(settings config.Settings) (*App, error) {
 	)
 
 	return &App{
-		Handler: serverHandler,
+		Handler:       serverHandler,
+		QueryRecorder: queryRec,
 		cleanup: func() {
 			// TODO add cleanup logic for closing connections
 		},
