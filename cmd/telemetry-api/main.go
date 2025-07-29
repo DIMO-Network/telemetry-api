@@ -61,7 +61,7 @@ func main() {
 	monSrv := monserver.NewMonitoringServer(&logger, cfg.EnablePprof)
 
 	// Create custom monitoring mux to add query recorder endpoint
-	monSrv.Handle("/queries", application.QueryRecorder.Handler()) // Add query recorder endpoint
+	monSrv.Handle("GET /queries", application.QueryRecorder.Handler()) // Add query recorder endpoint
 
 	runner.RunHandler(runnerCtx, runnerGroup, monSrv, ":"+strconv.Itoa(cfg.MonPort))
 
