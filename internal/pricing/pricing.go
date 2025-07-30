@@ -268,7 +268,7 @@ func (c *CostCalculator) calculateEventsCost(field *ast.Field, variables map[str
 	breakdown := &CostBreakdown{
 		Name:          field.Alias,
 		Cost:          totalCost,
-		Description:   fmt.Sprintf("Events query cost: %d × %d = %d", baseCost, timeRangeCost, totalCost),
+		Description:   fmt.Sprintf("Events query cost: %d × %d = %d", baseCost, timeRangeCost.Cost, totalCost),
 		SubBreakdowns: subBreakdowns,
 	}
 
