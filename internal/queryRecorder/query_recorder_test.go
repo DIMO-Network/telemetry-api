@@ -29,8 +29,9 @@ func TestNew(t *testing.T) {
 func TestAddNewQuery(t *testing.T) {
 	qr := New()
 	query := "query { user { id name } }"
+	devID := "test-dev-1"
 
-	qr.Add(query)
+	qr.Add(query, devID)
 
 	// Wait for goroutine to complete
 	time.Sleep(10 * time.Millisecond)
@@ -49,15 +50,20 @@ func TestAddNewQuery(t *testing.T) {
 	if info.Count != 1 {
 		t.Fatalf("expected count 1, got %d", info.Count)
 	}
+	if _, devExists := info.Devs[devID]; !devExists {
+		t.Fatalf("expected devID %s in devs map", devID)
+	}
 }
 
 func TestAddExistingQuery(t *testing.T) {
 	qr := New()
 	query := "query { user { id } }"
+	devID1 := "test-dev-1"
+	devID2 := "test-dev-2"
 
-	// Add query twice
-	qr.Add(query)
-	qr.Add(query)
+	// Add query twice with different dev IDs
+	qr.Add(query, devID1)
+	qr.Add(query, devID2)
 
 	// Wait for goroutines to complete
 	time.Sleep(20 * time.Millisecond)
@@ -73,6 +79,12 @@ func TestAddExistingQuery(t *testing.T) {
 	if info.Count != 2 {
 		t.Fatalf("expected count 2, got %d", info.Count)
 	}
+	if _, dev1Exists := info.Devs[devID1]; !dev1Exists {
+		t.Fatalf("expected devID1 %s in devs map", devID1)
+	}
+	if _, dev2Exists := info.Devs[devID2]; !dev2Exists {
+		t.Fatalf("expected devID2 %s in devs map", devID2)
+	}
 }
 
 func TestCleanupWithHeap(t *testing.T) {
@@ -81,7 +93,8 @@ func TestCleanupWithHeap(t *testing.T) {
 	// Add more queries than the limit
 	for i := 0; i < MaxQueries+10; i++ {
 		query := fmt.Sprintf("query { user%d { id } }", i)
-		qr.Add(query)
+		devID := fmt.Sprintf("dev-%d", i)
+		qr.Add(query, devID)
 	}
 
 	// Wait for goroutines to complete
@@ -103,10 +116,10 @@ func TestHeapMaintainsOrder(t *testing.T) {
 	}
 
 	// Add queries
-	qr.Add(queries[0]) // count = 1
-	qr.Add(queries[1]) // count = 1
-	qr.Add(queries[1]) // count = 2
-	qr.Add(queries[2]) // count = 1
+	qr.Add(queries[0], "dev1") // count = 1
+	qr.Add(queries[1], "dev2") // count = 1
+	qr.Add(queries[1], "dev3") // count = 2
+	qr.Add(queries[2], "dev4") // count = 1
 
 	// Wait for goroutines to complete
 	time.Sleep(50 * time.Millisecond)
@@ -139,8 +152,9 @@ func TestGetQueries(t *testing.T) {
 		"query { user3 { id } }",
 	}
 
-	for _, query := range queries {
-		qr.Add(query)
+	for i, query := range queries {
+		devID := fmt.Sprintf("dev-%d", i)
+		qr.Add(query, devID)
 	}
 
 	// Wait for goroutines to complete
@@ -169,7 +183,8 @@ func TestHandler(t *testing.T) {
 
 	// Add a query
 	query := "query { user { id } }"
-	qr.Add(query)
+	devID := "test-dev"
+	qr.Add(query, devID)
 
 	// Wait for goroutine to complete
 	time.Sleep(10 * time.Millisecond)
@@ -243,7 +258,8 @@ func TestConcurrentAccess(t *testing.T) {
 		go func(id int) {
 			defer wg.Done()
 			query := fmt.Sprintf("query { user%d { id } }", id)
-			qr.Add(query)
+			devID := fmt.Sprintf("dev-%d", id)
+			qr.Add(query, devID)
 		}(i)
 	}
 
@@ -268,7 +284,8 @@ func TestHeapIndexTracking(t *testing.T) {
 
 	// Add a query
 	query := "query { user { id } }"
-	qr.Add(query)
+	devID := "test-dev"
+	qr.Add(query, devID)
 
 	// Wait for goroutine to complete
 	time.Sleep(10 * time.Millisecond)
@@ -284,7 +301,7 @@ func TestHeapIndexTracking(t *testing.T) {
 	}
 
 	// Update the query count
-	qr.Add(query)
+	qr.Add(query, "another-dev")
 
 	// Wait for goroutine to complete
 	time.Sleep(10 * time.Millisecond)

@@ -64,7 +64,7 @@ func (d DCT) InterceptResponse(
 	}
 
 	// Determine who to charge
-	developerID, tokenID, gqlError := d.getSubjectAndTokenID(ctx)
+	developerID, tokenID, gqlError := GetSubjectAndTokenID(ctx)
 	if gqlError != nil {
 		zerolog.Ctx(ctx).Warn().Err(gqlError).Msg("Failed to get subject and token ID")
 		// return &graphql.Response{
@@ -165,7 +165,8 @@ func handleErrorDetails(ctx context.Context, errorInfo *errdetails.ErrorInfo, or
 	}
 }
 
-func (d DCT) getSubjectAndTokenID(ctx context.Context) (string, *big.Int, *gqlerror.Error) {
+// GetSubjectAndTokenID gets the subject and token ID from the context.
+func GetSubjectAndTokenID(ctx context.Context) (string, *big.Int, *gqlerror.Error) {
 	validateClaims, ok := auth.GetValidatedClaims(ctx)
 	if !ok || validateClaims.CustomClaims == nil {
 		return "", nil, errorhandler.NewUnauthorizedErrorWithMsg(ctx, fmt.Errorf("failed to get validated claims"), "Unauthorized")
