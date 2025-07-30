@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/99designs/gqlgen/graphql"
+	"github.com/DIMO-Network/telemetry-api/internal/dtcmiddleware"
 )
 
 const (
@@ -25,9 +26,11 @@ type QueryRecorder struct {
 
 // QueryInfo contains information about a recorded query
 type QueryInfo struct {
-	Query string `json:"query"`
-	Count int    `json:"count"`
-	index int    // heap index for efficient updates
+	Query string              `json:"query"`
+	Count int                 `json:"count"`
+	Devs  map[string]struct{} `json:"devs"`
+
+	index int // heap index for efficient updates
 }
 
 // queryHeap implements heap.Interface for maintaining least frequent queries
@@ -82,7 +85,7 @@ func (qr *QueryRecorder) cleanup() {
 }
 
 // Add records a new query or updates an existing one
-func (qr *QueryRecorder) Add(query string) {
+func (qr *QueryRecorder) Add(query string, devID string) {
 	go func() {
 		qr.mu.Lock()
 		defer qr.mu.Unlock()
@@ -90,6 +93,7 @@ func (qr *QueryRecorder) Add(query string) {
 		if info, exists := qr.queries[query]; exists {
 			// Update existing query count
 			info.Count++
+			info.Devs[devID] = struct{}{}
 			// Fix heap after count change
 			heap.Fix(qr.heap, info.index)
 		} else {
@@ -97,6 +101,7 @@ func (qr *QueryRecorder) Add(query string) {
 			info := &QueryInfo{
 				Query: query,
 				Count: 1,
+				Devs:  map[string]struct{}{devID: {}},
 			}
 			qr.queries[query] = info
 			heap.Push(qr.heap, info)
@@ -165,7 +170,8 @@ func (QueryRecordingExtension) Validate(schema graphql.ExecutableSchema) error {
 func (q QueryRecordingExtension) InterceptResponse(ctx context.Context, next graphql.ResponseHandler) *graphql.Response {
 	op := graphql.GetOperationContext(ctx)
 	if op != nil && op.RawQuery != "" {
-		q.Recorder.Add(op.RawQuery)
+		developerID, _, _ := dtcmiddleware.GetSubjectAndTokenID(ctx)
+		q.Recorder.Add(op.RawQuery, developerID)
 	}
 	return next(ctx)
 }
