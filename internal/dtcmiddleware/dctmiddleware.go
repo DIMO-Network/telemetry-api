@@ -3,6 +3,7 @@ package dtcmiddleware
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"math/big"
 	"net/http"
@@ -11,6 +12,7 @@ import (
 	"github.com/DIMO-Network/credit-tracker/pkg/grpc"
 	"github.com/DIMO-Network/server-garage/pkg/gql/errorhandler"
 	"github.com/DIMO-Network/telemetry-api/internal/auth"
+	"github.com/DIMO-Network/telemetry-api/internal/pricing"
 	"github.com/DIMO-Network/telemetry-api/internal/service/credittracker"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/rs/zerolog"
@@ -20,11 +22,10 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-var defaultCreditAmount = uint64(1)
-
 // DCT provides a GraphQL middleware for the Developer Credit Tracker.
 type DCT struct {
-	Tracker *credittracker.Client
+	Tracker        *credittracker.Client
+	CostCalculator *pricing.CostCalculator
 }
 
 var _ interface {
@@ -43,9 +44,10 @@ func (DCT) Validate(schema graphql.ExecutableSchema) error {
 }
 
 // NewDCT creates a new DCT middleware with default values.
-func NewDCT(tracker *credittracker.Client) *DCT {
+func NewDCT(tracker *credittracker.Client, costCalculator *pricing.CostCalculator) *DCT {
 	return &DCT{
-		Tracker: tracker,
+		Tracker:        tracker,
+		CostCalculator: costCalculator,
 	}
 }
 
@@ -54,9 +56,13 @@ func (d DCT) InterceptResponse(
 	ctx context.Context,
 	next graphql.ResponseHandler,
 ) *graphql.Response {
-	// Start timing the entire middleware operation
-	middlewareTimer := prometheus.NewTimer(MiddlewareLatency)
-	defer middlewareTimer.ObserveDuration()
+	if d.isEstimationRequest(ctx) {
+		resp := d.handleCostEstimation(ctx)
+		if errors.Is(resp.Errors, ErrOperationNotSet) {
+			return next(ctx)
+		}
+		return resp
+	}
 
 	if d.Tracker == nil {
 		zerolog.Ctx(ctx).Error().Msg("DCT is not enabled")
@@ -76,10 +82,13 @@ func (d DCT) InterceptResponse(
 	// Determine how many credits to charge
 	credits, gqlError := d.calculateCredits(ctx)
 	if gqlError != nil {
-		zerolog.Ctx(ctx).Warn().Err(gqlError).Msg("Failed to calculate credits")
+		// if errors.Is(gqlError.Err, OperationNotSetError) {
+		// 	return next(ctx)
+		// }
 		// return &graphql.Response{
 		// 	Errors: gqlerror.List{gqlError},
 		// }
+		zerolog.Ctx(ctx).Warn().Err(gqlError).Msg("Failed to calculate credits")
 		return next(ctx)
 	}
 
@@ -184,7 +193,23 @@ func GetSubjectAndTokenID(ctx context.Context) (string, *big.Int, *gqlerror.Erro
 }
 
 func (d DCT) calculateCredits(ctx context.Context) (uint64, *gqlerror.Error) {
-	// TODO: We can add logic here to determine what the base cost for a given operations should be
-	return defaultCreditAmount, nil
+	// If cost calculator is not available, fall back to default
+	if d.CostCalculator == nil {
+		return 0, errorhandler.NewInternalErrorWithMsg(ctx, fmt.Errorf("cost calculator not available"), "Cost calculator not available")
+	}
 
+	// Get the GraphQL operation context
+	opCtx := graphql.GetOperationContext(ctx)
+	if opCtx == nil || opCtx.Operation == nil {
+		return 0, errorhandler.NewInternalErrorWithMsg(ctx, ErrOperationNotSet, "No GraphQL operation context found")
+	}
+
+	// Calculate the cost based on the query
+	credits, err := d.CostCalculator.CalculateQueryCost(ctx, opCtx.Operation, opCtx.Variables)
+	if err != nil {
+		// Fallback to default cost on error
+		return 0, errorhandler.NewInternalErrorWithMsg(ctx, err, "Failed to calculate query cost")
+	}
+
+	return credits, nil
 }
