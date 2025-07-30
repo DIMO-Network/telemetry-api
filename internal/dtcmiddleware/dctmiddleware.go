@@ -22,8 +22,6 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-var defaultCreditAmount = uint64(1)
-
 // DCT provides a GraphQL middleware for the Developer Credit Tracker.
 type DCT struct {
 	Tracker        *credittracker.Client
@@ -60,7 +58,7 @@ func (d DCT) InterceptResponse(
 ) *graphql.Response {
 	if d.isEstimationRequest(ctx) {
 		resp := d.handleCostEstimation(ctx)
-		if errors.Is(resp.Errors, OperationNotSetError) {
+		if errors.Is(resp.Errors, ErrOperationNotSet) {
 			return next(ctx)
 		}
 		return resp
@@ -203,7 +201,7 @@ func (d DCT) calculateCredits(ctx context.Context) (uint64, *gqlerror.Error) {
 	// Get the GraphQL operation context
 	opCtx := graphql.GetOperationContext(ctx)
 	if opCtx == nil || opCtx.Operation == nil {
-		return 0, errorhandler.NewInternalErrorWithMsg(ctx, OperationNotSetError, "No GraphQL operation context found")
+		return 0, errorhandler.NewInternalErrorWithMsg(ctx, ErrOperationNotSet, "No GraphQL operation context found")
 	}
 
 	// Calculate the cost based on the query

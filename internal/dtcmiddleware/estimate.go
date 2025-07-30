@@ -20,7 +20,7 @@ const (
 	EstimateCostKey contextKey = "estimateCost"
 )
 
-var OperationNotSetError = errors.New("operation not set")
+var ErrOperationNotSet = errors.New("operation not set")
 
 type EstimateCostResponse struct {
 	EstimatedCredits uint64 `json:"estimatedCredits"`

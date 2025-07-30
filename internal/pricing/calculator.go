@@ -5,7 +5,6 @@ package pricing
 import (
 	"context"
 	"fmt"
-	"strconv"
 	"time"
 
 	"github.com/rs/zerolog"
@@ -349,29 +348,4 @@ func (c *CostCalculator) extractStringArg(field *ast.Field, argName string, vari
 		}
 	}
 	return "", fmt.Errorf("argument '%s' not found", argName)
-}
-
-// extractIntArg extracts an integer argument from GraphQL field arguments
-func (c *CostCalculator) extractIntArg(field *ast.Field, argName string, variables map[string]interface{}) (int, error) {
-	for _, arg := range field.Arguments {
-		if arg.Name == argName {
-			switch arg.Value.Kind {
-			case ast.Variable:
-				if varValue, exists := variables[arg.Value.Raw]; exists {
-					if intValue, ok := varValue.(int); ok {
-						return intValue, nil
-					}
-					if floatValue, ok := varValue.(float64); ok {
-						return int(floatValue), nil
-					}
-					if strValue, ok := varValue.(string); ok {
-						return strconv.Atoi(strValue)
-					}
-				}
-			case ast.IntValue:
-				return strconv.Atoi(arg.Value.Raw)
-			}
-		}
-	}
-	return 0, fmt.Errorf("argument '%s' not found", argName)
 }
