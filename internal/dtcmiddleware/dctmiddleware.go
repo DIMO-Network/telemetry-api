@@ -192,24 +192,32 @@ func GetSubjectAndTokenID(ctx context.Context) (string, *big.Int, *gqlerror.Erro
 	return validateClaims.RegisteredClaims.Subject, tokenIDBig, nil
 }
 
-func (d DCT) calculateCredits(ctx context.Context) (uint64, *gqlerror.Error) {
+func (d DCT) calculateCreditsBreakdown(ctx context.Context) (*pricing.CostBreakdown, *gqlerror.Error) {
 	// If cost calculator is not available, fall back to default
 	if d.CostCalculator == nil {
-		return 0, errorhandler.NewInternalErrorWithMsg(ctx, fmt.Errorf("cost calculator not available"), "Cost calculator not available")
+		return nil, errorhandler.NewInternalErrorWithMsg(ctx, fmt.Errorf("cost calculator not available"), "Cost calculator not available")
 	}
 
 	// Get the GraphQL operation context
 	opCtx := graphql.GetOperationContext(ctx)
 	if opCtx == nil || opCtx.Operation == nil {
-		return 0, errorhandler.NewInternalErrorWithMsg(ctx, ErrOperationNotSet, "No GraphQL operation context found")
+		return nil, errorhandler.NewInternalErrorWithMsg(ctx, ErrOperationNotSet, "No GraphQL operation context found")
 	}
 
-	// Calculate the cost based on the query
-	credits, err := d.CostCalculator.CalculateQueryCost(ctx, opCtx.Operation, opCtx.Variables)
+	// Calculate the cost with breakdown based on the query
+	breakdown, err := d.CostCalculator.CalculateQueryCost(ctx, opCtx.Operation, opCtx.Variables)
 	if err != nil {
 		// Fallback to default cost on error
-		return 0, errorhandler.NewInternalErrorWithMsg(ctx, err, "Failed to calculate query cost")
+		return nil, errorhandler.NewInternalErrorWithMsg(ctx, err, "Failed to calculate query cost")
 	}
 
-	return credits, nil
+	return breakdown, nil
+}
+
+func (d DCT) calculateCredits(ctx context.Context) (uint64, *gqlerror.Error) {
+	breakdown, gqlErr := d.calculateCreditsBreakdown(ctx)
+	if gqlErr != nil {
+		return 0, gqlErr
+	}
+	return breakdown.Cost, nil
 }

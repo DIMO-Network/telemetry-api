@@ -9,7 +9,7 @@ import (
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/DIMO-Network/server-garage/pkg/gql/errorhandler"
-	"github.com/rs/zerolog"
+	"github.com/DIMO-Network/telemetry-api/internal/pricing"
 	"github.com/vektah/gqlparser/v2/gqlerror"
 )
 
@@ -23,8 +23,9 @@ const (
 var ErrOperationNotSet = errors.New("operation not set")
 
 type EstimateCostResponse struct {
-	EstimatedCredits uint64 `json:"estimatedCredits"`
-	Message          string `json:"message"`
+	EstimatedCredits uint64                 `json:"estimatedCredits"`
+	Message          string                 `json:"message"`
+	QueryBreakdown   *pricing.CostBreakdown `json:"queryBreakdown"`
 }
 
 // EstimateCostHeaderMiddleware injects estimate cost header into the context
@@ -49,16 +50,18 @@ func (d DCT) isEstimationRequest(ctx context.Context) bool {
 
 // handleCostEstimation calculates and returns cost without executing the query
 func (d DCT) handleCostEstimation(ctx context.Context) *graphql.Response {
-	// Calculate the cost
-	credits, gqlErr := d.calculateCredits(ctx)
+	// Calculate the cost with breakdown
+	breakdown, gqlErr := d.calculateCreditsBreakdown(ctx)
 	if gqlErr != nil {
 		return &graphql.Response{
 			Errors: gqlerror.List{gqlErr},
 		}
 	}
+
 	estimate := EstimateCostResponse{
-		EstimatedCredits: credits,
-		Message:          fmt.Sprintf("This query would cost %d credits", credits),
+		EstimatedCredits: breakdown.Cost,
+		Message:          fmt.Sprintf("This query would cost %d credits", breakdown.Cost),
+		QueryBreakdown:   breakdown,
 	}
 
 	// Marshal to JSON
@@ -70,10 +73,6 @@ func (d DCT) handleCostEstimation(ctx context.Context) *graphql.Response {
 			},
 		}
 	}
-
-	zerolog.Ctx(ctx).Info().
-		Uint64("estimatedCredits", credits).
-		Msg("Cost estimation requested")
 
 	return &graphql.Response{
 		Data: data,

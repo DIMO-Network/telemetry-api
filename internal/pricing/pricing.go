@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/rs/zerolog"
 	"github.com/vektah/gqlparser/v2/ast"
 )
 
@@ -61,8 +60,16 @@ func DefaultPricingConfig() *PricingConfig {
 			"1-24h":      2,  // 1-24 hours
 			"24h+":       1,  // 24+ hours
 		},
-		SignalCountCostDivisor: 5, // every 5 signals costs 1 credit
+		SignalCountCostDivisor: 1,
 	}
+}
+
+// CostBreakdown provides detailed information about how cost was calculated
+type CostBreakdown struct {
+	Name          string          `json:"name"`
+	Cost          uint64          `json:"cost"`
+	Description   string          `json:"description,omitempty"`
+	SubBreakdowns []CostBreakdown `json:"subBreakdowns,omitempty"`
 }
 
 // CostCalculator analyzes GraphQL queries and calculates credit costs
@@ -77,26 +84,26 @@ func NewCostCalculator(config PricingConfig) *CostCalculator {
 	}
 }
 
-// CalculateQueryCost analyzes a GraphQL operation and calculates the total cost
-func (c *CostCalculator) CalculateQueryCost(ctx context.Context, operation *ast.OperationDefinition, variables map[string]interface{}) (uint64, error) {
+// CalculateQueryCost analyzes a GraphQL operation and returns cost with detailed breakdown
+func (c *CostCalculator) CalculateQueryCost(ctx context.Context, operation *ast.OperationDefinition, variables map[string]interface{}) (*CostBreakdown, error) {
 	if c.config == nil {
 		c.config = DefaultPricingConfig()
 	}
 	if operation == nil || operation.Operation != ast.Query {
-		return 0, fmt.Errorf("cost calculator only supports query operations")
+		return nil, fmt.Errorf("cost calculator only supports query operations")
 	}
-	logger := zerolog.Ctx(ctx)
 
+	var fieldBreakdowns []CostBreakdown
 	var totalCost uint64 = 0
 
 	for _, selection := range operation.SelectionSet {
 		if field, ok := selection.(*ast.Field); ok {
-			cost, err := c.calculateFieldCost(ctx, field, variables)
+			fieldBreakdown, err := c.calculateFieldCostBreakdown(ctx, field, variables)
 			if err != nil {
-				return 0, fmt.Errorf("failed to calculate field cost: %w", err)
+				return nil, fmt.Errorf("failed to calculate field cost: %w", err)
 			}
-			totalCost += cost
-			logger.Debug().Str("field", field.Name).Uint64("cost", cost).Msg("Field cost calculated")
+			fieldBreakdowns = append(fieldBreakdowns, *fieldBreakdown)
+			totalCost += fieldBreakdown.Cost
 		}
 	}
 
@@ -105,12 +112,18 @@ func (c *CostCalculator) CalculateQueryCost(ctx context.Context, operation *ast.
 		totalCost = 1
 	}
 
-	logger.Debug().Uint64("totalCost", totalCost).Msg("Total query cost calculated")
-	return totalCost, nil
+	breakdown := &CostBreakdown{
+		Name:          operation.Name,
+		Cost:          totalCost,
+		Description:   fmt.Sprintf("Total query cost: %d credits", totalCost),
+		SubBreakdowns: fieldBreakdowns,
+	}
+
+	return breakdown, nil
 }
 
-// calculateFieldCost calculates the cost for a specific GraphQL field
-func (c *CostCalculator) calculateFieldCost(ctx context.Context, field *ast.Field, variables map[string]interface{}) (uint64, error) {
+// calculateFieldCostBreakdown calculates the cost for a specific GraphQL field with detailed breakdown
+func (c *CostCalculator) calculateFieldCostBreakdown(ctx context.Context, field *ast.Field, variables map[string]interface{}) (*CostBreakdown, error) {
 	fieldName := field.Name
 
 	switch fieldName {
@@ -121,142 +134,213 @@ func (c *CostCalculator) calculateFieldCost(ctx context.Context, field *ast.Fiel
 	case "events":
 		return c.calculateEventsCost(field, variables)
 	default:
-		return c.getBaseCost(fieldName)
+		baseCost, err := c.getBaseCost(fieldName)
+		if err != nil {
+			return nil, err
+		}
+		return &CostBreakdown{
+			Name:        field.Alias,
+			Cost:        baseCost,
+			Description: fmt.Sprintf("Base cost for %s field", fieldName),
+		}, nil
 	}
 }
 
-// calculateSignalsCost calculates cost for aggregated signals query
-func (c *CostCalculator) calculateSignalsCost(ctx context.Context, field *ast.Field, variables map[string]interface{}) (uint64, error) {
+// calculateSignalsCost calculates cost for aggregated signals query with detailed breakdown
+func (c *CostCalculator) calculateSignalsCost(ctx context.Context, field *ast.Field, variables map[string]interface{}) (*CostBreakdown, error) {
 	baseCost, err := c.getBaseCost("signals")
 	if err != nil {
-		return 0, fmt.Errorf("failed to get base cost: %w", err)
+		return nil, fmt.Errorf("failed to get base cost: %w", err)
 	}
+
 	// Extract time range
 	from, err := c.extractTimeArg(field, "from", variables)
 	if err != nil {
-		return 0, fmt.Errorf("failed to extract 'from' time: %w", err)
+		return nil, fmt.Errorf("failed to extract 'from' time: %w", err)
 	}
 
 	to, err := c.extractTimeArg(field, "to", variables)
 	if err != nil {
-		return 0, fmt.Errorf("failed to extract 'to' time: %w", err)
+		return nil, fmt.Errorf("failed to extract 'to' time: %w", err)
 	}
 
 	// Extract interval
 	interval, err := c.extractStringArg(field, "interval", variables)
 	if err != nil {
-		return 0, fmt.Errorf("failed to extract 'interval': %w", err)
+		return nil, fmt.Errorf("failed to extract 'interval': %w", err)
 	}
 
 	// Calculate component costs
 	timeRangeCost := c.calculateTimeRangeCost(from, to)
 	intervalCost, err := c.calculateIntervalCost(interval)
 	if err != nil {
-		return 0, fmt.Errorf("failed to calculate interval cost: %w", err)
+		return nil, fmt.Errorf("failed to calculate interval cost: %w", err)
 	}
-	signalCount := countRequestedSignals(field)
-	signalCountCost := c.calculateSignalCountCost(signalCount)
-	aggregationCost := c.calculateAggregationCost(field)
+	aggregationCosts := c.calculateAggregationCost(field)
 
 	// Total cost is base cost multiplied by all factors
-	totalCost := baseCost * timeRangeCost * intervalCost * signalCountCost * aggregationCost
+	totalCost := baseCost * timeRangeCost.Cost * intervalCost.Cost * aggregationCosts.Cost
 
-	zerolog.Ctx(ctx).Debug().
-		Uint64("baseCost", baseCost).
-		Uint64("timeRangeCost", timeRangeCost).
-		Uint64("intervalCost", intervalCost).
-		Int("signalCount", signalCount).
-		Uint64("signalCountCost", signalCountCost).
-		Uint64("aggregationCost", aggregationCost).
-		Uint64("totalCost", totalCost).
-		Msg("Signals cost breakdown")
+	// Create sub-breakdowns
+	subBreakdowns := []CostBreakdown{
+		{
+			Name:        "base",
+			Cost:        baseCost,
+			Description: "Base cost for signals field",
+		},
+		timeRangeCost,
+		intervalCost,
+		aggregationCosts,
+	}
 
-	return totalCost, nil
+	breakdown := &CostBreakdown{
+		Name:          field.Alias,
+		Cost:          totalCost,
+		Description:   fmt.Sprintf("Signals query cost: %d × %d × %d × %d = %d", baseCost, timeRangeCost.Cost, intervalCost.Cost, aggregationCosts.Cost, totalCost),
+		SubBreakdowns: subBreakdowns,
+	}
+
+	return breakdown, nil
 }
 
-// calculateSignalsLatestCost calculates cost for latest signals query
-func (c *CostCalculator) calculateSignalsLatestCost(field *ast.Field, variables map[string]interface{}) (uint64, error) {
+// calculateSignalsLatestCost calculates cost for latest signals query with detailed breakdown
+func (c *CostCalculator) calculateSignalsLatestCost(field *ast.Field, variables map[string]interface{}) (*CostBreakdown, error) {
 	baseCost, err := c.getBaseCost("signalsLatest")
 	if err != nil {
-		return 0, fmt.Errorf("failed to get base cost: %w", err)
+		return nil, fmt.Errorf("failed to get base cost: %w", err)
 	}
 	signalCount := countRequestedSignals(field)
 	signalCountCost := c.calculateSignalCountCost(signalCount)
 
-	totalCost := baseCost * signalCountCost
-	return totalCost, nil
+	totalCost := baseCost * signalCountCost.Cost
+
+	// Create sub-breakdowns
+	subBreakdowns := []CostBreakdown{
+		{
+			Name:        "base",
+			Cost:        baseCost,
+			Description: "Base cost for signalsLatest field",
+		},
+		signalCountCost,
+	}
+
+	breakdown := &CostBreakdown{
+		Name:          field.Alias,
+		Cost:          totalCost,
+		Description:   fmt.Sprintf("SignalsLatest query cost: %d × %d = %d", baseCost, signalCountCost.Cost, totalCost),
+		SubBreakdowns: subBreakdowns,
+	}
+
+	return breakdown, nil
 }
 
-// calculateEventsCost calculates cost for events query
-func (c *CostCalculator) calculateEventsCost(field *ast.Field, variables map[string]interface{}) (uint64, error) {
+// calculateEventsCost calculates cost for events query with detailed breakdown
+func (c *CostCalculator) calculateEventsCost(field *ast.Field, variables map[string]interface{}) (*CostBreakdown, error) {
 	baseCost, err := c.getBaseCost("events")
 	if err != nil {
-		return 0, fmt.Errorf("failed to get base cost: %w", err)
+		return nil, fmt.Errorf("failed to get base cost: %w", err)
 	}
 
 	// Extract time range
 	from, err := c.extractTimeArg(field, "from", variables)
 	if err != nil {
-		return 0, fmt.Errorf("failed to extract 'from' time: %w", err)
+		return nil, fmt.Errorf("failed to extract 'from' time: %w", err)
 	}
 
 	to, err := c.extractTimeArg(field, "to", variables)
 	if err != nil {
-		return 0, fmt.Errorf("failed to extract 'to' time: %w", err)
+		return nil, fmt.Errorf("failed to extract 'to' time: %w", err)
 	}
 
 	timeRangeCost := c.calculateTimeRangeCost(from, to)
-	totalCost := baseCost * timeRangeCost
+	totalCost := baseCost * timeRangeCost.Cost
 
-	return totalCost, nil
+	// Create sub-breakdowns
+	subBreakdowns := []CostBreakdown{
+		{
+			Name:        "base",
+			Cost:        baseCost,
+			Description: "Base cost for events field",
+		},
+		timeRangeCost,
+	}
+
+	breakdown := &CostBreakdown{
+		Name:          field.Alias,
+		Cost:          totalCost,
+		Description:   fmt.Sprintf("Events query cost: %d × %d = %d", baseCost, timeRangeCost.Cost, totalCost),
+		SubBreakdowns: subBreakdowns,
+	}
+
+	return breakdown, nil
 }
 
 // calculateTimeRangeCost calculates cost multiplier based on time range duration
-func (c *CostCalculator) calculateTimeRangeCost(from, to time.Time) uint64 {
+func (c *CostCalculator) calculateTimeRangeCost(from, to time.Time) CostBreakdown {
 	duration := to.Sub(from)
 	hours := duration.Hours()
-
+	cost := uint64(0)
 	switch {
 	case hours <= 1:
-		return c.config.TimeRangeCosts["0-1h"]
+		cost = c.config.TimeRangeCosts["0-1h"]
 	case hours <= 24:
-		return c.config.TimeRangeCosts["1-24h"]
+		cost = c.config.TimeRangeCosts["1-24h"]
 	case hours <= 168:
-		return c.config.TimeRangeCosts["1-7d"]
+		cost = c.config.TimeRangeCosts["1-7d"]
 	case hours <= 720:
-		return c.config.TimeRangeCosts["1-30d"]
+		cost = c.config.TimeRangeCosts["1-30d"]
 	case hours <= 2160:
-		return c.config.TimeRangeCosts["1-90d"]
+		cost = c.config.TimeRangeCosts["1-90d"]
 	default:
-		return c.config.TimeRangeCosts["90d+"]
+		cost = c.config.TimeRangeCosts["90d+"]
+	}
+	return CostBreakdown{
+		Name: "timeRange",
+		Cost: cost,
 	}
 }
 
 // calculateIntervalCost calculates cost multiplier based on aggregation interval granularity
-func (c *CostCalculator) calculateIntervalCost(interval string) (uint64, error) {
+func (c *CostCalculator) calculateIntervalCost(interval string) (CostBreakdown, error) {
 	duration, err := time.ParseDuration(interval)
 	if err != nil {
-		return 0, fmt.Errorf("failed to parse interval: %w", err)
+		return CostBreakdown{}, fmt.Errorf("failed to parse interval: %w", err)
 	}
-
+	cost := uint64(0)
+	var description string
 	switch {
 	case duration < time.Minute:
-		return c.config.IntervalCosts["sub-minute"], nil // Sub-minute (very expensive)
+		description = "Sub-minute"
+		cost = c.config.IntervalCosts["sub-minute"] // Sub-minute (very expensive)
 	case duration < 5*time.Minute:
-		return c.config.IntervalCosts["1-5min"], nil // 1-5 minutes
+		description = "1-5 minutes"
+		cost = c.config.IntervalCosts["1-5min"] // 1-5 minutes
 	case duration < time.Hour:
-		return c.config.IntervalCosts["5-60min"], nil // 5-60 minutes
+		description = "5-60 minutes"
+		cost = c.config.IntervalCosts["5-60min"] // 5-60 minutes
 	case duration < 24*time.Hour:
-		return c.config.IntervalCosts["1-24h"], nil // 1-24 hours
+		description = "1-24 hours"
+		cost = c.config.IntervalCosts["1-24h"] // 1-24 hours
 	default:
-		return c.config.IntervalCosts["24h+"], nil // 24+ hours
+		description = "24+ hours"
+		cost = c.config.IntervalCosts["24h+"] // 24+ hours
 	}
+	return CostBreakdown{
+		Name:        "interval",
+		Cost:        cost,
+		Description: description,
+	}, nil
 }
 
 // calculateSignalCountCost calculates cost multiplier based on number of signals requested
-func (c *CostCalculator) calculateSignalCountCost(signalCount int) uint64 {
+func (c *CostCalculator) calculateSignalCountCost(signalCount int) CostBreakdown {
 	// every N signals costs 1 credit (configurable)
-	return uint64(signalCount/int(c.config.SignalCountCostDivisor)) + 1
+	cost := uint64(signalCount/int(c.config.SignalCountCostDivisor)) + 1
+	return CostBreakdown{
+		Name:        "signalCount",
+		Cost:        cost,
+		Description: fmt.Sprintf("Signal count multiplier for %d signals", signalCount),
+	}
 }
 
 // countRequestedSignals counts how many distinct signals are being requested
@@ -265,11 +349,8 @@ func countRequestedSignals(field *ast.Field) int {
 
 	// Walk through the selection set to count signal fields
 	for _, selection := range field.SelectionSet {
-		if subField, ok := selection.(*ast.Field); ok {
-			// Check if this field represents a signal (has @isSignal directive or matches signal patterns)
-			if isSignalField(subField) {
-				count++
-			}
+		if subField, ok := selection.(*ast.Field); ok && isSignalField(subField) {
+			count++
 		}
 	}
 
@@ -282,26 +363,43 @@ func isSignalField(field *ast.Field) bool {
 }
 
 // calculateAggregationCost calculates cost multiplier based on aggregation complexity
-func (c *CostCalculator) calculateAggregationCost(field *ast.Field) uint64 {
-	maxCost := uint64(1)
+func (c *CostCalculator) calculateAggregationCost(field *ast.Field) CostBreakdown {
+	costs := []CostBreakdown{}
 
 	// Walk through selection set to find aggregation arguments
 	for _, selection := range field.SelectionSet {
-		if subField, ok := selection.(*ast.Field); ok {
+		if subField, ok := selection.(*ast.Field); ok && isSignalField(subField) {
+			fieldCost := uint64(1)
+			var description = fmt.Sprintf("Field cost for field %s", subField.Alias)
 			for _, arg := range subField.Arguments {
 				if arg.Name == "agg" {
 					if arg.Value.Kind == ast.EnumValue {
 						enumValue := arg.Value.Raw
-						if cost, exists := c.config.AggregationCosts[enumValue]; exists && cost > maxCost {
-							maxCost = cost
+						if aggCost, exists := c.config.AggregationCosts[enumValue]; exists {
+							fieldCost *= aggCost
+							description += fmt.Sprintf(" and aggregation %s", enumValue)
 						}
 					}
 				}
 			}
+			costs = append(costs, CostBreakdown{
+				Name:          subField.Alias,
+				Cost:          fieldCost,
+				Description:   description,
+				SubBreakdowns: costs,
+			})
 		}
 	}
-
-	return maxCost
+	fieldCost := uint64(0)
+	for _, cost := range costs {
+		fieldCost += cost.Cost
+	}
+	return CostBreakdown{
+		Name:          field.Alias,
+		Cost:          fieldCost,
+		Description:   "costs for aggregated fields",
+		SubBreakdowns: costs,
+	}
 }
 
 // getBaseCost returns the base cost for a field, defaulting to 1 if not found
