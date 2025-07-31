@@ -58,6 +58,11 @@ type AttestationFilter struct {
 	Limit *int `json:"limit,omitempty"`
 }
 
+type CircleCenter struct {
+	Latitude  float64 `json:"latitude"`
+	Longitude float64 `json:"longitude"`
+}
+
 type DeviceActivity struct {
 	// lastActive indicates the start of a 3 hour block during which the device was last active.
 	LastActive *time.Time `json:"lastActive,omitempty"`
@@ -81,6 +86,12 @@ type EventFilter struct {
 	Name *StringValueFilter `json:"name,omitempty"`
 	// source is the name of the source connection that created the event.
 	Source *StringValueFilter `json:"source,omitempty"`
+}
+
+type Location struct {
+	Latitude  float64 `json:"latitude"`
+	Longitude float64 `json:"longitude"`
+	Hdop      float64 `json:"hdop"`
 }
 
 type Pomvc struct {
@@ -418,14 +429,24 @@ type SignalFloat struct {
 }
 
 type SignalFloatFilter struct {
-	Eq    *float64  `json:"eq,omitempty"`
-	Neq   *float64  `json:"neq,omitempty"`
-	Gt    *float64  `json:"gt,omitempty"`
-	Lt    *float64  `json:"lt,omitempty"`
-	Gte   *float64  `json:"gte,omitempty"`
-	Lte   *float64  `json:"lte,omitempty"`
-	NotIn []float64 `json:"notIn,omitempty"`
-	In    []float64 `json:"in,omitempty"`
+	Eq    *float64             `json:"eq,omitempty"`
+	Neq   *float64             `json:"neq,omitempty"`
+	Gt    *float64             `json:"gt,omitempty"`
+	Lt    *float64             `json:"lt,omitempty"`
+	Gte   *float64             `json:"gte,omitempty"`
+	Lte   *float64             `json:"lte,omitempty"`
+	NotIn []float64            `json:"notIn,omitempty"`
+	In    []float64            `json:"in,omitempty"`
+	Or    []*SignalFloatFilter `json:"or,omitempty"`
+}
+
+type SignalLocationCircleFilter struct {
+	Center *CircleCenter `json:"center"`
+	Radius float64       `json:"radius"`
+}
+
+type SignalLocationFilter struct {
+	InCircle *SignalLocationCircleFilter `json:"inCircle,omitempty"`
 }
 
 type SignalString struct {
@@ -523,6 +544,59 @@ func (e *FloatAggregation) UnmarshalJSON(b []byte) error {
 }
 
 func (e FloatAggregation) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type LocationAggregation string
+
+const (
+	LocationAggregationFirst LocationAggregation = "FIRST"
+)
+
+var AllLocationAggregation = []LocationAggregation{
+	LocationAggregationFirst,
+}
+
+func (e LocationAggregation) IsValid() bool {
+	switch e {
+	case LocationAggregationFirst:
+		return true
+	}
+	return false
+}
+
+func (e LocationAggregation) String() string {
+	return string(e)
+}
+
+func (e *LocationAggregation) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = LocationAggregation(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid LocationAggregation", str)
+	}
+	return nil
+}
+
+func (e LocationAggregation) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *LocationAggregation) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e LocationAggregation) MarshalJSON() ([]byte, error) {
 	var buf bytes.Buffer
 	e.MarshalGQL(&buf)
 	return buf.Bytes(), nil

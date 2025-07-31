@@ -19,6 +19,8 @@ type SignalAggregations struct {
 	ValueNumbers map[string]float64 `json:"-"`
 	// Alias to value
 	ValueStrings map[string]string `json:"-"`
+	// Alias to value
+	ValueLocations map[string]Location `json:"-"`
 
 	// Aggregation cross non-approximate field name to value
 	AppLocNumbers map[AppLocKey]float64 `json:"-"`
