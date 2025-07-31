@@ -96,8 +96,6 @@ func (ts *mockCreditTrackerServer) SetResponse(method string, requestKey string,
 // getRequestKey generates a unique key for a request based on its parameters
 func getRequestKey(req any) string {
 	switch r := req.(type) {
-	case *ctgrpc.GetBalanceRequest:
-		return fmt.Sprintf("%s:%s", r.DeveloperLicense, r.AssetDid)
 	case *ctgrpc.CreditDeductRequest:
 		return fmt.Sprintf("%s:%s", r.GetReferenceId(), r.GetAppName())
 	case *ctgrpc.RefundCreditsRequest:
@@ -105,26 +103,6 @@ func getRequestKey(req any) string {
 	default:
 		return ""
 	}
-}
-
-// CheckCredits implements the gRPC CheckCredits method
-func (s *mockCreditTrackerServer) GetBalance(ctx context.Context, req *ctgrpc.GetBalanceRequest) (*ctgrpc.GetBalanceResponse, error) {
-	s.mutex.Lock()
-	defer s.mutex.Unlock()
-
-	requestKey := getRequestKey(req)
-	if responses, ok := s.responses["CheckCredits"]; ok {
-		if response, ok := responses[requestKey]; ok {
-			if resp, ok := response.(*ctgrpc.GetBalanceResponse); ok {
-				return resp, nil
-			}
-		}
-	}
-
-	// Default response if no custom response is set
-	return &ctgrpc.GetBalanceResponse{
-		RemainingCredits: 100,
-	}, nil
 }
 
 // DeductCredits implements the gRPC DeductCredits method
