@@ -4,21 +4,21 @@ go 1.24.0
 
 require (
 	github.com/99designs/gqlgen v0.17.78
-	github.com/ClickHouse/clickhouse-go/v2 v2.39.0
+	github.com/ClickHouse/clickhouse-go/v2 v2.40.1
 	github.com/DIMO-Network/attestation-api v0.1.2
 	github.com/DIMO-Network/clickhouse-infra v0.0.4
 	github.com/DIMO-Network/cloudevent v0.1.2
 	github.com/DIMO-Network/credit-tracker v0.0.6
 	github.com/DIMO-Network/fetch-api v0.0.12
-	github.com/DIMO-Network/model-garage v0.6.7
-	github.com/DIMO-Network/server-garage v0.0.2
+	github.com/DIMO-Network/model-garage v0.7.0
+	github.com/DIMO-Network/server-garage v0.0.3
 	github.com/DIMO-Network/shared v1.0.7
 	github.com/DIMO-Network/token-exchange-api v0.3.2
 	github.com/Khan/genqlient v0.8.1
 	github.com/auth0/go-jwt-middleware/v2 v2.3.0
-	github.com/ethereum/go-ethereum v1.16.1
-	github.com/go-jose/go-jose/v4 v4.1.1
-	github.com/prometheus/client_golang v1.22.0
+	github.com/ethereum/go-ethereum v1.16.2
+	github.com/go-jose/go-jose/v4 v4.1.2
+	github.com/prometheus/client_golang v1.23.0
 	github.com/rs/zerolog v1.34.0
 	github.com/segmentio/ksuid v1.0.4
 	github.com/stretchr/testify v1.10.0
@@ -99,8 +99,8 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/power-devops/perfstat v0.0.0-20221212215047-62379fc7944b // indirect
 	github.com/pressly/goose/v3 v3.24.3 // indirect
-	github.com/prometheus/client_model v0.6.1 // indirect
-	github.com/prometheus/common v0.62.0 // indirect
+	github.com/prometheus/client_model v0.6.2 // indirect
+	github.com/prometheus/common v0.65.0 // indirect
 	github.com/prometheus/procfs v0.16.1 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/segmentio/asm v1.2.0 // indirect
