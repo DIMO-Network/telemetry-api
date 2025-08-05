@@ -6,15 +6,6 @@ import (
 )
 
 var (
-	// MiddlewareLatency measures the latency of the middleware operations
-	MiddlewareLatency = promauto.NewHistogram(
-		prometheus.HistogramOpts{
-			Name:    "telemetry_credit_tracker_middleware_latency_seconds",
-			Help:    "Latency of Credit Tracker Middleware operations in seconds",
-			Buckets: prometheus.DefBuckets,
-		},
-	)
-
 	// DCTRequestLatency measures the latency of DCT requests
 	DCTRequestLatency = promauto.NewHistogramVec(
 		prometheus.HistogramOpts{

@@ -70,6 +70,14 @@ type ComplexityRoot struct {
 		LastActive func(childComplexity int) int
 	}
 
+	Event struct {
+		DurationNs func(childComplexity int) int
+		Metadata   func(childComplexity int) int
+		Name       func(childComplexity int) int
+		Source     func(childComplexity int) int
+		Timestamp  func(childComplexity int) int
+	}
+
 	POMVC struct {
 		RawVc                  func(childComplexity int) int
 		RecordedBy             func(childComplexity int) int
@@ -82,6 +90,7 @@ type ComplexityRoot struct {
 		Attestations     func(childComplexity int, tokenID int, filter *model.AttestationFilter) int
 		AvailableSignals func(childComplexity int, tokenID int, filter *model.SignalFilter) int
 		DeviceActivity   func(childComplexity int, by model.AftermarketDeviceBy) int
+		Events           func(childComplexity int, tokenID int, from time.Time, to time.Time, filter *model.EventFilter) int
 		PomVCLatest      func(childComplexity int, tokenID int) int
 		Signals          func(childComplexity int, tokenID int, interval string, from time.Time, to time.Time, filter *model.SignalFilter) int
 		SignalsLatest    func(childComplexity int, tokenID int, filter *model.SignalFilter) int
@@ -133,6 +142,7 @@ type ComplexityRoot struct {
 		ObdO2WRSensor2Voltage                                     func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
 		ObdRunTime                                                func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
 		ObdShortTermFuelTrim1                                     func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		ObdStatusDTCCount                                         func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
 		ObdWarmupsSinceDTCClear                                   func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
 		PowertrainCombustionEngineDieselExhaustFluidCapacity      func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
 		PowertrainCombustionEngineDieselExhaustFluidLevel         func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
@@ -216,6 +226,7 @@ type ComplexityRoot struct {
 		OBDO2WRSensor2Voltage                                     func(childComplexity int) int
 		OBDRunTime                                                func(childComplexity int) int
 		OBDShortTermFuelTrim1                                     func(childComplexity int) int
+		OBDStatusDTCCount                                         func(childComplexity int) int
 		OBDWarmupsSinceDTCClear                                   func(childComplexity int) int
 		PowertrainCombustionEngineDieselExhaustFluidCapacity      func(childComplexity int) int
 		PowertrainCombustionEngineDieselExhaustFluidLevel         func(childComplexity int) int
@@ -281,6 +292,7 @@ type QueryResolver interface {
 	AvailableSignals(ctx context.Context, tokenID int, filter *model.SignalFilter) ([]string, error)
 	Attestations(ctx context.Context, tokenID int, filter *model.AttestationFilter) ([]*model.Attestation, error)
 	DeviceActivity(ctx context.Context, by model.AftermarketDeviceBy) (*model.DeviceActivity, error)
+	Events(ctx context.Context, tokenID int, from time.Time, to time.Time, filter *model.EventFilter) ([]*model.Event, error)
 	VinVCLatest(ctx context.Context, tokenID int) (*model.Vinvc, error)
 	PomVCLatest(ctx context.Context, tokenID int) (*model.Pomvc, error)
 }
@@ -329,6 +341,7 @@ type SignalAggregationsResolver interface {
 	ObdO2WRSensor2Voltage(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
 	ObdRunTime(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
 	ObdShortTermFuelTrim1(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	ObdStatusDTCCount(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
 	ObdWarmupsSinceDTCClear(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
 	PowertrainCombustionEngineDieselExhaustFluidCapacity(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
 	PowertrainCombustionEngineDieselExhaustFluidLevel(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
@@ -454,6 +467,41 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.DeviceActivity.LastActive(childComplexity), true
 
+	case "Event.durationNs":
+		if e.complexity.Event.DurationNs == nil {
+			break
+		}
+
+		return e.complexity.Event.DurationNs(childComplexity), true
+
+	case "Event.metadata":
+		if e.complexity.Event.Metadata == nil {
+			break
+		}
+
+		return e.complexity.Event.Metadata(childComplexity), true
+
+	case "Event.name":
+		if e.complexity.Event.Name == nil {
+			break
+		}
+
+		return e.complexity.Event.Name(childComplexity), true
+
+	case "Event.source":
+		if e.complexity.Event.Source == nil {
+			break
+		}
+
+		return e.complexity.Event.Source(childComplexity), true
+
+	case "Event.timestamp":
+		if e.complexity.Event.Timestamp == nil {
+			break
+		}
+
+		return e.complexity.Event.Timestamp(childComplexity), true
+
 	case "POMVC.rawVC":
 		if e.complexity.POMVC.RawVc == nil {
 			break
@@ -524,6 +572,18 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Query.DeviceActivity(childComplexity, args["by"].(model.AftermarketDeviceBy)), true
+
+	case "Query.events":
+		if e.complexity.Query.Events == nil {
+			break
+		}
+
+		args, err := ec.field_Query_events_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Events(childComplexity, args["tokenId"].(int), args["from"].(time.Time), args["to"].(time.Time), args["filter"].(*model.EventFilter)), true
 
 	case "Query.pomVCLatest":
 		if e.complexity.Query.PomVCLatest == nil {
@@ -1100,6 +1160,18 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.SignalAggregations.ObdShortTermFuelTrim1(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+
+	case "SignalAggregations.obdStatusDTCCount":
+		if e.complexity.SignalAggregations.ObdStatusDTCCount == nil {
+			break
+		}
+
+		args, err := ec.field_SignalAggregations_obdStatusDTCCount_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.SignalAggregations.ObdStatusDTCCount(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 
 	case "SignalAggregations.obdWarmupsSinceDTCClear":
 		if e.complexity.SignalAggregations.ObdWarmupsSinceDTCClear == nil {
@@ -1831,6 +1903,13 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.SignalCollection.OBDShortTermFuelTrim1(childComplexity), true
 
+	case "SignalCollection.obdStatusDTCCount":
+		if e.complexity.SignalCollection.OBDStatusDTCCount == nil {
+			break
+		}
+
+		return e.complexity.SignalCollection.OBDStatusDTCCount(childComplexity), true
+
 	case "SignalCollection.obdWarmupsSinceDTCClear":
 		if e.complexity.SignalCollection.OBDWarmupsSinceDTCClear == nil {
 			break
@@ -2170,8 +2249,10 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
 		ec.unmarshalInputAftermarketDeviceBy,
 		ec.unmarshalInputAttestationFilter,
+		ec.unmarshalInputEventFilter,
 		ec.unmarshalInputSignalFilter,
 		ec.unmarshalInputSignalFloatFilter,
+		ec.unmarshalInputStringValueFilter,
 	)
 	first := true
 
@@ -2610,6 +2691,75 @@ input AftermarketDeviceBy @oneOf {
   serial: String
 }
 `, BuiltIn: false},
+	{Name: "../../schema/events.graphqls", Input: `extend type Query {
+  """
+  events returns a list of events for a given token in a given time range.
+  """
+  events(
+    """
+    tokenId is the id of the token to get events for.
+    """
+    tokenId: Int!
+    """
+    from is the start time of the event.
+    """
+    from: Time!
+    """
+    to is the end time of the event.
+    """
+    to: Time!
+    """
+    filter is the filter to apply to the events.
+    """
+    filter: EventFilter
+  ): [Event!]
+    @requiresVehicleToken
+    @requiresAllOfPrivileges(
+      privileges: [VEHICLE_NON_LOCATION_DATA, VEHICLE_ALL_TIME_LOCATION]
+    )
+}
+
+type Event {
+  """
+  timestamp is the time the event occurred.
+  """
+  timestamp: Time!
+  """
+  name is the name of the event.
+  """
+  name: String!
+  """
+  source is the name of the source connection that created the event.
+  """
+  source: String!
+  """
+  durationNs is the duration of the event in nanoseconds.
+  """
+  durationNs: Int!
+  """
+  metadata is the metadata of the event.
+  """
+  metadata: String
+}
+
+input EventFilter {
+  """
+  name is the name of the event.
+  """
+  name: StringValueFilter
+  """
+  source is the name of the source connection that created the event.
+  """
+  source: StringValueFilter
+}
+
+input StringValueFilter {
+  eq: String
+  neq: String
+  notIn: [String!]
+  in: [String!]
+}
+`, BuiltIn: false},
 	{Name: "../../schema/signals_gen.graphqls", Input: `# Code generated  with ` + "`" + `make gql-model` + "`" + ` DO NOT EDIT.
 extend type SignalAggregations {
   """
@@ -3015,6 +3165,15 @@ extend type SignalAggregations {
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDShortTermFuelTrim1", forceResolver: true) @isSignal @hasAggregation
   
   """
+  Number of Diagnostic Trouble Codes (DTC)
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  obdStatusDTCCount(
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDStatusDTCCount", forceResolver: true) @isSignal @hasAggregation
+  
+  """
   PID 30 - Number of warm-ups since codes cleared
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
@@ -3160,8 +3319,8 @@ extend type SignalAggregations {
   ):  String @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainFuelSystemSupportedFuelTypes", forceResolver: true) @isSignal @hasAggregation
   
   """
-  Remaining range in meters using all energy sources available in the vehicle.
-  Unit: 'm'
+  Remaining range in kilometers using all energy sources available in the vehicle.
+  Unit: 'km'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainRange(
@@ -3249,8 +3408,8 @@ extend type SignalAggregations {
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryGrossCapacity", forceResolver: true) @isSignal @hasAggregation
   
   """
-  Remaining range in meters using only battery.
-  Unit: 'm'
+  Remaining range in kilometers using only battery.
+  Unit: 'km'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainTractionBatteryRange(
@@ -3628,6 +3787,12 @@ extend type SignalCollection {
   obdShortTermFuelTrim1: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDShortTermFuelTrim1") @isSignal
   
   """
+  Number of Diagnostic Trouble Codes (DTC)
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  obdStatusDTCCount: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDStatusDTCCount") @isSignal
+  
+  """
   PID 30 - Number of warm-ups since codes cleared
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
@@ -3730,8 +3895,8 @@ extend type SignalCollection {
   powertrainFuelSystemSupportedFuelTypes: SignalString @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainFuelSystemSupportedFuelTypes") @isSignal
   
   """
-  Remaining range in meters using all energy sources available in the vehicle.
-  Unit: 'm'
+  Remaining range in kilometers using all energy sources available in the vehicle.
+  Unit: 'km'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainRange: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainRange") @isSignal
@@ -3792,8 +3957,8 @@ extend type SignalCollection {
   powertrainTractionBatteryGrossCapacity: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryGrossCapacity") @isSignal
   
   """
-  Remaining range in meters using only battery.
-  Unit: 'm'
+  Remaining range in kilometers using only battery.
+  Unit: 'km'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainTractionBatteryRange: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryRange") @isSignal
@@ -3975,4348 +4140,1440 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 func (ec *executionContext) dir_requiresAllOfPrivileges_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.dir_requiresAllOfPrivileges_argsPrivileges(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "privileges", ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ)
 	if err != nil {
 		return nil, err
 	}
 	args["privileges"] = arg0
 	return args, nil
-}
-func (ec *executionContext) dir_requiresAllOfPrivileges_argsPrivileges(
-	ctx context.Context,
-	rawArgs map[string]any,
-) ([]model.Privilege, error) {
-	if _, ok := rawArgs["privileges"]; !ok {
-		var zeroVal []model.Privilege
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("privileges"))
-	if tmp, ok := rawArgs["privileges"]; ok {
-		return ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, tmp)
-	}
-
-	var zeroVal []model.Privilege
-	return zeroVal, nil
 }
 
 func (ec *executionContext) dir_requiresOneOfPrivilege_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.dir_requiresOneOfPrivilege_argsPrivileges(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "privileges", ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ)
 	if err != nil {
 		return nil, err
 	}
 	args["privileges"] = arg0
 	return args, nil
 }
-func (ec *executionContext) dir_requiresOneOfPrivilege_argsPrivileges(
-	ctx context.Context,
-	rawArgs map[string]any,
-) ([]model.Privilege, error) {
-	if _, ok := rawArgs["privileges"]; !ok {
-		var zeroVal []model.Privilege
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("privileges"))
-	if tmp, ok := rawArgs["privileges"]; ok {
-		return ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, tmp)
-	}
-
-	var zeroVal []model.Privilege
-	return zeroVal, nil
-}
 
 func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_Query___type_argsName(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "name", ec.unmarshalNString2string)
 	if err != nil {
 		return nil, err
 	}
 	args["name"] = arg0
 	return args, nil
 }
-func (ec *executionContext) field_Query___type_argsName(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (string, error) {
-	if _, ok := rawArgs["name"]; !ok {
-		var zeroVal string
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
-	if tmp, ok := rawArgs["name"]; ok {
-		return ec.unmarshalNString2string(ctx, tmp)
-	}
-
-	var zeroVal string
-	return zeroVal, nil
-}
 
 func (ec *executionContext) field_Query_attestations_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_Query_attestations_argsTokenID(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "tokenId", ec.unmarshalNInt2int)
 	if err != nil {
 		return nil, err
 	}
 	args["tokenId"] = arg0
-	arg1, err := ec.field_Query_attestations_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOAttestationFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐAttestationFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_Query_attestations_argsTokenID(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (int, error) {
-	if _, ok := rawArgs["tokenId"]; !ok {
-		var zeroVal int
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("tokenId"))
-	if tmp, ok := rawArgs["tokenId"]; ok {
-		return ec.unmarshalNInt2int(ctx, tmp)
-	}
-
-	var zeroVal int
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_Query_attestations_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.AttestationFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.AttestationFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOAttestationFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐAttestationFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.AttestationFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Query_availableSignals_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_Query_availableSignals_argsTokenID(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "tokenId", ec.unmarshalNInt2int)
 	if err != nil {
 		return nil, err
 	}
 	args["tokenId"] = arg0
-	arg1, err := ec.field_Query_availableSignals_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
 }
-func (ec *executionContext) field_Query_availableSignals_argsTokenID(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (int, error) {
-	if _, ok := rawArgs["tokenId"]; !ok {
-		var zeroVal int
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("tokenId"))
-	if tmp, ok := rawArgs["tokenId"]; ok {
-		return ec.unmarshalNInt2int(ctx, tmp)
-	}
-
-	var zeroVal int
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_Query_availableSignals_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFilter
-	return zeroVal, nil
-}
 
 func (ec *executionContext) field_Query_deviceActivity_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_Query_deviceActivity_argsBy(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "by", ec.unmarshalNAftermarketDeviceBy2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐAftermarketDeviceBy)
 	if err != nil {
 		return nil, err
 	}
 	args["by"] = arg0
 	return args, nil
 }
-func (ec *executionContext) field_Query_deviceActivity_argsBy(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.AftermarketDeviceBy, error) {
-	if _, ok := rawArgs["by"]; !ok {
-		var zeroVal model.AftermarketDeviceBy
-		return zeroVal, nil
-	}
 
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("by"))
-	if tmp, ok := rawArgs["by"]; ok {
-		return ec.unmarshalNAftermarketDeviceBy2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐAftermarketDeviceBy(ctx, tmp)
+func (ec *executionContext) field_Query_events_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "tokenId", ec.unmarshalNInt2int)
+	if err != nil {
+		return nil, err
 	}
-
-	var zeroVal model.AftermarketDeviceBy
-	return zeroVal, nil
+	args["tokenId"] = arg0
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "from", ec.unmarshalNTime2timeᚐTime)
+	if err != nil {
+		return nil, err
+	}
+	args["from"] = arg1
+	arg2, err := graphql.ProcessArgField(ctx, rawArgs, "to", ec.unmarshalNTime2timeᚐTime)
+	if err != nil {
+		return nil, err
+	}
+	args["to"] = arg2
+	arg3, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOEventFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐEventFilter)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg3
+	return args, nil
 }
 
 func (ec *executionContext) field_Query_pomVCLatest_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_Query_pomVCLatest_argsTokenID(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "tokenId", ec.unmarshalNInt2int)
 	if err != nil {
 		return nil, err
 	}
 	args["tokenId"] = arg0
 	return args, nil
 }
-func (ec *executionContext) field_Query_pomVCLatest_argsTokenID(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (int, error) {
-	if _, ok := rawArgs["tokenId"]; !ok {
-		var zeroVal int
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("tokenId"))
-	if tmp, ok := rawArgs["tokenId"]; ok {
-		return ec.unmarshalNInt2int(ctx, tmp)
-	}
-
-	var zeroVal int
-	return zeroVal, nil
-}
 
 func (ec *executionContext) field_Query_signalsLatest_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_Query_signalsLatest_argsTokenID(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "tokenId", ec.unmarshalNInt2int)
 	if err != nil {
 		return nil, err
 	}
 	args["tokenId"] = arg0
-	arg1, err := ec.field_Query_signalsLatest_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
 }
-func (ec *executionContext) field_Query_signalsLatest_argsTokenID(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (int, error) {
-	if _, ok := rawArgs["tokenId"]; !ok {
-		var zeroVal int
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("tokenId"))
-	if tmp, ok := rawArgs["tokenId"]; ok {
-		return ec.unmarshalNInt2int(ctx, tmp)
-	}
-
-	var zeroVal int
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_Query_signalsLatest_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFilter
-	return zeroVal, nil
-}
 
 func (ec *executionContext) field_Query_signals_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_Query_signals_argsTokenID(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "tokenId", ec.unmarshalNInt2int)
 	if err != nil {
 		return nil, err
 	}
 	args["tokenId"] = arg0
-	arg1, err := ec.field_Query_signals_argsInterval(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "interval", ec.unmarshalNString2string)
 	if err != nil {
 		return nil, err
 	}
 	args["interval"] = arg1
-	arg2, err := ec.field_Query_signals_argsFrom(ctx, rawArgs)
+	arg2, err := graphql.ProcessArgField(ctx, rawArgs, "from", ec.unmarshalNTime2timeᚐTime)
 	if err != nil {
 		return nil, err
 	}
 	args["from"] = arg2
-	arg3, err := ec.field_Query_signals_argsTo(ctx, rawArgs)
+	arg3, err := graphql.ProcessArgField(ctx, rawArgs, "to", ec.unmarshalNTime2timeᚐTime)
 	if err != nil {
 		return nil, err
 	}
 	args["to"] = arg3
-	arg4, err := ec.field_Query_signals_argsFilter(ctx, rawArgs)
+	arg4, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg4
 	return args, nil
 }
-func (ec *executionContext) field_Query_signals_argsTokenID(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (int, error) {
-	if _, ok := rawArgs["tokenId"]; !ok {
-		var zeroVal int
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("tokenId"))
-	if tmp, ok := rawArgs["tokenId"]; ok {
-		return ec.unmarshalNInt2int(ctx, tmp)
-	}
-
-	var zeroVal int
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_Query_signals_argsInterval(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (string, error) {
-	if _, ok := rawArgs["interval"]; !ok {
-		var zeroVal string
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("interval"))
-	if tmp, ok := rawArgs["interval"]; ok {
-		return ec.unmarshalNString2string(ctx, tmp)
-	}
-
-	var zeroVal string
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_Query_signals_argsFrom(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (time.Time, error) {
-	if _, ok := rawArgs["from"]; !ok {
-		var zeroVal time.Time
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("from"))
-	if tmp, ok := rawArgs["from"]; ok {
-		return ec.unmarshalNTime2timeᚐTime(ctx, tmp)
-	}
-
-	var zeroVal time.Time
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_Query_signals_argsTo(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (time.Time, error) {
-	if _, ok := rawArgs["to"]; !ok {
-		var zeroVal time.Time
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("to"))
-	if tmp, ok := rawArgs["to"]; ok {
-		return ec.unmarshalNTime2timeᚐTime(ctx, tmp)
-	}
-
-	var zeroVal time.Time
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_Query_signals_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFilter
-	return zeroVal, nil
-}
 
 func (ec *executionContext) field_Query_vinVCLatest_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_Query_vinVCLatest_argsTokenID(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "tokenId", ec.unmarshalNInt2int)
 	if err != nil {
 		return nil, err
 	}
 	args["tokenId"] = arg0
 	return args, nil
 }
-func (ec *executionContext) field_Query_vinVCLatest_argsTokenID(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (int, error) {
-	if _, ok := rawArgs["tokenId"]; !ok {
-		var zeroVal int
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("tokenId"))
-	if tmp, ok := rawArgs["tokenId"]; ok {
-		return ec.unmarshalNInt2int(ctx, tmp)
-	}
-
-	var zeroVal int
-	return zeroVal, nil
-}
 
 func (ec *executionContext) field_SignalAggregations_angularVelocityYaw_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_angularVelocityYaw_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_angularVelocityYaw_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_angularVelocityYaw_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_angularVelocityYaw_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_cabinDoorRow1DriverSideIsOpen_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_cabinDoorRow1DriverSideIsOpen_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_cabinDoorRow1DriverSideIsOpen_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_cabinDoorRow1DriverSideIsOpen_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_cabinDoorRow1DriverSideIsOpen_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_cabinDoorRow1DriverSideWindowIsOpen_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_cabinDoorRow1DriverSideWindowIsOpen_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_cabinDoorRow1DriverSideWindowIsOpen_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_cabinDoorRow1DriverSideWindowIsOpen_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_cabinDoorRow1DriverSideWindowIsOpen_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_cabinDoorRow1PassengerSideIsOpen_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_cabinDoorRow1PassengerSideIsOpen_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_cabinDoorRow1PassengerSideIsOpen_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_cabinDoorRow1PassengerSideIsOpen_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_cabinDoorRow1PassengerSideIsOpen_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_cabinDoorRow1PassengerSideWindowIsOpen_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_cabinDoorRow1PassengerSideWindowIsOpen_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_cabinDoorRow1PassengerSideWindowIsOpen_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_cabinDoorRow1PassengerSideWindowIsOpen_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_cabinDoorRow1PassengerSideWindowIsOpen_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_cabinDoorRow2DriverSideIsOpen_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_cabinDoorRow2DriverSideIsOpen_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_cabinDoorRow2DriverSideIsOpen_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_cabinDoorRow2DriverSideIsOpen_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_cabinDoorRow2DriverSideIsOpen_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_cabinDoorRow2DriverSideWindowIsOpen_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_cabinDoorRow2DriverSideWindowIsOpen_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_cabinDoorRow2DriverSideWindowIsOpen_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_cabinDoorRow2DriverSideWindowIsOpen_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_cabinDoorRow2DriverSideWindowIsOpen_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_cabinDoorRow2PassengerSideIsOpen_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_cabinDoorRow2PassengerSideIsOpen_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_cabinDoorRow2PassengerSideIsOpen_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_cabinDoorRow2PassengerSideIsOpen_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_cabinDoorRow2PassengerSideIsOpen_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_cabinDoorRow2PassengerSideWindowIsOpen_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_cabinDoorRow2PassengerSideWindowIsOpen_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_cabinDoorRow2PassengerSideWindowIsOpen_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_cabinDoorRow2PassengerSideWindowIsOpen_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_cabinDoorRow2PassengerSideWindowIsOpen_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_chassisAxleRow1WheelLeftSpeed_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_chassisAxleRow1WheelLeftSpeed_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_chassisAxleRow1WheelLeftSpeed_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_chassisAxleRow1WheelLeftSpeed_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_chassisAxleRow1WheelLeftSpeed_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_chassisAxleRow1WheelLeftTirePressure_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_chassisAxleRow1WheelLeftTirePressure_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_chassisAxleRow1WheelLeftTirePressure_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_chassisAxleRow1WheelLeftTirePressure_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_chassisAxleRow1WheelLeftTirePressure_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_chassisAxleRow1WheelRightSpeed_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_chassisAxleRow1WheelRightSpeed_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_chassisAxleRow1WheelRightSpeed_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_chassisAxleRow1WheelRightSpeed_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_chassisAxleRow1WheelRightSpeed_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_chassisAxleRow1WheelRightTirePressure_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_chassisAxleRow1WheelRightTirePressure_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_chassisAxleRow1WheelRightTirePressure_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_chassisAxleRow1WheelRightTirePressure_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_chassisAxleRow1WheelRightTirePressure_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_chassisAxleRow2WheelLeftTirePressure_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_chassisAxleRow2WheelLeftTirePressure_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_chassisAxleRow2WheelLeftTirePressure_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_chassisAxleRow2WheelLeftTirePressure_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_chassisAxleRow2WheelLeftTirePressure_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_chassisAxleRow2WheelRightTirePressure_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_chassisAxleRow2WheelRightTirePressure_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_chassisAxleRow2WheelRightTirePressure_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_chassisAxleRow2WheelRightTirePressure_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_chassisAxleRow2WheelRightTirePressure_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_currentLocationAltitude_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_currentLocationAltitude_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_currentLocationAltitude_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_currentLocationAltitude_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_currentLocationAltitude_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_currentLocationApproximateLatitude_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_currentLocationApproximateLatitude_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_currentLocationApproximateLatitude_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_currentLocationApproximateLongitude_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_currentLocationApproximateLongitude_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_currentLocationApproximateLongitude_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_currentLocationHeading_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_currentLocationHeading_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_currentLocationHeading_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_currentLocationHeading_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_currentLocationHeading_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_currentLocationIsRedacted_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_currentLocationIsRedacted_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_currentLocationIsRedacted_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_currentLocationIsRedacted_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_currentLocationIsRedacted_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_currentLocationLatitude_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_currentLocationLatitude_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_currentLocationLatitude_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_currentLocationLatitude_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_currentLocationLatitude_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_currentLocationLongitude_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_currentLocationLongitude_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_currentLocationLongitude_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_currentLocationLongitude_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_currentLocationLongitude_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_dimoAftermarketHDOP_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_dimoAftermarketHDOP_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_dimoAftermarketHDOP_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_dimoAftermarketHDOP_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_dimoAftermarketHDOP_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_dimoAftermarketNSAT_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_dimoAftermarketNSAT_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_dimoAftermarketNSAT_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_dimoAftermarketNSAT_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_dimoAftermarketNSAT_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_dimoAftermarketSSID_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_dimoAftermarketSSID_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNStringAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐStringAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_dimoAftermarketSSID_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.StringAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.StringAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNStringAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐStringAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.StringAggregation
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_dimoAftermarketWPAState_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_dimoAftermarketWPAState_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNStringAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐStringAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_dimoAftermarketWPAState_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.StringAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.StringAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNStringAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐStringAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.StringAggregation
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_exteriorAirTemperature_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_exteriorAirTemperature_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_exteriorAirTemperature_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_exteriorAirTemperature_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_exteriorAirTemperature_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_isIgnitionOn_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_isIgnitionOn_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_isIgnitionOn_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_isIgnitionOn_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_isIgnitionOn_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_lowVoltageBatteryCurrentVoltage_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_lowVoltageBatteryCurrentVoltage_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_lowVoltageBatteryCurrentVoltage_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_lowVoltageBatteryCurrentVoltage_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_lowVoltageBatteryCurrentVoltage_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_obdBarometricPressure_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_obdBarometricPressure_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_obdBarometricPressure_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_obdBarometricPressure_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_obdBarometricPressure_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_obdCommandedEGR_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_obdCommandedEGR_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_obdCommandedEGR_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_obdCommandedEGR_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_obdCommandedEGR_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_obdCommandedEVAP_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_obdCommandedEVAP_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_obdCommandedEVAP_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_obdCommandedEVAP_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_obdCommandedEVAP_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_obdDTCList_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_obdDTCList_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNStringAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐStringAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_obdDTCList_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.StringAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.StringAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNStringAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐStringAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.StringAggregation
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_obdDistanceSinceDTCClear_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_obdDistanceSinceDTCClear_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_obdDistanceSinceDTCClear_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_obdDistanceSinceDTCClear_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_obdDistanceSinceDTCClear_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_obdDistanceWithMIL_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_obdDistanceWithMIL_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_obdDistanceWithMIL_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_obdDistanceWithMIL_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_obdDistanceWithMIL_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_obdEngineLoad_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_obdEngineLoad_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_obdEngineLoad_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_obdEngineLoad_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_obdEngineLoad_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_obdFuelPressure_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_obdFuelPressure_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_obdFuelPressure_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_obdFuelPressure_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_obdFuelPressure_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_obdIntakeTemp_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_obdIntakeTemp_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_obdIntakeTemp_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_obdIntakeTemp_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_obdIntakeTemp_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_obdLongTermFuelTrim1_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_obdLongTermFuelTrim1_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_obdLongTermFuelTrim1_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_obdLongTermFuelTrim1_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_obdLongTermFuelTrim1_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_obdMAP_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_obdMAP_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_obdMAP_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_obdMAP_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_obdMAP_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_obdO2WRSensor1Voltage_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_obdO2WRSensor1Voltage_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_obdO2WRSensor1Voltage_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_obdO2WRSensor1Voltage_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_obdO2WRSensor1Voltage_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_obdO2WRSensor2Voltage_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_obdO2WRSensor2Voltage_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_obdO2WRSensor2Voltage_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_obdO2WRSensor2Voltage_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_obdO2WRSensor2Voltage_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_obdRunTime_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_obdRunTime_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_obdRunTime_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_obdRunTime_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_obdRunTime_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_obdShortTermFuelTrim1_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_obdShortTermFuelTrim1_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_obdShortTermFuelTrim1_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
 }
-func (ec *executionContext) field_SignalAggregations_obdShortTermFuelTrim1_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
+
+func (ec *executionContext) field_SignalAggregations_obdStatusDTCCount_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
+	if err != nil {
+		return nil, err
 	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
+	args["agg"] = arg0
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
+	if err != nil {
+		return nil, err
 	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_obdShortTermFuelTrim1_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
+	args["filter"] = arg1
+	return args, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_obdWarmupsSinceDTCClear_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_obdWarmupsSinceDTCClear_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_obdWarmupsSinceDTCClear_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_obdWarmupsSinceDTCClear_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_obdWarmupsSinceDTCClear_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineDieselExhaustFluidCapacity_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_powertrainCombustionEngineDieselExhaustFluidCapacity_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_powertrainCombustionEngineDieselExhaustFluidCapacity_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineDieselExhaustFluidCapacity_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineDieselExhaustFluidCapacity_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineDieselExhaustFluidLevel_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_powertrainCombustionEngineDieselExhaustFluidLevel_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_powertrainCombustionEngineDieselExhaustFluidLevel_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineDieselExhaustFluidLevel_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineDieselExhaustFluidLevel_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineECT_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_powertrainCombustionEngineECT_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_powertrainCombustionEngineECT_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineECT_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineECT_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineEOP_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_powertrainCombustionEngineEOP_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_powertrainCombustionEngineEOP_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineEOP_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineEOP_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineEOT_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_powertrainCombustionEngineEOT_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_powertrainCombustionEngineEOT_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineEOT_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineEOT_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineEngineOilLevel_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_powertrainCombustionEngineEngineOilLevel_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNStringAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐStringAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineEngineOilLevel_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.StringAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.StringAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNStringAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐStringAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.StringAggregation
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineEngineOilRelativeLevel_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_powertrainCombustionEngineEngineOilRelativeLevel_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_powertrainCombustionEngineEngineOilRelativeLevel_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineEngineOilRelativeLevel_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineEngineOilRelativeLevel_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineMAF_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_powertrainCombustionEngineMAF_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_powertrainCombustionEngineMAF_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineMAF_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineMAF_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineSpeed_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_powertrainCombustionEngineSpeed_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_powertrainCombustionEngineSpeed_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineSpeed_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineSpeed_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineTPS_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_powertrainCombustionEngineTPS_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_powertrainCombustionEngineTPS_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineTPS_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineTPS_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineTorque_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_powertrainCombustionEngineTorque_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_powertrainCombustionEngineTorque_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineTorque_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_powertrainCombustionEngineTorque_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_powertrainFuelSystemAbsoluteLevel_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_powertrainFuelSystemAbsoluteLevel_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_powertrainFuelSystemAbsoluteLevel_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_powertrainFuelSystemAbsoluteLevel_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_powertrainFuelSystemAbsoluteLevel_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_powertrainFuelSystemRelativeLevel_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_powertrainFuelSystemRelativeLevel_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_powertrainFuelSystemRelativeLevel_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_powertrainFuelSystemRelativeLevel_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_powertrainFuelSystemRelativeLevel_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_powertrainFuelSystemSupportedFuelTypes_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_powertrainFuelSystemSupportedFuelTypes_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNStringAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐStringAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_powertrainFuelSystemSupportedFuelTypes_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.StringAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.StringAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNStringAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐStringAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.StringAggregation
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_powertrainRange_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_powertrainRange_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_powertrainRange_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_powertrainRange_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_powertrainRange_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryChargingAddedEnergy_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_powertrainTractionBatteryChargingAddedEnergy_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_powertrainTractionBatteryChargingAddedEnergy_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryChargingAddedEnergy_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryChargingAddedEnergy_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryChargingChargeCurrentAC_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_powertrainTractionBatteryChargingChargeCurrentAC_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_powertrainTractionBatteryChargingChargeCurrentAC_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryChargingChargeCurrentAC_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryChargingChargeCurrentAC_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryChargingChargeLimit_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_powertrainTractionBatteryChargingChargeLimit_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_powertrainTractionBatteryChargingChargeLimit_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryChargingChargeLimit_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryChargingChargeLimit_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryChargingChargeVoltageUnknownType_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_powertrainTractionBatteryChargingChargeVoltageUnknownType_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_powertrainTractionBatteryChargingChargeVoltageUnknownType_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryChargingChargeVoltageUnknownType_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryChargingChargeVoltageUnknownType_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryChargingIsCharging_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_powertrainTractionBatteryChargingIsCharging_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_powertrainTractionBatteryChargingIsCharging_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryChargingIsCharging_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryChargingIsCharging_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryCurrentPower_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_powertrainTractionBatteryCurrentPower_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_powertrainTractionBatteryCurrentPower_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryCurrentPower_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryCurrentPower_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryCurrentVoltage_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_powertrainTractionBatteryCurrentVoltage_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_powertrainTractionBatteryCurrentVoltage_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryCurrentVoltage_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryCurrentVoltage_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryGrossCapacity_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_powertrainTractionBatteryGrossCapacity_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_powertrainTractionBatteryGrossCapacity_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryGrossCapacity_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryGrossCapacity_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryRange_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_powertrainTractionBatteryRange_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_powertrainTractionBatteryRange_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryRange_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryRange_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryStateOfChargeCurrentEnergy_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_powertrainTractionBatteryStateOfChargeCurrentEnergy_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_powertrainTractionBatteryStateOfChargeCurrentEnergy_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryStateOfChargeCurrentEnergy_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryStateOfChargeCurrentEnergy_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryStateOfChargeCurrent_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_powertrainTractionBatteryStateOfChargeCurrent_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_powertrainTractionBatteryStateOfChargeCurrent_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryStateOfChargeCurrent_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryStateOfChargeCurrent_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryTemperatureAverage_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_powertrainTractionBatteryTemperatureAverage_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_powertrainTractionBatteryTemperatureAverage_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryTemperatureAverage_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_powertrainTractionBatteryTemperatureAverage_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_powertrainTransmissionCurrentGear_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_powertrainTransmissionCurrentGear_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_powertrainTransmissionCurrentGear_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_powertrainTransmissionCurrentGear_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_powertrainTransmissionCurrentGear_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_powertrainTransmissionTemperature_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_powertrainTransmissionTemperature_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_powertrainTransmissionTemperature_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_powertrainTransmissionTemperature_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_powertrainTransmissionTemperature_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_powertrainTransmissionTravelledDistance_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_powertrainTransmissionTravelledDistance_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_powertrainTransmissionTravelledDistance_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_powertrainTransmissionTravelledDistance_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_powertrainTransmissionTravelledDistance_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_powertrainType_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_powertrainType_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNStringAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐStringAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_powertrainType_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.StringAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.StringAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNStringAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐStringAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.StringAggregation
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_serviceDistanceToService_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_serviceDistanceToService_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_serviceDistanceToService_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
-}
-func (ec *executionContext) field_SignalAggregations_serviceDistanceToService_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_serviceDistanceToService_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field_SignalAggregations_speed_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_SignalAggregations_speed_argsAgg(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
 	if err != nil {
 		return nil, err
 	}
 	args["agg"] = arg0
-	arg1, err := ec.field_SignalAggregations_speed_argsFilter(ctx, rawArgs)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
 	if err != nil {
 		return nil, err
 	}
 	args["filter"] = arg1
 	return args, nil
 }
-func (ec *executionContext) field_SignalAggregations_speed_argsAgg(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.FloatAggregation, error) {
-	if _, ok := rawArgs["agg"]; !ok {
-		var zeroVal model.FloatAggregation
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
-	if tmp, ok := rawArgs["agg"]; ok {
-		return ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, tmp)
-	}
-
-	var zeroVal model.FloatAggregation
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_speed_argsFilter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*model.SignalFloatFilter, error) {
-	if _, ok := rawArgs["filter"]; !ok {
-		var zeroVal *model.SignalFloatFilter
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, tmp)
-	}
-
-	var zeroVal *model.SignalFloatFilter
-	return zeroVal, nil
-}
 
 func (ec *executionContext) field___Directive_args_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field___Directive_args_argsIncludeDeprecated(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "includeDeprecated", ec.unmarshalOBoolean2ᚖbool)
 	if err != nil {
 		return nil, err
 	}
 	args["includeDeprecated"] = arg0
 	return args, nil
-}
-func (ec *executionContext) field___Directive_args_argsIncludeDeprecated(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*bool, error) {
-	if _, ok := rawArgs["includeDeprecated"]; !ok {
-		var zeroVal *bool
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("includeDeprecated"))
-	if tmp, ok := rawArgs["includeDeprecated"]; ok {
-		return ec.unmarshalOBoolean2ᚖbool(ctx, tmp)
-	}
-
-	var zeroVal *bool
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field___Field_args_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field___Field_args_argsIncludeDeprecated(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "includeDeprecated", ec.unmarshalOBoolean2ᚖbool)
 	if err != nil {
 		return nil, err
 	}
 	args["includeDeprecated"] = arg0
 	return args, nil
-}
-func (ec *executionContext) field___Field_args_argsIncludeDeprecated(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*bool, error) {
-	if _, ok := rawArgs["includeDeprecated"]; !ok {
-		var zeroVal *bool
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("includeDeprecated"))
-	if tmp, ok := rawArgs["includeDeprecated"]; ok {
-		return ec.unmarshalOBoolean2ᚖbool(ctx, tmp)
-	}
-
-	var zeroVal *bool
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field___Type_enumValues_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field___Type_enumValues_argsIncludeDeprecated(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "includeDeprecated", ec.unmarshalOBoolean2bool)
 	if err != nil {
 		return nil, err
 	}
 	args["includeDeprecated"] = arg0
 	return args, nil
-}
-func (ec *executionContext) field___Type_enumValues_argsIncludeDeprecated(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (bool, error) {
-	if _, ok := rawArgs["includeDeprecated"]; !ok {
-		var zeroVal bool
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("includeDeprecated"))
-	if tmp, ok := rawArgs["includeDeprecated"]; ok {
-		return ec.unmarshalOBoolean2bool(ctx, tmp)
-	}
-
-	var zeroVal bool
-	return zeroVal, nil
 }
 
 func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field___Type_fields_argsIncludeDeprecated(ctx, rawArgs)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "includeDeprecated", ec.unmarshalOBoolean2bool)
 	if err != nil {
 		return nil, err
 	}
 	args["includeDeprecated"] = arg0
 	return args, nil
-}
-func (ec *executionContext) field___Type_fields_argsIncludeDeprecated(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (bool, error) {
-	if _, ok := rawArgs["includeDeprecated"]; !ok {
-		var zeroVal bool
-		return zeroVal, nil
-	}
-
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("includeDeprecated"))
-	if tmp, ok := rawArgs["includeDeprecated"]; ok {
-		return ec.unmarshalOBoolean2bool(ctx, tmp)
-	}
-
-	var zeroVal bool
-	return zeroVal, nil
 }
 
 // endregion ***************************** args.gotpl *****************************
@@ -8761,6 +6018,223 @@ func (ec *executionContext) fieldContext_DeviceActivity_lastActive(_ context.Con
 	return fc, nil
 }
 
+func (ec *executionContext) _Event_timestamp(ctx context.Context, field graphql.CollectedField, obj *model.Event) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Event_timestamp(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Timestamp, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Event_timestamp(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Event",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Event_name(ctx context.Context, field graphql.CollectedField, obj *model.Event) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Event_name(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Name, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Event_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Event",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Event_source(ctx context.Context, field graphql.CollectedField, obj *model.Event) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Event_source(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Source, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Event_source(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Event",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Event_durationNs(ctx context.Context, field graphql.CollectedField, obj *model.Event) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Event_durationNs(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DurationNs, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Event_durationNs(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Event",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Event_metadata(ctx context.Context, field graphql.CollectedField, obj *model.Event) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Event_metadata(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Metadata, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Event_metadata(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Event",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _POMVC_vehicleTokenId(ctx context.Context, field graphql.CollectedField, obj *model.Pomvc) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_POMVC_vehicleTokenId(ctx, field)
 	if err != nil {
@@ -9117,6 +6591,8 @@ func (ec *executionContext) fieldContext_Query_signals(ctx context.Context, fiel
 				return ec.fieldContext_SignalAggregations_obdRunTime(ctx, field)
 			case "obdShortTermFuelTrim1":
 				return ec.fieldContext_SignalAggregations_obdShortTermFuelTrim1(ctx, field)
+			case "obdStatusDTCCount":
+				return ec.fieldContext_SignalAggregations_obdStatusDTCCount(ctx, field)
 			case "obdWarmupsSinceDTCClear":
 				return ec.fieldContext_SignalAggregations_obdWarmupsSinceDTCClear(ctx, field)
 			case "powertrainCombustionEngineDieselExhaustFluidCapacity":
@@ -9351,6 +6827,8 @@ func (ec *executionContext) fieldContext_Query_signalsLatest(ctx context.Context
 				return ec.fieldContext_SignalCollection_obdRunTime(ctx, field)
 			case "obdShortTermFuelTrim1":
 				return ec.fieldContext_SignalCollection_obdShortTermFuelTrim1(ctx, field)
+			case "obdStatusDTCCount":
+				return ec.fieldContext_SignalCollection_obdStatusDTCCount(ctx, field)
 			case "obdWarmupsSinceDTCClear":
 				return ec.fieldContext_SignalCollection_obdWarmupsSinceDTCClear(ctx, field)
 			case "powertrainCombustionEngineDieselExhaustFluidCapacity":
@@ -9689,6 +7167,104 @@ func (ec *executionContext) fieldContext_Query_deviceActivity(ctx context.Contex
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Query_deviceActivity_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_events(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_events(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Query().Events(rctx, fc.Args["tokenId"].(int), fc.Args["from"].(time.Time), fc.Args["to"].(time.Time), fc.Args["filter"].(*model.EventFilter))
+		}
+
+		directive1 := func(ctx context.Context) (any, error) {
+			if ec.directives.RequiresVehicleToken == nil {
+				var zeroVal []*model.Event
+				return zeroVal, errors.New("directive requiresVehicleToken is not implemented")
+			}
+			return ec.directives.RequiresVehicleToken(ctx, nil, directive0)
+		}
+		directive2 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA", "VEHICLE_ALL_TIME_LOCATION"})
+			if err != nil {
+				var zeroVal []*model.Event
+				return zeroVal, err
+			}
+			if ec.directives.RequiresAllOfPrivileges == nil {
+				var zeroVal []*model.Event
+				return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
+			}
+			return ec.directives.RequiresAllOfPrivileges(ctx, nil, directive1, privileges)
+		}
+
+		tmp, err := directive2(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.([]*model.Event); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be []*github.com/DIMO-Network/telemetry-api/internal/graph/model.Event`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Event)
+	fc.Result = res
+	return ec.marshalOEvent2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐEventᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_events(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "timestamp":
+				return ec.fieldContext_Event_timestamp(ctx, field)
+			case "name":
+				return ec.fieldContext_Event_name(ctx, field)
+			case "source":
+				return ec.fieldContext_Event_source(ctx, field)
+			case "durationNs":
+				return ec.fieldContext_Event_durationNs(ctx, field)
+			case "metadata":
+				return ec.fieldContext_Event_metadata(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Event", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_events_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -14160,6 +11736,99 @@ func (ec *executionContext) fieldContext_SignalAggregations_obdShortTermFuelTrim
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_SignalAggregations_obdShortTermFuelTrim1_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SignalAggregations_obdStatusDTCCount(ctx context.Context, field graphql.CollectedField, obj *model.SignalAggregations) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignalAggregations_obdStatusDTCCount(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.SignalAggregations().ObdStatusDTCCount(rctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		}
+
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+			if err != nil {
+				var zeroVal *float64
+				return zeroVal, err
+			}
+			if ec.directives.RequiresAllOfPrivileges == nil {
+				var zeroVal *float64
+				return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
+			}
+			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+		}
+		directive2 := func(ctx context.Context) (any, error) {
+			if ec.directives.IsSignal == nil {
+				var zeroVal *float64
+				return zeroVal, errors.New("directive isSignal is not implemented")
+			}
+			return ec.directives.IsSignal(ctx, obj, directive1)
+		}
+		directive3 := func(ctx context.Context) (any, error) {
+			if ec.directives.HasAggregation == nil {
+				var zeroVal *float64
+				return zeroVal, errors.New("directive hasAggregation is not implemented")
+			}
+			return ec.directives.HasAggregation(ctx, obj, directive2)
+		}
+
+		tmp, err := directive3(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*float64); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*float64)
+	fc.Result = res
+	return ec.marshalOFloat2ᚖfloat64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SignalAggregations_obdStatusDTCCount(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignalAggregations",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_SignalAggregations_obdStatusDTCCount_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -20933,6 +18602,87 @@ func (ec *executionContext) fieldContext_SignalCollection_obdShortTermFuelTrim1(
 	return fc, nil
 }
 
+func (ec *executionContext) _SignalCollection_obdStatusDTCCount(ctx context.Context, field graphql.CollectedField, obj *model.SignalCollection) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignalCollection_obdStatusDTCCount(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
+			ctx = rctx // use context from middleware stack in children
+			return obj.OBDStatusDTCCount, nil
+		}
+
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+			if err != nil {
+				var zeroVal *model.SignalFloat
+				return zeroVal, err
+			}
+			if ec.directives.RequiresAllOfPrivileges == nil {
+				var zeroVal *model.SignalFloat
+				return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
+			}
+			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+		}
+		directive2 := func(ctx context.Context) (any, error) {
+			if ec.directives.IsSignal == nil {
+				var zeroVal *model.SignalFloat
+				return zeroVal, errors.New("directive isSignal is not implemented")
+			}
+			return ec.directives.IsSignal(ctx, obj, directive1)
+		}
+
+		tmp, err := directive2(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*model.SignalFloat); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.SignalFloat)
+	fc.Result = res
+	return ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SignalCollection_obdStatusDTCCount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignalCollection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "timestamp":
+				return ec.fieldContext_SignalFloat_timestamp(ctx, field)
+			case "value":
+				return ec.fieldContext_SignalFloat_value(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SignalFloat", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _SignalCollection_obdWarmupsSinceDTCClear(ctx context.Context, field graphql.CollectedField, obj *model.SignalCollection) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalCollection_obdWarmupsSinceDTCClear(ctx, field)
 	if err != nil {
@@ -26296,6 +24046,40 @@ func (ec *executionContext) unmarshalInputAttestationFilter(ctx context.Context,
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputEventFilter(ctx context.Context, obj any) (model.EventFilter, error) {
+	var it model.EventFilter
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"name", "source"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "name":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			data, err := ec.unmarshalOStringValueFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐStringValueFilter(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Name = data
+		case "source":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("source"))
+			data, err := ec.unmarshalOStringValueFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐStringValueFilter(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Source = data
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputSignalFilter(ctx context.Context, obj any) (model.SignalFilter, error) {
 	var it model.SignalFilter
 	asMap := map[string]any{}
@@ -26406,6 +24190,54 @@ func (ec *executionContext) unmarshalInputSignalFloatFilter(ctx context.Context,
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputStringValueFilter(ctx context.Context, obj any) (model.StringValueFilter, error) {
+	var it model.StringValueFilter
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"eq", "neq", "notIn", "in"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "eq":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("eq"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Eq = data
+		case "neq":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("neq"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Neq = data
+		case "notIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("notIn"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.NotIn = data
+		case "in":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("in"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.In = data
+		}
+	}
+
+	return it, nil
+}
+
 // endregion **************************** input.gotpl *****************************
 
 // region    ************************** interface.gotpl ***************************
@@ -26503,6 +24335,62 @@ func (ec *executionContext) _DeviceActivity(ctx context.Context, sel ast.Selecti
 			out.Values[i] = graphql.MarshalString("DeviceActivity")
 		case "lastActive":
 			out.Values[i] = ec._DeviceActivity_lastActive(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var eventImplementors = []string{"Event"}
+
+func (ec *executionContext) _Event(ctx context.Context, sel ast.SelectionSet, obj *model.Event) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, eventImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Event")
+		case "timestamp":
+			out.Values[i] = ec._Event_timestamp(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "name":
+			out.Values[i] = ec._Event_name(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "source":
+			out.Values[i] = ec._Event_source(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "durationNs":
+			out.Values[i] = ec._Event_durationNs(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "metadata":
+			out.Values[i] = ec._Event_metadata(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -26678,6 +24566,25 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_deviceActivity(ctx, field)
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "events":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_events(ctx, field)
 				return res
 			}
 
@@ -28224,6 +26131,39 @@ func (ec *executionContext) _SignalAggregations(ctx context.Context, sel ast.Sel
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "obdStatusDTCCount":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._SignalAggregations_obdStatusDTCCount(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "obdWarmupsSinceDTCClear":
 			field := field
 
@@ -29470,6 +27410,8 @@ func (ec *executionContext) _SignalCollection(ctx context.Context, sel ast.Selec
 			out.Values[i] = ec._SignalCollection_obdRunTime(ctx, field, obj)
 		case "obdShortTermFuelTrim1":
 			out.Values[i] = ec._SignalCollection_obdShortTermFuelTrim1(ctx, field, obj)
+		case "obdStatusDTCCount":
+			out.Values[i] = ec._SignalCollection_obdStatusDTCCount(ctx, field, obj)
 		case "obdWarmupsSinceDTCClear":
 			out.Values[i] = ec._SignalCollection_obdWarmupsSinceDTCClear(ctx, field, obj)
 		case "powertrainCombustionEngineDieselExhaustFluidCapacity":
@@ -30076,6 +28018,16 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
+func (ec *executionContext) marshalNEvent2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐEvent(ctx context.Context, sel ast.SelectionSet, v *model.Event) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._Event(ctx, sel, v)
+}
+
 func (ec *executionContext) unmarshalNFloat2float64(ctx context.Context, v any) (float64, error) {
 	res, err := graphql.UnmarshalFloatContext(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -30608,6 +28560,61 @@ func (ec *executionContext) marshalODeviceActivity2ᚖgithubᚗcomᚋDIMOᚑNetw
 	return ec._DeviceActivity(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalOEvent2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐEventᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Event) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNEvent2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐEvent(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) unmarshalOEventFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐEventFilter(ctx context.Context, v any) (*model.EventFilter, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputEventFilter(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalOFloat2ᚕfloat64ᚄ(ctx context.Context, v any) ([]float64, error) {
 	if v == nil {
 		return nil, nil
@@ -30840,6 +28847,14 @@ func (ec *executionContext) marshalOString2ᚖstring(ctx context.Context, sel as
 	_ = ctx
 	res := graphql.MarshalString(*v)
 	return res
+}
+
+func (ec *executionContext) unmarshalOStringValueFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐStringValueFilter(ctx context.Context, v any) (*model.StringValueFilter, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputStringValueFilter(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalOTime2ᚖtimeᚐTime(ctx context.Context, v any) (*time.Time, error) {

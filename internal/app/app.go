@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"os"
-	"runtime/debug"
 	"time"
 
 	"github.com/99designs/gqlgen/graphql"
@@ -19,6 +17,8 @@ import (
 	"github.com/DIMO-Network/telemetry-api/internal/dtcmiddleware"
 	"github.com/DIMO-Network/telemetry-api/internal/graph"
 	"github.com/DIMO-Network/telemetry-api/internal/limits"
+	"github.com/DIMO-Network/telemetry-api/internal/pricing"
+	"github.com/DIMO-Network/telemetry-api/internal/queryRecorder"
 	"github.com/DIMO-Network/telemetry-api/internal/repositories"
 	"github.com/DIMO-Network/telemetry-api/internal/repositories/attestation"
 	"github.com/DIMO-Network/telemetry-api/internal/repositories/vc"
@@ -26,13 +26,13 @@ import (
 	"github.com/DIMO-Network/telemetry-api/internal/service/credittracker"
 	"github.com/DIMO-Network/telemetry-api/internal/service/fetchapi"
 	"github.com/DIMO-Network/telemetry-api/internal/service/identity"
-	"github.com/rs/zerolog"
 )
 
 // App is the main application for the telemetry API.
 type App struct {
-	Handler http.Handler
-	cleanup func()
+	Handler       http.Handler
+	QueryRecorder *queryRecorder.QueryRecorder
+	cleanup       func()
 }
 
 // AppName is the name of the application.
@@ -45,7 +45,7 @@ func New(settings config.Settings) (*App, error) {
 	if err != nil {
 		return nil, fmt.Errorf("couldn't create ClickHouse service: %w", err)
 	}
-	baseRepo, err := repositories.NewRepository(chService, settings.DeviceLastSeenBinHrs)
+	baseRepo, err := repositories.NewRepository(chService, settings)
 	if err != nil {
 		return nil, fmt.Errorf("couldn't create base repository: %w", err)
 	}
@@ -63,8 +63,11 @@ func New(settings config.Settings) (*App, error) {
 		return nil, fmt.Errorf("failed to create credit tracker client: %w", err)
 	}
 
+	// Create query recorder
+	queryRec := queryRecorder.New()
+
 	resolver := &graph.Resolver{
-		Repository:      baseRepo,
+		BaseRepo:        baseRepo,
 		IdentityService: idService,
 		VCRepo:          vcRepo,
 		AttestationRepo: attRepo,
@@ -78,8 +81,13 @@ func New(settings config.Settings) (*App, error) {
 	cfg.Directives.IsSignal = noOp
 	cfg.Directives.HasAggregation = noOp
 
+	var costCalculator pricing.CostCalculator
+
 	server := newServer(graph.NewExecutableSchema(cfg))
-	server.Use(dtcmiddleware.NewDCT(ctClient))
+	server.Use(dtcmiddleware.NewDCT(ctClient, &costCalculator))
+
+	// Add query recording middleware
+	server.Use(queryRecorder.QueryRecordingExtension{Recorder: queryRec})
 
 	authMiddleware, err := auth.NewJWTMiddleware(settings.TokenExchangeIssuer, settings.TokenExchangeJWTKeySetURL)
 	if err != nil {
@@ -96,7 +104,9 @@ func New(settings config.Settings) (*App, error) {
 			limiter.AddRequestTimeout(
 				authMiddleware.CheckJWT(
 					authLoggerMiddleware(
-						auth.AddClaimHandler(server, settings.VehicleNFTAddress, settings.ManufacturerNFTAddress),
+						dtcmiddleware.EstimateCostHeaderMiddleware(
+							auth.AddClaimHandler(server, settings.VehicleNFTAddress, settings.ManufacturerNFTAddress),
+						),
 					),
 				),
 			),
@@ -104,7 +114,8 @@ func New(settings config.Settings) (*App, error) {
 	)
 
 	return &App{
-		Handler: serverHandler,
+		Handler:       serverHandler,
+		QueryRecorder: queryRec,
 		cleanup: func() {
 			// TODO add cleanup logic for closing connections
 		},
@@ -148,48 +159,4 @@ func newServer(es graphql.ExecutableSchema) *handler.Server {
 	srv.SetErrorPresenter(errorhandler.ErrorPresenter)
 
 	return srv
-}
-
-// LoggerMiddleware adds the source IP to the logger.
-func LoggerMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// get source ip from request could be cloudflare proxy
-		sourceIP := r.Header.Get("X-Forwarded-For")
-		if sourceIP == "" {
-			sourceIP = r.Header.Get("X-Real-IP")
-		}
-		if sourceIP == "" {
-			sourceIP = r.RemoteAddr
-		}
-		loggerCtx := zerolog.Ctx(r.Context()).With().Str("method", r.Method).Str("path", r.URL.Path).Str("sourceIp", sourceIP).Logger().WithContext(r.Context())
-		r = r.WithContext(loggerCtx)
-		next.ServeHTTP(w, r)
-	})
-}
-
-// authLoggerMiddleware adds the authenticated user to the logger
-func authLoggerMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		validateClaims, ok := auth.GetValidatedClaims(r.Context())
-		if !ok {
-			next.ServeHTTP(w, r)
-			return
-		}
-		loggerCtx := zerolog.Ctx(r.Context()).With().Str("jwtSubject", validateClaims.RegisteredClaims.Subject).Logger()
-		r = r.WithContext(loggerCtx.WithContext(r.Context()))
-		next.ServeHTTP(w, r)
-	})
-}
-
-// PanicRecoveryMiddleware recovers from panics and logs them.
-func PanicRecoveryMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		defer func() {
-			if err := recover(); err != nil {
-				_, _ = fmt.Fprintf(os.Stderr, "panic: %v\n%s\n", err, debug.Stack())
-				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-			}
-		}()
-		next.ServeHTTP(w, r)
-	})
 }

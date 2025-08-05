@@ -6,11 +6,12 @@ package graph
 
 import (
 	"context"
+	"time"
 
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 )
 
-// Attestations is the resolver for the attestations field.
-func (r *queryResolver) Attestations(ctx context.Context, tokenID int, filter *model.AttestationFilter) ([]*model.Attestation, error) {
-	return r.AttestationRepo.GetAttestations(ctx, tokenID, filter)
+// Events is the resolver for the events field.
+func (r *queryResolver) Events(ctx context.Context, tokenID int, from time.Time, to time.Time, filter *model.EventFilter) ([]*model.Event, error) {
+	return r.BaseRepo.GetEvents(ctx, tokenID, from, to, filter)
 }

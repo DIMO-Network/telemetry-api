@@ -63,6 +63,26 @@ type DeviceActivity struct {
 	LastActive *time.Time `json:"lastActive,omitempty"`
 }
 
+type Event struct {
+	// timestamp is the time the event occurred.
+	Timestamp time.Time `json:"timestamp"`
+	// name is the name of the event.
+	Name string `json:"name"`
+	// source is the name of the source connection that created the event.
+	Source string `json:"source"`
+	// durationNs is the duration of the event in nanoseconds.
+	DurationNs int `json:"durationNs"`
+	// metadata is the metadata of the event.
+	Metadata *string `json:"metadata,omitempty"`
+}
+
+type EventFilter struct {
+	// name is the name of the event.
+	Name *StringValueFilter `json:"name,omitempty"`
+	// source is the name of the source connection that created the event.
+	Source *StringValueFilter `json:"source,omitempty"`
+}
+
 type Pomvc struct {
 	// vehicleTokenId is the token ID of the vehicle.
 	VehicleTokenID *int `json:"vehicleTokenId,omitempty"`
@@ -248,6 +268,9 @@ type SignalCollection struct {
 	// Unit: 'percent'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	OBDShortTermFuelTrim1 *SignalFloat `json:"obdShortTermFuelTrim1,omitempty"`
+	// Number of Diagnostic Trouble Codes (DTC)
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	OBDStatusDTCCount *SignalFloat `json:"obdStatusDTCCount,omitempty"`
 	// PID 30 - Number of warm-ups since codes cleared
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	OBDWarmupsSinceDTCClear *SignalFloat `json:"obdWarmupsSinceDTCClear,omitempty"`
@@ -305,8 +328,8 @@ type SignalCollection struct {
 	// High level information of fuel types supported
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainFuelSystemSupportedFuelTypes *SignalString `json:"powertrainFuelSystemSupportedFuelTypes,omitempty"`
-	// Remaining range in meters using all energy sources available in the vehicle.
-	// Unit: 'm'
+	// Remaining range in kilometers using all energy sources available in the vehicle.
+	// Unit: 'km'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainRange *SignalFloat `json:"powertrainRange,omitempty"`
 	// Amount of charge added to the high voltage battery during the current charging session, expressed in kilowatt-hours.
@@ -340,8 +363,8 @@ type SignalCollection struct {
 	// Unit: 'kWh'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainTractionBatteryGrossCapacity *SignalFloat `json:"powertrainTractionBatteryGrossCapacity,omitempty"`
-	// Remaining range in meters using only battery.
-	// Unit: 'm'
+	// Remaining range in kilometers using only battery.
+	// Unit: 'km'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainTractionBatteryRange *SignalFloat `json:"powertrainTractionBatteryRange,omitempty"`
 	// Physical state of charge of the high voltage battery, relative to net capacity. This is not necessarily the state of charge being displayed to the customer.
@@ -411,6 +434,13 @@ type SignalString struct {
 	Timestamp time.Time `json:"timestamp"`
 	// value of the signal
 	Value string `json:"value"`
+}
+
+type StringValueFilter struct {
+	Eq    *string  `json:"eq,omitempty"`
+	Neq   *string  `json:"neq,omitempty"`
+	NotIn []string `json:"notIn,omitempty"`
+	In    []string `json:"in,omitempty"`
 }
 
 type Vinvc struct {
