@@ -190,4 +190,5 @@ input SignalFloatFilter {
   lte: Float
   notIn: [Float!]
   in: [Float!]
+  or: [SignalFloatFilter!]
 }

@@ -2658,6 +2658,7 @@ input SignalFloatFilter {
   lte: Float
   notIn: [Float!]
   in: [Float!]
+  or: [SignalFloatFilter!]
 }
 `, BuiltIn: false},
 	{Name: "../../schema/device_activity.graphqls", Input: `extend type Query {
@@ -24113,7 +24114,7 @@ func (ec *executionContext) unmarshalInputSignalFloatFilter(ctx context.Context,
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"eq", "neq", "gt", "lt", "gte", "lte", "notIn", "in"}
+	fieldsInOrder := [...]string{"eq", "neq", "gt", "lt", "gte", "lte", "notIn", "in", "or"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -24176,6 +24177,13 @@ func (ec *executionContext) unmarshalInputSignalFloatFilter(ctx context.Context,
 				return it, err
 			}
 			it.In = data
+		case "or":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("or"))
+			data, err := ec.unmarshalOSignalFloatFilter2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilterᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Or = data
 		}
 	}
 
@@ -28141,6 +28149,11 @@ func (ec *executionContext) marshalNSignalAggregations2ᚖgithubᚗcomᚋDIMOᚑ
 	return ec._SignalAggregations(ctx, sel, v)
 }
 
+func (ec *executionContext) unmarshalNSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx context.Context, v any) (*model.SignalFloatFilter, error) {
+	res, err := ec.unmarshalInputSignalFloatFilter(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNString2string(ctx context.Context, v any) (string, error) {
 	res, err := graphql.UnmarshalString(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -28747,6 +28760,24 @@ func (ec *executionContext) marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetwork
 		return graphql.Null
 	}
 	return ec._SignalFloat(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOSignalFloatFilter2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilterᚄ(ctx context.Context, v any) ([]*model.SignalFloatFilter, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []any
+	vSlice = graphql.CoerceList(v)
+	var err error
+	res := make([]*model.SignalFloatFilter, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
 }
 
 func (ec *executionContext) unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx context.Context, v any) (*model.SignalFloatFilter, error) {
