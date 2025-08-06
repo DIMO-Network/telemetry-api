@@ -369,8 +369,8 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 	for i, agg := range model.AllFloatAggregation {
 		if _, ok := aggArgs.ApproxLocArgs[agg]; ok {
 			valuesArgs = append(valuesArgs,
-				aggTableEntry(AppLocType, 2*i, vss.FieldCurrentLocationLongitude),
-				aggTableEntry(AppLocType, 2*i+1, vss.FieldCurrentLocationLatitude))
+				aggTableEntry(AppLocType, 2*i, vss.FieldCurrentLocationLatitude),
+				aggTableEntry(AppLocType, 2*i+1, vss.FieldCurrentLocationLongitude))
 		}
 	}
 	valueTable := fmt.Sprintf("VALUES('%s', %s) as %s ON %s.%s = %s.%s", valueTableDef, strings.Join(valuesArgs, ", "), aggTableName, vss.TableName, vss.NameCol, aggTableName, vss.NameCol)

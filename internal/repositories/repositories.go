@@ -126,7 +126,7 @@ func (r *Repository) GetSignal(ctx context.Context, aggArgs *model.AggregatedSig
 	return allAggs, nil
 }
 
-var parityToLocationSignalName = [2]string{vss.FieldCurrentLocationLongitude, vss.FieldCurrentLocationLatitude}
+var parityToLocationSignalName = [2]string{vss.FieldCurrentLocationLatitude, vss.FieldCurrentLocationLongitude}
 
 // GetSignalLatest returns the latest signals for the given tokenID and filter.
 func (r *Repository) GetSignalLatest(ctx context.Context, latestArgs *model.LatestSignalsArgs) (*model.SignalCollection, error) {
