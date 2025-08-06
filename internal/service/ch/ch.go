@@ -165,11 +165,12 @@ type AggSignal struct {
 	// For float and string aggregations this is simply an index
 	// into the corresponding argument array.
 	//
-	// For approximate location, we imagine expanding each element of
-	// the slice model.AllFloatAggregation into two: first the
-	// longitude and then the latitude. So, for example, SignalType = 3
-	// and SignalIndex = 3 means latitude for the 1-th float
-	// aggregation.
+	// For approximate location (SignalType = AppLocType = 3), we
+	// imagine expanding each element of the slice
+	// model.AllFloatAggregation into two: first the latitude and then
+	// the longitude. So, for example, SignalType = 3 and
+	// SignalIndex = 4 means we want approximate latitude (4 % 2 = 0)
+	// for the index 2 (4 / 2 = 2) float aggregation.
 	//
 	// We could get away with a single number, since we know how many
 	// arguments of each type there are, but it appears to us that this
