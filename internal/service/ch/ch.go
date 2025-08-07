@@ -141,7 +141,7 @@ func (s *Service) getSignals(ctx context.Context, stmt string, args []any) ([]*v
 	signals := []*vss.Signal{}
 	for rows.Next() {
 		var signal vss.Signal
-		err := rows.Scan(&signal.Name, &signal.Timestamp, &signal.ValueNumber, &signal.ValueString)
+		err := rows.Scan(&signal.Name, &signal.Timestamp, &signal.ValueNumber, &signal.ValueString, &signal.ValueLocation)
 		if err != nil {
 			_ = rows.Close()
 			return nil, fmt.Errorf("failed scanning clickhouse row: %w", err)

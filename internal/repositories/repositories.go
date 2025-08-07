@@ -144,6 +144,17 @@ func (r *Repository) GetSignalLatest(ctx context.Context, latestArgs *model.Late
 			coll.LastSeen = &signal.Timestamp
 			continue
 		}
+		if signal.Name == "currentLocation" {
+			coll.CurrentLocationLatitude = &model.SignalFloat{
+				Timestamp: signal.Timestamp,
+				Value:     signal.ValueLocation.Latitude,
+			}
+			coll.CurrentLocationLongitude = &model.SignalFloat{
+				Timestamp: signal.Timestamp,
+				Value:     signal.ValueLocation.Longitude,
+			}
+			continue
+		}
 		model.SetCollectionField(coll, signal)
 	}
 	setApproximateLocationInCollection(coll)
