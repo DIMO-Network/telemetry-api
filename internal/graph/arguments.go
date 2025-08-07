@@ -92,12 +92,12 @@ func latestArgsFromContext(ctx context.Context, tokenID int, filter *model.Signa
 			}
 			continue
 		}
-		if field.Name == model.ApproximateLatField || field.Name == model.ApproximateLongField {
-			latestArgs.SignalNames[vss.FieldCurrentLocationLatitude] = struct{}{}
-			latestArgs.SignalNames[vss.FieldCurrentLocationLongitude] = struct{}{}
-			continue
+		switch field.Name {
+		case vss.FieldCurrentLocationLatitude, vss.FieldCurrentLocationLongitude, model.ApproximateLatField, model.ApproximateLongField:
+			latestArgs.SignalNames["currentLocation"] = struct{}{}
+		default:
+			latestArgs.SignalNames[field.Name] = struct{}{}
 		}
-		latestArgs.SignalNames[field.Name] = struct{}{}
 	}
 	return &latestArgs, nil
 }
