@@ -375,21 +375,28 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 	}
 	valueTable := fmt.Sprintf("VALUES('%s', %s) as %s ON %s.%s = %s.%s", valueTableDef, strings.Join(valuesArgs, ", "), aggTableName, vss.TableName, vss.NameCol, aggTableName, vss.NameCol)
 
-	floatFilters := []qm.QueryMod{
-		// Make sure non-float rows can still get returned.
+	// This ensures that non-float rows get returned.
+	// TODO(elffjs): When we have filtering for more field types, this
+	// will get more complex.
+	perSignalFilters := []qm.QueryMod{
 		qmhelper.Where(signalTypeCol, qmhelper.NEQ, FloatType),
 	}
 
-	for i, agg := range aggArgs.FloatArgs {
-		// TODO(elffjs): Some duplication here. Also a bit wasteful if
-		// there are no filters at all.
-		fieldFilters := []qm.QueryMod{
-			qmhelper.Where(signalTypeCol, qmhelper.EQ, FloatType),
-			qmhelper.Where(signalIndexCol, qmhelper.EQ, i),
-		}
-		fieldFilters = append(fieldFilters, buildConditionList(agg.Filter)...)
+	if len(aggArgs.FloatArgs) != 0 {
+		// These are for float fields. One sub-Expr per field.
+		var innerFloatFilters []qm.QueryMod
 
-		floatFilters = append(floatFilters, qm.Or2(qm.Expr(fieldFilters...)))
+		for i, agg := range aggArgs.FloatArgs {
+			fieldFilters := []qm.QueryMod{
+				qmhelper.Where(signalIndexCol, qmhelper.EQ, i),
+			}
+			fieldFilters = append(fieldFilters, buildConditionList(agg.Filter)...)
+
+			// It's okay to use Or2 for the first entry. It's simply ignored.
+			innerFloatFilters = append(innerFloatFilters, qm.Or2(qm.Expr(fieldFilters...)))
+		}
+
+		perSignalFilters = append(perSignalFilters, qm.Or2(qm.Expr(innerFloatFilters...)))
 	}
 
 	mods := []qm.QueryMod{
@@ -409,7 +416,7 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 		qm.OrderBy(groupAsc),
 	}
 	mods = append(mods, getFilterMods(aggArgs.Filter)...)
-	mods = append(mods, qm.Expr(floatFilters...))
+	mods = append(mods, qm.Expr(perSignalFilters...)) // Parenthesization is very important here!
 
 	stmt, args := newQuery(mods...)
 	return stmt, args, nil
@@ -451,13 +458,10 @@ func buildConditionList(fil *model.SignalFloatFilter) []qm.QueryMod {
 	for _, cond := range fil.Or {
 		clauseMods := buildConditionList(cond)
 		if len(clauseMods) != 0 {
-			if len(orMods) == 0 {
-				orMods = append(orMods, qm.Expr(clauseMods...))
-			} else {
-				orMods = append(orMods, qm.Or2(qm.Expr(clauseMods...)))
-			}
+			orMods = append(orMods, qm.Or2(qm.Expr(clauseMods...)))
 		}
 	}
+
 	if len(orMods) != 0 {
 		mods = append(mods, qm.Expr(orMods...))
 	}
