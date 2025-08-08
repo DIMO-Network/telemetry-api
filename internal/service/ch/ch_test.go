@@ -516,6 +516,36 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 			},
 		},
 		{
+			name: "float filters and-ed",
+			aggArgs: model.AggregatedSignalArgs{
+				SignalArgs: model.SignalArgs{
+					TokenID: 1,
+				},
+				FromTS:   c.dataStartTime,
+				ToTS:     endTs,
+				Interval: day.Microseconds(),
+				FloatArgs: []model.FloatSignalArgs{
+					{
+						Name:  vss.FieldSpeed,
+						Agg:   model.FloatAggregationAvg,
+						Alias: vss.FieldSpeed,
+						Filter: &model.SignalFloatFilter{
+							Gte: ref(3.0),
+							Neq: ref(6.0),
+						},
+					},
+				},
+			},
+			expected: []AggSignal{
+				{
+					SignalType:  FloatType,
+					SignalIndex: 0,
+					Timestamp:   c.dataStartTime,
+					ValueNumber: 6.0,
+				},
+			},
+		},
+		{
 			name: "float filters or-ed",
 			aggArgs: model.AggregatedSignalArgs{
 				SignalArgs: model.SignalArgs{
