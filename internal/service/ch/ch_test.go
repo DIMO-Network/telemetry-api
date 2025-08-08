@@ -629,6 +629,66 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 				},
 			},
 		},
+		{
+			name: "multiple",
+			aggArgs: model.AggregatedSignalArgs{
+				SignalArgs: model.SignalArgs{
+					TokenID: 1,
+				},
+				FromTS:   c.dataStartTime,
+				ToTS:     endTs,
+				Interval: day.Microseconds(),
+				FloatArgs: []model.FloatSignalArgs{
+					{
+						Name:  vss.FieldSpeed,
+						Agg:   model.FloatAggregationMed,
+						Alias: "speed1",
+						Filter: &model.SignalFloatFilter{
+							Or: []*model.SignalFloatFilter{
+								{Lte: ref(1.0)},
+								{Gte: ref(9.0)},
+							},
+						},
+					},
+					{
+						Name:  vss.FieldSpeed,
+						Agg:   model.FloatAggregationLast,
+						Alias: "speed2",
+						Filter: &model.SignalFloatFilter{
+							Gt:  ref(1.0),
+							Lte: ref(6.0),
+						},
+					},
+				},
+				StringArgs: []model.StringSignalArgs{
+					{
+						Name:  vss.FieldPowertrainType,
+						Agg:   model.StringAggregationLast,
+						Alias: vss.FieldPowertrainType,
+					},
+				},
+			},
+			expected: []AggSignal{
+				{
+					SignalType:  FloatType,
+					SignalIndex: 0,
+					Timestamp:   c.dataStartTime,
+					ValueNumber: 1,
+				},
+				{
+					SignalType:  FloatType,
+					SignalIndex: 1,
+					Timestamp:   c.dataStartTime,
+					ValueNumber: 6,
+				},
+				{
+					SignalType:  StringType,
+					SignalIndex: 0,
+					Timestamp:   c.dataStartTime,
+					ValueString: "value10",
+				},
+			},
+		},
 	}
 	for _, tc := range testCases {
 		c.Run(tc.name, func() {
