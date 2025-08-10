@@ -811,7 +811,7 @@ func (c *CHServiceTestSuite) TestExecutionTimeout() {
 
 	settings := config.Settings{
 		Clickhouse:         cfg,
-		MaxRequestDuration: "1s",
+		MaxRequestDuration: "1s500ms",
 	}
 	chService, err := NewService(settings)
 	c.Require().NoError(err, "Failed to create repository")
