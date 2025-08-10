@@ -375,7 +375,7 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 	}
 	valueTable := fmt.Sprintf("VALUES('%s', %s) as %s ON %s.%s = %s.%s", valueTableDef, strings.Join(valuesArgs, ", "), aggTableName, vss.TableName, vss.NameCol, aggTableName, vss.NameCol)
 
-	// This ensures that non-float rows get returned.
+	// This NEQ ensures that non-float rows get returned.
 	// TODO(elffjs): When we have filtering for more field types, this
 	// will get more complex.
 	perSignalFilters := []qm.QueryMod{
@@ -392,7 +392,7 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 			}
 			fieldFilters = append(fieldFilters, buildConditionList(agg.Filter)...)
 
-			// It's okay to use Or2 for the first entry. It's simply ignored.
+			// It's okay to also use Or2 for the first entry: it's simply ignored.
 			innerFloatFilters = append(innerFloatFilters, qm.Or2(qm.Expr(fieldFilters...)))
 		}
 
