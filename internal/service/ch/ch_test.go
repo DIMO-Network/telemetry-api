@@ -56,7 +56,7 @@ func (c *CHServiceTestSuite) SetupSuite() {
 	}
 	c.chService, err = NewService(settings)
 	c.Require().NoError(err, "Failed to create repository")
-	c.dataStartTime = time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
+	c.dataStartTime = time.Date(2020, time.January, 1, 0, 0, 0, 0, time.UTC)
 	c.insertTestData()
 }
 
@@ -313,6 +313,35 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 			},
 		},
 		{
+			name: "gt filter",
+			aggArgs: model.AggregatedSignalArgs{
+				SignalArgs: model.SignalArgs{
+					TokenID: 1,
+				},
+				FromTS:   c.dataStartTime,
+				ToTS:     endTs,
+				Interval: day.Microseconds(),
+				FloatArgs: []model.FloatSignalArgs{
+					{
+						Name:  vss.FieldSpeed,
+						Agg:   model.FloatAggregationAvg,
+						Alias: vss.FieldSpeed,
+						Filter: &model.SignalFloatFilter{
+							Gt: ref(float64(5)),
+						},
+					},
+				},
+			},
+			expected: []AggSignal{
+				{
+					SignalType:  FloatType,
+					SignalIndex: 0,
+					Timestamp:   c.dataStartTime,
+					ValueNumber: 7.5,
+				},
+			},
+		},
+		{
 			name: "gte filter",
 			aggArgs: model.AggregatedSignalArgs{
 				SignalArgs: model.SignalArgs{
@@ -338,6 +367,213 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 					SignalIndex: 0,
 					Timestamp:   c.dataStartTime,
 					ValueNumber: 7,
+				},
+			},
+		},
+		{
+			name: "lte filter",
+			aggArgs: model.AggregatedSignalArgs{
+				SignalArgs: model.SignalArgs{
+					TokenID: 1,
+				},
+				FromTS:   c.dataStartTime,
+				ToTS:     endTs,
+				Interval: day.Microseconds(),
+				FloatArgs: []model.FloatSignalArgs{
+					{
+						Name:  vss.FieldSpeed,
+						Agg:   model.FloatAggregationAvg,
+						Alias: vss.FieldSpeed,
+						Filter: &model.SignalFloatFilter{
+							Lte: ref(float64(7)),
+						},
+					},
+				},
+			},
+			expected: []AggSignal{
+				{
+					SignalType:  FloatType,
+					SignalIndex: 0,
+					Timestamp:   c.dataStartTime,
+					ValueNumber: 3.5,
+				},
+			},
+		},
+		{
+			name: "filter for numeric values in set",
+			aggArgs: model.AggregatedSignalArgs{
+				SignalArgs: model.SignalArgs{
+					TokenID: 1,
+				},
+				FromTS:   c.dataStartTime,
+				ToTS:     endTs,
+				Interval: day.Microseconds(),
+				FloatArgs: []model.FloatSignalArgs{
+					{
+						Name:  vss.FieldSpeed,
+						Agg:   model.FloatAggregationAvg,
+						Alias: vss.FieldSpeed,
+						Filter: &model.SignalFloatFilter{
+							In: []float64{3, 9},
+						},
+					},
+				},
+			},
+			expected: []AggSignal{
+				{
+					SignalType:  FloatType,
+					SignalIndex: 0,
+					Timestamp:   c.dataStartTime,
+					ValueNumber: 6,
+				},
+			},
+		},
+		{
+			name: "float neq filter",
+			aggArgs: model.AggregatedSignalArgs{
+				SignalArgs: model.SignalArgs{
+					TokenID: 1,
+				},
+				FromTS:   c.dataStartTime,
+				ToTS:     endTs,
+				Interval: day.Microseconds(),
+				FloatArgs: []model.FloatSignalArgs{
+					{
+						Name:  vss.FieldSpeed,
+						Agg:   model.FloatAggregationAvg,
+						Alias: vss.FieldSpeed,
+						Filter: &model.SignalFloatFilter{
+							Neq: ref(0.0),
+						},
+					},
+				},
+			},
+			expected: []AggSignal{
+				{
+					SignalType:  FloatType,
+					SignalIndex: 0,
+					Timestamp:   c.dataStartTime,
+					ValueNumber: 5,
+				},
+			},
+		},
+		{
+			name: "float neq filter",
+			aggArgs: model.AggregatedSignalArgs{
+				SignalArgs: model.SignalArgs{
+					TokenID: 1,
+				},
+				FromTS:   c.dataStartTime,
+				ToTS:     endTs,
+				Interval: day.Microseconds(),
+				FloatArgs: []model.FloatSignalArgs{
+					{
+						Name:  vss.FieldSpeed,
+						Agg:   model.FloatAggregationAvg,
+						Alias: vss.FieldSpeed,
+						Filter: &model.SignalFloatFilter{
+							Eq: ref(3.0),
+						},
+					},
+				},
+			},
+			expected: []AggSignal{
+				{
+					SignalType:  FloatType,
+					SignalIndex: 0,
+					Timestamp:   c.dataStartTime,
+					ValueNumber: 3,
+				},
+			},
+		},
+		{
+			name: "float not in filter",
+			aggArgs: model.AggregatedSignalArgs{
+				SignalArgs: model.SignalArgs{
+					TokenID: 1,
+				},
+				FromTS:   c.dataStartTime,
+				ToTS:     endTs,
+				Interval: day.Microseconds(),
+				FloatArgs: []model.FloatSignalArgs{
+					{
+						Name:  vss.FieldSpeed,
+						Agg:   model.FloatAggregationAvg,
+						Alias: vss.FieldSpeed,
+						Filter: &model.SignalFloatFilter{
+							NotIn: []float64{3, 5},
+						},
+					},
+				},
+			},
+			expected: []AggSignal{
+				{
+					SignalType:  FloatType,
+					SignalIndex: 0,
+					Timestamp:   c.dataStartTime,
+					ValueNumber: 4.625,
+				},
+			},
+		},
+		{
+			name: "float filters and-ed",
+			aggArgs: model.AggregatedSignalArgs{
+				SignalArgs: model.SignalArgs{
+					TokenID: 1,
+				},
+				FromTS:   c.dataStartTime,
+				ToTS:     endTs,
+				Interval: day.Microseconds(),
+				FloatArgs: []model.FloatSignalArgs{
+					{
+						Name:  vss.FieldSpeed,
+						Agg:   model.FloatAggregationAvg,
+						Alias: vss.FieldSpeed,
+						Filter: &model.SignalFloatFilter{
+							Gte: ref(3.0),
+							Neq: ref(6.0),
+						},
+					},
+				},
+			},
+			expected: []AggSignal{
+				{
+					SignalType:  FloatType,
+					SignalIndex: 0,
+					Timestamp:   c.dataStartTime,
+					ValueNumber: 6.0,
+				},
+			},
+		},
+		{
+			name: "float filters or-ed",
+			aggArgs: model.AggregatedSignalArgs{
+				SignalArgs: model.SignalArgs{
+					TokenID: 1,
+				},
+				FromTS:   c.dataStartTime,
+				ToTS:     endTs,
+				Interval: day.Microseconds(),
+				FloatArgs: []model.FloatSignalArgs{
+					{
+						Name:  vss.FieldSpeed,
+						Agg:   model.FloatAggregationAvg,
+						Alias: vss.FieldSpeed,
+						Filter: &model.SignalFloatFilter{
+							Or: []*model.SignalFloatFilter{
+								{Lt: ref(2.0)},
+								{Gte: ref(8.0)},
+							},
+						},
+					},
+				},
+			},
+			expected: []AggSignal{
+				{
+					SignalType:  FloatType,
+					SignalIndex: 0,
+					Timestamp:   c.dataStartTime,
+					ValueNumber: 4.5,
 				},
 			},
 		},
@@ -390,6 +626,66 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 					SignalIndex: 0,
 					Timestamp:   c.dataStartTime,
 					ValueString: fmt.Sprintf("value%d", dataPoints),
+				},
+			},
+		},
+		{
+			name: "multiple",
+			aggArgs: model.AggregatedSignalArgs{
+				SignalArgs: model.SignalArgs{
+					TokenID: 1,
+				},
+				FromTS:   c.dataStartTime,
+				ToTS:     endTs,
+				Interval: day.Microseconds(),
+				FloatArgs: []model.FloatSignalArgs{
+					{
+						Name:  vss.FieldSpeed,
+						Agg:   model.FloatAggregationMed,
+						Alias: "speed1",
+						Filter: &model.SignalFloatFilter{
+							Or: []*model.SignalFloatFilter{
+								{Lte: ref(1.0)},
+								{Gte: ref(9.0)},
+							},
+						},
+					},
+					{
+						Name:  vss.FieldSpeed,
+						Agg:   model.FloatAggregationLast,
+						Alias: "speed2",
+						Filter: &model.SignalFloatFilter{
+							Gt:  ref(1.0),
+							Lte: ref(6.0),
+						},
+					},
+				},
+				StringArgs: []model.StringSignalArgs{
+					{
+						Name:  vss.FieldPowertrainType,
+						Agg:   model.StringAggregationLast,
+						Alias: vss.FieldPowertrainType,
+					},
+				},
+			},
+			expected: []AggSignal{
+				{
+					SignalType:  FloatType,
+					SignalIndex: 0,
+					Timestamp:   c.dataStartTime,
+					ValueNumber: 1,
+				},
+				{
+					SignalType:  FloatType,
+					SignalIndex: 1,
+					Timestamp:   c.dataStartTime,
+					ValueNumber: 6,
+				},
+				{
+					SignalType:  StringType,
+					SignalIndex: 0,
+					Timestamp:   c.dataStartTime,
+					ValueString: "value10",
 				},
 			},
 		},
@@ -515,7 +811,7 @@ func (c *CHServiceTestSuite) TestExecutionTimeout() {
 
 	settings := config.Settings{
 		Clickhouse:         cfg,
-		MaxRequestDuration: "1s",
+		MaxRequestDuration: "1s500ms",
 	}
 	chService, err := NewService(settings)
 	c.Require().NoError(err, "Failed to create repository")

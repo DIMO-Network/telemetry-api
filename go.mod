@@ -15,6 +15,7 @@ require (
 	github.com/DIMO-Network/shared v1.0.7
 	github.com/DIMO-Network/token-exchange-api v0.3.2
 	github.com/Khan/genqlient v0.8.1
+	github.com/aarondl/sqlboiler/v4 v4.19.5
 	github.com/auth0/go-jwt-middleware/v2 v2.3.0
 	github.com/ethereum/go-ethereum v1.16.1
 	github.com/go-jose/go-jose/v4 v4.1.1
@@ -24,7 +25,6 @@ require (
 	github.com/stretchr/testify v1.10.0
 	github.com/uber/h3-go/v4 v4.3.0
 	github.com/vektah/gqlparser/v2 v2.5.30
-	github.com/volatiletech/sqlboiler/v4 v4.19.1
 	go.uber.org/mock v0.5.2
 	golang.org/x/sync v0.16.0
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20250603155806-513f23925822
@@ -41,6 +41,8 @@ require (
 	github.com/Masterminds/semver/v3 v3.3.0 // indirect
 	github.com/Masterminds/sprig/v3 v3.3.0 // indirect
 	github.com/Microsoft/go-winio v0.6.2 // indirect
+	github.com/aarondl/inflect v0.0.2 // indirect
+	github.com/aarondl/strmangle v0.0.9 // indirect
 	github.com/agnivade/levenshtein v1.2.1 // indirect
 	github.com/andybalholm/brotli v1.2.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
@@ -119,8 +121,6 @@ require (
 	github.com/tklauser/go-sysconf v0.3.13 // indirect
 	github.com/tklauser/numcpus v0.7.0 // indirect
 	github.com/urfave/cli/v2 v2.27.7 // indirect
-	github.com/volatiletech/inflect v0.0.1 // indirect
-	github.com/volatiletech/strmangle v0.0.7-0.20240503230658-86517898275a // indirect
 	github.com/xrash/smetrics v0.0.0-20240521201337-686a1a2994c1 // indirect
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
 	go.opentelemetry.io/auto/sdk v1.1.0 // indirect
