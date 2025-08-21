@@ -1089,6 +1089,98 @@ func (c *CHServiceTestSuite) insertTestData() {
 	c.Require().NoError(err, "Failed to send batch")
 }
 
+// TestGetAggregatedSignalsOptimization tests that the optimization correctly filters unavailable signals.
+func (c *CHServiceTestSuite) TestGetAggregatedSignalsOptimization() {
+	ctx := context.Background()
+	endTs := c.dataStartTime.Add(time.Second * time.Duration(30*dataPoints))
+
+	c.Run("filters unavailable signals", func() {
+		aggArgs := model.AggregatedSignalArgs{
+			SignalArgs: model.SignalArgs{TokenID: 1},
+			FromTS:     c.dataStartTime,
+			ToTS:       endTs,
+			Interval:   day.Microseconds(),
+			FloatArgs: []model.FloatSignalArgs{
+				{Name: vss.FieldSpeed, Agg: model.FloatAggregationAvg, Alias: "speed"},
+				{Name: "nonExistentSignal", Agg: model.FloatAggregationMax, Alias: "nonExistent"},
+			},
+			StringArgs: []model.StringSignalArgs{
+				{Name: vss.FieldPowertrainType, Agg: model.StringAggregationUnique, Alias: "powertrain"},
+				{Name: "anotherNonExistent", Agg: model.StringAggregationTop, Alias: "another"},
+			},
+		}
+
+		result, err := c.chService.GetAggregatedSignals(ctx, &aggArgs)
+
+		c.Require().NoError(err)
+		c.Require().Len(result, 2) // Only available signals should return results
+	})
+
+	c.Run("returns empty when no signals available", func() {
+		aggArgs := model.AggregatedSignalArgs{
+			SignalArgs: model.SignalArgs{TokenID: 1},
+			FromTS:     c.dataStartTime,
+			ToTS:       endTs,
+			Interval:   day.Microseconds(),
+			FloatArgs: []model.FloatSignalArgs{
+				{Name: "unavailable1", Agg: model.FloatAggregationAvg, Alias: "unavailable1"},
+			},
+		}
+
+		result, err := c.chService.GetAggregatedSignals(ctx, &aggArgs)
+		c.Require().NoError(err)
+		c.Require().Empty(result)
+	})
+}
+
+// TestGetLatestSignalsOptimization tests that the optimization correctly filters unavailable signals.
+func (c *CHServiceTestSuite) TestGetLatestSignalsOptimization() {
+	ctx := context.Background()
+
+	c.Run("filters unavailable signals", func() {
+		latestArgs := model.LatestSignalsArgs{
+			SignalArgs: model.SignalArgs{TokenID: 1},
+			SignalNames: map[string]struct{}{
+				vss.FieldSpeed:          {},
+				vss.FieldPowertrainType: {},
+				"nonExistentSignal1":    {},
+				"nonExistentSignal2":    {},
+			},
+		}
+
+		result, err := c.chService.GetLatestSignals(ctx, &latestArgs)
+		c.Require().NoError(err)
+		c.Require().Len(result, 2) // Only available signals should return results
+	})
+
+	c.Run("returns empty when no signals available", func() {
+		latestArgs := model.LatestSignalsArgs{
+			SignalArgs: model.SignalArgs{TokenID: 1},
+			SignalNames: map[string]struct{}{
+				"unavailable1": {},
+				"unavailable2": {},
+			},
+		}
+
+		result, err := c.chService.GetLatestSignals(ctx, &latestArgs)
+		c.Require().NoError(err)
+		c.Require().Empty(result)
+	})
+
+	c.Run("includes lastSeen when requested", func() {
+		latestArgs := model.LatestSignalsArgs{
+			SignalArgs:      model.SignalArgs{TokenID: 1},
+			SignalNames:     map[string]struct{}{},
+			IncludeLastSeen: true,
+		}
+
+		result, err := c.chService.GetLatestSignals(ctx, &latestArgs)
+		c.Require().NoError(err)
+		c.Require().Len(result, 1)
+		c.Require().Equal(model.LastSeenField, result[0].Name)
+	})
+}
+
 func ref[T any](t T) *T {
 	return &t
 }
