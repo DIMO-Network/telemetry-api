@@ -69,6 +69,12 @@ func addSignalAggregation(aggArgs *model.AggregatedSignalArgs, child *graphql.Fi
 			Agg:   typedAgg,
 			Alias: alias,
 		})
+	case model.LocationAggregation:
+		aggArgs.LocationArgs = append(aggArgs.LocationArgs, model.LocationSignalArgs{
+			Name:  name,
+			Agg:   typedAgg,
+			Alias: alias,
+		})
 	default:
 		return fmt.Errorf("unknown aggregation type: %T", agg)
 	}

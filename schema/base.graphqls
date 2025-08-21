@@ -122,6 +122,10 @@ enum FloatAggregation {
   LAST
 }
 
+enum LocationAggregation {
+  FIRST
+}
+
 enum StringAggregation {
   """
   Randomly select a value from the group.
@@ -168,6 +172,18 @@ type SignalString {
   value: String!
 }
 
+type SignalLocation {
+  """
+  timestamp of when this data was colllected
+  """
+  timestamp: Time!
+
+  """
+  value of the signal
+  """
+  value: Location!
+}
+
 """
 SignalFilter holds the filter parameters for the signal querys.
 """
@@ -191,4 +207,10 @@ input SignalFloatFilter {
   notIn: [Float!]
   in: [Float!]
   or: [SignalFloatFilter!]
+}
+
+type Location {
+  latitude: Float!
+  longitude: Float!
+  hdop: Float!
 }

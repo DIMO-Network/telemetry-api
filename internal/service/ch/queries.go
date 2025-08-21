@@ -19,6 +19,7 @@ const (
 	IntervalGroup     = "group_timestamp"
 	AggNumberCol      = "agg_number"
 	AggStringCol      = "agg_string"
+	AggLocationCol    = "agg_location"
 	aggTableName      = "agg_table"
 	tokenIDWhere      = vss.TokenIDCol + " = ?"
 	eventSubjectWhere = vss.EventSubjectCol + " = ?"
@@ -39,13 +40,16 @@ const (
 	lastSeenName = "'" + model.LastSeenField + "' AS name"
 	numValAsNull = "NULL AS " + vss.ValueNumberCol
 	strValAsNull = "NULL AS " + vss.ValueStringCol
-	lastSeenTS   = "max(" + vss.TimestampCol + ") AS ts"
+	locValAsZero = "CAST(tuple(0, 0, 0), 'Tuple(latitude Float64, longitude Float64, hdop Float64)') AS " + vss.ValueLocationCol
+
+	lastSeenTS = "max(" + vss.TimestampCol + ") AS ts"
 )
 
 // Aggregation functions for latest signals.
 const (
 	latestString    = "argMax(" + vss.ValueStringCol + ", " + vss.TimestampCol + ") as " + vss.ValueStringCol
 	latestNumber    = "argMax(" + vss.ValueNumberCol + ", " + vss.TimestampCol + ") as " + vss.ValueNumberCol
+	latestLocation  = "argMax(" + vss.ValueLocationCol + ", " + vss.TimestampCol + ") as " + vss.ValueLocationCol
 	latestTimestamp = "max(" + vss.TimestampCol + ") as ts"
 )
 
@@ -67,6 +71,10 @@ const (
 	topGroup         = "arrayStringConcat(topK(1, 10)(" + vss.ValueStringCol + "))"
 	firstStringGroup = "argMin(" + vss.ValueStringCol + ", " + vss.TimestampCol + ")"
 	lastStringGroup  = "argMax(" + vss.ValueStringCol + ", " + vss.TimestampCol + ")"
+)
+
+const (
+	firstLocationGroup = "argMin(" + vss.ValueLocationCol + ", " + vss.TimestampCol + ")"
 )
 
 var SourceTranslations = map[string][]string{
@@ -94,6 +102,7 @@ const (
 	// AppLocType is the type for rows needed to compute approximate
 	// locations.
 	AppLocType FieldType = 3
+	LocType    FieldType = 4
 )
 
 func (t *FieldType) Scan(value any) error {
@@ -154,7 +163,7 @@ func selectInterval(microSeconds int64, origin time.Time) qm.QueryMod {
 
 func selectNumberAggs(numberAggs []model.FloatSignalArgs, appLocAggs map[model.FloatAggregation]struct{}) qm.QueryMod {
 	if len(numberAggs) == 0 && len(appLocAggs) == 0 {
-		return qm.Select("NULL AS " + vss.ValueNumberCol)
+		return qm.Select("NULL AS " + AggNumberCol)
 	}
 	// Add a CASE statement for each name and its corresponding aggregation function
 	caseStmts := make([]string, 0, len(numberAggs)+2*len(appLocAggs))
@@ -174,7 +183,7 @@ func selectNumberAggs(numberAggs []model.FloatSignalArgs, appLocAggs map[model.F
 
 func selectStringAggs(stringAggs []model.StringSignalArgs) qm.QueryMod {
 	if len(stringAggs) == 0 {
-		return qm.Select("NULL AS " + vss.ValueStringCol)
+		return qm.Select("NULL AS " + AggStringCol)
 	}
 	// Add a CASE statement for each name and its corresponding aggregation function
 	caseStmts := make([]string, 0, len(stringAggs))
@@ -182,6 +191,19 @@ func selectStringAggs(stringAggs []model.StringSignalArgs) qm.QueryMod {
 		caseStmts = append(caseStmts, fmt.Sprintf("WHEN %s = %d AND %s = %d THEN %s", signalTypeCol, StringType, signalIndexCol, i, getStringAgg(agg.Agg)))
 	}
 	caseStmt := fmt.Sprintf("CASE %s ELSE NULL END AS %s", strings.Join(caseStmts, " "), AggStringCol)
+	return qm.Select(caseStmt)
+}
+
+func selectLocationAggs(stringAggs []model.LocationSignalArgs) qm.QueryMod {
+	if len(stringAggs) == 0 {
+		return qm.Select("CAST(tuple(0, 0, 0), 'Tuple(latitude Float64, longitude Float64, hdop Float64)') AS " + AggLocationCol)
+	}
+	// Add a CASE statement for each name and its corresponding aggregation function
+	caseStmts := make([]string, 0, len(stringAggs))
+	for i, agg := range stringAggs {
+		caseStmts = append(caseStmts, fmt.Sprintf("WHEN %s = %d AND %s = %d THEN %s", signalTypeCol, LocType, signalIndexCol, i, getLocationAgg(agg.Agg)))
+	}
+	caseStmt := fmt.Sprintf("CASE %s ELSE CAST(tuple(0, 0, 0), 'Tuple(latitude Float64, longitude Float64, hdop Float64)') END AS %s", strings.Join(caseStmts, " "), AggLocationCol)
 	return qm.Select(caseStmt)
 }
 
@@ -227,6 +249,15 @@ func getStringAgg(aggType model.StringAggregation) string {
 	return aggStr
 }
 
+func getLocationAgg(aggType model.LocationAggregation) string {
+	aggLoc := firstLocationGroup
+	switch aggType {
+	case model.LocationAggregationFirst:
+		aggLoc = firstLocationGroup
+	}
+	return aggLoc
+}
+
 // getLatestQuery creates a query to get the latest signal value for each signal names
 // returns the query statement and the arguments list,
 /*
@@ -253,6 +284,7 @@ func getLatestQuery(latestArgs *model.LatestSignalsArgs) (string, []any) {
 		qm.Select(latestTimestamp),
 		qm.Select(latestNumber),
 		qm.Select(latestString),
+		qm.Select(latestLocation),
 		qm.From(vss.TableName),
 		qm.Where(tokenIDWhere, latestArgs.TokenID),
 		qm.WhereIn(nameIn, signalNames),
@@ -284,6 +316,7 @@ func getLastSeenQuery(sigArgs *model.SignalArgs) (string, []any) {
 		qm.Select(lastSeenTS),
 		qm.Select(numValAsNull),
 		qm.Select(strValAsNull),
+		qm.Select(locValAsZero),
 		qm.From(vss.TableName),
 		qm.Where(tokenIDWhere, sigArgs.TokenID),
 	}
@@ -351,7 +384,7 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 		return "", nil, nil
 	}
 
-	numAggs := len(aggArgs.FloatArgs) + len(aggArgs.StringArgs) + 2*len(aggArgs.ApproxLocArgs)
+	numAggs := len(aggArgs.FloatArgs) + len(aggArgs.StringArgs) + 2*len(aggArgs.ApproxLocArgs) + len(aggArgs.LocationArgs)
 	if numAggs == 0 {
 		return "", nil, errors.New("no aggregations requested")
 	}
@@ -372,6 +405,9 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 				aggTableEntry(AppLocType, 2*i, vss.FieldCurrentLocationLatitude),
 				aggTableEntry(AppLocType, 2*i+1, vss.FieldCurrentLocationLongitude))
 		}
+	}
+	for i, agg := range aggArgs.LocationArgs {
+		valuesArgs = append(valuesArgs, aggTableEntry(LocType, i, agg.Name))
 	}
 	valueTable := fmt.Sprintf("VALUES('%s', %s) as %s ON %s.%s = %s.%s", valueTableDef, strings.Join(valuesArgs, ", "), aggTableName, vss.TableName, vss.NameCol, aggTableName, vss.NameCol)
 
@@ -405,6 +441,7 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 		selectInterval(aggArgs.Interval, aggArgs.FromTS),
 		selectNumberAggs(aggArgs.FloatArgs, aggArgs.ApproxLocArgs),
 		selectStringAggs(aggArgs.StringArgs),
+		selectLocationAggs(aggArgs.LocationArgs),
 		qm.Where(tokenIDWhere, aggArgs.TokenID),
 		qm.Where(timestampFrom, aggArgs.FromTS),
 		qm.Where(timestampTo, aggArgs.ToTS),

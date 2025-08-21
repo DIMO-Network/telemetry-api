@@ -22,8 +22,8 @@ github.com/DIMO-Network/credit-tracker v0.0.6 h1:9C9AXah2uCQKCr7Kqzu2H9aXWj7wEOj
 github.com/DIMO-Network/credit-tracker v0.0.6/go.mod h1:k037ZQMuBcyNj0Czg/jd6GCBC/HihkSsA7c1FRrF2yI=
 github.com/DIMO-Network/fetch-api v0.0.12 h1:pLUekaYNWHKmguoGAni+BtTWl1j1yOdpowN5T6bWZuo=
 github.com/DIMO-Network/fetch-api v0.0.12/go.mod h1:9FtpOZR6kChy9x8cXN1z/0002ATh7R6yDo40pABAyNw=
-github.com/DIMO-Network/model-garage v0.6.7 h1:tcygIsxM6fOVCXnuTsiLjjw2iyjb3g095Z0d97uR1eU=
-github.com/DIMO-Network/model-garage v0.6.7/go.mod h1:89G/TNoTM/MGMof9PX/wdF1KIbthib/Wb1LB8BOJBKY=
+github.com/DIMO-Network/model-garage v0.7.1-0.20250821190225-dbd9a5354eab h1:SffK4W1h5FPM7UO0nRs4kZqXeHFswEZ+SMFGk1Aqnz4=
+github.com/DIMO-Network/model-garage v0.7.1-0.20250821190225-dbd9a5354eab/go.mod h1:TFzjbN+mdbyjK+rV2B7nvwUCxRjtBAz+l6XwyvUQ3VY=
 github.com/DIMO-Network/server-garage v0.0.2 h1:myiYZB2cwaj1I5LWT9xOMLu6pqr6PhOYhzSQlRRyO08=
 github.com/DIMO-Network/server-garage v0.0.2/go.mod h1:3Go/1frM5asHyNsA/ruCYSIg0z+mho1/FdnqFVOirKg=
 github.com/DIMO-Network/shared v1.0.7 h1:LfSgsqJ6R7EUyfo2GTfuhrCpoDcweJqe7eVOa4j7Xbo=
