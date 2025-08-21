@@ -1,6 +1,10 @@
 package model
 
-import "time"
+import (
+	"time"
+
+	"github.com/DIMO-Network/model-garage/pkg/vss"
+)
 
 // AliasKey identifies the combination of signal name and aggregation
 // for a certain time bucket.
@@ -22,6 +26,9 @@ type SignalAggregations struct {
 
 	// Aggregation cross non-approximate field name to value
 	AppLocNumbers map[AppLocKey]float64 `json:"-"`
+
+	// Alias to value
+	ValueLocations map[string]vss.Location `json:"-"`
 }
 
 type AppLocKey struct {

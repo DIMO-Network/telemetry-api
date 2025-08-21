@@ -37,7 +37,10 @@ func validateAggSigArgs(args *model.AggregatedSignalArgs) error {
 		return ValidationError("too many float aggregations")
 	}
 	if len(args.StringArgs) > math.MaxUint16 {
-		return ValidationError("too many string aggregations, maximum is ")
+		return ValidationError("too many string aggregations")
+	}
+	if len(args.LocationArgs) > math.MaxUint16 {
+		return ValidationError("too many location aggregations")
 	}
 
 	return validateSignalArgs(&args.SignalArgs)

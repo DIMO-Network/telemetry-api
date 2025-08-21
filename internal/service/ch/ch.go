@@ -81,6 +81,8 @@ func (s *Service) GetLatestSignals(ctx context.Context, latestArgs *model.Latest
 		stmt, args = unionAll([]string{stmt, lastSeenStmt}, [][]any{args, lastSeenArgs})
 	}
 
+	fmt.Println(stmt)
+
 	signals, err := s.getSignals(ctx, stmt, args)
 	if err != nil {
 		return nil, err
@@ -116,7 +118,7 @@ func (m *AliasHandleMapper) Alias(handle string) string {
 // The signals are sorted by timestamp in ascending order.
 // The timestamp on each signal is for the start of the interval.
 func (s *Service) GetAggregatedSignals(ctx context.Context, aggArgs *model.AggregatedSignalArgs) ([]*AggSignal, error) {
-	if len(aggArgs.FloatArgs) == 0 && len(aggArgs.StringArgs) == 0 && len(aggArgs.ApproxLocArgs) == 0 {
+	if len(aggArgs.FloatArgs) == 0 && len(aggArgs.StringArgs) == 0 && len(aggArgs.ApproxLocArgs) == 0 && len(aggArgs.LocationArgs) == 0 {
 		return []*AggSignal{}, nil
 	}
 
@@ -141,7 +143,7 @@ func (s *Service) getSignals(ctx context.Context, stmt string, args []any) ([]*v
 	signals := []*vss.Signal{}
 	for rows.Next() {
 		var signal vss.Signal
-		err := rows.Scan(&signal.Name, &signal.Timestamp, &signal.ValueNumber, &signal.ValueString)
+		err := rows.Scan(&signal.Name, &signal.Timestamp, &signal.ValueNumber, &signal.ValueString, &signal.ValueLocation)
 		if err != nil {
 			_ = rows.Close()
 			return nil, fmt.Errorf("failed scanning clickhouse row: %w", err)
@@ -183,7 +185,8 @@ type AggSignal struct {
 	ValueNumber float64
 	// ValueNumber is the value for this row if it is of float or
 	// approximate location type.
-	ValueString string
+	ValueString   string
+	ValueLocation vss.Location
 }
 
 func (s *Service) getAggSignals(ctx context.Context, stmt string, args []any) ([]*AggSignal, error) {
@@ -194,7 +197,7 @@ func (s *Service) getAggSignals(ctx context.Context, stmt string, args []any) ([
 	signals := []*AggSignal{}
 	for rows.Next() {
 		var signal AggSignal
-		err := rows.Scan(&signal.SignalType, &signal.SignalIndex, &signal.Timestamp, &signal.ValueNumber, &signal.ValueString)
+		err := rows.Scan(&signal.SignalType, &signal.SignalIndex, &signal.Timestamp, &signal.ValueNumber, &signal.ValueString, &signal.ValueLocation)
 		if err != nil {
 			_ = rows.Close()
 			return nil, fmt.Errorf("failed scanning clickhouse row: %w", err)

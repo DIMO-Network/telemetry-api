@@ -45,6 +45,13 @@ type AggregatedSignalArgs struct {
 	StringArgs []StringSignalArgs
 	// ApproxLocArgs
 	ApproxLocArgs map[FloatAggregation]struct{}
+	LocationArgs  []LocationSignalArgs
+}
+
+type LocationSignalArgs struct {
+	Name  string
+	Agg   LocationAggregation
+	Alias string
 }
 
 // FloatSignalArgs is the arguments for querying a float signals.
