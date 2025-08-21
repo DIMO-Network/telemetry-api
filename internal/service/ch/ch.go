@@ -75,9 +75,27 @@ func getMaxExecutionTime(maxRequestDuration string) (int, error) {
 
 // GetLatestSignals returns the latest signals based on the provided arguments from the ClickHouse database.
 func (s *Service) GetLatestSignals(ctx context.Context, latestArgs *model.LatestSignalsArgs) ([]*vss.Signal, error) {
-	stmt, args := getLatestQuery(latestArgs)
-	if latestArgs.IncludeLastSeen {
-		lastSeenStmt, lastSeenArgs := getLastSeenQuery(&latestArgs.SignalArgs)
+	filteredArgs, err := s.getFilteredLatestSignalsArgs(ctx, latestArgs)
+	if err != nil {
+		return nil, err
+	}
+
+	// If no signals are available but lastSeen is requested, return only lastSeen
+	if len(filteredArgs.SignalNames) == 0 {
+		if filteredArgs.IncludeLastSeen {
+			lastSeenStmt, lastSeenArgs := getLastSeenQuery(&filteredArgs.SignalArgs)
+			signals, err := s.getSignals(ctx, lastSeenStmt, lastSeenArgs)
+			if err != nil {
+				return nil, err
+			}
+			return signals, nil
+		}
+		return []*vss.Signal{}, nil
+	}
+
+	stmt, args := getLatestQuery(filteredArgs)
+	if filteredArgs.IncludeLastSeen {
+		lastSeenStmt, lastSeenArgs := getLastSeenQuery(&filteredArgs.SignalArgs)
 		stmt, args = unionAll([]string{stmt, lastSeenStmt}, [][]any{args, lastSeenArgs})
 	}
 
@@ -120,7 +138,15 @@ func (s *Service) GetAggregatedSignals(ctx context.Context, aggArgs *model.Aggre
 		return []*AggSignal{}, nil
 	}
 
-	stmt, args, err := getAggQuery(aggArgs)
+	filteredArgs, err := s.getFilteredAggregatedSignalArgs(ctx, aggArgs)
+	if err != nil {
+		return nil, err
+	}
+	if len(filteredArgs.FloatArgs) == 0 && len(filteredArgs.StringArgs) == 0 && len(filteredArgs.ApproxLocArgs) == 0 {
+		return []*AggSignal{}, nil
+	}
+
+	stmt, args, err := getAggQuery(filteredArgs)
 	if err != nil {
 		return nil, err
 	}
@@ -232,6 +258,90 @@ func (s *Service) GetAvailableSignals(ctx context.Context, tokenId uint32, filte
 		return nil, fmt.Errorf("clickhouse row error: %w", rows.Err())
 	}
 	return signals, nil
+}
+
+// getFilteredLatestSignalsArgs gets available signals and filters the LatestSignalsArgs to only include available signals.
+func (s *Service) getFilteredLatestSignalsArgs(ctx context.Context, args *model.LatestSignalsArgs) (*model.LatestSignalsArgs, error) {
+	availableSignals, err := s.GetAvailableSignals(ctx, args.TokenID, args.Filter)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get available signals: %w", err)
+	}
+	return s.filterLatestSignalsArgs(args, availableSignals), nil
+}
+
+// getFilteredAggregatedSignalArgs gets available signals and filters the AggregatedSignalArgs to only include available signals.
+func (s *Service) getFilteredAggregatedSignalArgs(ctx context.Context, args *model.AggregatedSignalArgs) (*model.AggregatedSignalArgs, error) {
+	availableSignals, err := s.GetAvailableSignals(ctx, args.TokenID, args.Filter)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get available signals: %w", err)
+	}
+	return s.filterAggregatedSignalArgs(args, availableSignals), nil
+}
+
+// filterLatestSignalsArgs filters the LatestSignalsArgs to only include signals that are available in the database.
+func (s *Service) filterLatestSignalsArgs(args *model.LatestSignalsArgs, availableSignals []string) *model.LatestSignalsArgs {
+	availableSet := make(map[string]struct{}, len(availableSignals))
+	for _, signal := range availableSignals {
+		availableSet[signal] = struct{}{}
+	}
+
+	filteredSignalNames := make(map[string]struct{})
+	for signalName := range args.SignalNames {
+		if _, exists := availableSet[signalName]; exists {
+			filteredSignalNames[signalName] = struct{}{}
+		}
+	}
+
+	return &model.LatestSignalsArgs{
+		SignalArgs:      args.SignalArgs,
+		SignalNames:     filteredSignalNames,
+		IncludeLastSeen: args.IncludeLastSeen,
+	}
+}
+
+// filterAggregatedSignalArgs filters the AggregatedSignalArgs to only include signals that are available in the database.
+func (s *Service) filterAggregatedSignalArgs(args *model.AggregatedSignalArgs, availableSignals []string) *model.AggregatedSignalArgs {
+	availableSet := make(map[string]struct{}, len(availableSignals))
+	for _, signal := range availableSignals {
+		availableSet[signal] = struct{}{}
+	}
+
+	// Filter FloatArgs
+	filteredFloatArgs := make([]model.FloatSignalArgs, 0, len(args.FloatArgs))
+	for _, floatArg := range args.FloatArgs {
+		if _, exists := availableSet[floatArg.Name]; exists {
+			filteredFloatArgs = append(filteredFloatArgs, floatArg)
+		}
+	}
+
+	// Filter StringArgs
+	filteredStringArgs := make([]model.StringSignalArgs, 0, len(args.StringArgs))
+	for _, stringArg := range args.StringArgs {
+		if _, exists := availableSet[stringArg.Name]; exists {
+			filteredStringArgs = append(filteredStringArgs, stringArg)
+		}
+	}
+
+	// Filter ApproxLocArgs - check if latitude and longitude fields are available
+	filteredApproxLocArgs := make(map[model.FloatAggregation]struct{})
+	_, hasLat := availableSet["currentLocationLatitude"]
+	_, hasLong := availableSet["currentLocationLongitude"]
+	if hasLat && hasLong {
+		// Only include approximate location args if both lat and long are available
+		for agg := range args.ApproxLocArgs {
+			filteredApproxLocArgs[agg] = struct{}{}
+		}
+	}
+
+	return &model.AggregatedSignalArgs{
+		SignalArgs:    args.SignalArgs,
+		FromTS:        args.FromTS,
+		ToTS:          args.ToTS,
+		Interval:      args.Interval,
+		FloatArgs:     filteredFloatArgs,
+		StringArgs:    filteredStringArgs,
+		ApproxLocArgs: filteredApproxLocArgs,
+	}
 }
 
 func (s *Service) GetEvents(ctx context.Context, subject string, from, to time.Time, filter *model.EventFilter) ([]*vss.Event, error) {
