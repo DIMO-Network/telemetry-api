@@ -715,6 +715,58 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 				},
 			},
 		},
+		{
+			name: "last location",
+			aggArgs: model.AggregatedSignalArgs{
+				SignalArgs: model.SignalArgs{
+					TokenID: 1,
+				},
+				FromTS:   c.dataStartTime,
+				ToTS:     endTs,
+				Interval: day.Microseconds(),
+				LocationArgs: []model.LocationSignalArgs{
+					{
+						Name:  vss.FieldCurrentLocationCoordinates,
+						Agg:   model.LocationAggregationLast,
+						Alias: vss.FieldCurrentLocationCoordinates,
+					},
+				},
+			},
+			expected: []AggSignal{
+				{
+					SignalType:    LocType,
+					SignalIndex:   0,
+					Timestamp:     c.dataStartTime,
+					ValueLocation: vss.Location{Latitude: 30, Longitude: 50, HDOP: 70},
+				},
+			},
+		},
+		{
+			name: "average location",
+			aggArgs: model.AggregatedSignalArgs{
+				SignalArgs: model.SignalArgs{
+					TokenID: 1,
+				},
+				FromTS:   c.dataStartTime,
+				ToTS:     endTs,
+				Interval: day.Microseconds(),
+				LocationArgs: []model.LocationSignalArgs{
+					{
+						Name:  vss.FieldCurrentLocationCoordinates,
+						Agg:   model.LocationAggregationAvg,
+						Alias: vss.FieldCurrentLocationCoordinates,
+					},
+				},
+			},
+			expected: []AggSignal{
+				{
+					SignalType:    LocType,
+					SignalIndex:   0,
+					Timestamp:     c.dataStartTime,
+					ValueLocation: vss.Location{Latitude: 16.5, Longitude: 27.5, HDOP: 38.5},
+				},
+			},
+		},
 	}
 	for _, tc := range testCases {
 		c.Run(tc.name, func() {

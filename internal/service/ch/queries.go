@@ -74,7 +74,7 @@ const (
 )
 
 const (
-	avgLocationGroup   = "avg(" + vss.ValueLocationCol + ".Latitude, " + vss.ValueLocationCol + ".Longitude, " + vss.ValueLocationCol + ".HDOP)"
+	avgLocationGroup   = "CAST(tuple(avg(" + vss.ValueLocationCol + ".latitude), avg(" + vss.ValueLocationCol + ".longitude), avg(" + vss.ValueLocationCol + ".hdop)), 'Tuple(latitude Float64, longitude Float64, hdop Float64)')"
 	randLocationGroup  = "groupArraySample(1, %d)(" + vss.ValueLocationCol + ")[1]"
 	firstLocationGroup = "argMin(" + vss.ValueLocationCol + ", " + vss.TimestampCol + ")"
 	lastLocationGroup  = "argMax(" + vss.ValueLocationCol + ", " + vss.TimestampCol + ")"
@@ -465,6 +465,7 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 	mods = append(mods, qm.Expr(perSignalFilters...)) // Parenthesization is very important here!
 
 	stmt, args := newQuery(mods...)
+	fmt.Println("STATEMENT", stmt)
 	return stmt, args, nil
 }
 
