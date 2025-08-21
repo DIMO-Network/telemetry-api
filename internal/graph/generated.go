@@ -2637,7 +2637,10 @@ enum FloatAggregation {
 }
 
 enum LocationAggregation {
+  AVG
+  RAND
   FIRST
+  LAST
 }
 
 enum StringAggregation {
@@ -2727,7 +2730,8 @@ type Location {
   latitude: Float!
   longitude: Float!
   hdop: Float!
-}`, BuiltIn: false},
+}
+`, BuiltIn: false},
 	{Name: "../../schema/device_activity.graphqls", Input: `extend type Query {
   """
   DeviceActivity indicates when a given device last transmitted data. For privacy, ranges are used rather than exact timestamps.

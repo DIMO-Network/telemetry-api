@@ -689,6 +689,32 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 				},
 			},
 		},
+		{
+			name: "first location",
+			aggArgs: model.AggregatedSignalArgs{
+				SignalArgs: model.SignalArgs{
+					TokenID: 1,
+				},
+				FromTS:   c.dataStartTime,
+				ToTS:     endTs,
+				Interval: day.Microseconds(),
+				LocationArgs: []model.LocationSignalArgs{
+					{
+						Name:  vss.FieldCurrentLocationCoordinates,
+						Agg:   model.LocationAggregationFirst,
+						Alias: vss.FieldCurrentLocationCoordinates,
+					},
+				},
+			},
+			expected: []AggSignal{
+				{
+					SignalType:    LocType,
+					SignalIndex:   0,
+					Timestamp:     c.dataStartTime,
+					ValueLocation: vss.Location{Latitude: 3, Longitude: 5, HDOP: 7},
+				},
+			},
+		},
 	}
 	for _, tc := range testCases {
 		c.Run(tc.name, func() {
@@ -787,8 +813,8 @@ func (c *CHServiceTestSuite) TestGetAvailableSignals() {
 	c.Run("has signals", func() {
 		result, err := c.chService.GetAvailableSignals(ctx, 1, nil)
 		c.Require().NoError(err)
-		c.Require().Len(result, 2)
-		c.Require().Equal([]string{vss.FieldPowertrainType, vss.FieldSpeed}, result)
+		c.Require().Len(result, 3)
+		c.Require().Equal([]string{vss.FieldCurrentLocationCoordinates, vss.FieldPowertrainType, vss.FieldSpeed}, result)
 	})
 
 	c.Run("no signals", func() {
@@ -1075,7 +1101,15 @@ func (c *CHServiceTestSuite) insertTestData() {
 			TokenID:     1,
 			ValueString: fmt.Sprintf("value%d", i+1),
 		}
-		testSignal = append(testSignal, numSig, strSig)
+
+		locSig := vss.Signal{
+			Name:          vss.FieldCurrentLocationCoordinates,
+			Timestamp:     c.dataStartTime.Add(time.Second * time.Duration(30*i)),
+			Source:        sources[i%3],
+			TokenID:       1,
+			ValueLocation: vss.Location{Latitude: 3 * float64(i+1), Longitude: 5 * float64(i+1), HDOP: 7 * float64(i+1)},
+		}
+		testSignal = append(testSignal, numSig, strSig, locSig)
 	}
 	// insert the test data into the clickhouse database
 	batch, err := conn.PrepareBatch(ctx, fmt.Sprintf("INSERT INTO %s", vss.TableName))

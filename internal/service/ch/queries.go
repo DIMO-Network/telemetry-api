@@ -74,7 +74,10 @@ const (
 )
 
 const (
+	avgLocationGroup   = "avg(" + vss.ValueLocationCol + ".Latitude, " + vss.ValueLocationCol + ".Longitude, " + vss.ValueLocationCol + ".HDOP)"
+	randLocationGroup  = "groupArraySample(1, %d)(" + vss.ValueLocationCol + ")[1]"
 	firstLocationGroup = "argMin(" + vss.ValueLocationCol + ", " + vss.TimestampCol + ")"
+	lastLocationGroup  = "argMax(" + vss.ValueLocationCol + ", " + vss.TimestampCol + ")"
 )
 
 var SourceTranslations = map[string][]string{
@@ -111,7 +114,7 @@ func (t *FieldType) Scan(value any) error {
 		return fmt.Errorf("expected value of type uint8, but got type %T", value)
 	}
 
-	if w == 0 || w > 3 {
+	if w == 0 || w > 4 {
 		return fmt.Errorf("invalid value %d for field type", w)
 	}
 
@@ -252,8 +255,14 @@ func getStringAgg(aggType model.StringAggregation) string {
 func getLocationAgg(aggType model.LocationAggregation) string {
 	aggLoc := firstLocationGroup
 	switch aggType {
+	case model.LocationAggregationAvg:
+		aggLoc = avgLocationGroup
+	case model.LocationAggregationRand:
+		aggLoc = randLocationGroup
 	case model.LocationAggregationFirst:
 		aggLoc = firstLocationGroup
+	case model.LocationAggregationLast:
+		aggLoc = lastLocationGroup
 	}
 	return aggLoc
 }

@@ -545,16 +545,22 @@ func (e FloatAggregation) MarshalJSON() ([]byte, error) {
 type LocationAggregation string
 
 const (
+	LocationAggregationAvg   LocationAggregation = "AVG"
+	LocationAggregationRand  LocationAggregation = "RAND"
 	LocationAggregationFirst LocationAggregation = "FIRST"
+	LocationAggregationLast  LocationAggregation = "LAST"
 )
 
 var AllLocationAggregation = []LocationAggregation{
+	LocationAggregationAvg,
+	LocationAggregationRand,
 	LocationAggregationFirst,
+	LocationAggregationLast,
 }
 
 func (e LocationAggregation) IsValid() bool {
 	switch e {
-	case LocationAggregationFirst:
+	case LocationAggregationAvg, LocationAggregationRand, LocationAggregationFirst, LocationAggregationLast:
 		return true
 	}
 	return false
