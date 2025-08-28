@@ -66,3 +66,9 @@ input StringValueFilter {
   notIn: [String!]
   in: [String!]
 }
+
+input StringArrayFilter {
+  hasAny: [String!]
+  hasAll: [String!]
+  hasNone: [String!]
+}

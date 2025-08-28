@@ -655,6 +655,9 @@ func appendEventFilterMods(mods []qm.QueryMod, filter *model.EventFilter) []qm.Q
 	if filter.Source != nil {
 		mods = appendStringFilterMod(mods, vss.EventSourceCol, filter.Source)
 	}
+	if filter.Tags != nil {
+		mods = appendStringArrayFilterMod(mods, vss.EventTagsCol, filter.Tags)
+	}
 	return mods
 }
 
@@ -673,6 +676,22 @@ func appendStringFilterMod(mods []qm.QueryMod, field string, filter *model.Strin
 	}
 	if filter.In != nil {
 		mods = append(mods, qm.WhereIn(field+" IN (?)", filter.In))
+	}
+	return mods
+}
+
+func appendStringArrayFilterMod(mods []qm.QueryMod, field string, filter *model.StringArrayFilter) []qm.QueryMod {
+	if filter == nil {
+		return mods
+	}
+	if filter.HasAny != nil {
+		mods = append(mods, qm.Where("hasAny("+field+", ?)", filter.HasAny))
+	}
+	if filter.HasAll != nil {
+		mods = append(mods, qm.Where("hasAll("+field+", ?)", filter.HasAll))
+	}
+	if filter.HasNone != nil {
+		mods = append(mods, qm.Where("NOT hasAny("+field+", ?)", filter.HasNone))
 	}
 	return mods
 }
