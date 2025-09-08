@@ -420,12 +420,7 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 	}
 	valueTable := fmt.Sprintf("VALUES('%s', %s) as %s ON %s.%s = %s.%s", valueTableDef, strings.Join(valuesArgs, ", "), aggTableName, vss.TableName, vss.NameCol, aggTableName, vss.NameCol)
 
-	// This NEQ ensures that non-float rows get returned.
-	// TODO(elffjs): When we have filtering for more field types, this
-	// will get more complex.
-	perSignalFilters := []qm.QueryMod{
-		qmhelper.Where(signalTypeCol, qmhelper.NEQ, FloatType),
-	}
+	var perSignalFilters []qm.QueryMod
 
 	if len(aggArgs.FloatArgs) != 0 {
 		// These are for float fields. One sub-Expr per field.
@@ -441,7 +436,32 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 			innerFloatFilters = append(innerFloatFilters, qm.Or2(qm.Expr(fieldFilters...)))
 		}
 
-		perSignalFilters = append(perSignalFilters, qm.Or2(qm.Expr(innerFloatFilters...)))
+		perSignalFilters = append(perSignalFilters, qm.Or2(
+			qm.Expr(
+				qmhelper.Where(signalTypeCol, qmhelper.EQ, FloatType),
+				qm.Expr(innerFloatFilters...),
+			),
+		))
+	}
+
+	if len(aggArgs.StringArgs) != 0 {
+		perSignalFilters = append(perSignalFilters, qm.Or2(qmhelper.Where(signalTypeCol, qmhelper.EQ, StringType)))
+	}
+
+	if len(aggArgs.ApproxLocArgs) != 0 {
+		perSignalFilters = append(perSignalFilters, qm.Or2(qmhelper.Where(signalTypeCol, qmhelper.EQ, AppLocType)))
+	}
+
+	if len(aggArgs.LocationArgs) != 0 {
+		perSignalFilters = append(perSignalFilters, qm.Or2(
+			qm.Expr(
+				qmhelper.Where(signalTypeCol, qmhelper.EQ, LocType),
+				qm.Expr(
+					qmhelper.Where(AggLocationCol+".latitude", qmhelper.NEQ, 0),
+					qm.Or2(qmhelper.Where(AggLocationCol+".longitude", qmhelper.NEQ, 0)),
+				),
+			),
+		))
 	}
 
 	mods := []qm.QueryMod{
