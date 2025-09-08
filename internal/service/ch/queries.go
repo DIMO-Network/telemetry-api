@@ -465,7 +465,6 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 	mods = append(mods, qm.Expr(perSignalFilters...)) // Parenthesization is very important here!
 
 	stmt, args := newQuery(mods...)
-	fmt.Println("STATEMENT", stmt)
 	return stmt, args, nil
 }
 

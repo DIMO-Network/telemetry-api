@@ -81,8 +81,6 @@ func (s *Service) GetLatestSignals(ctx context.Context, latestArgs *model.Latest
 		stmt, args = unionAll([]string{stmt, lastSeenStmt}, [][]any{args, lastSeenArgs})
 	}
 
-	fmt.Println(stmt)
-
 	signals, err := s.getSignals(ctx, stmt, args)
 	if err != nil {
 		return nil, err
