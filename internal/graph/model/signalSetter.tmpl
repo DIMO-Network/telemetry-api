@@ -17,7 +17,11 @@ func SetCollectionField(collection *SignalCollection, signal *vss.Signal) {
         {{- else if eq .GQLType "Location" }}
         collection.{{ .GOName }} = &SignalLocation{
             Timestamp: signal.Timestamp,
-            Value: signal.ValueLocation,
+            Value: &Location{
+                Latitude: signal.ValueLocation.Latitude,
+                Longitude: signal.ValueLocation.Longitude,
+                Hdop: signal.ValueLocation.HDOP,
+            },
         }
         {{- else }}
         collection.{{ .GOName }} = &SignalString{

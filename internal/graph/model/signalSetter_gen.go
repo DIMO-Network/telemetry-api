@@ -89,6 +89,15 @@ func SetCollectionField(collection *SignalCollection, signal *vss.Signal) {
 			Timestamp: signal.Timestamp,
 			Value:     signal.ValueNumber,
 		}
+	case "currentLocationCoordinates":
+		collection.CurrentLocationCoordinates = &SignalLocation{
+			Timestamp: signal.Timestamp,
+			Value: &Location{
+				Latitude:  signal.ValueLocation.Latitude,
+				Longitude: signal.ValueLocation.Longitude,
+				Hdop:      signal.ValueLocation.HDOP,
+			},
+		}
 	case "currentLocationHeading":
 		collection.CurrentLocationHeading = &SignalFloat{
 			Timestamp: signal.Timestamp,

@@ -177,6 +177,9 @@ type SignalCollection struct {
 	// Unit: 'm'
 	// Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
 	CurrentLocationAltitude *SignalFloat `json:"currentLocationAltitude,omitempty"`
+	// Current location of the vehicle in WGS 84 coordinates.
+	// Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
+	CurrentLocationCoordinates *SignalLocation `json:"currentLocationCoordinates,omitempty"`
 	// Current heading relative to geographic north. 0 = North, 90 = East, 180 = South, 270 = West.
 	// Unit: 'degrees' Min: '0' Max: '360'
 	// Required Privileges: [VEHICLE_ALL_TIME_LOCATION]

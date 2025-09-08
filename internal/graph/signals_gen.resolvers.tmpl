@@ -26,7 +26,7 @@ func (r *signalAggregationsResolver) {{ GQLGenResolverName .JSONName }}(ctx cont
 	if !ok {
 		return nil, nil
 	}
-	return &model.Location{Latitude: vl.Latitude, Longitude: vl.Longitude, HDOP: vl.HDOP}, nil
+	return &model.Location{Latitude: vl.Latitude, Longitude: vl.Longitude, Hdop: vl.HDOP}, nil
 }
 {{ else }}
 func (r *signalAggregationsResolver) {{ GQLGenResolverName .JSONName }}(ctx context.Context, obj *model.SignalAggregations, agg model.StringAggregation) (*string, error) {
