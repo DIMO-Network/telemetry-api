@@ -457,8 +457,8 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 			qm.Expr(
 				qmhelper.Where(signalTypeCol, qmhelper.EQ, LocType),
 				qm.Expr(
-					qmhelper.Where(AggLocationCol+".latitude", qmhelper.NEQ, 0),
-					qm.Or2(qmhelper.Where(AggLocationCol+".longitude", qmhelper.NEQ, 0)),
+					qmhelper.Where(vss.ValueLocationCol+".latitude", qmhelper.NEQ, 0),
+					qm.Or2(qmhelper.Where(vss.ValueLocationCol+".longitude", qmhelper.NEQ, 0)),
 				),
 			),
 		))
