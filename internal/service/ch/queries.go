@@ -49,7 +49,7 @@ const (
 const (
 	latestString    = "argMax(" + vss.ValueStringCol + ", " + vss.TimestampCol + ") as " + vss.ValueStringCol
 	latestNumber    = "argMax(" + vss.ValueNumberCol + ", " + vss.TimestampCol + ") as " + vss.ValueNumberCol
-	latestLocation  = "argMax(" + vss.ValueLocationCol + ", " + vss.TimestampCol + ") as " + vss.ValueLocationCol
+	latestLocation  = "argMax(" + vss.ValueLocationCol + ", " + vss.TimestampCol + ") as " + AggLocationCol
 	latestTimestamp = "max(" + vss.TimestampCol + ") as ts"
 )
 
@@ -288,6 +288,12 @@ func getLatestQuery(latestArgs *model.LatestSignalsArgs) (string, []any) {
 	for name := range latestArgs.SignalNames {
 		signalNames = append(signalNames, name)
 	}
+
+	locationSignalNames := make([]string, 0, len(latestArgs.LocationSignalNames))
+	for name := range latestArgs.LocationSignalNames {
+		locationSignalNames = append(locationSignalNames, name)
+	}
+
 	mods := []qm.QueryMod{
 		qm.Select(vss.NameCol),
 		qm.Select(latestTimestamp),
@@ -296,7 +302,18 @@ func getLatestQuery(latestArgs *model.LatestSignalsArgs) (string, []any) {
 		qm.Select(latestLocation),
 		qm.From(vss.TableName),
 		qm.Where(tokenIDWhere, latestArgs.TokenID),
-		qm.WhereIn(nameIn, signalNames),
+		qm.Expr(
+			qm.WhereIn(nameIn, signalNames),
+			qm.Or2(
+				qm.Expr(
+					qm.WhereIn(nameIn, locationSignalNames),
+					qm.Expr(
+						qmhelper.Where(vss.ValueLocationCol+".latitude", qmhelper.NEQ, 0),
+						qm.Or2(qmhelper.Where(vss.ValueLocationCol+".longitude", qmhelper.NEQ, 0)),
+					),
+				),
+			),
+		),
 		qm.GroupBy(vss.NameCol),
 	}
 	mods = append(mods, getFilterMods(latestArgs.Filter)...)
