@@ -844,7 +844,26 @@ func (c *CHServiceTestSuite) TestGetLatestSignal() {
 			expected: []vss.Signal{
 				{
 					Name:      model.LastSeenField,
-					Timestamp: c.dataStartTime.Add(time.Second * time.Duration(30*(dataPoints-1))),
+					Timestamp: c.dataStartTime.Add(time.Second * time.Duration(299)), // This is picking up the (0, 0, hdop) point.
+				},
+			},
+		},
+		{
+			name: "latest location",
+			latestArgs: model.LatestSignalsArgs{
+				SignalArgs: model.SignalArgs{
+					TokenID: 1,
+				},
+				SignalNames: map[string]struct{}{},
+				LocationSignalNames: map[string]struct{}{
+					vss.FieldCurrentLocationCoordinates: struct{}{},
+				},
+			},
+			expected: []vss.Signal{
+				{
+					Name:          vss.FieldCurrentLocationCoordinates,
+					Timestamp:     c.dataStartTime.Add(time.Second * time.Duration(30*(dataPoints-1))),
+					ValueLocation: vss.Location{Latitude: 30, Longitude: 50, HDOP: 70},
 				},
 			},
 		},
@@ -1163,6 +1182,15 @@ func (c *CHServiceTestSuite) insertTestData() {
 		}
 		testSignal = append(testSignal, numSig, strSig, locSig)
 	}
+
+	testSignal = append(testSignal, vss.Signal{
+		Name:          vss.FieldCurrentLocationCoordinates,
+		Timestamp:     c.dataStartTime.Add(time.Second * time.Duration(299)),
+		Source:        sources[0],
+		TokenID:       1,
+		ValueLocation: vss.Location{Latitude: 0, Longitude: 0, HDOP: 111},
+	})
+
 	// insert the test data into the clickhouse database
 	batch, err := conn.PrepareBatch(ctx, fmt.Sprintf("INSERT INTO %s", vss.TableName))
 	c.Require().NoError(err, "Failed to prepare batch")
