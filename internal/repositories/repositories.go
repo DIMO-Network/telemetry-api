@@ -91,10 +91,11 @@ func (r *Repository) GetSignal(ctx context.Context, aggArgs *model.AggregatedSig
 		if !lastTS.Equal(signal.Timestamp) {
 			lastTS = signal.Timestamp
 			currAggs = &model.SignalAggregations{
-				Timestamp:     signal.Timestamp,
-				ValueNumbers:  make(map[string]float64),
-				ValueStrings:  make(map[string]string),
-				AppLocNumbers: make(map[model.AppLocKey]float64),
+				Timestamp:      signal.Timestamp,
+				ValueNumbers:   make(map[string]float64),
+				ValueStrings:   make(map[string]string),
+				AppLocNumbers:  make(map[model.AppLocKey]float64),
+				ValueLocations: make(map[string]vss.Location),
 			}
 			allAggs = append(allAggs, currAggs)
 		}
