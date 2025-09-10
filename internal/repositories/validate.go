@@ -43,6 +43,13 @@ func validateAggSigArgs(args *model.AggregatedSignalArgs) error {
 		return ValidationError("too many location aggregations")
 	}
 
+	// TODO(elffjs): Awkward place to put this.
+	for _, locArg := range args.LocationArgs {
+		if locArg.Filter != nil && len(locArg.Filter.InPolygon) != 0 && len(locArg.Filter.InPolygon) < 3 {
+			return ValidationError("not enough points in geofence filter")
+		}
+	}
+
 	return validateSignalArgs(&args.SignalArgs)
 }
 
