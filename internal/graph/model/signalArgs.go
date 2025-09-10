@@ -51,9 +51,10 @@ type AggregatedSignalArgs struct {
 }
 
 type LocationSignalArgs struct {
-	Name  string
-	Agg   LocationAggregation
-	Alias string
+	Name   string
+	Agg    LocationAggregation
+	Alias  string
+	Filter *SignalLocationFilter
 }
 
 // FloatSignalArgs is the arguments for querying a float signals.

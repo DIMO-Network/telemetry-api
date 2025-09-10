@@ -102,6 +102,11 @@ type Pomvc struct {
 	RawVc string `json:"rawVC"`
 }
 
+type PolygonPoint struct {
+	Latitude  float64 `json:"latitude"`
+	Longitude float64 `json:"longitude"`
+}
+
 // The root query type for the GraphQL schema.
 type Query struct {
 }
@@ -443,6 +448,10 @@ type SignalLocation struct {
 	Timestamp time.Time `json:"timestamp"`
 	// value of the signal
 	Value *Location `json:"value"`
+}
+
+type SignalLocationFilter struct {
+	InPolygon []*PolygonPoint `json:"inPolygon,omitempty"`
 }
 
 type SignalString struct {

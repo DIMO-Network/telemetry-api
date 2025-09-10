@@ -172,7 +172,7 @@ func (r *signalAggregationsResolver) CurrentLocationAltitude(ctx context.Context
 }
 
 // CurrentLocationCoordinates is the resolver for the currentLocationCoordinates
-func (r *signalAggregationsResolver) CurrentLocationCoordinates(ctx context.Context, obj *model.SignalAggregations, agg model.LocationAggregation) (*model.Location, error) {
+func (r *signalAggregationsResolver) CurrentLocationCoordinates(ctx context.Context, obj *model.SignalAggregations, agg model.LocationAggregation, filter *model.SignalLocationFilter) (*model.Location, error) {
 	fieldCtx := graphql.GetFieldContext(ctx)
 	vl, ok := obj.ValueLocations[fieldCtx.Field.Alias]
 	if !ok {

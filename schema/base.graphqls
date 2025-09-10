@@ -199,7 +199,6 @@ input SignalFilter {
 }
 
 # TODO(elffjs): Unsure about this exact name.
-# TODO(elffjs): Recursive "or" support.
 input SignalFloatFilter {
   eq: Float
   neq: Float
@@ -216,4 +215,13 @@ type Location {
   latitude: Float!
   longitude: Float!
   hdop: Float!
+}
+
+input SignalLocationFilter {
+  inPolygon: [PolygonPoint!]
+}
+
+input PolygonPoint {
+  latitude: Float!
+  longitude: Float!
 }

@@ -122,7 +122,7 @@ type ComplexityRoot struct {
 		CurrentLocationAltitude                                   func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
 		CurrentLocationApproximateLatitude                        func(childComplexity int, agg model.FloatAggregation) int
 		CurrentLocationApproximateLongitude                       func(childComplexity int, agg model.FloatAggregation) int
-		CurrentLocationCoordinates                                func(childComplexity int, agg model.LocationAggregation) int
+		CurrentLocationCoordinates                                func(childComplexity int, agg model.LocationAggregation, filter *model.SignalLocationFilter) int
 		CurrentLocationHeading                                    func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
 		CurrentLocationIsRedacted                                 func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
 		CurrentLocationLatitude                                   func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
@@ -328,7 +328,7 @@ type SignalAggregationsResolver interface {
 	ChassisAxleRow2WheelLeftTirePressure(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
 	ChassisAxleRow2WheelRightTirePressure(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
 	CurrentLocationAltitude(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
-	CurrentLocationCoordinates(ctx context.Context, obj *model.SignalAggregations, agg model.LocationAggregation) (*model.Location, error)
+	CurrentLocationCoordinates(ctx context.Context, obj *model.SignalAggregations, agg model.LocationAggregation, filter *model.SignalLocationFilter) (*model.Location, error)
 	CurrentLocationHeading(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
 	CurrentLocationIsRedacted(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
 	CurrentLocationLatitude(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
@@ -894,7 +894,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.CurrentLocationCoordinates(childComplexity, args["agg"].(model.LocationAggregation)), true
+		return e.complexity.SignalAggregations.CurrentLocationCoordinates(childComplexity, args["agg"].(model.LocationAggregation), args["filter"].(*model.SignalLocationFilter)), true
 
 	case "SignalAggregations.currentLocationHeading":
 		if e.complexity.SignalAggregations.CurrentLocationHeading == nil {
@@ -2318,8 +2318,10 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputAftermarketDeviceBy,
 		ec.unmarshalInputAttestationFilter,
 		ec.unmarshalInputEventFilter,
+		ec.unmarshalInputPolygonPoint,
 		ec.unmarshalInputSignalFilter,
 		ec.unmarshalInputSignalFloatFilter,
+		ec.unmarshalInputSignalLocationFilter,
 		ec.unmarshalInputStringValueFilter,
 	)
 	first := true
@@ -2735,7 +2737,6 @@ input SignalFilter {
 }
 
 # TODO(elffjs): Unsure about this exact name.
-# TODO(elffjs): Recursive "or" support.
 input SignalFloatFilter {
   eq: Float
   neq: Float
@@ -2752,6 +2753,15 @@ type Location {
   latitude: Float!
   longitude: Float!
   hdop: Float!
+}
+
+input SignalLocationFilter {
+  inPolygon: [PolygonPoint!]
+}
+
+input PolygonPoint {
+  latitude: Float!
+  longitude: Float!
 }
 `, BuiltIn: false},
 	{Name: "../../schema/device_activity.graphqls", Input: `extend type Query {
@@ -3013,6 +3023,7 @@ extend type SignalAggregations {
   """
   currentLocationCoordinates(
     agg: LocationAggregation!,
+    filter: SignalLocationFilter
   ):  Location @requiresAllOfPrivileges(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationCoordinates", forceResolver: true) @isSignal @hasAggregation
   
   """
@@ -4701,6 +4712,11 @@ func (ec *executionContext) field_SignalAggregations_currentLocationCoordinates_
 		return nil, err
 	}
 	args["agg"] = arg0
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalLocationFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalLocationFilter)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 
@@ -9593,7 +9609,7 @@ func (ec *executionContext) _SignalAggregations_currentLocationCoordinates(ctx c
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		directive0 := func(rctx context.Context) (any, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.SignalAggregations().CurrentLocationCoordinates(rctx, obj, fc.Args["agg"].(model.LocationAggregation))
+			return ec.resolvers.SignalAggregations().CurrentLocationCoordinates(rctx, obj, fc.Args["agg"].(model.LocationAggregation), fc.Args["filter"].(*model.SignalLocationFilter))
 		}
 
 		directive1 := func(ctx context.Context) (any, error) {
@@ -24612,6 +24628,40 @@ func (ec *executionContext) unmarshalInputEventFilter(ctx context.Context, obj a
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputPolygonPoint(ctx context.Context, obj any) (model.PolygonPoint, error) {
+	var it model.PolygonPoint
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"latitude", "longitude"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "latitude":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("latitude"))
+			data, err := ec.unmarshalNFloat2float64(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Latitude = data
+		case "longitude":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("longitude"))
+			data, err := ec.unmarshalNFloat2float64(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Longitude = data
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputSignalFilter(ctx context.Context, obj any) (model.SignalFilter, error) {
 	var it model.SignalFilter
 	asMap := map[string]any{}
@@ -24716,6 +24766,33 @@ func (ec *executionContext) unmarshalInputSignalFloatFilter(ctx context.Context,
 				return it, err
 			}
 			it.Or = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputSignalLocationFilter(ctx context.Context, obj any) (model.SignalLocationFilter, error) {
+	var it model.SignalLocationFilter
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"inPolygon"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "inPolygon":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("inPolygon"))
+			data, err := ec.unmarshalOPolygonPoint2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPolygonPointᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.InPolygon = data
 		}
 	}
 
@@ -28750,6 +28827,11 @@ func (ec *executionContext) marshalNLocationAggregation2githubᚗcomᚋDIMOᚑNe
 	return v
 }
 
+func (ec *executionContext) unmarshalNPolygonPoint2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPolygonPoint(ctx context.Context, v any) (*model.PolygonPoint, error) {
+	res, err := ec.unmarshalInputPolygonPoint(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNPrivilege2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilege(ctx context.Context, v any) (model.Privilege, error) {
 	var res model.Privilege
 	err := res.UnmarshalGQL(v)
@@ -29380,6 +29462,24 @@ func (ec *executionContext) marshalOPOMVC2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtel
 	return ec._POMVC(ctx, sel, v)
 }
 
+func (ec *executionContext) unmarshalOPolygonPoint2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPolygonPointᚄ(ctx context.Context, v any) ([]*model.PolygonPoint, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []any
+	vSlice = graphql.CoerceList(v)
+	var err error
+	res := make([]*model.PolygonPoint, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNPolygonPoint2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPolygonPoint(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
 func (ec *executionContext) marshalOSignalAggregations2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalAggregationsᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.SignalAggregations) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
@@ -29480,6 +29580,14 @@ func (ec *executionContext) marshalOSignalLocation2ᚖgithubᚗcomᚋDIMOᚑNetw
 		return graphql.Null
 	}
 	return ec._SignalLocation(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOSignalLocationFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalLocationFilter(ctx context.Context, v any) (*model.SignalLocationFilter, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputSignalLocationFilter(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalOSignalString2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalString(ctx context.Context, sel ast.SelectionSet, v *model.SignalString) graphql.Marshaler {
