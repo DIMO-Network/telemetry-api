@@ -78,6 +78,12 @@ type ComplexityRoot struct {
 		Timestamp  func(childComplexity int) int
 	}
 
+	Location struct {
+		Hdop      func(childComplexity int) int
+		Latitude  func(childComplexity int) int
+		Longitude func(childComplexity int) int
+	}
+
 	POMVC struct {
 		RawVc                  func(childComplexity int) int
 		RecordedBy             func(childComplexity int) int
@@ -116,6 +122,7 @@ type ComplexityRoot struct {
 		CurrentLocationAltitude                                   func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
 		CurrentLocationApproximateLatitude                        func(childComplexity int, agg model.FloatAggregation) int
 		CurrentLocationApproximateLongitude                       func(childComplexity int, agg model.FloatAggregation) int
+		CurrentLocationCoordinates                                func(childComplexity int, agg model.LocationAggregation) int
 		CurrentLocationHeading                                    func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
 		CurrentLocationIsRedacted                                 func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
 		CurrentLocationLatitude                                   func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
@@ -199,6 +206,7 @@ type ComplexityRoot struct {
 		CurrentLocationAltitude                                   func(childComplexity int) int
 		CurrentLocationApproximateLatitude                        func(childComplexity int) int
 		CurrentLocationApproximateLongitude                       func(childComplexity int) int
+		CurrentLocationCoordinates                                func(childComplexity int) int
 		CurrentLocationHeading                                    func(childComplexity int) int
 		CurrentLocationIsRedacted                                 func(childComplexity int) int
 		CurrentLocationLatitude                                   func(childComplexity int) int
@@ -268,6 +276,11 @@ type ComplexityRoot struct {
 		Value     func(childComplexity int) int
 	}
 
+	SignalLocation struct {
+		Timestamp func(childComplexity int) int
+		Value     func(childComplexity int) int
+	}
+
 	SignalString struct {
 		Timestamp func(childComplexity int) int
 		Value     func(childComplexity int) int
@@ -315,6 +328,7 @@ type SignalAggregationsResolver interface {
 	ChassisAxleRow2WheelLeftTirePressure(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
 	ChassisAxleRow2WheelRightTirePressure(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
 	CurrentLocationAltitude(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	CurrentLocationCoordinates(ctx context.Context, obj *model.SignalAggregations, agg model.LocationAggregation) (*model.Location, error)
 	CurrentLocationHeading(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
 	CurrentLocationIsRedacted(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
 	CurrentLocationLatitude(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
@@ -501,6 +515,27 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Event.Timestamp(childComplexity), true
+
+	case "Location.hdop":
+		if e.complexity.Location.Hdop == nil {
+			break
+		}
+
+		return e.complexity.Location.Hdop(childComplexity), true
+
+	case "Location.latitude":
+		if e.complexity.Location.Latitude == nil {
+			break
+		}
+
+		return e.complexity.Location.Latitude(childComplexity), true
+
+	case "Location.longitude":
+		if e.complexity.Location.Longitude == nil {
+			break
+		}
+
+		return e.complexity.Location.Longitude(childComplexity), true
 
 	case "POMVC.rawVC":
 		if e.complexity.POMVC.RawVc == nil {
@@ -848,6 +883,18 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.SignalAggregations.CurrentLocationApproximateLongitude(childComplexity, args["agg"].(model.FloatAggregation)), true
+
+	case "SignalAggregations.currentLocationCoordinates":
+		if e.complexity.SignalAggregations.CurrentLocationCoordinates == nil {
+			break
+		}
+
+		args, err := ec.field_SignalAggregations_currentLocationCoordinates_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.SignalAggregations.CurrentLocationCoordinates(childComplexity, args["agg"].(model.LocationAggregation)), true
 
 	case "SignalAggregations.currentLocationHeading":
 		if e.complexity.SignalAggregations.CurrentLocationHeading == nil {
@@ -1714,6 +1761,13 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.SignalCollection.CurrentLocationApproximateLongitude(childComplexity), true
 
+	case "SignalCollection.currentLocationCoordinates":
+		if e.complexity.SignalCollection.CurrentLocationCoordinates == nil {
+			break
+		}
+
+		return e.complexity.SignalCollection.CurrentLocationCoordinates(childComplexity), true
+
 	case "SignalCollection.currentLocationHeading":
 		if e.complexity.SignalCollection.CurrentLocationHeading == nil {
 			break
@@ -2162,6 +2216,20 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.SignalFloat.Value(childComplexity), true
 
+	case "SignalLocation.timestamp":
+		if e.complexity.SignalLocation.Timestamp == nil {
+			break
+		}
+
+		return e.complexity.SignalLocation.Timestamp(childComplexity), true
+
+	case "SignalLocation.value":
+		if e.complexity.SignalLocation.Value == nil {
+			break
+		}
+
+		return e.complexity.SignalLocation.Value(childComplexity), true
+
 	case "SignalString.timestamp":
 		if e.complexity.SignalString.Timestamp == nil {
 			break
@@ -2590,6 +2658,13 @@ enum FloatAggregation {
   LAST
 }
 
+enum LocationAggregation {
+  AVG
+  RAND
+  FIRST
+  LAST
+}
+
 enum StringAggregation {
   """
   Randomly select a value from the group.
@@ -2636,6 +2711,18 @@ type SignalString {
   value: String!
 }
 
+type SignalLocation {
+  """
+  timestamp of when this data was colllected
+  """
+  timestamp: Time!
+
+  """
+  value of the signal
+  """
+  value: Location!
+}
+
 """
 SignalFilter holds the filter parameters for the signal querys.
 """
@@ -2659,6 +2746,12 @@ input SignalFloatFilter {
   notIn: [Float!]
   in: [Float!]
   or: [SignalFloatFilter!]
+}
+
+type Location {
+  latitude: Float!
+  longitude: Float!
+  hdop: Float!
 }
 `, BuiltIn: false},
 	{Name: "../../schema/device_activity.graphqls", Input: `extend type Query {
@@ -2913,6 +3006,14 @@ extend type SignalAggregations {
     agg: FloatAggregation!,
     filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationAltitude", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  Current location of the vehicle in WGS 84 coordinates.
+  Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
+  """
+  currentLocationCoordinates(
+    agg: LocationAggregation!,
+  ):  Location @requiresAllOfPrivileges(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationCoordinates", forceResolver: true) @isSignal @hasAggregation
   
   """
   Current heading relative to geographic north. 0 = North, 90 = East, 180 = South, 270 = West.
@@ -3610,6 +3711,12 @@ extend type SignalCollection {
   Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
   """
   currentLocationAltitude: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationAltitude") @isSignal
+  
+  """
+  Current location of the vehicle in WGS 84 coordinates.
+  Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
+  """
+  currentLocationCoordinates: SignalLocation @requiresAllOfPrivileges(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationCoordinates") @isSignal
   
   """
   Current heading relative to geographic north. 0 = North, 90 = East, 180 = South, 270 = West.
@@ -4579,6 +4686,17 @@ func (ec *executionContext) field_SignalAggregations_currentLocationApproximateL
 	var err error
 	args := map[string]any{}
 	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
+	if err != nil {
+		return nil, err
+	}
+	args["agg"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_SignalAggregations_currentLocationCoordinates_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNLocationAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐLocationAggregation)
 	if err != nil {
 		return nil, err
 	}
@@ -6235,6 +6353,138 @@ func (ec *executionContext) fieldContext_Event_metadata(_ context.Context, field
 	return fc, nil
 }
 
+func (ec *executionContext) _Location_latitude(ctx context.Context, field graphql.CollectedField, obj *model.Location) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Location_latitude(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Latitude, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(float64)
+	fc.Result = res
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Location_latitude(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Location",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Location_longitude(ctx context.Context, field graphql.CollectedField, obj *model.Location) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Location_longitude(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Longitude, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(float64)
+	fc.Result = res
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Location_longitude(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Location",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Location_hdop(ctx context.Context, field graphql.CollectedField, obj *model.Location) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Location_hdop(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Hdop, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(float64)
+	fc.Result = res
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Location_hdop(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Location",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _POMVC_vehicleTokenId(ctx context.Context, field graphql.CollectedField, obj *model.Pomvc) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_POMVC_vehicleTokenId(ctx, field)
 	if err != nil {
@@ -6539,6 +6789,8 @@ func (ec *executionContext) fieldContext_Query_signals(ctx context.Context, fiel
 				return ec.fieldContext_SignalAggregations_chassisAxleRow2WheelRightTirePressure(ctx, field)
 			case "currentLocationAltitude":
 				return ec.fieldContext_SignalAggregations_currentLocationAltitude(ctx, field)
+			case "currentLocationCoordinates":
+				return ec.fieldContext_SignalAggregations_currentLocationCoordinates(ctx, field)
 			case "currentLocationHeading":
 				return ec.fieldContext_SignalAggregations_currentLocationHeading(ctx, field)
 			case "currentLocationIsRedacted":
@@ -6775,6 +7027,8 @@ func (ec *executionContext) fieldContext_Query_signalsLatest(ctx context.Context
 				return ec.fieldContext_SignalCollection_chassisAxleRow2WheelRightTirePressure(ctx, field)
 			case "currentLocationAltitude":
 				return ec.fieldContext_SignalCollection_currentLocationAltitude(ctx, field)
+			case "currentLocationCoordinates":
+				return ec.fieldContext_SignalCollection_currentLocationCoordinates(ctx, field)
 			case "currentLocationHeading":
 				return ec.fieldContext_SignalCollection_currentLocationHeading(ctx, field)
 			case "currentLocationIsRedacted":
@@ -9318,6 +9572,107 @@ func (ec *executionContext) fieldContext_SignalAggregations_currentLocationAltit
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_SignalAggregations_currentLocationAltitude_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SignalAggregations_currentLocationCoordinates(ctx context.Context, field graphql.CollectedField, obj *model.SignalAggregations) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignalAggregations_currentLocationCoordinates(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.SignalAggregations().CurrentLocationCoordinates(rctx, obj, fc.Args["agg"].(model.LocationAggregation))
+		}
+
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_ALL_TIME_LOCATION"})
+			if err != nil {
+				var zeroVal *model.Location
+				return zeroVal, err
+			}
+			if ec.directives.RequiresAllOfPrivileges == nil {
+				var zeroVal *model.Location
+				return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
+			}
+			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+		}
+		directive2 := func(ctx context.Context) (any, error) {
+			if ec.directives.IsSignal == nil {
+				var zeroVal *model.Location
+				return zeroVal, errors.New("directive isSignal is not implemented")
+			}
+			return ec.directives.IsSignal(ctx, obj, directive1)
+		}
+		directive3 := func(ctx context.Context) (any, error) {
+			if ec.directives.HasAggregation == nil {
+				var zeroVal *model.Location
+				return zeroVal, errors.New("directive hasAggregation is not implemented")
+			}
+			return ec.directives.HasAggregation(ctx, obj, directive2)
+		}
+
+		tmp, err := directive3(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*model.Location); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.Location`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.Location)
+	fc.Result = res
+	return ec.marshalOLocation2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐLocation(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SignalAggregations_currentLocationCoordinates(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignalAggregations",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "latitude":
+				return ec.fieldContext_Location_latitude(ctx, field)
+			case "longitude":
+				return ec.fieldContext_Location_longitude(ctx, field)
+			case "hdop":
+				return ec.fieldContext_Location_hdop(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Location", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_SignalAggregations_currentLocationCoordinates_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -16496,6 +16851,87 @@ func (ec *executionContext) fieldContext_SignalCollection_currentLocationAltitud
 	return fc, nil
 }
 
+func (ec *executionContext) _SignalCollection_currentLocationCoordinates(ctx context.Context, field graphql.CollectedField, obj *model.SignalCollection) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignalCollection_currentLocationCoordinates(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		directive0 := func(rctx context.Context) (any, error) {
+			ctx = rctx // use context from middleware stack in children
+			return obj.CurrentLocationCoordinates, nil
+		}
+
+		directive1 := func(ctx context.Context) (any, error) {
+			privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_ALL_TIME_LOCATION"})
+			if err != nil {
+				var zeroVal *model.SignalLocation
+				return zeroVal, err
+			}
+			if ec.directives.RequiresAllOfPrivileges == nil {
+				var zeroVal *model.SignalLocation
+				return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
+			}
+			return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+		}
+		directive2 := func(ctx context.Context) (any, error) {
+			if ec.directives.IsSignal == nil {
+				var zeroVal *model.SignalLocation
+				return zeroVal, errors.New("directive isSignal is not implemented")
+			}
+			return ec.directives.IsSignal(ctx, obj, directive1)
+		}
+
+		tmp, err := directive2(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*model.SignalLocation); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalLocation`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.SignalLocation)
+	fc.Result = res
+	return ec.marshalOSignalLocation2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalLocation(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SignalCollection_currentLocationCoordinates(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignalCollection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "timestamp":
+				return ec.fieldContext_SignalLocation_timestamp(ctx, field)
+			case "value":
+				return ec.fieldContext_SignalLocation_value(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SignalLocation", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _SignalCollection_currentLocationHeading(ctx context.Context, field graphql.CollectedField, obj *model.SignalCollection) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalCollection_currentLocationHeading(ctx, field)
 	if err != nil {
@@ -21525,6 +21961,102 @@ func (ec *executionContext) fieldContext_SignalFloat_value(_ context.Context, fi
 	return fc, nil
 }
 
+func (ec *executionContext) _SignalLocation_timestamp(ctx context.Context, field graphql.CollectedField, obj *model.SignalLocation) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignalLocation_timestamp(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Timestamp, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SignalLocation_timestamp(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignalLocation",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SignalLocation_value(ctx context.Context, field graphql.CollectedField, obj *model.SignalLocation) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignalLocation_value(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Value, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Location)
+	fc.Result = res
+	return ec.marshalNLocation2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐLocation(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SignalLocation_value(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignalLocation",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "latitude":
+				return ec.fieldContext_Location_latitude(ctx, field)
+			case "longitude":
+				return ec.fieldContext_Location_longitude(ctx, field)
+			case "hdop":
+				return ec.fieldContext_Location_hdop(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Location", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _SignalString_timestamp(ctx context.Context, field graphql.CollectedField, obj *model.SignalString) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SignalString_timestamp(ctx, field)
 	if err != nil {
@@ -24414,6 +24946,55 @@ func (ec *executionContext) _Event(ctx context.Context, sel ast.SelectionSet, ob
 	return out
 }
 
+var locationImplementors = []string{"Location"}
+
+func (ec *executionContext) _Location(ctx context.Context, sel ast.SelectionSet, obj *model.Location) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, locationImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Location")
+		case "latitude":
+			out.Values[i] = ec._Location_latitude(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "longitude":
+			out.Values[i] = ec._Location_longitude(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "hdop":
+			out.Values[i] = ec._Location_hdop(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var pOMVCImplementors = []string{"POMVC"}
 
 func (ec *executionContext) _POMVC(ctx context.Context, sel ast.SelectionSet, obj *model.Pomvc) graphql.Marshaler {
@@ -25250,6 +25831,39 @@ func (ec *executionContext) _SignalAggregations(ctx context.Context, sel ast.Sel
 					}
 				}()
 				res = ec._SignalAggregations_currentLocationAltitude(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "currentLocationCoordinates":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._SignalAggregations_currentLocationCoordinates(ctx, field, obj)
 				return res
 			}
 
@@ -27358,6 +27972,8 @@ func (ec *executionContext) _SignalCollection(ctx context.Context, sel ast.Selec
 			out.Values[i] = ec._SignalCollection_chassisAxleRow2WheelRightTirePressure(ctx, field, obj)
 		case "currentLocationAltitude":
 			out.Values[i] = ec._SignalCollection_currentLocationAltitude(ctx, field, obj)
+		case "currentLocationCoordinates":
+			out.Values[i] = ec._SignalCollection_currentLocationCoordinates(ctx, field, obj)
 		case "currentLocationHeading":
 			out.Values[i] = ec._SignalCollection_currentLocationHeading(ctx, field, obj)
 		case "currentLocationIsRedacted":
@@ -27521,6 +28137,50 @@ func (ec *executionContext) _SignalFloat(ctx context.Context, sel ast.SelectionS
 			}
 		case "value":
 			out.Values[i] = ec._SignalFloat_value(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var signalLocationImplementors = []string{"SignalLocation"}
+
+func (ec *executionContext) _SignalLocation(ctx context.Context, sel ast.SelectionSet, obj *model.SignalLocation) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, signalLocationImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("SignalLocation")
+		case "timestamp":
+			out.Values[i] = ec._SignalLocation_timestamp(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "value":
+			out.Values[i] = ec._SignalLocation_value(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -28068,6 +28728,26 @@ func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.Selecti
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) marshalNLocation2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐLocation(ctx context.Context, sel ast.SelectionSet, v *model.Location) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._Location(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNLocationAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐLocationAggregation(ctx context.Context, v any) (model.LocationAggregation, error) {
+	var res model.LocationAggregation
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNLocationAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐLocationAggregation(ctx context.Context, sel ast.SelectionSet, v model.LocationAggregation) graphql.Marshaler {
+	return v
 }
 
 func (ec *executionContext) unmarshalNPrivilege2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilege(ctx context.Context, v any) (model.Privilege, error) {
@@ -28686,6 +29366,13 @@ func (ec *executionContext) marshalOInt2ᚖint(ctx context.Context, sel ast.Sele
 	return res
 }
 
+func (ec *executionContext) marshalOLocation2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐLocation(ctx context.Context, sel ast.SelectionSet, v *model.Location) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Location(ctx, sel, v)
+}
+
 func (ec *executionContext) marshalOPOMVC2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPomvc(ctx context.Context, sel ast.SelectionSet, v *model.Pomvc) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
@@ -28786,6 +29473,13 @@ func (ec *executionContext) unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMO�
 	}
 	res, err := ec.unmarshalInputSignalFloatFilter(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOSignalLocation2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalLocation(ctx context.Context, sel ast.SelectionSet, v *model.SignalLocation) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._SignalLocation(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalOSignalString2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalString(ctx context.Context, sel ast.SelectionSet, v *model.SignalString) graphql.Marshaler {

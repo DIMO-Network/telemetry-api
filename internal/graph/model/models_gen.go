@@ -83,6 +83,12 @@ type EventFilter struct {
 	Source *StringValueFilter `json:"source,omitempty"`
 }
 
+type Location struct {
+	Latitude  float64 `json:"latitude"`
+	Longitude float64 `json:"longitude"`
+	Hdop      float64 `json:"hdop"`
+}
+
 type Pomvc struct {
 	// vehicleTokenId is the token ID of the vehicle.
 	VehicleTokenID *int `json:"vehicleTokenId,omitempty"`
@@ -171,6 +177,9 @@ type SignalCollection struct {
 	// Unit: 'm'
 	// Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
 	CurrentLocationAltitude *SignalFloat `json:"currentLocationAltitude,omitempty"`
+	// Current location of the vehicle in WGS 84 coordinates.
+	// Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
+	CurrentLocationCoordinates *SignalLocation `json:"currentLocationCoordinates,omitempty"`
 	// Current heading relative to geographic north. 0 = North, 90 = East, 180 = South, 270 = West.
 	// Unit: 'degrees' Min: '0' Max: '360'
 	// Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
@@ -429,6 +438,13 @@ type SignalFloatFilter struct {
 	Or    []*SignalFloatFilter `json:"or,omitempty"`
 }
 
+type SignalLocation struct {
+	// timestamp of when this data was colllected
+	Timestamp time.Time `json:"timestamp"`
+	// value of the signal
+	Value *Location `json:"value"`
+}
+
 type SignalString struct {
 	// timestamp of when this data was colllected
 	Timestamp time.Time `json:"timestamp"`
@@ -524,6 +540,65 @@ func (e *FloatAggregation) UnmarshalJSON(b []byte) error {
 }
 
 func (e FloatAggregation) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type LocationAggregation string
+
+const (
+	LocationAggregationAvg   LocationAggregation = "AVG"
+	LocationAggregationRand  LocationAggregation = "RAND"
+	LocationAggregationFirst LocationAggregation = "FIRST"
+	LocationAggregationLast  LocationAggregation = "LAST"
+)
+
+var AllLocationAggregation = []LocationAggregation{
+	LocationAggregationAvg,
+	LocationAggregationRand,
+	LocationAggregationFirst,
+	LocationAggregationLast,
+}
+
+func (e LocationAggregation) IsValid() bool {
+	switch e {
+	case LocationAggregationAvg, LocationAggregationRand, LocationAggregationFirst, LocationAggregationLast:
+		return true
+	}
+	return false
+}
+
+func (e LocationAggregation) String() string {
+	return string(e)
+}
+
+func (e *LocationAggregation) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = LocationAggregation(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid LocationAggregation", str)
+	}
+	return nil
+}
+
+func (e LocationAggregation) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *LocationAggregation) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e LocationAggregation) MarshalJSON() ([]byte, error) {
 	var buf bytes.Buffer
 	e.MarshalGQL(&buf)
 	return buf.Bytes(), nil

@@ -13,6 +13,9 @@ extend type SignalAggregations {
     agg: FloatAggregation!,
     filter: SignalFloatFilter
   ):  Float
+  {{- else if eq .GQLType "Location" }}
+    agg: LocationAggregation!,
+  ):  Location
   {{- else }}
     agg: StringAggregation!
   ):  String
@@ -32,6 +35,8 @@ extend type SignalCollection {
   
   {{- if eq .GQLType "Float" }}
   {{ .JSONName }}: SignalFloat
+  {{- else if eq .GQLType "Location" }}
+  {{ .JSONName }}: SignalLocation
   {{- else }}
   {{ .JSONName }}: SignalString
   {{- end }} @requiresAllOfPrivileges(privileges: {{ .Privileges }}) @goField(name: "{{ .GOName }}") @isSignal

@@ -153,6 +153,14 @@ extend type SignalAggregations {
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationAltitude", forceResolver: true) @isSignal @hasAggregation
   
   """
+  Current location of the vehicle in WGS 84 coordinates.
+  Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
+  """
+  currentLocationCoordinates(
+    agg: LocationAggregation!,
+  ):  Location @requiresAllOfPrivileges(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationCoordinates", forceResolver: true) @isSignal @hasAggregation
+  
+  """
   Current heading relative to geographic north. 0 = North, 90 = East, 180 = South, 270 = West.
   Unit: 'degrees' Min: '0' Max: '360'
   Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
@@ -848,6 +856,12 @@ extend type SignalCollection {
   Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
   """
   currentLocationAltitude: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationAltitude") @isSignal
+  
+  """
+  Current location of the vehicle in WGS 84 coordinates.
+  Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
+  """
+  currentLocationCoordinates: SignalLocation @requiresAllOfPrivileges(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationCoordinates") @isSignal
   
   """
   Current heading relative to geographic north. 0 = North, 90 = East, 180 = South, 270 = West.

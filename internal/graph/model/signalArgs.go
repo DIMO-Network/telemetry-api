@@ -26,6 +26,8 @@ type LatestSignalsArgs struct {
 	SignalArgs
 	// SignalNames is the list of signal names to query.
 	SignalNames map[string]struct{}
+	// LocationSignalNames is the list of location signal names to query.
+	LocationSignalNames map[string]struct{}
 	// IncludeLastSeen is a flag to include a new signal for the last seen signal.
 	IncludeLastSeen bool
 }
@@ -45,6 +47,13 @@ type AggregatedSignalArgs struct {
 	StringArgs []StringSignalArgs
 	// ApproxLocArgs
 	ApproxLocArgs map[FloatAggregation]struct{}
+	LocationArgs  []LocationSignalArgs
+}
+
+type LocationSignalArgs struct {
+	Name  string
+	Agg   LocationAggregation
+	Alias string
 }
 
 // FloatSignalArgs is the arguments for querying a float signals.
