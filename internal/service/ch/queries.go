@@ -579,6 +579,8 @@ func buildLocationConditionList(fil *model.SignalLocationFilter) []qm.QueryMod {
 			interp = append(interp, pt.Longitude, pt.Latitude)
 		}
 
+		// ClickHouse function:
+		// https://clickhouse.com/docs/sql-reference/functions/geo/coordinates#pointinpolygon
 		mods = append(mods, qm.Where(
 			"pointInPolygon(("+vss.ValueLocationCol+".longitude, "+vss.ValueLocationCol+".latitude), ["+repeatWithSep("(?, ?)", len(fil.InPolygon), ", ")+"])",
 			interp...,
