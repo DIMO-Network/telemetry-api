@@ -572,7 +572,7 @@ func buildLocationConditionList(fil *model.SignalLocationFilter) []qm.QueryMod {
 	var mods []qm.QueryMod
 
 	if len(fil.InPolygon) != 0 {
-		// TODO(elffjs): Can the ClickHouse driver handle this?
+		// TODO(elffjs): Can the ClickHouse driver handle this for us?
 		var interp []any
 		for _, pt := range fil.InPolygon {
 			// Important: ClickHouse uses (x, y) here, so longitude first.
@@ -594,7 +594,7 @@ func repeatWithSep(s string, count int, sep string) string {
 	if count == 0 {
 		return ""
 	}
-	// Don't need to special case this, since strings.Repeat(s, 0) is "".
+	// Don't actually need to special case this, since strings.Repeat(s, 0) is "".
 	if count == 1 {
 		return s
 	}
