@@ -571,6 +571,8 @@ func buildLocationConditionList(fil *model.SignalLocationFilter) []qm.QueryMod {
 
 	var mods []qm.QueryMod
 
+	// This will not work well if points at at the edges of the coordinate system:
+	// for example, around the antimeridian.
 	if len(fil.InPolygon) != 0 {
 		// TODO(elffjs): Can the ClickHouse driver handle this for us?
 		var interp []any
