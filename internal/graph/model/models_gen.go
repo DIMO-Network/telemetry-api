@@ -83,6 +83,11 @@ type EventFilter struct {
 	Source *StringValueFilter `json:"source,omitempty"`
 }
 
+type FilterLocation struct {
+	Latitude  float64 `json:"latitude"`
+	Longitude float64 `json:"longitude"`
+}
+
 type Location struct {
 	Latitude  float64 `json:"latitude"`
 	Longitude float64 `json:"longitude"`
@@ -100,11 +105,6 @@ type Pomvc struct {
 	ValidFrom *time.Time `json:"validFrom,omitempty"`
 	// rawVC is the raw VC JSON.
 	RawVc string `json:"rawVC"`
-}
-
-type PolygonPoint struct {
-	Latitude  float64 `json:"latitude"`
-	Longitude float64 `json:"longitude"`
 }
 
 // The root query type for the GraphQL schema.
@@ -451,7 +451,7 @@ type SignalLocation struct {
 }
 
 type SignalLocationFilter struct {
-	InPolygon []*PolygonPoint `json:"inPolygon,omitempty"`
+	InPolygon []*FilterLocation `json:"inPolygon,omitempty"`
 }
 
 type SignalString struct {

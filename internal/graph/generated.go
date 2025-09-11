@@ -2318,7 +2318,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputAftermarketDeviceBy,
 		ec.unmarshalInputAttestationFilter,
 		ec.unmarshalInputEventFilter,
-		ec.unmarshalInputPolygonPoint,
+		ec.unmarshalInputFilterLocation,
 		ec.unmarshalInputSignalFilter,
 		ec.unmarshalInputSignalFloatFilter,
 		ec.unmarshalInputSignalLocationFilter,
@@ -2756,10 +2756,11 @@ type Location {
 }
 
 input SignalLocationFilter {
-  inPolygon: [PolygonPoint!]
+  inPolygon: [FilterLocation!]
+  # inCircle: InCircleFilter
 }
 
-input PolygonPoint {
+input FilterLocation {
   latitude: Float!
   longitude: Float!
 }
@@ -24628,8 +24629,8 @@ func (ec *executionContext) unmarshalInputEventFilter(ctx context.Context, obj a
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputPolygonPoint(ctx context.Context, obj any) (model.PolygonPoint, error) {
-	var it model.PolygonPoint
+func (ec *executionContext) unmarshalInputFilterLocation(ctx context.Context, obj any) (model.FilterLocation, error) {
+	var it model.FilterLocation
 	asMap := map[string]any{}
 	for k, v := range obj.(map[string]any) {
 		asMap[k] = v
@@ -24788,7 +24789,7 @@ func (ec *executionContext) unmarshalInputSignalLocationFilter(ctx context.Conte
 		switch k {
 		case "inPolygon":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("inPolygon"))
-			data, err := ec.unmarshalOPolygonPoint2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPolygonPointᚄ(ctx, v)
+			data, err := ec.unmarshalOFilterLocation2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFilterLocationᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -28765,6 +28766,11 @@ func (ec *executionContext) marshalNEvent2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtel
 	return ec._Event(ctx, sel, v)
 }
 
+func (ec *executionContext) unmarshalNFilterLocation2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFilterLocation(ctx context.Context, v any) (*model.FilterLocation, error) {
+	res, err := ec.unmarshalInputFilterLocation(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNFloat2float64(ctx context.Context, v any) (float64, error) {
 	res, err := graphql.UnmarshalFloatContext(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -28825,11 +28831,6 @@ func (ec *executionContext) unmarshalNLocationAggregation2githubᚗcomᚋDIMOᚑ
 
 func (ec *executionContext) marshalNLocationAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐLocationAggregation(ctx context.Context, sel ast.SelectionSet, v model.LocationAggregation) graphql.Marshaler {
 	return v
-}
-
-func (ec *executionContext) unmarshalNPolygonPoint2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPolygonPoint(ctx context.Context, v any) (*model.PolygonPoint, error) {
-	res, err := ec.unmarshalInputPolygonPoint(ctx, v)
-	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalNPrivilege2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilege(ctx context.Context, v any) (model.Privilege, error) {
@@ -29377,6 +29378,24 @@ func (ec *executionContext) unmarshalOEventFilter2ᚖgithubᚗcomᚋDIMOᚑNetwo
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) unmarshalOFilterLocation2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFilterLocationᚄ(ctx context.Context, v any) ([]*model.FilterLocation, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []any
+	vSlice = graphql.CoerceList(v)
+	var err error
+	res := make([]*model.FilterLocation, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNFilterLocation2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFilterLocation(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
 func (ec *executionContext) unmarshalOFloat2ᚕfloat64ᚄ(ctx context.Context, v any) ([]float64, error) {
 	if v == nil {
 		return nil, nil
@@ -29460,24 +29479,6 @@ func (ec *executionContext) marshalOPOMVC2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtel
 		return graphql.Null
 	}
 	return ec._POMVC(ctx, sel, v)
-}
-
-func (ec *executionContext) unmarshalOPolygonPoint2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPolygonPointᚄ(ctx context.Context, v any) ([]*model.PolygonPoint, error) {
-	if v == nil {
-		return nil, nil
-	}
-	var vSlice []any
-	vSlice = graphql.CoerceList(v)
-	var err error
-	res := make([]*model.PolygonPoint, len(vSlice))
-	for i := range vSlice {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
-		res[i], err = ec.unmarshalNPolygonPoint2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPolygonPoint(ctx, vSlice[i])
-		if err != nil {
-			return nil, err
-		}
-	}
-	return res, nil
 }
 
 func (ec *executionContext) marshalOSignalAggregations2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalAggregationsᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.SignalAggregations) graphql.Marshaler {

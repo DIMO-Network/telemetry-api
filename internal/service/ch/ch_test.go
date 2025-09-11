@@ -782,7 +782,7 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 						Agg:   model.LocationAggregationFirst,
 						Alias: vss.FieldCurrentLocationCoordinates,
 						Filter: &model.SignalLocationFilter{
-							InPolygon: []*model.PolygonPoint{
+							InPolygon: []*model.FilterLocation{
 								{Latitude: 5, Longitude: 15},
 								{Latitude: 10, Longitude: 10},
 								{Latitude: 15, Longitude: 20},
