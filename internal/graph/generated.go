@@ -2770,7 +2770,6 @@ input InCircleFilter {
   center: FilterLocation!
   radius: Float!
 }
-
 `, BuiltIn: false},
 	{Name: "../../schema/device_activity.graphqls", Input: `extend type Query {
   """
