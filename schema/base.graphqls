@@ -219,10 +219,15 @@ type Location {
 
 input SignalLocationFilter {
   inPolygon: [FilterLocation!]
-  # inCircle: InCircleFilter
+  inCircle: InCircleFilter
 }
 
 input FilterLocation {
   latitude: Float!
   longitude: Float!
+}
+
+input InCircleFilter {
+  center: FilterLocation!
+  radius: Float!
 }

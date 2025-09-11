@@ -2319,6 +2319,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputAttestationFilter,
 		ec.unmarshalInputEventFilter,
 		ec.unmarshalInputFilterLocation,
+		ec.unmarshalInputInCircleFilter,
 		ec.unmarshalInputSignalFilter,
 		ec.unmarshalInputSignalFloatFilter,
 		ec.unmarshalInputSignalLocationFilter,
@@ -2757,13 +2758,19 @@ type Location {
 
 input SignalLocationFilter {
   inPolygon: [FilterLocation!]
-  # inCircle: InCircleFilter
+  inCircle: InCircleFilter
 }
 
 input FilterLocation {
   latitude: Float!
   longitude: Float!
 }
+
+input InCircleFilter {
+  center: FilterLocation!
+  radius: Float!
+}
+
 `, BuiltIn: false},
 	{Name: "../../schema/device_activity.graphqls", Input: `extend type Query {
   """
@@ -24663,6 +24670,40 @@ func (ec *executionContext) unmarshalInputFilterLocation(ctx context.Context, ob
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputInCircleFilter(ctx context.Context, obj any) (model.InCircleFilter, error) {
+	var it model.InCircleFilter
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"center", "radius"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "center":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("center"))
+			data, err := ec.unmarshalNFilterLocation2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFilterLocation(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Center = data
+		case "radius":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("radius"))
+			data, err := ec.unmarshalNFloat2float64(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Radius = data
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputSignalFilter(ctx context.Context, obj any) (model.SignalFilter, error) {
 	var it model.SignalFilter
 	asMap := map[string]any{}
@@ -24780,7 +24821,7 @@ func (ec *executionContext) unmarshalInputSignalLocationFilter(ctx context.Conte
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"inPolygon"}
+	fieldsInOrder := [...]string{"inPolygon", "inCircle"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -24794,6 +24835,13 @@ func (ec *executionContext) unmarshalInputSignalLocationFilter(ctx context.Conte
 				return it, err
 			}
 			it.InPolygon = data
+		case "inCircle":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("inCircle"))
+			data, err := ec.unmarshalOInCircleFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐInCircleFilter(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.InCircle = data
 		}
 	}
 
@@ -29447,6 +29495,14 @@ func (ec *executionContext) marshalOFloat2ᚖfloat64(ctx context.Context, sel as
 	_ = sel
 	res := graphql.MarshalFloatContext(*v)
 	return graphql.WrapContextMarshaler(ctx, res)
+}
+
+func (ec *executionContext) unmarshalOInCircleFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐInCircleFilter(ctx context.Context, v any) (*model.InCircleFilter, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputInCircleFilter(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalOInt2ᚖint(ctx context.Context, v any) (*int, error) {

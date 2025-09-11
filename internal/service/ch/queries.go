@@ -587,6 +587,15 @@ func buildLocationConditionList(fil *model.SignalLocationFilter) []qm.QueryMod {
 		))
 	}
 
+	// ClickHouse function:
+	// https://clickhouse.com/docs/sql-reference/functions/geo/coordinates#geodistance
+	if fil.InCircle != nil {
+		mods = append(mods, qm.Where(
+			"geoDistance(?, ?, "+vss.ValueLocationCol+".longitude, "+vss.ValueLocationCol+".latitude) <= ?",
+			fil.InCircle.Center.Longitude, fil.InCircle.Center.Latitude, fil.InCircle.Radius,
+		))
+	}
+
 	return mods
 }
 

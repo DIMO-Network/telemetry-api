@@ -88,6 +88,11 @@ type FilterLocation struct {
 	Longitude float64 `json:"longitude"`
 }
 
+type InCircleFilter struct {
+	Center *FilterLocation `json:"center"`
+	Radius float64         `json:"radius"`
+}
+
 type Location struct {
 	Latitude  float64 `json:"latitude"`
 	Longitude float64 `json:"longitude"`
@@ -452,6 +457,7 @@ type SignalLocation struct {
 
 type SignalLocationFilter struct {
 	InPolygon []*FilterLocation `json:"inPolygon,omitempty"`
+	InCircle  *InCircleFilter   `json:"inCircle,omitempty"`
 }
 
 type SignalString struct {
