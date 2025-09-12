@@ -2323,6 +2323,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputSignalFilter,
 		ec.unmarshalInputSignalFloatFilter,
 		ec.unmarshalInputSignalLocationFilter,
+		ec.unmarshalInputStringArrayFilter,
 		ec.unmarshalInputStringValueFilter,
 	)
 	first := true
@@ -2895,8 +2896,15 @@ input StringValueFilter {
   notIn: [String!]
   in: [String!]
 }
+
+input StringArrayFilter {
+  hasAny: [String!]
+  hasAll: [String!]
+  or: StringArrayFilter
+  not: StringArrayFilter
+}
 `, BuiltIn: false},
-	{Name: "../../schema/signals_gen.graphqls", Input: `# Code generated  with ` + "`" + `make gql-model` + "`" + ` DO NOT EDIT.
+	{Name: "../../schema/signals-events_gen.graphqls", Input: `# Code generated  with ` + "`" + `make gql-model` + "`" + ` DO NOT EDIT.
 extend type SignalAggregations {
   """
   Vehicle rotation rate along Z (vertical).
@@ -4175,6 +4183,14 @@ extend type SignalCollection {
   """
   speed: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "Speed") @isSignal
   
+}
+
+extend input EventFilter {
+  """
+  tags is the tags of the event.
+  available tags: behavior.harshAcceleration, behavior.harshBraking, behavior.harshCornering, safety.collision
+  """
+  tags: StringArrayFilter
 }
 
 `, BuiltIn: false},
@@ -24634,7 +24650,7 @@ func (ec *executionContext) unmarshalInputEventFilter(ctx context.Context, obj a
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"name", "source"}
+	fieldsInOrder := [...]string{"name", "source", "tags"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -24655,6 +24671,13 @@ func (ec *executionContext) unmarshalInputEventFilter(ctx context.Context, obj a
 				return it, err
 			}
 			it.Source = data
+		case "tags":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tags"))
+			data, err := ec.unmarshalOStringArrayFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐStringArrayFilter(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Tags = data
 		}
 	}
 
@@ -24867,6 +24890,54 @@ func (ec *executionContext) unmarshalInputSignalLocationFilter(ctx context.Conte
 				return it, err
 			}
 			it.InCircle = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputStringArrayFilter(ctx context.Context, obj any) (model.StringArrayFilter, error) {
+	var it model.StringArrayFilter
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"hasAny", "hasAll", "or", "not"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "hasAny":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasAny"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HasAny = data
+		case "hasAll":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasAll"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HasAll = data
+		case "or":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("or"))
+			data, err := ec.unmarshalOStringArrayFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐStringArrayFilter(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Or = data
+		case "not":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("not"))
+			data, err := ec.unmarshalOStringArrayFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐStringArrayFilter(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Not = data
 		}
 	}
 
@@ -29731,6 +29802,14 @@ func (ec *executionContext) marshalOString2ᚖstring(ctx context.Context, sel as
 	_ = ctx
 	res := graphql.MarshalString(*v)
 	return res
+}
+
+func (ec *executionContext) unmarshalOStringArrayFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐStringArrayFilter(ctx context.Context, v any) (*model.StringArrayFilter, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputStringArrayFilter(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalOStringValueFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐStringValueFilter(ctx context.Context, v any) (*model.StringValueFilter, error) {

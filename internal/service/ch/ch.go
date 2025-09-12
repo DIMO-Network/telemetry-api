@@ -237,7 +237,7 @@ func (s *Service) GetAvailableSignals(ctx context.Context, tokenId uint32, filte
 
 func (s *Service) GetEvents(ctx context.Context, subject string, from, to time.Time, filter *model.EventFilter) ([]*vss.Event, error) {
 	mods := []qm.QueryMod{
-		qm.Select(vss.EventNameCol, vss.EventSourceCol, vss.EventTimestampCol, vss.EventDurationNsCol, vss.EventMetadataCol),
+		qm.Select(vss.EventNameCol, vss.EventSourceCol, vss.EventTimestampCol, vss.EventDurationNsCol, vss.EventMetadataCol, vss.EventTagsCol),
 		qm.From(vss.EventTableName),
 		qm.Where(eventSubjectWhere, subject),
 		qm.Where(timestampFrom, from),
@@ -254,7 +254,7 @@ func (s *Service) GetEvents(ctx context.Context, subject string, from, to time.T
 	events := []*vss.Event{}
 	for rows.Next() {
 		var event vss.Event
-		err := rows.Scan(&event.Name, &event.Source, &event.Timestamp, &event.DurationNs, &event.Metadata)
+		err := rows.Scan(&event.Name, &event.Source, &event.Timestamp, &event.DurationNs, &event.Metadata, &event.Tags)
 		if err != nil {
 			_ = rows.Close()
 			return nil, fmt.Errorf("failed scanning clickhouse event row: %w", err)

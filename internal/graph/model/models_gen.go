@@ -81,6 +81,9 @@ type EventFilter struct {
 	Name *StringValueFilter `json:"name,omitempty"`
 	// source is the name of the source connection that created the event.
 	Source *StringValueFilter `json:"source,omitempty"`
+	// tags is the tags of the event.
+	// available tags: behavior.harshAcceleration, behavior.harshBraking, behavior.harshCornering, safety.collision
+	Tags *StringArrayFilter `json:"tags,omitempty"`
 }
 
 type FilterLocation struct {
@@ -477,6 +480,13 @@ type SignalString struct {
 	Timestamp time.Time `json:"timestamp"`
 	// value of the signal
 	Value string `json:"value"`
+}
+
+type StringArrayFilter struct {
+	HasAny []string           `json:"hasAny,omitempty"`
+	HasAll []string           `json:"hasAll,omitempty"`
+	Or     *StringArrayFilter `json:"or,omitempty"`
+	Not    *StringArrayFilter `json:"not,omitempty"`
 }
 
 type StringValueFilter struct {
