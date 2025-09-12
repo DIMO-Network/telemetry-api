@@ -70,5 +70,6 @@ input StringValueFilter {
 input StringArrayFilter {
   hasAny: [String!]
   hasAll: [String!]
-  hasNone: [String!]
+  or: StringArrayFilter
+  not: StringArrayFilter
 }

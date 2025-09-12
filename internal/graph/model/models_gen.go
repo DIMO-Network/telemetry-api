@@ -74,6 +74,8 @@ type Event struct {
 	DurationNs int `json:"durationNs"`
 	// metadata is the metadata of the event.
 	Metadata *string `json:"metadata,omitempty"`
+	// tags is the tags of the event.
+	Tags []string `json:"tags,omitempty"`
 }
 
 type EventFilter struct {
@@ -483,9 +485,10 @@ type SignalString struct {
 }
 
 type StringArrayFilter struct {
-	HasAny  []string `json:"hasAny,omitempty"`
-	HasAll  []string `json:"hasAll,omitempty"`
-	HasNone []string `json:"hasNone,omitempty"`
+	HasAny []string           `json:"hasAny,omitempty"`
+	HasAll []string           `json:"hasAll,omitempty"`
+	Or     *StringArrayFilter `json:"or,omitempty"`
+	Not    *StringArrayFilter `json:"not,omitempty"`
 }
 
 type StringValueFilter struct {

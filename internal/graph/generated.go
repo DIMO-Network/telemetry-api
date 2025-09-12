@@ -75,6 +75,7 @@ type ComplexityRoot struct {
 		Metadata   func(childComplexity int) int
 		Name       func(childComplexity int) int
 		Source     func(childComplexity int) int
+		Tags       func(childComplexity int) int
 		Timestamp  func(childComplexity int) int
 	}
 
@@ -508,6 +509,13 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Event.Source(childComplexity), true
+
+	case "Event.tags":
+		if e.complexity.Event.Tags == nil {
+			break
+		}
+
+		return e.complexity.Event.Tags(childComplexity), true
 
 	case "Event.timestamp":
 		if e.complexity.Event.Timestamp == nil {
@@ -2877,6 +2885,11 @@ type Event {
   metadata is the metadata of the event.
   """
   metadata: String
+
+  """
+  tags is the tags of the event.
+  """
+  tags: [String!]
 }
 
 input EventFilter {
@@ -2900,7 +2913,8 @@ input StringValueFilter {
 input StringArrayFilter {
   hasAny: [String!]
   hasAll: [String!]
-  hasNone: [String!]
+  or: StringArrayFilter
+  not: StringArrayFilter
 }
 `, BuiltIn: false},
 	{Name: "../../schema/signals-events_gen.graphqls", Input: `# Code generated  with ` + "`" + `make gql-model` + "`" + ` DO NOT EDIT.
@@ -6417,6 +6431,47 @@ func (ec *executionContext) fieldContext_Event_metadata(_ context.Context, field
 	return fc, nil
 }
 
+func (ec *executionContext) _Event_tags(ctx context.Context, field graphql.CollectedField, obj *model.Event) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Event_tags(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Tags, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]string)
+	fc.Result = res
+	return ec.marshalOString2ᚕstringᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Event_tags(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Event",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Location_latitude(ctx context.Context, field graphql.CollectedField, obj *model.Location) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Location_latitude(ctx, field)
 	if err != nil {
@@ -7571,6 +7626,8 @@ func (ec *executionContext) fieldContext_Query_events(ctx context.Context, field
 				return ec.fieldContext_Event_durationNs(ctx, field)
 			case "metadata":
 				return ec.fieldContext_Event_metadata(ctx, field)
+			case "tags":
+				return ec.fieldContext_Event_tags(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Event", field.Name)
 		},
@@ -24902,7 +24959,7 @@ func (ec *executionContext) unmarshalInputStringArrayFilter(ctx context.Context,
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"hasAny", "hasAll", "hasNone"}
+	fieldsInOrder := [...]string{"hasAny", "hasAll", "or", "not"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -24923,13 +24980,20 @@ func (ec *executionContext) unmarshalInputStringArrayFilter(ctx context.Context,
 				return it, err
 			}
 			it.HasAll = data
-		case "hasNone":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasNone"))
-			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+		case "or":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("or"))
+			data, err := ec.unmarshalOStringArrayFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐStringArrayFilter(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.HasNone = data
+			it.Or = data
+		case "not":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("not"))
+			data, err := ec.unmarshalOStringArrayFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐStringArrayFilter(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Not = data
 		}
 	}
 
@@ -25137,6 +25201,8 @@ func (ec *executionContext) _Event(ctx context.Context, sel ast.SelectionSet, ob
 			}
 		case "metadata":
 			out.Values[i] = ec._Event_metadata(ctx, field, obj)
+		case "tags":
+			out.Values[i] = ec._Event_tags(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}

@@ -656,42 +656,57 @@ func appendEventFilterMods(mods []qm.QueryMod, filter *model.EventFilter) []qm.Q
 		mods = appendStringFilterMod(mods, vss.EventSourceCol, filter.Source)
 	}
 	if filter.Tags != nil {
-		mods = appendStringArrayFilterMod(mods, vss.EventTagsCol, filter.Tags)
+		newMods := appendStringArrayFilterMod(vss.EventTagsCol, filter.Tags, false)
+		mods = append(mods, qm.Expr(newMods...))
 	}
 	return mods
 }
 
 func appendStringFilterMod(mods []qm.QueryMod, field string, filter *model.StringValueFilter) []qm.QueryMod {
+	var newMods []qm.QueryMod
 	if filter == nil {
 		return mods
 	}
 	if filter.Eq != nil {
-		mods = append(mods, qm.Where(field+" = ?", *filter.Eq))
+		newMods = append(newMods, qm.Where(field+" = ?", *filter.Eq))
 	}
 	if filter.Neq != nil {
-		mods = append(mods, qm.Where(field+" != ?", *filter.Neq))
+		newMods = append(newMods, qm.Where(field+" != ?", *filter.Neq))
 	}
 	if filter.NotIn != nil {
-		mods = append(mods, qm.WhereNotIn(field+" NOT IN (?)", filter.NotIn))
+		newMods = append(newMods, qm.WhereNotIn(field+" NOT IN (?)", filter.NotIn))
 	}
 	if filter.In != nil {
-		mods = append(mods, qm.WhereIn(field+" IN (?)", filter.In))
+		newMods = append(newMods, qm.WhereIn(field+" IN (?)", filter.In))
 	}
-	return mods
+	return append(mods, qm.Expr(newMods...))
 }
 
-func appendStringArrayFilterMod(mods []qm.QueryMod, field string, filter *model.StringArrayFilter) []qm.QueryMod {
+func appendStringArrayFilterMod(field string, filter *model.StringArrayFilter, negate bool) []qm.QueryMod {
+	var newMods []qm.QueryMod
 	if filter == nil {
-		return mods
+		return newMods
+	}
+	negateClause := ""
+	if negate {
+		negateClause = "NOT "
 	}
 	if filter.HasAny != nil {
-		mods = append(mods, qm.Where("hasAny("+field+", ?)", filter.HasAny))
+		newMods = append(newMods, qm.Where(negateClause+"hasAny("+field+", ?)", filter.HasAny))
 	}
 	if filter.HasAll != nil {
-		mods = append(mods, qm.Where("hasAll("+field+", ?)", filter.HasAll))
+		newMods = append(newMods, qm.Where(negateClause+"hasAll("+field+", ?)", filter.HasAll))
 	}
-	if filter.HasNone != nil {
-		mods = append(mods, qm.Where("NOT hasAny("+field+", ?)", filter.HasNone))
+	if filter.Not != nil {
+		// change this and clause to implicit AND clause to an or clause with a negate
+		// Not (A AND B) = (NOT A) OR (NOT B)
+		OrFilter := &model.StringArrayFilter{Or: filter.Not}
+		newMods = appendStringArrayFilterMod(field, OrFilter, !negate)
 	}
-	return mods
+	if filter.Or != nil {
+		orMods := appendStringArrayFilterMod(field, filter.Or, negate)
+		newMods = append(newMods, qm.Or2(qm.Expr(orMods...)))
+	}
+
+	return newMods
 }

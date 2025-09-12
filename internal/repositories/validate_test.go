@@ -45,15 +45,11 @@ func TestValidateEventArgs(t *testing.T) {
 		require.NoError(t, err)
 		err = validateEventArgs(1, validFrom, validTo, &model.EventFilter{Tags: &model.StringArrayFilter{HasAll: []string{vss.TagBehaviorHarshAcceleration}}})
 		require.NoError(t, err)
-		err = validateEventArgs(1, validFrom, validTo, &model.EventFilter{Tags: &model.StringArrayFilter{HasNone: []string{vss.TagBehaviorHarshAcceleration}}})
-		require.NoError(t, err)
 	})
 	t.Run("invalid tags", func(t *testing.T) {
 		err := validateEventArgs(1, validFrom, validTo, &model.EventFilter{Tags: &model.StringArrayFilter{HasAny: []string{"invalid"}}})
 		require.Error(t, err)
 		err = validateEventArgs(1, validFrom, validTo, &model.EventFilter{Tags: &model.StringArrayFilter{HasAll: []string{vss.TagBehaviorHarshAcceleration, "invalid"}}})
-		require.Error(t, err)
-		err = validateEventArgs(1, validFrom, validTo, &model.EventFilter{Tags: &model.StringArrayFilter{HasNone: []string{"invalid"}}})
 		require.Error(t, err)
 	})
 

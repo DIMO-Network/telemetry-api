@@ -136,9 +136,6 @@ func validateEventArgs(tokenID int, from, to time.Time, filter *model.EventFilte
 		if err := validateTags(filter.Tags.HasAny); err != nil {
 			return err
 		}
-		if err := validateTags(filter.Tags.HasNone); err != nil {
-			return err
-		}
 	}
 	return nil
 }

@@ -1067,7 +1067,7 @@ func (c *CHServiceTestSuite) TestGetEvents() {
 		{
 			Name:       "event.a",
 			Source:     "source1",
-			Timestamp:  baseTime,
+			Timestamp:  baseTime.Add(5 * time.Minute),
 			DurationNs: 999,
 			Subject:    "did:erc721:1:0x0000000000000000000000000000000000000001:99",
 			Metadata:   `{"should":"not_appear"}`,
@@ -1206,19 +1206,13 @@ func (c *CHServiceTestSuite) TestGetEvents() {
 		c.Require().Equal("source2", result[0].Source)
 	})
 
-	c.Run("filter by tags hasNone", func() {
-		filter := &model.EventFilter{Tags: &model.StringArrayFilter{HasNone: []string{vss.TagSafetyCollision}}}
-		result, err := c.chService.GetEvents(ctx, subject, from, to, filter)
-		c.Require().NoError(err)
-		c.Require().Len(result, 2)
-		c.Require().Equal("event.b", result[0].Name)
-		c.Require().Equal(baseTime.Add(5*time.Minute), result[0].Timestamp)
-		c.Require().Equal("event.a", result[1].Name)
-		c.Require().Equal(baseTime, result[1].Timestamp)
-	})
-
 	c.Run("filter by tags hasAny multiple", func() {
-		filter := &model.EventFilter{Tags: &model.StringArrayFilter{HasAny: []string{vss.TagBehaviorHarshBraking, vss.TagSafetyCollision}}}
+		filter := &model.EventFilter{Tags: &model.StringArrayFilter{
+			HasAny: []string{vss.TagBehaviorHarshBraking, vss.TagSafetyCollision},
+			Or: &model.StringArrayFilter{
+				HasAny: []string{vss.TagBehaviorHarshAcceleration, vss.TagSafetyCollision},
+			},
+		}}
 		result, err := c.chService.GetEvents(ctx, subject, from, to, filter)
 		c.Require().NoError(err)
 		c.Require().Len(result, 3)
@@ -1231,13 +1225,102 @@ func (c *CHServiceTestSuite) TestGetEvents() {
 		c.Require().Len(result, 0)
 	})
 
-	c.Run("filter by tags hasNone multiple", func() {
-		filter := &model.EventFilter{Tags: &model.StringArrayFilter{HasNone: []string{vss.TagBehaviorHarshAcceleration, vss.TagSafetyCollision}}}
+	c.Run("filter by tags not hasAny multiple", func() {
+		filter := &model.EventFilter{Tags: &model.StringArrayFilter{Not: &model.StringArrayFilter{HasAny: []string{vss.TagBehaviorHarshAcceleration, vss.TagSafetyCollision}}}}
 		result, err := c.chService.GetEvents(ctx, subject, from, to, filter)
 		c.Require().NoError(err)
 		c.Require().Len(result, 1)
 		c.Require().Equal("event.b", result[0].Name)
 		c.Require().Equal(baseTime.Add(5*time.Minute), result[0].Timestamp)
+	})
+
+	c.Run("filter by tags not hasAll", func() {
+		filter := &model.EventFilter{Tags: &model.StringArrayFilter{Not: &model.StringArrayFilter{HasAll: []string{vss.TagBehaviorHarshAcceleration, vss.TagSafetyCollision}}}}
+		result, err := c.chService.GetEvents(ctx, subject, from, to, filter)
+		c.Require().NoError(err)
+		c.Require().Len(result, 2)
+		c.Require().Equal("event.b", result[0].Name)
+		c.Require().Equal("source2", result[0].Source)
+		c.Require().Equal("event.a", result[1].Name)
+		c.Require().Equal("source1", result[1].Source)
+	})
+
+	c.Run("filter by tags hasAll or hasAny", func() {
+		filter := &model.EventFilter{Tags: &model.StringArrayFilter{
+			HasAll: []string{vss.TagBehaviorHarshBraking, vss.TagBehaviorHarshCornering},
+			Or: &model.StringArrayFilter{
+				HasAny: []string{vss.TagSafetyCollision},
+			},
+		}}
+		result, err := c.chService.GetEvents(ctx, subject, from, to, filter)
+		c.Require().NoError(err)
+		c.Require().Len(result, 2)
+		c.Require().Equal("event.a", result[0].Name)
+		c.Require().Equal("source2", result[0].Source)
+		c.Require().Equal(baseTime.Add(10*time.Minute), result[0].Timestamp)
+		c.Require().Equal("event.b", result[1].Name)
+		c.Require().Equal("source2", result[1].Source)
+		c.Require().Equal(baseTime.Add(5*time.Minute), result[1].Timestamp)
+	})
+
+	c.Run("filter by tags not hasAny", func() {
+		filter := &model.EventFilter{Tags: &model.StringArrayFilter{
+			Not: &model.StringArrayFilter{
+				HasAny: []string{vss.TagSafetyCollision},
+			},
+		}}
+		result, err := c.chService.GetEvents(ctx, subject, from, to, filter)
+		c.Require().NoError(err)
+		c.Require().Len(result, 2)
+		c.Require().Equal("event.b", result[0].Name)
+		c.Require().Equal(baseTime.Add(5*time.Minute), result[0].Timestamp)
+		c.Require().Equal("event.a", result[1].Name)
+		c.Require().Equal(baseTime, result[1].Timestamp)
+	})
+
+	c.Run("filter by tags complex or with not", func() {
+		filter := &model.EventFilter{Tags: &model.StringArrayFilter{
+			HasAll: []string{vss.TagSafetyCollision},
+			Not: &model.StringArrayFilter{
+				HasAny: []string{vss.TagBehaviorHarshAcceleration, vss.TagBehaviorHarshBraking, vss.TagBehaviorHarshCornering},
+			},
+			Or: &model.StringArrayFilter{
+				HasAny: []string{vss.TagBehaviorHarshBraking},
+			},
+		}}
+		result, err := c.chService.GetEvents(ctx, subject, from, to, filter)
+		c.Require().NoError(err)
+		c.Require().Len(result, 2)
+		c.Require().Equal("event.b", result[0].Name)
+		c.Require().Equal(baseTime.Add(5*time.Minute), result[0].Timestamp)
+		c.Require().Equal("event.a", result[1].Name)
+		c.Require().Equal(baseTime, result[1].Timestamp)
+	})
+
+	c.Run("filter by tags hasAll and not hasAny", func() {
+		filter := &model.EventFilter{Tags: &model.StringArrayFilter{
+			HasAll: []string{vss.TagBehaviorHarshBraking},
+			Not: &model.StringArrayFilter{
+				HasAny: []string{vss.TagSafetyCollision},
+			},
+		}}
+		result, err := c.chService.GetEvents(ctx, subject, from, to, filter)
+		c.Require().NoError(err)
+		c.Require().Len(result, 1)
+		c.Require().Equal("event.b", result[0].Name)
+		c.Require().Equal(baseTime.Add(5*time.Minute), result[0].Timestamp)
+	})
+
+	c.Run("filter by tags hasAny and hasAll", func() {
+		filter := &model.EventFilter{Tags: &model.StringArrayFilter{
+			HasAny: []string{vss.TagBehaviorHarshBraking, vss.TagSafetyCollision},
+			HasAll: []string{vss.TagBehaviorHarshAcceleration, vss.TagBehaviorHarshCornering},
+		}}
+		result, err := c.chService.GetEvents(ctx, subject, from, to, filter)
+		c.Require().NoError(err)
+		c.Require().Len(result, 1)
+		c.Require().Equal("event.a", result[0].Name)
+		c.Require().Equal("source2", result[0].Source)
 	})
 
 	c.Run("filter by tags no matches", func() {
