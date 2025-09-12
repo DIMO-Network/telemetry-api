@@ -15,6 +15,7 @@ extend type SignalAggregations {
   ):  Float
   {{- else if eq .GQLType "Location" }}
     agg: LocationAggregation!,
+    filter: SignalLocationFilter
   ):  Location
   {{- else }}
     agg: StringAggregation!

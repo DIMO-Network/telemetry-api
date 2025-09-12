@@ -767,6 +767,40 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 				},
 			},
 		},
+		{
+			name: "first location in fence",
+			aggArgs: model.AggregatedSignalArgs{
+				SignalArgs: model.SignalArgs{
+					TokenID: 1,
+				},
+				FromTS:   c.dataStartTime,
+				ToTS:     endTs,
+				Interval: day.Microseconds(),
+				LocationArgs: []model.LocationSignalArgs{
+					{
+						Name:  vss.FieldCurrentLocationCoordinates,
+						Agg:   model.LocationAggregationFirst,
+						Alias: vss.FieldCurrentLocationCoordinates,
+						Filter: &model.SignalLocationFilter{
+							InPolygon: []*model.FilterLocation{
+								{Latitude: 5, Longitude: 15},
+								{Latitude: 10, Longitude: 10},
+								{Latitude: 15, Longitude: 20},
+								{Latitude: 5, Longitude: 25},
+							},
+						},
+					},
+				},
+			},
+			expected: []AggSignal{
+				{
+					SignalType:    LocType,
+					SignalIndex:   0,
+					Timestamp:     c.dataStartTime,
+					ValueLocation: vss.Location{Latitude: 9, Longitude: 15, HDOP: 21},
+				},
+			},
+		},
 	}
 	for _, tc := range testCases {
 		c.Run(tc.name, func() {

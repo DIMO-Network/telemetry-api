@@ -43,7 +43,32 @@ func validateAggSigArgs(args *model.AggregatedSignalArgs) error {
 		return ValidationError("too many location aggregations")
 	}
 
+	// TODO(elffjs): Awkward place to put this. Certainly this would get
+	// worse if we allowed ORs.
+	for _, locArg := range args.LocationArgs {
+		if fil := locArg.Filter; fil != nil {
+			// TODO(elffjs): Should we check polygon orientation?
+			// Could apply isFilterLocationValid here, but failure there
+			// doesn't actually break queries.
+			if len(fil.InPolygon) != 0 && len(fil.InPolygon) < 3 {
+				return ValidationError("not enough points in geofence filter")
+			}
+
+			if fil.InCircle != nil {
+				if !isFilterLocationValid(fil.InCircle.Center) {
+					return ValidationError("invalid circle filter location")
+				}
+				// Could think about checking for radius < 0, but nothing
+				// actually breaks.
+			}
+		}
+	}
+
 	return validateSignalArgs(&args.SignalArgs)
+}
+
+func isFilterLocationValid(loc *model.FilterLocation) bool {
+	return -90 <= loc.Latitude && loc.Latitude <= 90 && -180 <= loc.Longitude && loc.Longitude <= 180
 }
 
 func validateLatestSigArgs(args *model.LatestSignalsArgs) error {

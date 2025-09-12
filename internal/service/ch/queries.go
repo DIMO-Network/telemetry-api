@@ -447,7 +447,7 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 			fieldFilters := []qm.QueryMod{
 				qmhelper.Where(signalIndexCol, qmhelper.EQ, i),
 			}
-			fieldFilters = append(fieldFilters, buildConditionList(agg.Filter)...)
+			fieldFilters = append(fieldFilters, buildFloatConditionList(agg.Filter)...)
 
 			// It's okay to also use Or2 for the first entry: it's simply ignored.
 			innerFloatFilters = append(innerFloatFilters, qm.Or2(qm.Expr(fieldFilters...)))
@@ -470,6 +470,17 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 	}
 
 	if len(aggArgs.LocationArgs) != 0 {
+		var innerLocationFilters []qm.QueryMod
+
+		for i, agg := range aggArgs.LocationArgs {
+			fieldFilters := []qm.QueryMod{
+				qmhelper.Where(signalIndexCol, qmhelper.EQ, i),
+			}
+			fieldFilters = append(fieldFilters, buildLocationConditionList(agg.Filter)...)
+
+			innerLocationFilters = append(innerLocationFilters, qm.Or2(qm.Expr(fieldFilters...)))
+		}
+
 		perSignalFilters = append(perSignalFilters, qm.Or2(
 			qm.Expr(
 				qmhelper.Where(signalTypeCol, qmhelper.EQ, LocType),
@@ -477,6 +488,7 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 					qmhelper.Where(vss.ValueLocationCol+".latitude", qmhelper.NEQ, 0),
 					qm.Or2(qmhelper.Where(vss.ValueLocationCol+".longitude", qmhelper.NEQ, 0)),
 				),
+				qm.Expr(innerLocationFilters...),
 			),
 		))
 	}
@@ -505,7 +517,7 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 	return stmt, args, nil
 }
 
-func buildConditionList(fil *model.SignalFloatFilter) []qm.QueryMod {
+func buildFloatConditionList(fil *model.SignalFloatFilter) []qm.QueryMod {
 	if fil == nil {
 		return nil
 	}
@@ -539,7 +551,7 @@ func buildConditionList(fil *model.SignalFloatFilter) []qm.QueryMod {
 
 	var orMods []qm.QueryMod
 	for _, cond := range fil.Or {
-		clauseMods := buildConditionList(cond)
+		clauseMods := buildFloatConditionList(cond)
 		if len(clauseMods) != 0 {
 			orMods = append(orMods, qm.Or2(qm.Expr(clauseMods...)))
 		}
@@ -550,6 +562,59 @@ func buildConditionList(fil *model.SignalFloatFilter) []qm.QueryMod {
 	}
 
 	return mods
+}
+
+func buildLocationConditionList(fil *model.SignalLocationFilter) []qm.QueryMod {
+	if fil == nil {
+		return nil
+	}
+
+	var mods []qm.QueryMod
+
+	// This will not work well if points at at the edges of the coordinate system:
+	// for example, around the antimeridian.
+	if len(fil.InPolygon) != 0 {
+		// TODO(elffjs): Can the ClickHouse driver handle this list assembly for us?
+		var interp []any
+		for _, pt := range fil.InPolygon {
+			// Important: ClickHouse thinks of these as (x, y), so longitude goes first.
+			interp = append(interp, pt.Longitude, pt.Latitude)
+		}
+
+		// ClickHouse function:
+		// https://clickhouse.com/docs/sql-reference/functions/geo/coordinates#pointinpolygon
+		mods = append(mods, qm.Where(
+			"pointInPolygon(("+vss.ValueLocationCol+".longitude, "+vss.ValueLocationCol+".latitude), ["+repeatWithSep("(?, ?)", len(fil.InPolygon), ", ")+"])",
+			interp...,
+		))
+	}
+
+	// ClickHouse function, which returns meters:
+	// https://clickhouse.com/docs/sql-reference/functions/geo/coordinates#geodistance
+	if fil.InCircle != nil {
+		mods = append(mods, qm.Where(
+			"geoDistance(?, ?, "+vss.ValueLocationCol+".longitude, "+vss.ValueLocationCol+".latitude) <= ?",
+			fil.InCircle.Center.Longitude, fil.InCircle.Center.Latitude, kilometersToMeters(fil.InCircle.Radius),
+		))
+	}
+
+	return mods
+}
+
+func kilometersToMeters(d float64) float64 {
+	return 1000 * d
+}
+
+func repeatWithSep(s string, count int, sep string) string {
+	if count == 0 {
+		return ""
+	}
+	// Don't actually need to special case this, since strings.Repeat(s, 0) is "".
+	// We do avoid a concatenation, though.
+	if count == 1 {
+		return s
+	}
+	return strings.Repeat(s+sep, count-1) + s
 }
 
 func aggTableEntry(ft FieldType, index int, name string) string {

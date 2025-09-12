@@ -158,6 +158,7 @@ extend type SignalAggregations {
   """
   currentLocationCoordinates(
     agg: LocationAggregation!,
+    filter: SignalLocationFilter
   ):  Location @requiresAllOfPrivileges(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationCoordinates", forceResolver: true) @isSignal @hasAggregation
   
   """
