@@ -589,16 +589,20 @@ func buildLocationConditionList(fil *model.SignalLocationFilter) []qm.QueryMod {
 		))
 	}
 
-	// ClickHouse function:
+	// ClickHouse function, which returns meters:
 	// https://clickhouse.com/docs/sql-reference/functions/geo/coordinates#geodistance
 	if fil.InCircle != nil {
 		mods = append(mods, qm.Where(
 			"geoDistance(?, ?, "+vss.ValueLocationCol+".longitude, "+vss.ValueLocationCol+".latitude) <= ?",
-			fil.InCircle.Center.Longitude, fil.InCircle.Center.Latitude, fil.InCircle.Radius,
+			fil.InCircle.Center.Longitude, fil.InCircle.Center.Latitude, kilometersToMeters(fil.InCircle.Radius),
 		))
 	}
 
 	return mods
+}
+
+func kilometersToMeters(d float64) float64 {
+	return 1000 * d
 }
 
 func repeatWithSep(s string, count int, sep string) string {
@@ -606,6 +610,7 @@ func repeatWithSep(s string, count int, sep string) string {
 		return ""
 	}
 	// Don't actually need to special case this, since strings.Repeat(s, 0) is "".
+	// We do avoid a concatenation, though.
 	if count == 1 {
 		return s
 	}

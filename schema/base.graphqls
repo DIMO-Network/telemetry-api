@@ -217,17 +217,43 @@ type Location {
   hdop: Float!
 }
 
+"""
+Filters that apply to locations.
+"""
 input SignalLocationFilter {
+  """
+  Filter for locations within a polygon. The vertices should be ordered
+  clockwise or counterclockwise, and there must be at least 3.
+
+  May produce inaccurate results around the poles and the antimeridian.
+  """
   inPolygon: [FilterLocation!]
+  """
+  Filter for locations within a given distance of a given point. Distances
+  are computed using WGS 84, and points that are exactly a distance `radius`
+  from the `center` will be included.
+  """
   inCircle: InCircleFilter
 }
 
 input FilterLocation {
+  """
+  Latitude in the range [-90, 90].
+  """
   latitude: Float!
+  """
+  Longitude in the range [-180, 180].
+  """
   longitude: Float!
 }
 
 input InCircleFilter {
+  """
+  Center of the filter circle.
+  """
   center: FilterLocation!
+  """
+  Radius of the circle around the center, in kilometers (km).
+  """
   radius: Float!
 }

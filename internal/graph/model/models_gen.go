@@ -84,13 +84,17 @@ type EventFilter struct {
 }
 
 type FilterLocation struct {
-	Latitude  float64 `json:"latitude"`
+	// Latitude in the range [-90, 90].
+	Latitude float64 `json:"latitude"`
+	// Longitude in the range [-180, 180].
 	Longitude float64 `json:"longitude"`
 }
 
 type InCircleFilter struct {
+	// Center of the filter circle.
 	Center *FilterLocation `json:"center"`
-	Radius float64         `json:"radius"`
+	// Radius of the circle around the center, in kilometers (km).
+	Radius float64 `json:"radius"`
 }
 
 type Location struct {
@@ -455,9 +459,17 @@ type SignalLocation struct {
 	Value *Location `json:"value"`
 }
 
+// Filters that apply to locations.
 type SignalLocationFilter struct {
+	// Filter for locations within a polygon. The vertices should be ordered
+	// clockwise or counterclockwise, and there must be at least 3.
+	//
+	// May produce inaccurate results around the poles and the antimeridian.
 	InPolygon []*FilterLocation `json:"inPolygon,omitempty"`
-	InCircle  *InCircleFilter   `json:"inCircle,omitempty"`
+	// Filter for locations within a given distance of a given point. Distances
+	// are computed using WGS 84, and points that are exactly a distance `radius`
+	// from the `center` will be included.
+	InCircle *InCircleFilter `json:"inCircle,omitempty"`
 }
 
 type SignalString struct {
