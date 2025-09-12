@@ -74,8 +74,6 @@ type Event struct {
 	DurationNs int `json:"durationNs"`
 	// metadata is the metadata of the event.
 	Metadata *string `json:"metadata,omitempty"`
-	// tags is the tags of the event.
-	Tags []string `json:"tags,omitempty"`
 }
 
 type EventFilter struct {
