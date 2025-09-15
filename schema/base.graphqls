@@ -9,6 +9,11 @@ A 20-byte Ethereum address, encoded as a checksummed hex string with 0x prefix.
 """
 scalar Address
 
+"""
+A 64-bit unsigned integer.
+"""
+scalar Uint64
+
 directive @goField(
   forceResolver: Boolean
   name: String
@@ -119,7 +124,7 @@ type SignalsMetadata {
   """
   Total number of signals collected
   """
-  numberOfSignals: Int!
+  numberOfSignals: Uint64!
   """
   available signal names
   """
@@ -147,7 +152,7 @@ type SignalMetadata {
   """
   number of this specific signal
   """
-  numberOfSignals: Int!
+  numberOfSignals: Uint64!
   """
   first seen timestamp
   """

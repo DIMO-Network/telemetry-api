@@ -211,7 +211,7 @@ func (r *Repository) GetSignalMetadata(ctx context.Context, tokenID uint32, filt
 	if err != nil {
 		return nil, handleDBError(ctx, err)
 	}
-	totalCount := 0
+	totalCount := uint64(0)
 	minTimestamp := time.Now().UTC()
 	maxTimestamp := time.Date(1900, 1, 1, 0, 0, 0, 0, time.UTC)
 	availableSignals := make([]string, len(signalMetadata))

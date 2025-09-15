@@ -1,8 +1,6 @@
 package e2e_test
 
 import (
-	"encoding/json"
-	"fmt"
 	"testing"
 
 	"github.com/99designs/gqlgen/client"
@@ -53,11 +51,8 @@ func TestEstimateCost(t *testing.T) {
 	}`
 
 	// Execute request
-	result, err := telemetryClient.RawPost(query, WithToken(token), WithEstimateCost())
+	_, err := telemetryClient.RawPost(query, WithToken(token), WithEstimateCost())
 	require.NoError(t, err)
-	json, err := json.MarshalIndent(result, "", "  ")
-	require.NoError(t, err)
-	fmt.Println(string(json))
 }
 
 func WithEstimateCost() client.Option {

@@ -483,7 +483,7 @@ type SignalMetadata struct {
 	// signal name
 	Name string `json:"name"`
 	// number of this specific signal
-	NumberOfSignals int `json:"numberOfSignals"`
+	NumberOfSignals uint64 `json:"numberOfSignals"`
 	// first seen timestamp
 	FirstSeen time.Time `json:"firstSeen"`
 	// last seen timestamp
@@ -499,7 +499,7 @@ type SignalString struct {
 
 type SignalsMetadata struct {
 	// Total number of signals collected
-	NumberOfSignals int `json:"numberOfSignals"`
+	NumberOfSignals uint64 `json:"numberOfSignals"`
 	// available signal names
 	AvailableSignals []string `json:"availableSignals"`
 	// first seen timestamp

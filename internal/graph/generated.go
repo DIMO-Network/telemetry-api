@@ -2656,6 +2656,11 @@ A 20-byte Ethereum address, encoded as a checksummed hex string with 0x prefix.
 """
 scalar Address
 
+"""
+A 64-bit unsigned integer.
+"""
+scalar Uint64
+
 directive @goField(
   forceResolver: Boolean
   name: String
@@ -2766,7 +2771,7 @@ type SignalsMetadata {
   """
   Total number of signals collected
   """
-  numberOfSignals: Int!
+  numberOfSignals: Uint64!
   """
   available signal names
   """
@@ -2794,7 +2799,7 @@ type SignalMetadata {
   """
   number of this specific signal
   """
-  numberOfSignals: Int!
+  numberOfSignals: Uint64!
   """
   first seen timestamp
   """
@@ -22528,9 +22533,9 @@ func (ec *executionContext) _SignalMetadata_numberOfSignals(ctx context.Context,
 		}
 		return graphql.Null
 	}
-	res := resTmp.(int)
+	res := resTmp.(uint64)
 	fc.Result = res
-	return ec.marshalNInt2int(ctx, field.Selections, res)
+	return ec.marshalNUint642uint64(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_SignalMetadata_numberOfSignals(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -22540,7 +22545,7 @@ func (ec *executionContext) fieldContext_SignalMetadata_numberOfSignals(_ contex
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Int does not have child fields")
+			return nil, errors.New("field of type Uint64 does not have child fields")
 		},
 	}
 	return fc, nil
@@ -22748,9 +22753,9 @@ func (ec *executionContext) _SignalsMetadata_numberOfSignals(ctx context.Context
 		}
 		return graphql.Null
 	}
-	res := resTmp.(int)
+	res := resTmp.(uint64)
 	fc.Result = res
-	return ec.marshalNInt2int(ctx, field.Selections, res)
+	return ec.marshalNUint642uint64(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_SignalsMetadata_numberOfSignals(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -22760,7 +22765,7 @@ func (ec *executionContext) fieldContext_SignalsMetadata_numberOfSignals(_ conte
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Int does not have child fields")
+			return nil, errors.New("field of type Uint64 does not have child fields")
 		},
 	}
 	return fc, nil
@@ -30086,6 +30091,22 @@ func (ec *executionContext) unmarshalNTime2timeᚐTime(ctx context.Context, v an
 func (ec *executionContext) marshalNTime2timeᚐTime(ctx context.Context, sel ast.SelectionSet, v time.Time) graphql.Marshaler {
 	_ = sel
 	res := graphql.MarshalTime(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+	}
+	return res
+}
+
+func (ec *executionContext) unmarshalNUint642uint64(ctx context.Context, v any) (uint64, error) {
+	res, err := graphql.UnmarshalUint64(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNUint642uint64(ctx context.Context, sel ast.SelectionSet, v uint64) graphql.Marshaler {
+	_ = sel
+	res := graphql.MarshalUint64(v)
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")

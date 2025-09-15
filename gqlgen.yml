@@ -83,3 +83,6 @@ models:
   Address:
     model:
       - github.com/DIMO-Network/telemetry-api/internal/graph/model.Address
+  Uint64:
+    model:
+      - github.com/99designs/gqlgen/graphql.Uint64
