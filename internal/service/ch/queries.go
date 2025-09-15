@@ -633,6 +633,23 @@ func getDistinctQuery(tokenId uint32, filter *model.SignalFilter) (string, []any
 	return stmt, args
 }
 
+// select Count(*), max(timestamp), min(timestamp), name, from signal where token_id = '39718' GROUP BY name
+func getSignalMetadataQuery(tokenId uint32, filter *model.SignalFilter) (string, []any) {
+	mods := []qm.QueryMod{
+		qm.Select("COUNT(*)"),
+		qm.Select("MAX(" + vss.TimestampCol + ")"),
+		qm.Select("MIN(" + vss.TimestampCol + ")"),
+		qm.Select(vss.NameCol),
+		qm.From(vss.TableName),
+		qm.Where(tokenIDWhere, tokenId),
+		qm.GroupBy(vss.NameCol),
+		qm.OrderBy(vss.NameCol),
+	}
+	mods = append(mods, getFilterMods(filter)...)
+	stmt, args := newQuery(mods...)
+	return stmt, args
+}
+
 // getFilterMods returns the query mods for the filter.
 func getFilterMods(filter *model.SignalFilter) []qm.QueryMod {
 	if filter == nil {

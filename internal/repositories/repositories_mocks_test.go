@@ -103,3 +103,18 @@ func (mr *MockCHServiceMockRecorder) GetLatestSignals(ctx, latestArgs any) *gomo
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetLatestSignals", reflect.TypeOf((*MockCHService)(nil).GetLatestSignals), ctx, latestArgs)
 }
+
+// GetSignalMetadata mocks base method.
+func (m *MockCHService) GetSignalMetadata(ctx context.Context, tokenID uint32, filter *model.SignalFilter) ([]*model.SignalMetadata, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetSignalMetadata", ctx, tokenID, filter)
+	ret0, _ := ret[0].([]*model.SignalMetadata)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetSignalMetadata indicates an expected call of GetSignalMetadata.
+func (mr *MockCHServiceMockRecorder) GetSignalMetadata(ctx, tokenID, filter any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSignalMetadata", reflect.TypeOf((*MockCHService)(nil).GetSignalMetadata), ctx, tokenID, filter)
+}

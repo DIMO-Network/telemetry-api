@@ -479,11 +479,35 @@ type SignalLocationFilter struct {
 	InCircle *InCircleFilter `json:"inCircle,omitempty"`
 }
 
+type SignalMetadata struct {
+	// signal name
+	Name string `json:"name"`
+	// number of this specific signal
+	NumberOfSignals int `json:"numberOfSignals"`
+	// first seen timestamp
+	FirstSeen time.Time `json:"firstSeen"`
+	// last seen timestamp
+	LastSeen time.Time `json:"lastSeen"`
+}
+
 type SignalString struct {
 	// timestamp of when this data was colllected
 	Timestamp time.Time `json:"timestamp"`
 	// value of the signal
 	Value string `json:"value"`
+}
+
+type SignalsMetadata struct {
+	// Total number of signals collected
+	NumberOfSignals int `json:"numberOfSignals"`
+	// available signal names
+	AvailableSignals []string `json:"availableSignals"`
+	// first seen timestamp
+	FirstSeen time.Time `json:"firstSeen"`
+	// last seen timestamp
+	LastSeen time.Time `json:"lastSeen"`
+	// signal metadata
+	SignalMetadata []*SignalMetadata `json:"signalMetadata"`
 }
 
 // Filters that apply to string arrays.

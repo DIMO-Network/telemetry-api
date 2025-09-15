@@ -45,6 +45,9 @@ type Query {
   """
   availableSignals(tokenId: Int!, filter: SignalFilter): [String!]
     @requiresVehicleToken
+
+  signalsMetadata(tokenId: Int!, filter: SignalFilter): SignalsMetadata
+    @requiresVehicleToken
 }
 type SignalAggregations {
   """
@@ -110,6 +113,49 @@ type SignalCollection {
     )
     @goField(name: "CurrentLocationApproximateLongitude")
     @isSignal
+}
+
+type SignalsMetadata {
+  """
+  Total number of signals collected
+  """
+  numberOfSignals: Int!
+  """
+  available signal names
+  """
+  availableSignals: [String!]!
+  """
+  first seen timestamp
+  """
+  firstSeen: Time!
+  """
+  last seen timestamp
+  """
+  lastSeen: Time!
+
+  """
+  signal metadata
+  """
+  signalMetadata: [SignalMetadata!]!
+}
+
+type SignalMetadata {
+  """
+  signal name
+  """
+  name: String!
+  """
+  number of this specific signal
+  """
+  numberOfSignals: Int!
+  """
+  first seen timestamp
+  """
+  firstSeen: Time!
+  """
+  last seen timestamp
+  """
+  lastSeen: Time!
 }
 
 enum FloatAggregation {
