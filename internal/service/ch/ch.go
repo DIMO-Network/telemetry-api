@@ -235,6 +235,25 @@ func (s *Service) GetAvailableSignals(ctx context.Context, tokenId uint32, filte
 	return signals, nil
 }
 
+func (s *Service) GetSignalSummaries(ctx context.Context, tokenId uint32, filter *model.SignalFilter) ([]*model.SignalDataSummary, error) {
+	stmt, args := getSignalSummariesQuery(tokenId, filter)
+	rows, err := s.conn.Query(ctx, stmt, args...)
+	if err != nil {
+		return nil, fmt.Errorf("failed querying clickhouse: %w", err)
+	}
+	signalSummaries := []*model.SignalDataSummary{}
+	for rows.Next() {
+		var signalSummary model.SignalDataSummary
+		err := rows.Scan(&signalSummary.Name, &signalSummary.NumberOfSignals, &signalSummary.FirstSeen, &signalSummary.LastSeen)
+		if err != nil {
+			_ = rows.Close()
+			return nil, fmt.Errorf("failed scanning clickhouse row: %w", err)
+		}
+		signalSummaries = append(signalSummaries, &signalSummary)
+	}
+	return signalSummaries, nil
+}
+
 func (s *Service) GetEvents(ctx context.Context, subject string, from, to time.Time, filter *model.EventFilter) ([]*vss.Event, error) {
 	mods := []qm.QueryMod{
 		qm.Select(vss.EventNameCol, vss.EventSourceCol, vss.EventTimestampCol, vss.EventDurationNsCol, vss.EventMetadataCol, vss.EventTagsCol),

@@ -34,6 +34,11 @@ func (r *queryResolver) AvailableSignals(ctx context.Context, tokenID int, filte
 	return r.BaseRepo.GetAvailableSignals(ctx, uint32(tokenID), filter)
 }
 
+// DataSummary is the resolver for the dataSummary field.
+func (r *queryResolver) DataSummary(ctx context.Context, tokenID int, filter *model.SignalFilter) (*model.DataSummary, error) {
+	return r.BaseRepo.GetDataSummary(ctx, uint32(tokenID), filter)
+}
+
 // CurrentLocationApproximateLatitude is the resolver for the CurrentLocationApproximateLatitude
 func (r *signalAggregationsResolver) CurrentLocationApproximateLatitude(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
 	latLng, ok := approximateLocationSignalAggregations(obj, agg)

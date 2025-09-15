@@ -103,3 +103,18 @@ func (mr *MockCHServiceMockRecorder) GetLatestSignals(ctx, latestArgs any) *gomo
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetLatestSignals", reflect.TypeOf((*MockCHService)(nil).GetLatestSignals), ctx, latestArgs)
 }
+
+// GetSignalSummaries mocks base method.
+func (m *MockCHService) GetSignalSummaries(ctx context.Context, tokenID uint32, filter *model.SignalFilter) ([]*model.SignalDataSummary, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetSignalSummaries", ctx, tokenID, filter)
+	ret0, _ := ret[0].([]*model.SignalDataSummary)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetSignalSummaries indicates an expected call of GetSignalSummaries.
+func (mr *MockCHServiceMockRecorder) GetSignalSummaries(ctx, tokenID, filter any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSignalSummaries", reflect.TypeOf((*MockCHService)(nil).GetSignalSummaries), ctx, tokenID, filter)
+}

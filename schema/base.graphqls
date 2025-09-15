@@ -9,6 +9,11 @@ A 20-byte Ethereum address, encoded as a checksummed hex string with 0x prefix.
 """
 scalar Address
 
+"""
+A 64-bit unsigned integer.
+"""
+scalar Uint64
+
 directive @goField(
   forceResolver: Boolean
   name: String
@@ -44,6 +49,12 @@ type Query {
   availableSignals returns a list of queryable signal names that have stored data for a given tokenId.
   """
   availableSignals(tokenId: Int!, filter: SignalFilter): [String!]
+    @requiresVehicleToken
+
+  """
+  data summary of all signals for a given tokenId
+  """
+  dataSummary(tokenId: Int!, filter: SignalFilter): DataSummary
     @requiresVehicleToken
 }
 type SignalAggregations {
@@ -110,6 +121,49 @@ type SignalCollection {
     )
     @goField(name: "CurrentLocationApproximateLongitude")
     @isSignal
+}
+
+type DataSummary {
+  """
+  Total number of signals collected
+  """
+  numberOfSignals: Uint64!
+  """
+  available signal names
+  """
+  availableSignals: [String!]!
+  """
+  first seen timestamp
+  """
+  firstSeen: Time!
+  """
+  last seen timestamp
+  """
+  lastSeen: Time!
+
+  """
+  data summary of an individual signal
+  """
+  signalDataSummary: [signalDataSummary!]!
+}
+
+type signalDataSummary {
+  """
+  signal name
+  """
+  name: String!
+  """
+  number of this specific signal
+  """
+  numberOfSignals: Uint64!
+  """
+  first seen timestamp
+  """
+  firstSeen: Time!
+  """
+  last seen timestamp
+  """
+  lastSeen: Time!
 }
 
 enum FloatAggregation {
