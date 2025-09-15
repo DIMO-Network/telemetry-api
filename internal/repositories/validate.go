@@ -129,21 +129,41 @@ func validateEventArgs(tokenID int, from, to time.Time, filter *model.EventFilte
 	if from.After(to) {
 		return ValidationError("from timestamp is after to timestamp")
 	}
-	if filter != nil && filter.Tags != nil {
-		if err := validateTags(filter.Tags.HasAll); err != nil {
-			return err
-		}
-		if err := validateTags(filter.Tags.HasAny); err != nil {
+	if filter != nil {
+		if err := validateTags(filter.Tags); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func validateTags(tags []string) error {
-	for _, tag := range tags {
+func validateTags(stringArrayFilter *model.StringArrayFilter) error {
+	if stringArrayFilter == nil {
+		return nil
+	}
+	for _, tag := range stringArrayFilter.ContainsAll {
 		if _, ok := eventTags[tag]; !ok {
 			return ValidationError(fmt.Sprintf("tag '%s', is not a valid value", tag))
+		}
+	}
+	for _, tag := range stringArrayFilter.ContainsAny {
+		if _, ok := eventTags[tag]; !ok {
+			return ValidationError(fmt.Sprintf("tag '%s', is not a valid value", tag))
+		}
+	}
+	for _, tag := range stringArrayFilter.NotContainsAny {
+		if _, ok := eventTags[tag]; !ok {
+			return ValidationError(fmt.Sprintf("tag '%s', is not a valid value", tag))
+		}
+	}
+	for _, tag := range stringArrayFilter.NotContainsAll {
+		if _, ok := eventTags[tag]; !ok {
+			return ValidationError(fmt.Sprintf("tag '%s', is not a valid value", tag))
+		}
+	}
+	for _, tag := range stringArrayFilter.Or {
+		if err := validateTags(tag); err != nil {
+			return err
 		}
 	}
 	return nil

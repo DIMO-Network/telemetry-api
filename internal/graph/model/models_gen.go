@@ -30,14 +30,16 @@ type Attestation struct {
 	Attestation string `json:"attestation"`
 	// type
 	Type string `json:"type"`
-	// source
+	// source is the address that created and signed the attestation
 	Source common.Address `json:"source"`
 	// dataversion
 	DataVersion string `json:"dataVersion"`
-	// producer
+	// producer of the attestation data
 	Producer *string `json:"producer,omitempty"`
-	// signature
+	// signature of the attestation data
 	Signature string `json:"signature"`
+	// tags tags associated with the attestation.
+	Tags []string `json:"tags,omitempty"`
 }
 
 // AttestationFilter holds the filter parameters for the attestation querys.
@@ -56,6 +58,8 @@ type AttestationFilter struct {
 	After *time.Time `json:"after,omitempty"`
 	// Limit attestations returned to this value. Defaults to 10.
 	Limit *int `json:"limit,omitempty"`
+	// Filter attestations by tags.
+	Tags *StringArrayFilter `json:"tags,omitempty"`
 }
 
 type DeviceActivity struct {
@@ -482,18 +486,32 @@ type SignalString struct {
 	Value string `json:"value"`
 }
 
+// Filters that apply to string arrays.
 type StringArrayFilter struct {
-	HasAny []string           `json:"hasAny,omitempty"`
-	HasAll []string           `json:"hasAll,omitempty"`
-	Or     *StringArrayFilter `json:"or,omitempty"`
-	Not    *StringArrayFilter `json:"not,omitempty"`
+	// containsAny array of strings containing any of the strings in the array
+	ContainsAny []string `json:"containsAny,omitempty"`
+	// containsAll array of strings containing all of the strings in the array
+	ContainsAll []string `json:"containsAll,omitempty"`
+	// notContainsAny array of strings does not contain any of the strings in the array
+	NotContainsAny []string `json:"notContainsAny,omitempty"`
+	// notContainsAll array of strings does not contain all of the strings in the array
+	NotContainsAll []string `json:"notContainsAll,omitempty"`
+	// or array of string array filters
+	Or []*StringArrayFilter `json:"or,omitempty"`
 }
 
+// Filters that apply to strings.
 type StringValueFilter struct {
-	Eq    *string  `json:"eq,omitempty"`
-	Neq   *string  `json:"neq,omitempty"`
+	// eq string equal to the string
+	Eq *string `json:"eq,omitempty"`
+	// neq string not equal to the string
+	Neq *string `json:"neq,omitempty"`
+	// notIn array of strings not in the array
 	NotIn []string `json:"notIn,omitempty"`
-	In    []string `json:"in,omitempty"`
+	// in array of strings in the array
+	In []string `json:"in,omitempty"`
+	// or array of string value filters
+	Or []*StringValueFilter `json:"or,omitempty"`
 }
 
 type Vinvc struct {

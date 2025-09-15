@@ -9,11 +9,10 @@ extend type Query {
     tokenId: Int!
 
     """
-    Filter attestations by metadata fields. 
+    Filter attestations by metadata fields.
     """
     filter: AttestationFilter
-  ): [Attestation]
-    @requiresVehicleToken
+  ): [Attestation] @requiresVehicleToken
 }
 
 type Attestation {
@@ -43,7 +42,7 @@ type Attestation {
   type: String!
 
   """
-  source
+  source is the address that created and signed the attestation
   """
   source: Address!
 
@@ -53,15 +52,19 @@ type Attestation {
   dataVersion: String!
 
   """
-  producer
+  producer of the attestation data
   """
   producer: String
 
   """
-  signature
+  signature of the attestation data
   """
   signature: String!
 
+  """
+  tags tags associated with the attestation.
+  """
+  tags: [String!]
 }
 
 """
@@ -74,7 +77,7 @@ input AttestationFilter {
   id: String
 
   """
-  The attesting party. 
+  The attesting party.
   """
   source: Address
 
@@ -99,8 +102,12 @@ input AttestationFilter {
   after: Time
 
   """
-  Limit attestations returned to this value. Defaults to 10. 
+  Limit attestations returned to this value. Defaults to 10.
   """
   limit: Int
-}
 
+  """
+  Filter attestations by tags.
+  """
+  tags: StringArrayFilter
+}

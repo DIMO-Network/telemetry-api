@@ -1,6 +1,6 @@
 module github.com/DIMO-Network/telemetry-api
 
-go 1.24.0
+go 1.25
 
 require (
 	github.com/99designs/gqlgen v0.17.78
@@ -9,9 +9,9 @@ require (
 	github.com/DIMO-Network/clickhouse-infra v0.0.5
 	github.com/DIMO-Network/cloudevent v0.1.4
 	github.com/DIMO-Network/credit-tracker v0.0.6
-	github.com/DIMO-Network/fetch-api v0.0.12
+	github.com/DIMO-Network/fetch-api v0.0.14
 	github.com/DIMO-Network/model-garage v0.7.3
-	github.com/DIMO-Network/server-garage v0.0.2
+	github.com/DIMO-Network/server-garage v0.0.4
 	github.com/DIMO-Network/shared v1.0.7
 	github.com/DIMO-Network/token-exchange-api v0.3.2
 	github.com/Khan/genqlient v0.8.1
@@ -19,7 +19,7 @@ require (
 	github.com/auth0/go-jwt-middleware/v2 v2.3.0
 	github.com/ethereum/go-ethereum v1.16.3
 	github.com/go-jose/go-jose/v4 v4.1.1
-	github.com/prometheus/client_golang v1.22.0
+	github.com/prometheus/client_golang v1.23.0
 	github.com/rs/zerolog v1.34.0
 	github.com/segmentio/ksuid v1.0.4
 	github.com/stretchr/testify v1.11.1
@@ -27,8 +27,8 @@ require (
 	github.com/vektah/gqlparser/v2 v2.5.30
 	go.uber.org/mock v0.6.0
 	golang.org/x/sync v0.16.0
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20250603155806-513f23925822
-	google.golang.org/grpc v1.74.2
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20250818200422-3122310a409c
+	google.golang.org/grpc v1.75.0
 	google.golang.org/protobuf v1.36.9
 )
 
@@ -69,7 +69,7 @@ require (
 	github.com/go-ole/go-ole v1.3.0 // indirect
 	github.com/go-viper/mapstructure/v2 v2.4.0 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
-	github.com/golang-jwt/jwt/v5 v5.2.2 // indirect
+	github.com/golang-jwt/jwt/v5 v5.3.0 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/gorilla/websocket v1.5.1 // indirect
 	github.com/hashicorp/golang-lru/v2 v2.0.7 // indirect
@@ -101,8 +101,8 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/power-devops/perfstat v0.0.0-20240221224432-82ca36839d55 // indirect
 	github.com/pressly/goose/v3 v3.24.3 // indirect
-	github.com/prometheus/client_model v0.6.1 // indirect
-	github.com/prometheus/common v0.62.0 // indirect
+	github.com/prometheus/client_model v0.6.2 // indirect
+	github.com/prometheus/common v0.65.0 // indirect
 	github.com/prometheus/procfs v0.16.1 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/segmentio/asm v1.2.0 // indirect

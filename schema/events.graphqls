@@ -59,17 +59,3 @@ input EventFilter {
   """
   source: StringValueFilter
 }
-
-input StringValueFilter {
-  eq: String
-  neq: String
-  notIn: [String!]
-  in: [String!]
-}
-
-input StringArrayFilter {
-  hasAny: [String!]
-  hasAll: [String!]
-  or: StringArrayFilter
-  not: StringArrayFilter
-}
