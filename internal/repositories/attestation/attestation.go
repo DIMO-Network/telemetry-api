@@ -14,11 +14,10 @@ import (
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	"github.com/ethereum/go-ethereum/common"
 	"google.golang.org/protobuf/types/known/timestamppb"
-	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
 type indexRepoService interface {
-	GetAllCloudEvents(ctx context.Context, filter *grpc.SearchOptions, limit int32) ([]cloudevent.CloudEvent[json.RawMessage], error)
+	GetAllCloudEvents(ctx context.Context, filter *grpc.AdvancedSearchOptions, limit int32) ([]cloudevent.CloudEvent[json.RawMessage], error)
 }
 type Repository struct {
 	indexService   indexRepoService
@@ -45,19 +44,27 @@ func (r *Repository) GetAttestations(ctx context.Context, vehicleTokenID int, fi
 		ContractAddress: r.vehicleAddress,
 		TokenID:         new(big.Int).SetUint64(uint64(vehicleTokenID)),
 	}.String()
-	opts := &grpc.SearchOptions{
-		Type:    &wrapperspb.StringValue{Value: cloudevent.TypeAttestation},
-		Subject: &wrapperspb.StringValue{Value: vehicleDID},
+	opts := &grpc.AdvancedSearchOptions{
+		Type: &grpc.StringFilterOption{
+			In: []string{cloudevent.TypeAttestation},
+		},
+		Subject: &grpc.StringFilterOption{
+			In: []string{vehicleDID},
+		},
 	}
 
 	limit := 10
 	if filter != nil {
 		if filter.Source != nil {
-			opts.Source = &wrapperspb.StringValue{Value: filter.Source.Hex()}
+			opts.Source = &grpc.StringFilterOption{
+				In: []string{filter.Source.Hex()},
+			}
 		}
 
 		if filter.Producer != nil {
-			opts.Producer = &wrapperspb.StringValue{Value: *filter.Producer}
+			opts.Producer = &grpc.StringFilterOption{
+				In: []string{*filter.Producer},
+			}
 		}
 
 		if filter.After != nil {
@@ -69,7 +76,9 @@ func (r *Repository) GetAttestations(ctx context.Context, vehicleTokenID int, fi
 		}
 
 		if filter.DataVersion != nil {
-			opts.DataVersion = &wrapperspb.StringValue{Value: *filter.DataVersion}
+			opts.DataVersion = &grpc.StringFilterOption{
+				In: []string{*filter.DataVersion},
+			}
 		}
 
 		if filter.Limit != nil {
@@ -77,7 +86,13 @@ func (r *Repository) GetAttestations(ctx context.Context, vehicleTokenID int, fi
 		}
 
 		if filter.ID != nil {
-			opts.Id = &wrapperspb.StringValue{Value: *filter.ID}
+			opts.Id = &grpc.StringFilterOption{
+				In: []string{*filter.ID},
+			}
+		}
+
+		if filter.Tags != nil {
+			opts.Tags = toFetchAPIArrayFilterOption(filter.Tags)
 		}
 	}
 
@@ -108,4 +123,21 @@ func (r *Repository) GetAttestations(ctx context.Context, vehicleTokenID int, fi
 	}
 
 	return attestations, nil
+}
+
+func toFetchAPIArrayFilterOption(filter *model.StringArrayFilter) *grpc.ArrayFilterOption {
+	if filter == nil {
+		return nil
+	}
+	orOptions := make([]*grpc.ArrayFilterOption, len(filter.Or))
+	for i, or := range filter.Or {
+		orOptions[i] = toFetchAPIArrayFilterOption(or)
+	}
+	return &grpc.ArrayFilterOption{
+		ContainsAny:    filter.ContainsAny,
+		ContainsAll:    filter.ContainsAll,
+		NotContainsAny: filter.NotContainsAny,
+		NotContainsAll: filter.NotContainsAll,
+		Or:             orOptions,
+	}
 }

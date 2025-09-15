@@ -650,29 +650,79 @@ func appendEventFilterMods(mods []qm.QueryMod, filter *model.EventFilter) []qm.Q
 		return mods
 	}
 	if filter.Name != nil {
-		mods = appendStringFilterMod(mods, vss.EventNameCol, filter.Name)
+		mods = append(mods, stringFilterMod(vss.EventNameCol, filter.Name)...)
 	}
 	if filter.Source != nil {
-		mods = appendStringFilterMod(mods, vss.EventSourceCol, filter.Source)
+		mods = append(mods, stringFilterMod(vss.EventSourceCol, filter.Source)...)
+	}
+	if filter.Tags != nil {
+		mods = append(mods, stringArrayFilterMod(filter.Tags, vss.EventTagsCol)...)
 	}
 	return mods
 }
 
-func appendStringFilterMod(mods []qm.QueryMod, field string, filter *model.StringValueFilter) []qm.QueryMod {
+func stringFilterMod(field string, filter *model.StringValueFilter) []qm.QueryMod {
+	var newMods []qm.QueryMod
 	if filter == nil {
-		return mods
+		return nil
 	}
 	if filter.Eq != nil {
-		mods = append(mods, qm.Where(field+" = ?", *filter.Eq))
+		newMods = append(newMods, qm.Where(field+" = ?", *filter.Eq))
 	}
 	if filter.Neq != nil {
-		mods = append(mods, qm.Where(field+" != ?", *filter.Neq))
+		newMods = append(newMods, qm.Where(field+" != ?", *filter.Neq))
 	}
 	if filter.NotIn != nil {
-		mods = append(mods, qm.WhereNotIn(field+" NOT IN (?)", filter.NotIn))
+		newMods = append(newMods, qm.WhereNotIn(field+" NOT IN (?)", filter.NotIn))
 	}
 	if filter.In != nil {
-		mods = append(mods, qm.WhereIn(field+" IN (?)", filter.In))
+		newMods = append(newMods, qm.WhereIn(field+" IN (?)", filter.In))
 	}
-	return mods
+
+	for _, cond := range filter.Or {
+		clauseMods := stringFilterMod(field, cond)
+		if len(clauseMods) != 0 {
+			newMods = append(newMods, qm.Or2(qm.Expr(clauseMods...)))
+		}
+	}
+
+	if len(filter.Or) != 0 {
+		// if we have an Or wrap the expression so it doesn't get ordered with the parent where clause
+		newMods = []qm.QueryMod{qm.Expr(newMods...)}
+	}
+
+	return newMods
+}
+
+func stringArrayFilterMod(filter *model.StringArrayFilter, field string) []qm.QueryMod {
+	var newMods []qm.QueryMod
+	if filter == nil {
+		return newMods
+	}
+
+	if len(filter.ContainsAny) != 0 {
+		newMods = append(newMods, qm.Where("hasAny("+field+", ?)", filter.ContainsAny))
+	}
+	if len(filter.ContainsAll) != 0 {
+		newMods = append(newMods, qm.Where("hasAll("+field+", ?)", filter.ContainsAll))
+	}
+	if len(filter.NotContainsAny) != 0 {
+		newMods = append(newMods, qm.Where("NOT hasAny("+field+", ?)", filter.NotContainsAny))
+	}
+	if len(filter.NotContainsAll) != 0 {
+		newMods = append(newMods, qm.Where("NOT hasAll("+field+", ?)", filter.NotContainsAll))
+	}
+
+	for _, cond := range filter.Or {
+		clauseMods := stringArrayFilterMod(cond, field)
+		if len(clauseMods) != 0 {
+			newMods = append(newMods, qm.Or2(qm.Expr(clauseMods...)))
+		}
+	}
+
+	if len(filter.Or) != 0 {
+		newMods = []qm.QueryMod{qm.Expr(newMods...)}
+	}
+
+	return newMods
 }

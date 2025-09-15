@@ -44,7 +44,7 @@ func (m *MockindexRepoService) EXPECT() *MockindexRepoServiceMockRecorder {
 }
 
 // GetLatestCloudEvent mocks base method.
-func (m *MockindexRepoService) GetLatestCloudEvent(ctx context.Context, filter *grpc.SearchOptions) (cloudevent.CloudEvent[json.RawMessage], error) {
+func (m *MockindexRepoService) GetLatestCloudEvent(ctx context.Context, filter *grpc.AdvancedSearchOptions) (cloudevent.CloudEvent[json.RawMessage], error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetLatestCloudEvent", ctx, filter)
 	ret0, _ := ret[0].(cloudevent.CloudEvent[json.RawMessage])

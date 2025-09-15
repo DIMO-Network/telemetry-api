@@ -257,3 +257,55 @@ input InCircleFilter {
   """
   radius: Float!
 }
+
+"""
+Filters that apply to strings.
+"""
+input StringValueFilter {
+  """
+  eq string equal to the string
+  """
+  eq: String
+  """
+  neq string not equal to the string
+  """
+  neq: String
+  """
+  notIn array of strings not in the array
+  """
+  notIn: [String!]
+  """
+  in array of strings in the array
+  """
+  in: [String!]
+  """
+  or array of string value filters
+  """
+  or: [StringValueFilter!]
+}
+
+"""
+Filters that apply to string arrays.
+"""
+input StringArrayFilter {
+  """
+  containsAny array of strings containing any of the strings in the array
+  """
+  containsAny: [String!]
+  """
+  containsAll array of strings containing all of the strings in the array
+  """
+  containsAll: [String!]
+  """
+  notContainsAny array of strings does not contain any of the strings in the array
+  """
+  notContainsAny: [String!]
+  """
+  notContainsAll array of strings does not contain all of the strings in the array
+  """
+  notContainsAll: [String!]
+  """
+  or array of string array filters
+  """
+  or: [StringArrayFilter!]
+}
