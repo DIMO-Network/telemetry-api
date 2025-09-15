@@ -116,12 +116,12 @@ func TestSignalsMetadata(t *testing.T) {
 		// Execute the query for all signals
 		query := `
 		query SignalsMetadataTest {
-			signalsMetadata(tokenId: %d) {
+			dataSummary(tokenId: %d) {
 				numberOfSignals
 				availableSignals
 				firstSeen
 				lastSeen
-				signalMetadata {
+				signalDataSummary {
 					name
 					numberOfSignals
 					firstSeen
@@ -136,9 +136,9 @@ func TestSignalsMetadata(t *testing.T) {
 		require.NoError(t, err)
 
 		// Assert the overall metadata results
-		assert.Equal(t, uint64(10), result.SignalsMetadata.NumberOfSignals)
-		assert.Equal(t, macaronTime.Format(time.RFC3339), result.SignalsMetadata.FirstSeen)
-		assert.Equal(t, smartCarTime2.Format(time.RFC3339), result.SignalsMetadata.LastSeen)
+		assert.Equal(t, uint64(10), result.DataSummary.NumberOfSignals)
+		assert.Equal(t, macaronTime.Format(time.RFC3339), result.DataSummary.FirstSeen)
+		assert.Equal(t, smartCarTime2.Format(time.RFC3339), result.DataSummary.LastSeen)
 
 		// Assert available signals (should be sorted)
 		expectedAvailableSignals := []string{
@@ -148,14 +148,14 @@ func TestSignalsMetadata(t *testing.T) {
 			"powertrainTractionBatteryStateOfChargeCurrent",
 			"speed",
 		}
-		assert.Equal(t, expectedAvailableSignals, result.SignalsMetadata.AvailableSignals)
+		assert.Equal(t, expectedAvailableSignals, result.DataSummary.AvailableSignals)
 
 		// Assert signal metadata - should have 5 different signal types
-		require.Len(t, result.SignalsMetadata.SignalMetadata, 5)
+		require.Len(t, result.DataSummary.SignalDataSummary, 5)
 
 		// Find and validate speed signal metadata (most common signal)
-		var speedMetadata *SignalMetadataTest
-		for _, sm := range result.SignalsMetadata.SignalMetadata {
+		var speedMetadata *DataSummaryTest
+		for _, sm := range result.DataSummary.SignalDataSummary {
 			if sm.Name == "speed" {
 				speedMetadata = sm
 				break
@@ -167,8 +167,8 @@ func TestSignalsMetadata(t *testing.T) {
 		assert.Equal(t, smartCarTime2.Format(time.RFC3339), speedMetadata.LastSeen)
 
 		// Find and validate battery signal metadata
-		var batteryCurrentMetadata *SignalMetadataTest
-		for _, sm := range result.SignalsMetadata.SignalMetadata {
+		var batteryCurrentMetadata *DataSummaryTest
+		for _, sm := range result.DataSummary.SignalDataSummary {
 			if sm.Name == "powertrainTractionBatteryStateOfChargeCurrent" {
 				batteryCurrentMetadata = sm
 				break
@@ -184,12 +184,12 @@ func TestSignalsMetadata(t *testing.T) {
 		// Execute the query filtered by smartcar source
 		query := `
 		query SignalsMetadataFiltered {
-			signalsMetadata(tokenId: %d, filter: {source: "smartcar"}) {
+			dataSummary(tokenId: %d, filter: {source: "smartcar"}) {
 				numberOfSignals
 				availableSignals
 				firstSeen
 				lastSeen
-				signalMetadata {
+				signalDataSummary {
 					name
 					numberOfSignals
 					firstSeen
@@ -204,9 +204,9 @@ func TestSignalsMetadata(t *testing.T) {
 		require.NoError(t, err)
 
 		// Assert filtered results - should only include smartcar signals
-		assert.Equal(t, uint64(4), result.SignalsMetadata.NumberOfSignals) // 2 speed + 1 lat + 1 lon
-		assert.Equal(t, smartCarTime1.Format(time.RFC3339), result.SignalsMetadata.FirstSeen)
-		assert.Equal(t, smartCarTime2.Format(time.RFC3339), result.SignalsMetadata.LastSeen)
+		assert.Equal(t, uint64(4), result.DataSummary.NumberOfSignals) // 2 speed + 1 lat + 1 lon
+		assert.Equal(t, smartCarTime1.Format(time.RFC3339), result.DataSummary.FirstSeen)
+		assert.Equal(t, smartCarTime2.Format(time.RFC3339), result.DataSummary.LastSeen)
 
 		// Assert available signals for smartcar only
 		expectedSmartcarSignals := []string{
@@ -214,14 +214,14 @@ func TestSignalsMetadata(t *testing.T) {
 			"currentLocationLongitude",
 			"speed",
 		}
-		assert.Equal(t, expectedSmartcarSignals, result.SignalsMetadata.AvailableSignals)
+		assert.Equal(t, expectedSmartcarSignals, result.DataSummary.AvailableSignals)
 
 		// Assert signal metadata - should have 3 different signal types for smartcar
-		require.Len(t, result.SignalsMetadata.SignalMetadata, 3)
+		require.Len(t, result.DataSummary.SignalDataSummary, 3)
 
 		// Validate speed signal metadata for smartcar only
-		var speedMetadata *SignalMetadataTest
-		for _, sm := range result.SignalsMetadata.SignalMetadata {
+		var speedMetadata *DataSummaryTest
+		for _, sm := range result.DataSummary.SignalDataSummary {
 			if sm.Name == "speed" {
 				speedMetadata = sm
 				break
@@ -237,12 +237,12 @@ func TestSignalsMetadata(t *testing.T) {
 		// Execute the query filtered by non-existent source
 		query := `
 		query SignalsMetadataEmpty {
-			signalsMetadata(tokenId: %d, filter: {source: "nonexistent"}) {
+			dataSummary(tokenId: %d, filter: {source: "nonexistent"}) {
 				numberOfSignals
 				availableSignals
 				firstSeen
 				lastSeen
-				signalMetadata {
+				signalDataSummary {
 					name
 					numberOfSignals
 					firstSeen
@@ -257,14 +257,14 @@ func TestSignalsMetadata(t *testing.T) {
 		require.NoError(t, err)
 
 		// Assert empty results
-		assert.Equal(t, uint64(0), result.SignalsMetadata.NumberOfSignals)
-		assert.Empty(t, result.SignalsMetadata.AvailableSignals)
-		assert.Empty(t, result.SignalsMetadata.SignalMetadata)
+		assert.Equal(t, uint64(0), result.DataSummary.NumberOfSignals)
+		assert.Empty(t, result.DataSummary.AvailableSignals)
+		assert.Empty(t, result.DataSummary.SignalDataSummary)
 		// firstSeen and lastSeen should be set to default values when no signals exist
 	})
 }
 
-type SignalMetadataTest struct {
+type DataSummaryTest struct {
 	Name            string `json:"name"`
 	NumberOfSignals uint64 `json:"numberOfSignals"`
 	FirstSeen       string `json:"firstSeen"`
@@ -272,11 +272,11 @@ type SignalMetadataTest struct {
 }
 
 type SignalsMetadataResult struct {
-	SignalsMetadata struct {
-		NumberOfSignals  uint64                `json:"numberOfSignals"`
-		AvailableSignals []string              `json:"availableSignals"`
-		FirstSeen        string                `json:"firstSeen"`
-		LastSeen         string                `json:"lastSeen"`
-		SignalMetadata   []*SignalMetadataTest `json:"signalMetadata"`
-	} `json:"signalsMetadata"`
+	DataSummary struct {
+		NumberOfSignals   uint64             `json:"numberOfSignals"`
+		AvailableSignals  []string           `json:"availableSignals"`
+		FirstSeen         string             `json:"firstSeen"`
+		LastSeen          string             `json:"lastSeen"`
+		SignalDataSummary []*DataSummaryTest `json:"signalDataSummary"`
+	} `json:"dataSummary"`
 }

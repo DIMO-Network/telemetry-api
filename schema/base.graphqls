@@ -51,7 +51,10 @@ type Query {
   availableSignals(tokenId: Int!, filter: SignalFilter): [String!]
     @requiresVehicleToken
 
-  signalsMetadata(tokenId: Int!, filter: SignalFilter): SignalsMetadata
+  """
+  data summary of all signals for a given tokenId
+  """
+  dataSummary(tokenId: Int!, filter: SignalFilter): DataSummary
     @requiresVehicleToken
 }
 type SignalAggregations {
@@ -120,7 +123,7 @@ type SignalCollection {
     @isSignal
 }
 
-type SignalsMetadata {
+type DataSummary {
   """
   Total number of signals collected
   """
@@ -139,12 +142,12 @@ type SignalsMetadata {
   lastSeen: Time!
 
   """
-  signal metadata
+  data summary of an individual signal
   """
-  signalMetadata: [SignalMetadata!]!
+  signalDataSummary: [signalDataSummary!]!
 }
 
-type SignalMetadata {
+type signalDataSummary {
   """
   signal name
   """

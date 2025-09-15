@@ -36,7 +36,7 @@ type CHService interface {
 	GetAggregatedSignals(ctx context.Context, aggArgs *model.AggregatedSignalArgs) ([]*ch.AggSignal, error)
 	GetLatestSignals(ctx context.Context, latestArgs *model.LatestSignalsArgs) ([]*vss.Signal, error)
 	GetAvailableSignals(ctx context.Context, tokenID uint32, filter *model.SignalFilter) ([]string, error)
-	GetSignalMetadata(ctx context.Context, tokenID uint32, filter *model.SignalFilter) ([]*model.SignalMetadata, error)
+	GetSignalSummaries(ctx context.Context, tokenID uint32, filter *model.SignalFilter) ([]*model.SignalDataSummary, error)
 	GetEvents(ctx context.Context, subject string, from, to time.Time, filter *model.EventFilter) ([]*vss.Event, error)
 }
 
@@ -205,17 +205,17 @@ func (r *Repository) GetAvailableSignals(ctx context.Context, tokenID uint32, fi
 	return retSignals, nil
 }
 
-// GetSignalMetadata returns the signal metadata for the given tokenID and filter.
-func (r *Repository) GetSignalMetadata(ctx context.Context, tokenID uint32, filter *model.SignalFilter) (*model.SignalsMetadata, error) {
-	signalMetadata, err := r.chService.GetSignalMetadata(ctx, tokenID, filter)
+// GetDataSummary returns the signal metadata for the given tokenID and filter.
+func (r *Repository) GetDataSummary(ctx context.Context, tokenID uint32, filter *model.SignalFilter) (*model.DataSummary, error) {
+	signalDataSummary, err := r.chService.GetSignalSummaries(ctx, tokenID, filter)
 	if err != nil {
 		return nil, handleDBError(ctx, err)
 	}
 	totalCount := uint64(0)
 	minTimestamp := time.Now().UTC()
 	maxTimestamp := time.Date(1900, 1, 1, 0, 0, 0, 0, time.UTC)
-	availableSignals := make([]string, len(signalMetadata))
-	for i, metadata := range signalMetadata {
+	availableSignals := make([]string, len(signalDataSummary))
+	for i, metadata := range signalDataSummary {
 		availableSignals[i] = metadata.Name
 		totalCount += metadata.NumberOfSignals
 		if metadata.FirstSeen.Before(minTimestamp) {
@@ -225,12 +225,12 @@ func (r *Repository) GetSignalMetadata(ctx context.Context, tokenID uint32, filt
 			maxTimestamp = metadata.LastSeen
 		}
 	}
-	return &model.SignalsMetadata{
-		NumberOfSignals:  totalCount,
-		FirstSeen:        minTimestamp,
-		LastSeen:         maxTimestamp,
-		AvailableSignals: availableSignals,
-		SignalMetadata:   signalMetadata,
+	return &model.DataSummary{
+		NumberOfSignals:   totalCount,
+		FirstSeen:         minTimestamp,
+		LastSeen:          maxTimestamp,
+		AvailableSignals:  availableSignals,
+		SignalDataSummary: signalDataSummary,
 	}, nil
 }
 

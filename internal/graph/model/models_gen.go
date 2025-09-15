@@ -62,6 +62,19 @@ type AttestationFilter struct {
 	Tags *StringArrayFilter `json:"tags,omitempty"`
 }
 
+type DataSummary struct {
+	// Total number of signals collected
+	NumberOfSignals uint64 `json:"numberOfSignals"`
+	// available signal names
+	AvailableSignals []string `json:"availableSignals"`
+	// first seen timestamp
+	FirstSeen time.Time `json:"firstSeen"`
+	// last seen timestamp
+	LastSeen time.Time `json:"lastSeen"`
+	// data summary of an individual signal
+	SignalDataSummary []*SignalDataSummary `json:"signalDataSummary"`
+}
+
 type DeviceActivity struct {
 	// lastActive indicates the start of a 3 hour block during which the device was last active.
 	LastActive *time.Time `json:"lastActive,omitempty"`
@@ -479,35 +492,11 @@ type SignalLocationFilter struct {
 	InCircle *InCircleFilter `json:"inCircle,omitempty"`
 }
 
-type SignalMetadata struct {
-	// signal name
-	Name string `json:"name"`
-	// number of this specific signal
-	NumberOfSignals uint64 `json:"numberOfSignals"`
-	// first seen timestamp
-	FirstSeen time.Time `json:"firstSeen"`
-	// last seen timestamp
-	LastSeen time.Time `json:"lastSeen"`
-}
-
 type SignalString struct {
 	// timestamp of when this data was colllected
 	Timestamp time.Time `json:"timestamp"`
 	// value of the signal
 	Value string `json:"value"`
-}
-
-type SignalsMetadata struct {
-	// Total number of signals collected
-	NumberOfSignals uint64 `json:"numberOfSignals"`
-	// available signal names
-	AvailableSignals []string `json:"availableSignals"`
-	// first seen timestamp
-	FirstSeen time.Time `json:"firstSeen"`
-	// last seen timestamp
-	LastSeen time.Time `json:"lastSeen"`
-	// signal metadata
-	SignalMetadata []*SignalMetadata `json:"signalMetadata"`
 }
 
 // Filters that apply to string arrays.
@@ -557,6 +546,17 @@ type Vinvc struct {
 	ValidTo *time.Time `json:"validTo,omitempty"`
 	// rawVC is the raw VC JSON.
 	RawVc string `json:"rawVC"`
+}
+
+type SignalDataSummary struct {
+	// signal name
+	Name string `json:"name"`
+	// number of this specific signal
+	NumberOfSignals uint64 `json:"numberOfSignals"`
+	// first seen timestamp
+	FirstSeen time.Time `json:"firstSeen"`
+	// last seen timestamp
+	LastSeen time.Time `json:"lastSeen"`
 }
 
 type FloatAggregation string

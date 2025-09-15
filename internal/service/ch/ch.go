@@ -235,23 +235,23 @@ func (s *Service) GetAvailableSignals(ctx context.Context, tokenId uint32, filte
 	return signals, nil
 }
 
-func (s *Service) GetSignalMetadata(ctx context.Context, tokenId uint32, filter *model.SignalFilter) ([]*model.SignalMetadata, error) {
-	stmt, args := getSignalMetadataQuery(tokenId, filter)
+func (s *Service) GetSignalSummaries(ctx context.Context, tokenId uint32, filter *model.SignalFilter) ([]*model.SignalDataSummary, error) {
+	stmt, args := getSignalSummariesQuery(tokenId, filter)
 	rows, err := s.conn.Query(ctx, stmt, args...)
 	if err != nil {
 		return nil, fmt.Errorf("failed querying clickhouse: %w", err)
 	}
-	signalsMetadata := []*model.SignalMetadata{}
+	signalSummaries := []*model.SignalDataSummary{}
 	for rows.Next() {
-		var signalMetadata model.SignalMetadata
-		err := rows.Scan(&signalMetadata.Name, &signalMetadata.NumberOfSignals, &signalMetadata.FirstSeen, &signalMetadata.LastSeen)
+		var signalSummary model.SignalDataSummary
+		err := rows.Scan(&signalSummary.Name, &signalSummary.NumberOfSignals, &signalSummary.FirstSeen, &signalSummary.LastSeen)
 		if err != nil {
 			_ = rows.Close()
 			return nil, fmt.Errorf("failed scanning clickhouse row: %w", err)
 		}
-		signalsMetadata = append(signalsMetadata, &signalMetadata)
+		signalSummaries = append(signalSummaries, &signalSummary)
 	}
-	return signalsMetadata, nil
+	return signalSummaries, nil
 }
 
 func (s *Service) GetEvents(ctx context.Context, subject string, from, to time.Time, filter *model.EventFilter) ([]*vss.Event, error) {
