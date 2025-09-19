@@ -338,6 +338,16 @@ func SetCollectionField(collection *SignalCollection, signal *vss.Signal) {
 			Timestamp: signal.Timestamp,
 			Value:     signal.ValueNumber,
 		}
+	case "powertrainTractionBatteryChargingIsChargingCableConnected":
+		collection.PowertrainTractionBatteryChargingIsChargingCableConnected = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
+	case "powertrainTractionBatteryChargingPower":
+		collection.PowertrainTractionBatteryChargingPower = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
 	case "powertrainTractionBatteryCurrentPower":
 		collection.PowertrainTractionBatteryCurrentPower = &SignalFloat{
 			Timestamp: signal.Timestamp,
@@ -365,6 +375,11 @@ func SetCollectionField(collection *SignalCollection, signal *vss.Signal) {
 		}
 	case "powertrainTractionBatteryStateOfChargeCurrentEnergy":
 		collection.PowertrainTractionBatteryStateOfChargeCurrentEnergy = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
+	case "powertrainTractionBatteryStateOfHealth":
+		collection.PowertrainTractionBatteryStateOfHealth = &SignalFloat{
 			Timestamp: signal.Timestamp,
 			Value:     signal.ValueNumber,
 		}
