@@ -394,6 +394,13 @@ type SignalCollection struct {
 	// True if charging is ongoing. Charging is considered to be ongoing if energy is flowing from charger to vehicle.
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainTractionBatteryChargingIsCharging *SignalFloat `json:"powertrainTractionBatteryChargingIsCharging,omitempty"`
+	// Indicates if a charging cable is physically connected to the vehicle or not.
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	PowertrainTractionBatteryChargingIsChargingCableConnected *SignalFloat `json:"powertrainTractionBatteryChargingIsChargingCableConnected,omitempty"`
+	// Instantaneous charging power recorded during a charging event.
+	// Unit: 'kW'
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	PowertrainTractionBatteryChargingPower *SignalFloat `json:"powertrainTractionBatteryChargingPower,omitempty"`
 	// Current electrical energy flowing in/out of battery. Positive = Energy flowing in to battery, e.g. during charging. Negative = Energy flowing out of battery, e.g. during driving.
 	// Unit: 'W'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
@@ -418,6 +425,10 @@ type SignalCollection struct {
 	// Unit: 'kWh'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainTractionBatteryStateOfChargeCurrentEnergy *SignalFloat `json:"powertrainTractionBatteryStateOfChargeCurrentEnergy,omitempty"`
+	// Calculated battery state of health at standard conditions.
+	// Unit: 'percent' Min: '0' Max: '100'
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	PowertrainTractionBatteryStateOfHealth *SignalFloat `json:"powertrainTractionBatteryStateOfHealth,omitempty"`
 	// Current average temperature of the battery cells.
 	// Unit: 'celsius'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]

@@ -625,6 +625,25 @@ extend type SignalAggregations {
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryChargingIsCharging", forceResolver: true) @isSignal @hasAggregation
   
   """
+  Indicates if a charging cable is physically connected to the vehicle or not.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  powertrainTractionBatteryChargingIsChargingCableConnected(
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryChargingIsChargingCableConnected", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  Instantaneous charging power recorded during a charging event.
+  Unit: 'kW'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  powertrainTractionBatteryChargingPower(
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryChargingPower", forceResolver: true) @isSignal @hasAggregation
+  
+  """
   Current electrical energy flowing in/out of battery. Positive = Energy flowing in to battery, e.g. during charging. Negative = Energy flowing out of battery, e.g. during driving.
   Unit: 'W'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
@@ -683,6 +702,16 @@ extend type SignalAggregations {
     agg: FloatAggregation!,
     filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryStateOfChargeCurrentEnergy", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  Calculated battery state of health at standard conditions.
+  Unit: 'percent' Min: '0' Max: '100'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  powertrainTractionBatteryStateOfHealth(
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryStateOfHealth", forceResolver: true) @isSignal @hasAggregation
   
   """
   Current average temperature of the battery cells.
@@ -1189,6 +1218,19 @@ extend type SignalCollection {
   powertrainTractionBatteryChargingIsCharging: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryChargingIsCharging") @isSignal
   
   """
+  Indicates if a charging cable is physically connected to the vehicle or not.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  powertrainTractionBatteryChargingIsChargingCableConnected: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryChargingIsChargingCableConnected") @isSignal
+  
+  """
+  Instantaneous charging power recorded during a charging event.
+  Unit: 'kW'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  powertrainTractionBatteryChargingPower: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryChargingPower") @isSignal
+  
+  """
   Current electrical energy flowing in/out of battery. Positive = Energy flowing in to battery, e.g. during charging. Negative = Energy flowing out of battery, e.g. during driving.
   Unit: 'W'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
@@ -1229,6 +1271,13 @@ extend type SignalCollection {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainTractionBatteryStateOfChargeCurrentEnergy: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryStateOfChargeCurrentEnergy") @isSignal
+  
+  """
+  Calculated battery state of health at standard conditions.
+  Unit: 'percent' Min: '0' Max: '100'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  powertrainTractionBatteryStateOfHealth: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryStateOfHealth") @isSignal
   
   """
   Current average temperature of the battery cells.
