@@ -96,6 +96,10 @@ func (d DCT) InterceptResponse(
 	dctTimer := prometheus.NewTimer(DCTRequestLatency.WithLabelValues("deduct"))
 	// Deduct the credits
 	referenceID := ksuid.New().String()
+
+	// TODO: The current credit calculator is a prototype and not accurate
+	// and causes extremely high costs causing deduct to fail. so we set it to 1 for now.
+	credits = 1
 	err := d.Tracker.DeductCredits(ctx, referenceID, developerID, tokenID, credits)
 	dctTimer.ObserveDuration()
 
