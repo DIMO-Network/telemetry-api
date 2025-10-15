@@ -7,6 +7,7 @@ import (
 	"github.com/DIMO-Network/model-garage/pkg/vss"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	"github.com/DIMO-Network/telemetry-api/internal/service/ch"
+	"github.com/DIMO-Network/token-exchange-api/pkg/tokenclaims"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -80,7 +81,7 @@ func TestSignalsLatest(t *testing.T) {
 	telemetryClient := NewGraphQLServer(t, services.Settings)
 
 	// Create auth token for vehicle
-	token := services.Auth.CreateVehicleToken(t, "39718", []int{1, 4})
+	token := services.Auth.CreateVehicleToken(t, 39718, []string{tokenclaims.PermissionGetNonLocationHistory, tokenclaims.PermissionGetLocationHistory})
 
 	// Execute the query
 	query := `

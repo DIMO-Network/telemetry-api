@@ -80,7 +80,7 @@ func (d DCT) InterceptResponse(
 	}
 
 	// Determine how many credits to charge
-	credits, gqlError := d.calculateCredits(ctx)
+	_, gqlError = d.calculateCredits(ctx)
 	if gqlError != nil {
 		// if errors.Is(gqlError.Err, OperationNotSetError) {
 		// 	return next(ctx)
@@ -99,7 +99,7 @@ func (d DCT) InterceptResponse(
 
 	// TODO: The current credit calculator is a prototype and not accurate
 	// and causes extremely high costs causing deduct to fail. so we set it to 1 for now.
-	credits = 1
+	credits := uint64(1)
 	err := d.Tracker.DeductCredits(ctx, referenceID, developerID, tokenID, credits)
 	dctTimer.ObserveDuration()
 
@@ -188,12 +188,8 @@ func GetSubjectAndTokenID(ctx context.Context) (string, *big.Int, *gqlerror.Erro
 	if !ok {
 		return "", nil, errorhandler.NewUnauthorizedErrorWithMsg(ctx, fmt.Errorf("failed to get cast exchange custom claims"), "Unauthorized")
 	}
-	tokenIDBig, ok := new(big.Int).SetString(telemClaim.TokenID, 10)
-	if !ok {
-		return "", nil, errorhandler.NewInternalErrorWithMsg(ctx, fmt.Errorf("failed to parse token ID"), "Failed to parse token ID")
-	}
 
-	return validateClaims.RegisteredClaims.Subject, tokenIDBig, nil
+	return validateClaims.RegisteredClaims.Subject, telemClaim.AssetDID.TokenID, nil
 }
 
 func (d DCT) calculateCreditsBreakdown(ctx context.Context) (*pricing.CostBreakdown, *gqlerror.Error) {

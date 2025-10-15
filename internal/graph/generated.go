@@ -15,6 +15,7 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
+	"github.com/DIMO-Network/token-exchange-api/pkg/tokenclaims"
 	"github.com/ethereum/go-ethereum/common"
 	gqlparser "github.com/vektah/gqlparser/v2"
 	"github.com/vektah/gqlparser/v2/ast"
@@ -47,9 +48,9 @@ type ResolverRoot interface {
 type DirectiveRoot struct {
 	HasAggregation            func(ctx context.Context, obj any, next graphql.Resolver) (res any, err error)
 	IsSignal                  func(ctx context.Context, obj any, next graphql.Resolver) (res any, err error)
-	RequiresAllOfPrivileges   func(ctx context.Context, obj any, next graphql.Resolver, privileges []model.Privilege) (res any, err error)
+	RequiresAllOfPrivileges   func(ctx context.Context, obj any, next graphql.Resolver, privileges []string) (res any, err error)
 	RequiresManufacturerToken func(ctx context.Context, obj any, next graphql.Resolver) (res any, err error)
-	RequiresOneOfPrivilege    func(ctx context.Context, obj any, next graphql.Resolver, privileges []model.Privilege) (res any, err error)
+	RequiresOneOfPrivilege    func(ctx context.Context, obj any, next graphql.Resolver, privileges []string) (res any, err error)
 	RequiresVehicleToken      func(ctx context.Context, obj any, next graphql.Resolver) (res any, err error)
 }
 
@@ -102,7 +103,7 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Attestations     func(childComplexity int, tokenID int, filter *model.AttestationFilter) int
+		Attestations     func(childComplexity int, tokenID *int, subject *string, filter *model.AttestationFilter) int
 		AvailableSignals func(childComplexity int, tokenID int, filter *model.SignalFilter) int
 		DataSummary      func(childComplexity int, tokenID int, filter *model.SignalFilter) int
 		DeviceActivity   func(childComplexity int, by model.AftermarketDeviceBy) int
@@ -327,7 +328,7 @@ type QueryResolver interface {
 	SignalsLatest(ctx context.Context, tokenID int, filter *model.SignalFilter) (*model.SignalCollection, error)
 	AvailableSignals(ctx context.Context, tokenID int, filter *model.SignalFilter) ([]string, error)
 	DataSummary(ctx context.Context, tokenID int, filter *model.SignalFilter) (*model.DataSummary, error)
-	Attestations(ctx context.Context, tokenID int, filter *model.AttestationFilter) ([]*model.Attestation, error)
+	Attestations(ctx context.Context, tokenID *int, subject *string, filter *model.AttestationFilter) ([]*model.Attestation, error)
 	DeviceActivity(ctx context.Context, by model.AftermarketDeviceBy) (*model.DeviceActivity, error)
 	Events(ctx context.Context, tokenID int, from time.Time, to time.Time, filter *model.EventFilter) ([]*model.Event, error)
 	VinVCLatest(ctx context.Context, tokenID int) (*model.Vinvc, error)
@@ -628,7 +629,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Query.Attestations(childComplexity, args["tokenId"].(int), args["filter"].(*model.AttestationFilter)), true
+		return e.complexity.Query.Attestations(childComplexity, args["tokenId"].(*int), args["subject"].(*string), args["filter"].(*model.AttestationFilter)), true
 	case "Query.availableSignals":
 		if e.complexity.Query.AvailableSignals == nil {
 			break
@@ -2364,19 +2365,24 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 var sources = []*ast.Source{
 	{Name: "../../schema/attestation.graphqls", Input: `extend type Query {
   """
-  attestations returns all attestations for a given vehicle token.
+  attestations returns all attestations for a given subject.
   """
   attestations(
     """
     The token ID of the vehicle.
     """
-    tokenId: Int!
+    tokenId: Int
+
+    """
+    The subject of the attestation.
+    """
+    subject: String
 
     """
     Filter attestations by metadata fields.
     """
     filter: AttestationFilter
-  ): [Attestation] @requiresVehicleToken
+  ): [Attestation]
 }
 
 type Attestation {
@@ -4410,7 +4416,7 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 func (ec *executionContext) dir_requiresAllOfPrivileges_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "privileges", ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "privileges", ec.unmarshalNPrivilege2ᚕstringᚄ)
 	if err != nil {
 		return nil, err
 	}
@@ -4421,7 +4427,7 @@ func (ec *executionContext) dir_requiresAllOfPrivileges_args(ctx context.Context
 func (ec *executionContext) dir_requiresOneOfPrivilege_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "privileges", ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "privileges", ec.unmarshalNPrivilege2ᚕstringᚄ)
 	if err != nil {
 		return nil, err
 	}
@@ -4443,16 +4449,21 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 func (ec *executionContext) field_Query_attestations_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "tokenId", ec.unmarshalNInt2int)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "tokenId", ec.unmarshalOInt2ᚖint)
 	if err != nil {
 		return nil, err
 	}
 	args["tokenId"] = arg0
-	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOAttestationFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐAttestationFilter)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "subject", ec.unmarshalOString2ᚖstring)
 	if err != nil {
 		return nil, err
 	}
-	args["filter"] = arg1
+	args["subject"] = arg1
+	arg2, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOAttestationFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐAttestationFilter)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg2
 	return args, nil
 }
 
@@ -7338,30 +7349,8 @@ func (ec *executionContext) _Query_attestations(ctx context.Context, field graph
 		field,
 		ec.fieldContext_Query_attestations,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.Query().Attestations(ctx, fc.Args["tokenId"].(int), fc.Args["filter"].(*model.AttestationFilter))
-			}
-
-			directive1 := func(ctx context.Context) (any, error) {
-				if ec.directives.RequiresVehicleToken == nil {
-					var zeroVal []*model.Attestation
-					return zeroVal, errors.New("directive requiresVehicleToken is not implemented")
-				}
-				return ec.directives.RequiresVehicleToken(ctx, nil, directive0)
-			}
-
-			tmp, err := directive1(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.([]*model.Attestation); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be []*github.com/DIMO-Network/telemetry-api/internal/graph/model.Attestation`, tmp)
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Query().Attestations(ctx, fc.Args["tokenId"].(*int), fc.Args["subject"].(*string), fc.Args["filter"].(*model.AttestationFilter))
 		},
 		nil,
 		ec.marshalOAttestation2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐAttestation,
@@ -7436,7 +7425,7 @@ func (ec *executionContext) _Query_deviceActivity(ctx context.Context, field gra
 				return ec.directives.RequiresManufacturerToken(ctx, nil, directive0)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"MANUFACTURER_DEVICE_LAST_SEEN"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"MANUFACTURER_DEVICE_LAST_SEEN"})
 				if err != nil {
 					var zeroVal *model.DeviceActivity
 					return zeroVal, err
@@ -7515,7 +7504,7 @@ func (ec *executionContext) _Query_events(ctx context.Context, field graphql.Col
 				return ec.directives.RequiresVehicleToken(ctx, nil, directive0)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA", "VEHICLE_ALL_TIME_LOCATION"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA", "VEHICLE_ALL_TIME_LOCATION"})
 				if err != nil {
 					var zeroVal []*model.Event
 					return zeroVal, err
@@ -7602,7 +7591,7 @@ func (ec *executionContext) _Query_vinVCLatest(ctx context.Context, field graphq
 				return ec.directives.RequiresVehicleToken(ctx, nil, directive0)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_VIN_CREDENTIAL"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_VIN_CREDENTIAL"})
 				if err != nil {
 					var zeroVal *model.Vinvc
 					return zeroVal, err
@@ -7697,7 +7686,7 @@ func (ec *executionContext) _Query_pomVCLatest(ctx context.Context, field graphq
 				return ec.directives.RequiresVehicleToken(ctx, nil, directive0)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_ALL_TIME_LOCATION"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_ALL_TIME_LOCATION"})
 				if err != nil {
 					var zeroVal *model.Pomvc
 					return zeroVal, err
@@ -7912,7 +7901,7 @@ func (ec *executionContext) _SignalAggregations_currentLocationApproximateLatitu
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_APPROXIMATE_LOCATION", "VEHICLE_ALL_TIME_LOCATION"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_APPROXIMATE_LOCATION", "VEHICLE_ALL_TIME_LOCATION"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -7994,7 +7983,7 @@ func (ec *executionContext) _SignalAggregations_currentLocationApproximateLongit
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_APPROXIMATE_LOCATION", "VEHICLE_ALL_TIME_LOCATION"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_APPROXIMATE_LOCATION", "VEHICLE_ALL_TIME_LOCATION"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -8076,7 +8065,7 @@ func (ec *executionContext) _SignalAggregations_angularVelocityYaw(ctx context.C
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -8158,7 +8147,7 @@ func (ec *executionContext) _SignalAggregations_cabinDoorRow1DriverSideIsOpen(ct
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -8240,7 +8229,7 @@ func (ec *executionContext) _SignalAggregations_cabinDoorRow1DriverSideWindowIsO
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -8322,7 +8311,7 @@ func (ec *executionContext) _SignalAggregations_cabinDoorRow1PassengerSideIsOpen
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -8404,7 +8393,7 @@ func (ec *executionContext) _SignalAggregations_cabinDoorRow1PassengerSideWindow
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -8486,7 +8475,7 @@ func (ec *executionContext) _SignalAggregations_cabinDoorRow2DriverSideIsOpen(ct
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -8568,7 +8557,7 @@ func (ec *executionContext) _SignalAggregations_cabinDoorRow2DriverSideWindowIsO
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -8650,7 +8639,7 @@ func (ec *executionContext) _SignalAggregations_cabinDoorRow2PassengerSideIsOpen
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -8732,7 +8721,7 @@ func (ec *executionContext) _SignalAggregations_cabinDoorRow2PassengerSideWindow
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -8814,7 +8803,7 @@ func (ec *executionContext) _SignalAggregations_chassisAxleRow1WheelLeftSpeed(ct
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -8896,7 +8885,7 @@ func (ec *executionContext) _SignalAggregations_chassisAxleRow1WheelLeftTirePres
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -8978,7 +8967,7 @@ func (ec *executionContext) _SignalAggregations_chassisAxleRow1WheelRightSpeed(c
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -9060,7 +9049,7 @@ func (ec *executionContext) _SignalAggregations_chassisAxleRow1WheelRightTirePre
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -9142,7 +9131,7 @@ func (ec *executionContext) _SignalAggregations_chassisAxleRow2WheelLeftTirePres
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -9224,7 +9213,7 @@ func (ec *executionContext) _SignalAggregations_chassisAxleRow2WheelRightTirePre
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -9306,7 +9295,7 @@ func (ec *executionContext) _SignalAggregations_currentLocationAltitude(ctx cont
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_ALL_TIME_LOCATION"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_ALL_TIME_LOCATION"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -9388,7 +9377,7 @@ func (ec *executionContext) _SignalAggregations_currentLocationCoordinates(ctx c
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_ALL_TIME_LOCATION"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_ALL_TIME_LOCATION"})
 				if err != nil {
 					var zeroVal *model.Location
 					return zeroVal, err
@@ -9478,7 +9467,7 @@ func (ec *executionContext) _SignalAggregations_currentLocationHeading(ctx conte
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_ALL_TIME_LOCATION"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_ALL_TIME_LOCATION"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -9560,7 +9549,7 @@ func (ec *executionContext) _SignalAggregations_currentLocationIsRedacted(ctx co
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_ALL_TIME_LOCATION"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_ALL_TIME_LOCATION"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -9642,7 +9631,7 @@ func (ec *executionContext) _SignalAggregations_currentLocationLatitude(ctx cont
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_ALL_TIME_LOCATION"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_ALL_TIME_LOCATION"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -9724,7 +9713,7 @@ func (ec *executionContext) _SignalAggregations_currentLocationLongitude(ctx con
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_ALL_TIME_LOCATION"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_ALL_TIME_LOCATION"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -9806,7 +9795,7 @@ func (ec *executionContext) _SignalAggregations_dimoAftermarketHDOP(ctx context.
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -9888,7 +9877,7 @@ func (ec *executionContext) _SignalAggregations_dimoAftermarketNSAT(ctx context.
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -9970,7 +9959,7 @@ func (ec *executionContext) _SignalAggregations_dimoAftermarketSSID(ctx context.
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *string
 					return zeroVal, err
@@ -10052,7 +10041,7 @@ func (ec *executionContext) _SignalAggregations_dimoAftermarketWPAState(ctx cont
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *string
 					return zeroVal, err
@@ -10134,7 +10123,7 @@ func (ec *executionContext) _SignalAggregations_exteriorAirTemperature(ctx conte
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -10216,7 +10205,7 @@ func (ec *executionContext) _SignalAggregations_isIgnitionOn(ctx context.Context
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -10298,7 +10287,7 @@ func (ec *executionContext) _SignalAggregations_lowVoltageBatteryCurrentVoltage(
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -10380,7 +10369,7 @@ func (ec *executionContext) _SignalAggregations_obdBarometricPressure(ctx contex
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -10462,7 +10451,7 @@ func (ec *executionContext) _SignalAggregations_obdCommandedEGR(ctx context.Cont
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -10544,7 +10533,7 @@ func (ec *executionContext) _SignalAggregations_obdCommandedEVAP(ctx context.Con
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -10626,7 +10615,7 @@ func (ec *executionContext) _SignalAggregations_obdDTCList(ctx context.Context, 
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *string
 					return zeroVal, err
@@ -10708,7 +10697,7 @@ func (ec *executionContext) _SignalAggregations_obdDistanceSinceDTCClear(ctx con
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -10790,7 +10779,7 @@ func (ec *executionContext) _SignalAggregations_obdDistanceWithMIL(ctx context.C
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -10872,7 +10861,7 @@ func (ec *executionContext) _SignalAggregations_obdEngineLoad(ctx context.Contex
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -10954,7 +10943,7 @@ func (ec *executionContext) _SignalAggregations_obdFuelPressure(ctx context.Cont
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -11036,7 +11025,7 @@ func (ec *executionContext) _SignalAggregations_obdIntakeTemp(ctx context.Contex
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -11118,7 +11107,7 @@ func (ec *executionContext) _SignalAggregations_obdLongTermFuelTrim1(ctx context
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -11200,7 +11189,7 @@ func (ec *executionContext) _SignalAggregations_obdMAP(ctx context.Context, fiel
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -11282,7 +11271,7 @@ func (ec *executionContext) _SignalAggregations_obdO2WRSensor1Voltage(ctx contex
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -11364,7 +11353,7 @@ func (ec *executionContext) _SignalAggregations_obdO2WRSensor2Voltage(ctx contex
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -11446,7 +11435,7 @@ func (ec *executionContext) _SignalAggregations_obdRunTime(ctx context.Context, 
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -11528,7 +11517,7 @@ func (ec *executionContext) _SignalAggregations_obdShortTermFuelTrim1(ctx contex
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -11610,7 +11599,7 @@ func (ec *executionContext) _SignalAggregations_obdStatusDTCCount(ctx context.Co
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -11692,7 +11681,7 @@ func (ec *executionContext) _SignalAggregations_obdWarmupsSinceDTCClear(ctx cont
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -11774,7 +11763,7 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineDiesel
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -11856,7 +11845,7 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineDiesel
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -11938,7 +11927,7 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineECT(ct
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -12020,7 +12009,7 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineEOP(ct
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -12102,7 +12091,7 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineEOT(ct
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -12184,7 +12173,7 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineEngine
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *string
 					return zeroVal, err
@@ -12266,7 +12255,7 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineEngine
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -12348,7 +12337,7 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineMAF(ct
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -12430,7 +12419,7 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineSpeed(
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -12512,7 +12501,7 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineTPS(ct
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -12594,7 +12583,7 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineTorque
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -12676,7 +12665,7 @@ func (ec *executionContext) _SignalAggregations_powertrainFuelSystemAbsoluteLeve
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -12758,7 +12747,7 @@ func (ec *executionContext) _SignalAggregations_powertrainFuelSystemRelativeLeve
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -12840,7 +12829,7 @@ func (ec *executionContext) _SignalAggregations_powertrainFuelSystemSupportedFue
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *string
 					return zeroVal, err
@@ -12922,7 +12911,7 @@ func (ec *executionContext) _SignalAggregations_powertrainRange(ctx context.Cont
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -13004,7 +12993,7 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryChargin
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -13086,7 +13075,7 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryChargin
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -13168,7 +13157,7 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryChargin
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -13250,7 +13239,7 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryChargin
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -13332,7 +13321,7 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryChargin
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -13414,7 +13403,7 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryChargin
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -13496,7 +13485,7 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryChargin
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -13578,7 +13567,7 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryCurrent
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -13660,7 +13649,7 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryCurrent
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -13742,7 +13731,7 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryGrossCa
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -13824,7 +13813,7 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryRange(c
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -13906,7 +13895,7 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryStateOf
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -13988,7 +13977,7 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryStateOf
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -14070,7 +14059,7 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryStateOf
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -14152,7 +14141,7 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryTempera
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -14234,7 +14223,7 @@ func (ec *executionContext) _SignalAggregations_powertrainTransmissionCurrentGea
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -14316,7 +14305,7 @@ func (ec *executionContext) _SignalAggregations_powertrainTransmissionTemperatur
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -14398,7 +14387,7 @@ func (ec *executionContext) _SignalAggregations_powertrainTransmissionTravelledD
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -14480,7 +14469,7 @@ func (ec *executionContext) _SignalAggregations_powertrainType(ctx context.Conte
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *string
 					return zeroVal, err
@@ -14562,7 +14551,7 @@ func (ec *executionContext) _SignalAggregations_serviceDistanceToService(ctx con
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -14644,7 +14633,7 @@ func (ec *executionContext) _SignalAggregations_speed(ctx context.Context, field
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *float64
 					return zeroVal, err
@@ -14752,7 +14741,7 @@ func (ec *executionContext) _SignalCollection_currentLocationApproximateLatitude
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_APPROXIMATE_LOCATION", "VEHICLE_ALL_TIME_LOCATION"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_APPROXIMATE_LOCATION", "VEHICLE_ALL_TIME_LOCATION"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -14821,7 +14810,7 @@ func (ec *executionContext) _SignalCollection_currentLocationApproximateLongitud
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_APPROXIMATE_LOCATION", "VEHICLE_ALL_TIME_LOCATION"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_APPROXIMATE_LOCATION", "VEHICLE_ALL_TIME_LOCATION"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -14890,7 +14879,7 @@ func (ec *executionContext) _SignalCollection_angularVelocityYaw(ctx context.Con
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -14959,7 +14948,7 @@ func (ec *executionContext) _SignalCollection_cabinDoorRow1DriverSideIsOpen(ctx 
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -15028,7 +15017,7 @@ func (ec *executionContext) _SignalCollection_cabinDoorRow1DriverSideWindowIsOpe
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -15097,7 +15086,7 @@ func (ec *executionContext) _SignalCollection_cabinDoorRow1PassengerSideIsOpen(c
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -15166,7 +15155,7 @@ func (ec *executionContext) _SignalCollection_cabinDoorRow1PassengerSideWindowIs
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -15235,7 +15224,7 @@ func (ec *executionContext) _SignalCollection_cabinDoorRow2DriverSideIsOpen(ctx 
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -15304,7 +15293,7 @@ func (ec *executionContext) _SignalCollection_cabinDoorRow2DriverSideWindowIsOpe
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -15373,7 +15362,7 @@ func (ec *executionContext) _SignalCollection_cabinDoorRow2PassengerSideIsOpen(c
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -15442,7 +15431,7 @@ func (ec *executionContext) _SignalCollection_cabinDoorRow2PassengerSideWindowIs
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -15511,7 +15500,7 @@ func (ec *executionContext) _SignalCollection_chassisAxleRow1WheelLeftSpeed(ctx 
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -15580,7 +15569,7 @@ func (ec *executionContext) _SignalCollection_chassisAxleRow1WheelLeftTirePressu
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -15649,7 +15638,7 @@ func (ec *executionContext) _SignalCollection_chassisAxleRow1WheelRightSpeed(ctx
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -15718,7 +15707,7 @@ func (ec *executionContext) _SignalCollection_chassisAxleRow1WheelRightTirePress
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -15787,7 +15776,7 @@ func (ec *executionContext) _SignalCollection_chassisAxleRow2WheelLeftTirePressu
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -15856,7 +15845,7 @@ func (ec *executionContext) _SignalCollection_chassisAxleRow2WheelRightTirePress
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -15925,7 +15914,7 @@ func (ec *executionContext) _SignalCollection_currentLocationAltitude(ctx contex
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_ALL_TIME_LOCATION"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_ALL_TIME_LOCATION"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -15994,7 +15983,7 @@ func (ec *executionContext) _SignalCollection_currentLocationCoordinates(ctx con
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_ALL_TIME_LOCATION"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_ALL_TIME_LOCATION"})
 				if err != nil {
 					var zeroVal *model.SignalLocation
 					return zeroVal, err
@@ -16063,7 +16052,7 @@ func (ec *executionContext) _SignalCollection_currentLocationHeading(ctx context
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_ALL_TIME_LOCATION"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_ALL_TIME_LOCATION"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -16132,7 +16121,7 @@ func (ec *executionContext) _SignalCollection_currentLocationIsRedacted(ctx cont
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_ALL_TIME_LOCATION"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_ALL_TIME_LOCATION"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -16201,7 +16190,7 @@ func (ec *executionContext) _SignalCollection_currentLocationLatitude(ctx contex
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_ALL_TIME_LOCATION"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_ALL_TIME_LOCATION"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -16270,7 +16259,7 @@ func (ec *executionContext) _SignalCollection_currentLocationLongitude(ctx conte
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_ALL_TIME_LOCATION"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_ALL_TIME_LOCATION"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -16339,7 +16328,7 @@ func (ec *executionContext) _SignalCollection_dimoAftermarketHDOP(ctx context.Co
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -16408,7 +16397,7 @@ func (ec *executionContext) _SignalCollection_dimoAftermarketNSAT(ctx context.Co
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -16477,7 +16466,7 @@ func (ec *executionContext) _SignalCollection_dimoAftermarketSSID(ctx context.Co
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalString
 					return zeroVal, err
@@ -16546,7 +16535,7 @@ func (ec *executionContext) _SignalCollection_dimoAftermarketWPAState(ctx contex
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalString
 					return zeroVal, err
@@ -16615,7 +16604,7 @@ func (ec *executionContext) _SignalCollection_exteriorAirTemperature(ctx context
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -16684,7 +16673,7 @@ func (ec *executionContext) _SignalCollection_isIgnitionOn(ctx context.Context, 
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -16753,7 +16742,7 @@ func (ec *executionContext) _SignalCollection_lowVoltageBatteryCurrentVoltage(ct
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -16822,7 +16811,7 @@ func (ec *executionContext) _SignalCollection_obdBarometricPressure(ctx context.
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -16891,7 +16880,7 @@ func (ec *executionContext) _SignalCollection_obdCommandedEGR(ctx context.Contex
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -16960,7 +16949,7 @@ func (ec *executionContext) _SignalCollection_obdCommandedEVAP(ctx context.Conte
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -17029,7 +17018,7 @@ func (ec *executionContext) _SignalCollection_obdDTCList(ctx context.Context, fi
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalString
 					return zeroVal, err
@@ -17098,7 +17087,7 @@ func (ec *executionContext) _SignalCollection_obdDistanceSinceDTCClear(ctx conte
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -17167,7 +17156,7 @@ func (ec *executionContext) _SignalCollection_obdDistanceWithMIL(ctx context.Con
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -17236,7 +17225,7 @@ func (ec *executionContext) _SignalCollection_obdEngineLoad(ctx context.Context,
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -17305,7 +17294,7 @@ func (ec *executionContext) _SignalCollection_obdFuelPressure(ctx context.Contex
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -17374,7 +17363,7 @@ func (ec *executionContext) _SignalCollection_obdIntakeTemp(ctx context.Context,
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -17443,7 +17432,7 @@ func (ec *executionContext) _SignalCollection_obdLongTermFuelTrim1(ctx context.C
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -17512,7 +17501,7 @@ func (ec *executionContext) _SignalCollection_obdMAP(ctx context.Context, field 
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -17581,7 +17570,7 @@ func (ec *executionContext) _SignalCollection_obdO2WRSensor1Voltage(ctx context.
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -17650,7 +17639,7 @@ func (ec *executionContext) _SignalCollection_obdO2WRSensor2Voltage(ctx context.
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -17719,7 +17708,7 @@ func (ec *executionContext) _SignalCollection_obdRunTime(ctx context.Context, fi
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -17788,7 +17777,7 @@ func (ec *executionContext) _SignalCollection_obdShortTermFuelTrim1(ctx context.
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -17857,7 +17846,7 @@ func (ec *executionContext) _SignalCollection_obdStatusDTCCount(ctx context.Cont
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -17926,7 +17915,7 @@ func (ec *executionContext) _SignalCollection_obdWarmupsSinceDTCClear(ctx contex
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -17995,7 +17984,7 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineDieselEx
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -18064,7 +18053,7 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineDieselEx
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -18133,7 +18122,7 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineECT(ctx 
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -18202,7 +18191,7 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineEOP(ctx 
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -18271,7 +18260,7 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineEOT(ctx 
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -18340,7 +18329,7 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineEngineOi
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalString
 					return zeroVal, err
@@ -18409,7 +18398,7 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineEngineOi
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -18478,7 +18467,7 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineMAF(ctx 
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -18547,7 +18536,7 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineSpeed(ct
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -18616,7 +18605,7 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineTPS(ctx 
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -18685,7 +18674,7 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineTorque(c
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -18754,7 +18743,7 @@ func (ec *executionContext) _SignalCollection_powertrainFuelSystemAbsoluteLevel(
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -18823,7 +18812,7 @@ func (ec *executionContext) _SignalCollection_powertrainFuelSystemRelativeLevel(
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -18892,7 +18881,7 @@ func (ec *executionContext) _SignalCollection_powertrainFuelSystemSupportedFuelT
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalString
 					return zeroVal, err
@@ -18961,7 +18950,7 @@ func (ec *executionContext) _SignalCollection_powertrainRange(ctx context.Contex
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -19030,7 +19019,7 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryChargingA
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -19099,7 +19088,7 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryChargingC
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -19168,7 +19157,7 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryChargingC
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -19237,7 +19226,7 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryChargingC
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -19306,7 +19295,7 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryChargingI
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -19375,7 +19364,7 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryChargingI
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -19444,7 +19433,7 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryChargingP
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -19513,7 +19502,7 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryCurrentPo
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -19582,7 +19571,7 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryCurrentVo
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -19651,7 +19640,7 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryGrossCapa
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -19720,7 +19709,7 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryRange(ctx
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -19789,7 +19778,7 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryStateOfCh
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -19858,7 +19847,7 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryStateOfCh
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -19927,7 +19916,7 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryStateOfHe
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -19996,7 +19985,7 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryTemperatu
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -20065,7 +20054,7 @@ func (ec *executionContext) _SignalCollection_powertrainTransmissionCurrentGear(
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -20134,7 +20123,7 @@ func (ec *executionContext) _SignalCollection_powertrainTransmissionTemperature(
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -20203,7 +20192,7 @@ func (ec *executionContext) _SignalCollection_powertrainTransmissionTravelledDis
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -20272,7 +20261,7 @@ func (ec *executionContext) _SignalCollection_powertrainType(ctx context.Context
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalString
 					return zeroVal, err
@@ -20341,7 +20330,7 @@ func (ec *executionContext) _SignalCollection_serviceDistanceToService(ctx conte
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -20410,7 +20399,7 @@ func (ec *executionContext) _SignalCollection_speed(ctx context.Context, field g
 			}
 
 			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
@@ -27116,24 +27105,54 @@ func (ec *executionContext) marshalNLocationAggregation2githubᚗcomᚋDIMOᚑNe
 	return v
 }
 
-func (ec *executionContext) unmarshalNPrivilege2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilege(ctx context.Context, v any) (model.Privilege, error) {
-	var res model.Privilege
-	err := res.UnmarshalGQL(v)
+func (ec *executionContext) unmarshalNPrivilege2string(ctx context.Context, v any) (string, error) {
+	tmp, err := graphql.UnmarshalString(v)
+	res := unmarshalNPrivilege2string[tmp]
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNPrivilege2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilege(ctx context.Context, sel ast.SelectionSet, v model.Privilege) graphql.Marshaler {
-	return v
+func (ec *executionContext) marshalNPrivilege2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
+	_ = sel
+	res := graphql.MarshalString(marshalNPrivilege2string[v])
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+	}
+	return res
 }
 
-func (ec *executionContext) unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx context.Context, v any) ([]model.Privilege, error) {
+var (
+	unmarshalNPrivilege2string = map[string]string{
+		"VEHICLE_NON_LOCATION_DATA":     tokenclaims.PermissionGetNonLocationHistory,
+		"VEHICLE_COMMANDS":              tokenclaims.PermissionExecuteCommands,
+		"VEHICLE_CURRENT_LOCATION":      tokenclaims.PermissionGetCurrentLocation,
+		"VEHICLE_ALL_TIME_LOCATION":     tokenclaims.PermissionGetLocationHistory,
+		"VEHICLE_VIN_CREDENTIAL":        tokenclaims.PermissionGetVINCredential,
+		"VEHICLE_APPROXIMATE_LOCATION":  tokenclaims.PermissionGetApproximateLocation,
+		"MANUFACTURER_DEVICE_LAST_SEEN": tokenclaims.PermissionManufacturerDeviceLastSeen,
+		"VEHICLE_RAW_DATA":              tokenclaims.PermissionGetRawData,
+	}
+	marshalNPrivilege2string = map[string]string{
+		tokenclaims.PermissionGetNonLocationHistory:      "VEHICLE_NON_LOCATION_DATA",
+		tokenclaims.PermissionExecuteCommands:            "VEHICLE_COMMANDS",
+		tokenclaims.PermissionGetCurrentLocation:         "VEHICLE_CURRENT_LOCATION",
+		tokenclaims.PermissionGetLocationHistory:         "VEHICLE_ALL_TIME_LOCATION",
+		tokenclaims.PermissionGetVINCredential:           "VEHICLE_VIN_CREDENTIAL",
+		tokenclaims.PermissionGetApproximateLocation:     "VEHICLE_APPROXIMATE_LOCATION",
+		tokenclaims.PermissionManufacturerDeviceLastSeen: "MANUFACTURER_DEVICE_LAST_SEEN",
+		tokenclaims.PermissionGetRawData:                 "VEHICLE_RAW_DATA",
+	}
+)
+
+func (ec *executionContext) unmarshalNPrivilege2ᚕstringᚄ(ctx context.Context, v any) ([]string, error) {
 	var vSlice []any
 	vSlice = graphql.CoerceList(v)
 	var err error
-	res := make([]model.Privilege, len(vSlice))
+	res := make([]string, len(vSlice))
 	for i := range vSlice {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
-		res[i], err = ec.unmarshalNPrivilege2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilege(ctx, vSlice[i])
+		res[i], err = ec.unmarshalNPrivilege2string(ctx, vSlice[i])
 		if err != nil {
 			return nil, err
 		}
@@ -27141,7 +27160,7 @@ func (ec *executionContext) unmarshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetwork
 	return res, nil
 }
 
-func (ec *executionContext) marshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilegeᚄ(ctx context.Context, sel ast.SelectionSet, v []model.Privilege) graphql.Marshaler {
+func (ec *executionContext) marshalNPrivilege2ᚕstringᚄ(ctx context.Context, sel ast.SelectionSet, v []string) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -27165,7 +27184,7 @@ func (ec *executionContext) marshalNPrivilege2ᚕgithubᚗcomᚋDIMOᚑNetwork�
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNPrivilege2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPrivilege(ctx, sel, v[i])
+			ret[i] = ec.marshalNPrivilege2string(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)

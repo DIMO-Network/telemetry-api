@@ -8,6 +8,7 @@ import (
 
 	"github.com/DIMO-Network/model-garage/pkg/vss"
 	"github.com/DIMO-Network/telemetry-api/internal/service/ch"
+	"github.com/DIMO-Network/token-exchange-api/pkg/tokenclaims"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -110,7 +111,7 @@ func TestSignalsMetadata(t *testing.T) {
 	telemetryClient := NewGraphQLServer(t, services.Settings)
 
 	// Create auth token for vehicle
-	token := services.Auth.CreateVehicleToken(t, fmt.Sprintf("%d", tokenID), []int{1, 4})
+	token := services.Auth.CreateVehicleToken(t, int(tokenID), []string{tokenclaims.PermissionGetLocationHistory, tokenclaims.PermissionGetApproximateLocation})
 
 	t.Run("All signals metadata", func(t *testing.T) {
 		// Execute the query for all signals

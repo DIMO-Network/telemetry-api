@@ -8,6 +8,7 @@ import (
 	"github.com/DIMO-Network/model-garage/pkg/vss"
 	"github.com/DIMO-Network/telemetry-api/internal/repositories"
 	"github.com/DIMO-Network/telemetry-api/internal/service/ch"
+	"github.com/DIMO-Network/token-exchange-api/pkg/tokenclaims"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/uber/h3-go/v4"
@@ -72,7 +73,7 @@ func TestApproximateLocation(t *testing.T) {
 	}`
 
 	// Create auth token for vehicle
-	token := services.Auth.CreateVehicleToken(t, "39718", []int{8})
+	token := services.Auth.CreateVehicleToken(t, 39718, []string{tokenclaims.PermissionGetApproximateLocation})
 
 	// Execute request
 	result := ApproxResult{}

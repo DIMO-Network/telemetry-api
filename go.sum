@@ -28,8 +28,8 @@ github.com/DIMO-Network/server-garage v0.0.4 h1:K0wnQ2vJAtyK8lbINxKneVyqELORAu4U
 github.com/DIMO-Network/server-garage v0.0.4/go.mod h1:bdj0wKTjozjjD2w7Htk/rnzOv+jH+iBrhCuXOP/H00s=
 github.com/DIMO-Network/shared v1.0.7 h1:LfSgsqJ6R7EUyfo2GTfuhrCpoDcweJqe7eVOa4j7Xbo=
 github.com/DIMO-Network/shared v1.0.7/go.mod h1:lDHUKwwT2LW6Zvd42Nb33dXklRNTmfyOlbUNx2dQfGY=
-github.com/DIMO-Network/token-exchange-api v0.3.6 h1:85poWbbos96rbZ9UNvgIsc08wjM/mWK0WIhdY9ORL/s=
-github.com/DIMO-Network/token-exchange-api v0.3.6/go.mod h1:TNPiSSKyVSosfVlmXQLg3sGom/Bbv3gkRALLS4anA5I=
+github.com/DIMO-Network/token-exchange-api v0.3.7-0.20251015124300-38e0ed34a50f h1:FkfbzbAIanKDQ31gPX2jLQkErtNikLZvhmXjVXZO8dw=
+github.com/DIMO-Network/token-exchange-api v0.3.7-0.20251015124300-38e0ed34a50f/go.mod h1:gKoB1Zi3EXJqIyfLnTn1GV1NSzTMBDkRleChBU/EQv8=
 github.com/DIMO-Network/yaml v0.1.0 h1:KQ3oKHUZETchR6Pxbmmol3e4ewrPv/q8cEwqxfwyZbU=
 github.com/DIMO-Network/yaml v0.1.0/go.mod h1:KkiehcbkVzH8Pf8f9dja8B2aW81gYYZSqfwzSj9yN68=
 github.com/Khan/genqlient v0.8.1 h1:wtOCc8N9rNynRLXN3k3CnfzheCUNKBcvXmVv5zt6WCs=

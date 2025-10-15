@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/99designs/gqlgen/client"
+	"github.com/DIMO-Network/token-exchange-api/pkg/tokenclaims"
 	"github.com/stretchr/testify/require"
 )
 
@@ -13,7 +14,7 @@ func TestEstimateCost(t *testing.T) {
 	telemetryClient := NewGraphQLServer(t, services.Settings)
 
 	// Create auth token for vehicle
-	token := services.Auth.CreateVehicleToken(t, "39718", []int{1})
+	token := services.Auth.CreateVehicleToken(t, 39718, []string{tokenclaims.PermissionGetLocationHistory})
 
 	// Execute the query
 	query := `

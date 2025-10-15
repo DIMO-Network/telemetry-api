@@ -6,10 +6,13 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"math/big"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
+	"github.com/DIMO-Network/cloudevent"
+	"github.com/DIMO-Network/telemetry-api/internal/config"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/go-jose/go-jose/v4"
 )
@@ -21,9 +24,10 @@ type mockAuthServer struct {
 	defaultClaims               map[string]any
 	VehicleContractAddress      string
 	ManufacturerContractAddress string
+	ChainID                     uint64
 }
 
-func setupAuthServer(t *testing.T, vehicleContractAddress, manufacturerContractAddress common.Address) *mockAuthServer {
+func setupAuthServer(t *testing.T, settings config.Settings) *mockAuthServer {
 	t.Helper()
 
 	// Generate RSA key
@@ -74,8 +78,9 @@ func setupAuthServer(t *testing.T, vehicleContractAddress, manufacturerContractA
 		signer:                      sig,
 		jwks:                        jwk,
 		defaultClaims:               defaultClaims,
-		VehicleContractAddress:      vehicleContractAddress.String(),
-		ManufacturerContractAddress: manufacturerContractAddress.String(),
+		VehicleContractAddress:      settings.VehicleNFTAddress.String(),
+		ManufacturerContractAddress: settings.ManufacturerNFTAddress.String(),
+		ChainID:                     settings.ChainID,
 	}
 
 	// Create test server with only JWKS endpoint
@@ -115,7 +120,7 @@ func (m *mockAuthServer) sign(claims map[string]interface{}) (string, error) {
 	return token, nil
 }
 
-func (m *mockAuthServer) CreateToken(t *testing.T, customClaims map[string]interface{}, privileges []int) string {
+func (m *mockAuthServer) CreateToken(t *testing.T, customClaims map[string]any, permissions []string) string {
 	t.Helper()
 
 	claims := make(map[string]interface{})
@@ -126,9 +131,9 @@ func (m *mockAuthServer) CreateToken(t *testing.T, customClaims map[string]inter
 		claims[k] = v
 	}
 
-	// Add privileges if provided
-	if privileges != nil {
-		claims["privilege_ids"] = privileges
+	// Add permissions if provided
+	if permissions != nil {
+		claims["permissions"] = permissions
 	}
 
 	token, err := m.sign(claims)
@@ -148,22 +153,28 @@ func (m *mockAuthServer) Close() {
 }
 
 // Helper function to create test tokens with specific claims and privileges
-func (m *mockAuthServer) CreateVehicleToken(t *testing.T, tokenID string, privileges []int) string {
+func (m *mockAuthServer) CreateVehicleToken(t *testing.T, tokenID int, privileges []string) string {
 	return m.CreateToken(t, map[string]interface{}{
-		"token_id":         tokenID,
-		"contract_address": m.VehicleContractAddress,
+		"asset": cloudevent.ERC721DID{
+			ChainID:         m.ChainID,
+			ContractAddress: common.HexToAddress(m.VehicleContractAddress),
+			TokenID:         new(big.Int).SetUint64(uint64(tokenID)),
+		}.String(),
 	}, privileges)
 }
 
-func (m *mockAuthServer) CreateManufacturerToken(t *testing.T, tokenID string, privileges []int) string {
+func (m *mockAuthServer) CreateManufacturerToken(t *testing.T, tokenID int, permissions []string) string {
 	return m.CreateToken(t, map[string]interface{}{
-		"contract_address": m.ManufacturerContractAddress,
-		"token_id":         tokenID,
-	}, privileges)
+		"asset": cloudevent.ERC721DID{
+			ChainID:         m.ChainID,
+			ContractAddress: common.HexToAddress(m.ManufacturerContractAddress),
+			TokenID:         new(big.Int).SetUint64(uint64(tokenID)),
+		}.String(),
+	}, permissions)
 }
 
-func (m *mockAuthServer) CreateUserToken(t *testing.T, userID string, privileges []int) string {
+func (m *mockAuthServer) CreateUserToken(t *testing.T, userID string, permissions []string) string {
 	return m.CreateToken(t, map[string]interface{}{
 		"sub": userID,
-	}, privileges)
+	}, permissions)
 }

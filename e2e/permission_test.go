@@ -1,9 +1,9 @@
 package e2e_test
 
 import (
-	"strconv"
 	"testing"
 
+	"github.com/DIMO-Network/token-exchange-api/pkg/tokenclaims"
 	"github.com/stretchr/testify/require"
 )
 
@@ -17,7 +17,7 @@ func TestPermission(t *testing.T) {
 		name        string
 		tokenID     int
 		query       string
-		permissions []int
+		permissions []string
 		expectedErr string // checking error strings since that is what the server returns
 	}{
 		{
@@ -28,7 +28,7 @@ func TestPermission(t *testing.T) {
 					lastSeen
 				}
 			}`,
-			permissions: []int{},
+			permissions: []string{},
 			expectedErr: "unauthorized: token id does not match",
 		},
 		{
@@ -39,7 +39,7 @@ func TestPermission(t *testing.T) {
 					lastSeen
 				}
 			}`,
-			permissions: []int{},
+			permissions: []string{},
 		},
 		{
 			name:    "Partial permissions",
@@ -52,8 +52,8 @@ func TestPermission(t *testing.T) {
 					}
 				}
 			}`,
-			permissions: []int{},
-			expectedErr: "unauthorized: missing required privilege(s) VEHICLE_NON_LOCATION_DATA",
+			permissions: []string{},
+			expectedErr: "unauthorized: missing required privilege(s) privilege:GetNonLocationHistory",
 		},
 		{
 			name:    "Non Location permissions",
@@ -66,7 +66,7 @@ func TestPermission(t *testing.T) {
 					}
 				}
 			}`,
-			permissions: []int{1},
+			permissions: []string{tokenclaims.PermissionGetNonLocationHistory},
 		},
 		{
 			name:    "Location permissions",
@@ -79,7 +79,7 @@ func TestPermission(t *testing.T) {
 					}
 				}
 			}`,
-			permissions: []int{4},
+			permissions: []string{tokenclaims.PermissionGetLocationHistory},
 		},
 		{
 			name:    "Approximate Location permissions",
@@ -92,7 +92,7 @@ func TestPermission(t *testing.T) {
 					}
 				}
 			}`,
-			permissions: []int{8},
+			permissions: []string{tokenclaims.PermissionGetApproximateLocation},
 		},
 		{
 			name:    "Approximate Location with ALL_TIME permission",
@@ -105,7 +105,7 @@ func TestPermission(t *testing.T) {
 					}
 				}
 			}`,
-			permissions: []int{4},
+			permissions: []string{tokenclaims.PermissionGetLocationHistory},
 		},
 
 		{
@@ -119,14 +119,14 @@ func TestPermission(t *testing.T) {
 					}
 				}
 			}`,
-			permissions: []int{1},
-			expectedErr: "unauthorized: requires at least one of the following privileges [VEHICLE_APPROXIMATE_LOCATION VEHICLE_ALL_TIME_LOCATION]",
+			permissions: []string{tokenclaims.PermissionGetNonLocationHistory},
+			expectedErr: "unauthorized: requires at least one of the following privileges [privilege:GetApproximateLocation privilege:GetLocationHistory]",
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			token := services.Auth.CreateVehicleToken(t, strconv.Itoa(tt.tokenID), tt.permissions)
+			token := services.Auth.CreateVehicleToken(t, tt.tokenID, tt.permissions)
 			// Execute request
 			result := map[string]any{}
 			err := telemetryClient.Post(tt.query, &result, WithToken(token))
