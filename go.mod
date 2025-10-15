@@ -13,7 +13,7 @@ require (
 	github.com/DIMO-Network/model-garage v0.7.4
 	github.com/DIMO-Network/server-garage v0.0.4
 	github.com/DIMO-Network/shared v1.0.7
-	github.com/DIMO-Network/token-exchange-api v0.3.6
+	github.com/DIMO-Network/token-exchange-api v0.3.7-0.20251015124300-38e0ed34a50f
 	github.com/Khan/genqlient v0.8.1
 	github.com/aarondl/sqlboiler/v4 v4.19.5
 	github.com/auth0/go-jwt-middleware/v2 v2.3.0

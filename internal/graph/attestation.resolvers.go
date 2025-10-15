@@ -11,6 +11,13 @@ import (
 )
 
 // Attestations is the resolver for the attestations field.
-func (r *queryResolver) Attestations(ctx context.Context, tokenID int, filter *model.AttestationFilter) ([]*model.Attestation, error) {
-	return r.AttestationRepo.GetAttestations(ctx, tokenID, filter)
+func (r *queryResolver) Attestations(ctx context.Context, tokenID int, subject *string, filter *model.AttestationFilter) ([]*model.Attestation, error) {
+	var subjectStr string
+	if subject != nil {
+		subjectStr = *subject
+	} else if tokenID != 0 {
+		asset := r.AttestationRepo.DefaultDID(tokenID)
+		subjectStr = asset
+	}
+	return r.AttestationRepo.GetAttestations(ctx, subjectStr, filter)
 }

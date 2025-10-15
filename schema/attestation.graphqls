@@ -1,12 +1,17 @@
 extend type Query {
   """
-  attestations returns all attestations for a given vehicle token.
+  attestations returns all attestations for a given subject.
   """
   attestations(
     """
     The token ID of the vehicle.
     """
     tokenId: Int!
+
+    """
+    The subject of the attestation.
+    """
+    subject: String
 
     """
     Filter attestations by metadata fields.

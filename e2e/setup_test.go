@@ -60,7 +60,7 @@ func GetTestServices(t *testing.T) *TestServices {
 
 		// Setup services
 		identity := setupIdentityServer()
-		auth := setupAuthServer(t, settings.VehicleNFTAddress, settings.ManufacturerNFTAddress)
+		auth := setupAuthServer(t, settings)
 		fetch := NewTestFetchAPI(t)
 		ch := setupClickhouseContainer(t)
 		ct := setupCreditTrackerContainer(t)
