@@ -103,7 +103,7 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Attestations     func(childComplexity int, tokenID int, subject *string, filter *model.AttestationFilter) int
+		Attestations     func(childComplexity int, tokenID *int, subject *string, filter *model.AttestationFilter) int
 		AvailableSignals func(childComplexity int, tokenID int, filter *model.SignalFilter) int
 		DataSummary      func(childComplexity int, tokenID int, filter *model.SignalFilter) int
 		DeviceActivity   func(childComplexity int, by model.AftermarketDeviceBy) int
@@ -328,7 +328,7 @@ type QueryResolver interface {
 	SignalsLatest(ctx context.Context, tokenID int, filter *model.SignalFilter) (*model.SignalCollection, error)
 	AvailableSignals(ctx context.Context, tokenID int, filter *model.SignalFilter) ([]string, error)
 	DataSummary(ctx context.Context, tokenID int, filter *model.SignalFilter) (*model.DataSummary, error)
-	Attestations(ctx context.Context, tokenID int, subject *string, filter *model.AttestationFilter) ([]*model.Attestation, error)
+	Attestations(ctx context.Context, tokenID *int, subject *string, filter *model.AttestationFilter) ([]*model.Attestation, error)
 	DeviceActivity(ctx context.Context, by model.AftermarketDeviceBy) (*model.DeviceActivity, error)
 	Events(ctx context.Context, tokenID int, from time.Time, to time.Time, filter *model.EventFilter) ([]*model.Event, error)
 	VinVCLatest(ctx context.Context, tokenID int) (*model.Vinvc, error)
@@ -629,7 +629,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Query.Attestations(childComplexity, args["tokenId"].(int), args["subject"].(*string), args["filter"].(*model.AttestationFilter)), true
+		return e.complexity.Query.Attestations(childComplexity, args["tokenId"].(*int), args["subject"].(*string), args["filter"].(*model.AttestationFilter)), true
 	case "Query.availableSignals":
 		if e.complexity.Query.AvailableSignals == nil {
 			break
@@ -2371,7 +2371,7 @@ var sources = []*ast.Source{
     """
     The token ID of the vehicle.
     """
-    tokenId: Int!
+    tokenId: Int
 
     """
     The subject of the attestation.
@@ -2382,7 +2382,7 @@ var sources = []*ast.Source{
     Filter attestations by metadata fields.
     """
     filter: AttestationFilter
-  ): [Attestation] @requiresVehicleToken
+  ): [Attestation]
 }
 
 type Attestation {
@@ -4449,7 +4449,7 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 func (ec *executionContext) field_Query_attestations_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "tokenId", ec.unmarshalNInt2int)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "tokenId", ec.unmarshalOInt2ᚖint)
 	if err != nil {
 		return nil, err
 	}
@@ -7349,30 +7349,8 @@ func (ec *executionContext) _Query_attestations(ctx context.Context, field graph
 		field,
 		ec.fieldContext_Query_attestations,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.Query().Attestations(ctx, fc.Args["tokenId"].(int), fc.Args["subject"].(*string), fc.Args["filter"].(*model.AttestationFilter))
-			}
-
-			directive1 := func(ctx context.Context) (any, error) {
-				if ec.directives.RequiresVehicleToken == nil {
-					var zeroVal []*model.Attestation
-					return zeroVal, errors.New("directive requiresVehicleToken is not implemented")
-				}
-				return ec.directives.RequiresVehicleToken(ctx, nil, directive0)
-			}
-
-			tmp, err := directive1(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.([]*model.Attestation); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be []*github.com/DIMO-Network/telemetry-api/internal/graph/model.Attestation`, tmp)
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Query().Attestations(ctx, fc.Args["tokenId"].(*int), fc.Args["subject"].(*string), fc.Args["filter"].(*model.AttestationFilter))
 		},
 		nil,
 		ec.marshalOAttestation2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐAttestation,

@@ -151,17 +151,18 @@ func toFetchAPIArrayFilterOption(filter *model.StringArrayFilter) *grpc.ArrayFil
 }
 
 func getDIDFromSubject(ctx context.Context, subject string) (cloudevent.ERC721DID, error) {
-	did, err := cloudevent.DecodeERC721DID(subject)
-	if err == nil {
+	did, firstErr := cloudevent.DecodeERC721DID(subject)
+	if firstErr == nil {
 		return did, nil
 	}
-	ethDID, err := cloudevent.DecodeEthrDID(subject)
-	if err == nil {
+	ethDID, secondErr := cloudevent.DecodeEthrDID(subject)
+	if secondErr == nil {
 		return cloudevent.ERC721DID{
 			ChainID:         ethDID.ChainID,
 			ContractAddress: ethDID.ContractAddress,
 			TokenID:         nil,
 		}, nil
 	}
-	return cloudevent.ERC721DID{}, errorhandler.NewBadRequestError(ctx, fmt.Errorf("failed to get DID from subject: %w", err))
+	// Both decode attempts failed - include both errors for better diagnostics
+	return cloudevent.ERC721DID{}, errorhandler.NewBadRequestError(ctx, fmt.Errorf("failed to get DID from subject: attempted ERC721DID decode (%v) and EthrDID decode (%w)", firstErr, secondErr))
 }

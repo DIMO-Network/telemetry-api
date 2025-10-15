@@ -6,7 +6,7 @@ extend type Query {
     """
     The token ID of the vehicle.
     """
-    tokenId: Int!
+    tokenId: Int
 
     """
     The subject of the attestation.
@@ -17,7 +17,7 @@ extend type Query {
     Filter attestations by metadata fields.
     """
     filter: AttestationFilter
-  ): [Attestation] @requiresVehicleToken
+  ): [Attestation]
 }
 
 type Attestation {
