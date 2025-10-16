@@ -70,7 +70,6 @@ func AddClaimHandler(next http.Handler, vehicleAddr, mfrAddr common.Address) htt
 			jwtmiddleware.DefaultErrorHandler(w, r, jwtmiddleware.ErrJWTMissing)
 			return
 		}
-
 		// add the custom claims to the context under a new custom key
 		r = r.Clone(context.WithValue(r.Context(), TelemetryClaimContextKey{}, telClaim))
 		next.ServeHTTP(w, r)

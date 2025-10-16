@@ -451,7 +451,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Attestation.DataVersion(childComplexity), true
-	case "Attestation.ID":
+	case "Attestation.id":
 		if e.complexity.Attestation.ID == nil {
 			break
 		}
@@ -2387,9 +2387,9 @@ var sources = []*ast.Source{
 
 type Attestation {
   """
-  ID is the ID of the attestation.
+  id is the id of the attestation.
   """
-  ID: String!
+  id: String!
 
   """
   vehicleTokenId is the token ID of the vehicle.
@@ -5945,12 +5945,12 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 
 // region    **************************** field.gotpl *****************************
 
-func (ec *executionContext) _Attestation_ID(ctx context.Context, field graphql.CollectedField, obj *model.Attestation) (ret graphql.Marshaler) {
+func (ec *executionContext) _Attestation_id(ctx context.Context, field graphql.CollectedField, obj *model.Attestation) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
 		ec.OperationContext,
 		field,
-		ec.fieldContext_Attestation_ID,
+		ec.fieldContext_Attestation_id,
 		func(ctx context.Context) (any, error) { return obj.ID, nil },
 		nil,
 		ec.marshalNString2string,
@@ -5959,7 +5959,7 @@ func (ec *executionContext) _Attestation_ID(ctx context.Context, field graphql.C
 	)
 }
 
-func (ec *executionContext) fieldContext_Attestation_ID(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Attestation_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Attestation",
 		Field:      field,
@@ -7367,8 +7367,8 @@ func (ec *executionContext) fieldContext_Query_attestations(ctx context.Context,
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "ID":
-				return ec.fieldContext_Attestation_ID(ctx, field)
+			case "id":
+				return ec.fieldContext_Attestation_id(ctx, field)
 			case "vehicleTokenId":
 				return ec.fieldContext_Attestation_vehicleTokenId(ctx, field)
 			case "time":
@@ -22900,8 +22900,8 @@ func (ec *executionContext) _Attestation(ctx context.Context, sel ast.SelectionS
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Attestation")
-		case "ID":
-			out.Values[i] = ec._Attestation_ID(ctx, field, obj)
+		case "id":
+			out.Values[i] = ec._Attestation_id(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}

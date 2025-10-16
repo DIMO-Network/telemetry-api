@@ -22,12 +22,21 @@ type TelemetryClaim struct {
 
 // Validate function is required to implement the validator.CustomClaims interface.
 func (t *TelemetryClaim) Validate(context.Context) error {
-	var err error
-	t.AssetDID, err = cloudevent.DecodeERC721DID(t.Asset)
-	if err != nil {
-		return fmt.Errorf("unauthorized: failed to decode Asset DID: %w", err)
+	var nftErr error
+	t.AssetDID, nftErr = cloudevent.DecodeERC721DID(t.Asset)
+	if nftErr == nil {
+		return nil
 	}
-	return nil
+	ethrDID, ethrErr := cloudevent.DecodeEthrDID(t.Asset)
+	if ethrErr == nil {
+		t.AssetDID = cloudevent.ERC721DID{
+			ChainID:         ethrDID.ChainID,
+			ContractAddress: ethrDID.ContractAddress,
+			TokenID:         nil,
+		}
+		return nil
+	}
+	return fmt.Errorf("unauthorized: failed to decode Asset as ERC721 DID: %w or Ethr DID: %v", nftErr, ethrErr)
 }
 
 func getTelemetryClaim(ctx context.Context) (*TelemetryClaim, error) {
@@ -43,7 +52,7 @@ func ValidRequest(ctx context.Context, subject string, filter *model.Attestation
 	if err != nil || claim.CloudEvents == nil {
 		return false
 	}
-	if subject != claim.AssetDID.String() {
+	if subject != claim.Asset {
 		return false
 	}
 

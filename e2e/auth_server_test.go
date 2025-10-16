@@ -13,6 +13,7 @@ import (
 
 	"github.com/DIMO-Network/cloudevent"
 	"github.com/DIMO-Network/telemetry-api/internal/config"
+	"github.com/DIMO-Network/token-exchange-api/pkg/tokenclaims"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/go-jose/go-jose/v4"
 )
@@ -120,28 +121,28 @@ func (m *mockAuthServer) sign(claims map[string]interface{}) (string, error) {
 	return token, nil
 }
 
-func (m *mockAuthServer) CreateToken(t *testing.T, customClaims map[string]any, permissions []string) string {
+func (m *mockAuthServer) CreateToken(t *testing.T, token tokenclaims.Token) string {
 	t.Helper()
+	tokenJSON, err := json.Marshal(token)
+	if err != nil {
+		t.Fatalf("Failed to marshal token: %v", err)
+	}
 
 	claims := make(map[string]interface{})
+	err = json.Unmarshal(tokenJSON, &claims)
+	if err != nil {
+		t.Fatalf("Failed to unmarshal token: %v", err)
+	}
 	for k, v := range m.defaultClaims {
 		claims[k] = v
 	}
-	for k, v := range customClaims {
-		claims[k] = v
-	}
 
-	// Add permissions if provided
-	if permissions != nil {
-		claims["permissions"] = permissions
-	}
-
-	token, err := m.sign(claims)
+	tokenString, err := m.sign(claims)
 	if err != nil {
 		t.Fatalf("Failed to create token: %v", err)
 	}
 
-	return token
+	return tokenString
 }
 
 func (m *mockAuthServer) URL() string {
@@ -153,28 +154,29 @@ func (m *mockAuthServer) Close() {
 }
 
 // Helper function to create test tokens with specific claims and privileges
-func (m *mockAuthServer) CreateVehicleToken(t *testing.T, tokenID int, privileges []string) string {
-	return m.CreateToken(t, map[string]interface{}{
-		"asset": cloudevent.ERC721DID{
-			ChainID:         m.ChainID,
-			ContractAddress: common.HexToAddress(m.VehicleContractAddress),
-			TokenID:         new(big.Int).SetUint64(uint64(tokenID)),
-		}.String(),
-	}, privileges)
+func (m *mockAuthServer) CreateVehicleToken(t *testing.T, tokenID int, privileges []string, events ...tokenclaims.Event) string {
+	return m.CreateToken(t, tokenclaims.Token{
+		CustomClaims: tokenclaims.CustomClaims{
+			Asset: cloudevent.ERC721DID{
+				ChainID:         m.ChainID,
+				ContractAddress: common.HexToAddress(m.VehicleContractAddress),
+				TokenID:         new(big.Int).SetUint64(uint64(tokenID)),
+			}.String(),
+			Permissions: privileges,
+			CloudEvents: &tokenclaims.CloudEvents{Events: events},
+		},
+	})
 }
 
-func (m *mockAuthServer) CreateManufacturerToken(t *testing.T, tokenID int, permissions []string) string {
-	return m.CreateToken(t, map[string]interface{}{
-		"asset": cloudevent.ERC721DID{
-			ChainID:         m.ChainID,
-			ContractAddress: common.HexToAddress(m.ManufacturerContractAddress),
-			TokenID:         new(big.Int).SetUint64(uint64(tokenID)),
-		}.String(),
-	}, permissions)
-}
-
-func (m *mockAuthServer) CreateUserToken(t *testing.T, userID string, permissions []string) string {
-	return m.CreateToken(t, map[string]interface{}{
-		"sub": userID,
-	}, permissions)
+func (m *mockAuthServer) CreateUserToken(t *testing.T, userAddress common.Address, permissions []string, events ...tokenclaims.Event) string {
+	return m.CreateToken(t, tokenclaims.Token{
+		CustomClaims: tokenclaims.CustomClaims{
+			Asset: cloudevent.EthrDID{
+				ChainID:         m.ChainID,
+				ContractAddress: userAddress,
+			}.String(),
+			Permissions: permissions,
+			CloudEvents: &tokenclaims.CloudEvents{Events: events},
+		},
+	})
 }

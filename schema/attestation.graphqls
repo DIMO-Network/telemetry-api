@@ -22,9 +22,9 @@ extend type Query {
 
 type Attestation {
   """
-  ID is the ID of the attestation.
+  id is the id of the attestation.
   """
-  ID: String!
+  id: String!
 
   """
   vehicleTokenId is the token ID of the vehicle.
@@ -37,7 +37,7 @@ type Attestation {
   time: Time!
 
   """
-  attestation is the data being attested to.
+  attestation is the JSON-encoded attestation.
   """
   attestation: String!
 

@@ -9,15 +9,15 @@ require (
 	github.com/DIMO-Network/clickhouse-infra v0.0.5
 	github.com/DIMO-Network/cloudevent v0.1.4
 	github.com/DIMO-Network/credit-tracker v0.0.6
-	github.com/DIMO-Network/fetch-api v0.0.14
+	github.com/DIMO-Network/fetch-api v0.0.16
 	github.com/DIMO-Network/model-garage v0.7.4
-	github.com/DIMO-Network/server-garage v0.0.4
+	github.com/DIMO-Network/server-garage v0.0.7
 	github.com/DIMO-Network/shared v1.0.7
-	github.com/DIMO-Network/token-exchange-api v0.3.7-0.20251015124300-38e0ed34a50f
+	github.com/DIMO-Network/token-exchange-api v0.3.7
 	github.com/Khan/genqlient v0.8.1
 	github.com/aarondl/sqlboiler/v4 v4.19.5
 	github.com/auth0/go-jwt-middleware/v2 v2.3.0
-	github.com/ethereum/go-ethereum v1.16.3
+	github.com/ethereum/go-ethereum v1.16.4
 	github.com/go-jose/go-jose/v4 v4.1.1
 	github.com/prometheus/client_golang v1.23.0
 	github.com/rs/zerolog v1.34.0
@@ -29,7 +29,7 @@ require (
 	golang.org/x/sync v0.17.0
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20250818200422-3122310a409c
 	google.golang.org/grpc v1.75.0
-	google.golang.org/protobuf v1.36.9
+	google.golang.org/protobuf v1.36.10
 )
 
 require (
@@ -129,11 +129,11 @@ require (
 	go.opentelemetry.io/otel/metric v1.37.0 // indirect
 	go.opentelemetry.io/otel/trace v1.37.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
-	golang.org/x/crypto v0.42.0 // indirect
+	golang.org/x/crypto v0.43.0 // indirect
 	golang.org/x/mod v0.28.0 // indirect
-	golang.org/x/net v0.44.0 // indirect
-	golang.org/x/sys v0.36.0 // indirect
-	golang.org/x/text v0.29.0 // indirect
+	golang.org/x/net v0.45.0 // indirect
+	golang.org/x/sys v0.37.0 // indirect
+	golang.org/x/text v0.30.0 // indirect
 	golang.org/x/tools v0.37.0 // indirect
 	golang.org/x/xerrors v0.0.0-20240903120638-7835f813f4da // indirect
 	gopkg.in/go-jose/go-jose.v2 v2.6.3 // indirect

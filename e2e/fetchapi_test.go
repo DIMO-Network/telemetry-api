@@ -14,7 +14,6 @@ import (
 	pb "github.com/DIMO-Network/fetch-api/pkg/grpc"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // mockFetchServer wraps the gRPC server and contains test configuration
@@ -23,7 +22,7 @@ type mockFetchServer struct {
 	listener         net.Listener
 	port             int
 	mutex            sync.Mutex
-	cloudeventReturn cloudevent.CloudEvent[json.RawMessage]
+	cloudeventReturn []cloudevent.CloudEvent[json.RawMessage]
 	pb.UnimplementedFetchServiceServer
 	t *testing.T
 }
@@ -68,7 +67,7 @@ func (ts *mockFetchServer) Close() {
 	}
 }
 
-func (ts *mockFetchServer) SetCloudEventReturn(ce cloudevent.CloudEvent[json.RawMessage]) {
+func (ts *mockFetchServer) SetCloudEventReturn(ce ...cloudevent.CloudEvent[json.RawMessage]) {
 	ts.mutex.Lock()
 	ts.cloudeventReturn = ce
 	ts.mutex.Unlock()
@@ -91,7 +90,13 @@ func (s *mockFetchServer) ListIndex(ctx context.Context, req *pb.ListIndexesRequ
 
 // ListCloudEvents translates the pb call to the indexrepo type and fetches data for the given options.
 func (s *mockFetchServer) ListCloudEvents(ctx context.Context, req *pb.ListCloudEventsRequest) (*pb.ListCloudEventsResponse, error) {
-	return nil, nil
+	respEvts := []*pb.CloudEvent{}
+	for _, ce := range s.cloudeventReturn {
+		respEvts = append(respEvts, pb.CloudEventToProto(ce))
+	}
+	return &pb.ListCloudEventsResponse{
+		CloudEvents: respEvts,
+	}, nil
 }
 
 // GetLatestCloudEvent translates the pb call to the indexrepo type and fetches the latest data for the given options.
@@ -99,7 +104,7 @@ func (s *mockFetchServer) GetLatestCloudEvent(ctx context.Context, req *pb.GetLa
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 	return &pb.GetLatestCloudEventResponse{
-		CloudEvent: cloudEventToProto(s.cloudeventReturn),
+		CloudEvent: pb.CloudEventToProto(s.cloudeventReturn[0]),
 	}, nil
 
 }
@@ -107,48 +112,4 @@ func (s *mockFetchServer) GetLatestCloudEvent(ctx context.Context, req *pb.GetLa
 // ListCloudEventsFromIndex translates the pb call to the indexrepo type and fetches data for the given index keys.
 func (s *mockFetchServer) ListCloudEventsFromIndex(ctx context.Context, req *pb.ListCloudEventsFromKeysRequest) (*pb.ListCloudEventsFromKeysResponse, error) {
 	return nil, nil
-}
-
-func cloudEventHeaderToProto(event *cloudevent.CloudEventHeader) *pb.CloudEventHeader {
-	if event == nil {
-		return nil
-	}
-	extras := make(map[string][]byte)
-	for k, v := range event.Extras {
-		v, err := json.Marshal(v)
-		if err != nil {
-			// Skip the extra if it can't be marshaled
-			continue
-		}
-		extras[k] = v
-	}
-	return &pb.CloudEventHeader{
-		Id:              event.ID,
-		Source:          event.Source,
-		Producer:        event.Producer,
-		Subject:         event.Subject,
-		SpecVersion:     event.SpecVersion,
-		Time:            timestamppb.New(event.Time),
-		Type:            event.Type,
-		DataContentType: event.DataContentType,
-		DataSchema:      event.DataSchema,
-		DataVersion:     event.DataVersion,
-		Extras:          extras,
-	}
-}
-
-func cloudEventToProto(event cloudevent.CloudEvent[json.RawMessage]) *pb.CloudEvent {
-	extras := make(map[string][]byte)
-	for k, v := range event.Extras {
-		v, err := json.Marshal(v)
-		if err != nil {
-			// Skip the extra if it can't be marshaled
-			continue
-		}
-		extras[k] = v
-	}
-	return &pb.CloudEvent{
-		Header: cloudEventHeaderToProto(&event.CloudEventHeader),
-		Data:   event.Data,
-	}
 }

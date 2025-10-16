@@ -20,8 +20,8 @@ type AftermarketDeviceBy struct {
 }
 
 type Attestation struct {
-	// ID is the ID of the attestation.
-	ID string `json:"ID"`
+	// id is the id of the attestation.
+	ID string `json:"id"`
 	// vehicleTokenId is the token ID of the vehicle.
 	VehicleTokenID int `json:"vehicleTokenId"`
 	// time represents the time the attestation was made at.
