@@ -81,6 +81,9 @@ func TestGetAttestations(t *testing.T) {
 	defaultEvent.Source = validSigner.Hex()
 	defaultEvent.Subject = vehicleDID
 	defaultEvent.Signature = "signature"
+	defaultJSONB, err := json.Marshal(defaultEvent)
+	defaultJSON := string(defaultJSONB)
+	require.NoError(t, err)
 	time := time.Now()
 	id := ksuid.New().String()
 	producer := "did:nft:153:0xbA5738a18d83D41847dfFbDC6101d37C69c9B0cF_123"
@@ -110,7 +113,7 @@ func TestGetAttestations(t *testing.T) {
 					ID:             id,
 					VehicleTokenID: validVehTknID,
 					Time:           defaultEvent.Time,
-					Attestation:    dataStr,
+					Attestation:    defaultJSON,
 					Type:           cloudevent.TypeAttestation,
 					Source:         validSigner,
 					Producer:       &producer,
@@ -141,7 +144,7 @@ func TestGetAttestations(t *testing.T) {
 					ID:             id,
 					VehicleTokenID: validVehTknID,
 					Time:           defaultEvent.Time,
-					Attestation:    dataStr,
+					Attestation:    defaultJSON,
 					Type:           cloudevent.TypeAttestation,
 					Source:         validSigner,
 					Producer:       &producer,
@@ -242,11 +245,11 @@ func populateClaimMap(ctx context.Context, ce, source []string, ids [][]string, 
 			IDs:       ids[idx],
 		})
 	}
-	claims.AssetDID = cloudevent.ERC721DID{
+	claims.Asset = cloudevent.ERC721DID{
 		ChainID:         uint64(1),
 		ContractAddress: vehicleAddress,
 		TokenID:         new(big.Int).SetUint64(uint64(tokenID)),
-	}
+	}.String()
 
 	return context.WithValue(ctx, auth.TelemetryClaimContextKey{}, &claims)
 }

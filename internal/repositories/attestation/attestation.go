@@ -110,13 +110,18 @@ func (r *Repository) GetAttestations(ctx context.Context, subject string, filter
 	}
 	var attestations []*model.Attestation
 	for _, ce := range cloudEvents {
+		ceJSON, err := json.Marshal(ce)
+		if err != nil {
+			return nil, errorhandler.NewInternalErrorWithMsg(ctx, fmt.Errorf("failed to marshal cloud event: %w", err), "internal error")
+		}
 		attestation := &model.Attestation{
 			ID:          ce.ID,
 			Time:        ce.Time,
-			Attestation: string(ce.Data),
+			Attestation: string(ceJSON),
 			Type:        ce.Type,
 			Source:      common.HexToAddress(ce.Source),
 			DataVersion: ce.DataVersion,
+			Tags:        ce.Tags,
 		}
 		if subDID.TokenID != nil {
 			attestation.VehicleTokenID = int(subDID.TokenID.Int64())

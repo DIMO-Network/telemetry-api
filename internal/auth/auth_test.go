@@ -8,7 +8,6 @@ import (
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/DIMO-Network/cloudevent"
-	"github.com/DIMO-Network/shared/pkg/privileges"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	"github.com/DIMO-Network/telemetry-api/internal/service/identity"
 	"github.com/DIMO-Network/token-exchange-api/pkg/tokenclaims"
@@ -288,8 +287,8 @@ func TestRequiresPrivilegeCheck(t *testing.T) {
 			},
 			telemetryClaim: &TelemetryClaim{
 				CustomClaims: tokenclaims.CustomClaims{
-					PrivilegeIDs: []privileges.Privilege{
-						privileges.VehicleAllTimeLocation,
+					Permissions: []string{
+						tokenclaims.PermissionGetLocationHistory,
 					},
 				},
 			},
