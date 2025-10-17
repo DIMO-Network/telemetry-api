@@ -26,7 +26,7 @@ type Attestation struct {
 	VehicleTokenID int `json:"vehicleTokenId"`
 	// time represents the time the attestation was made at.
 	Time time.Time `json:"time"`
-	// attestation is the data being attested to.
+	// attestation is the JSON-encoded attestation.
 	Attestation string `json:"attestation"`
 	// type
 	Type string `json:"type"`

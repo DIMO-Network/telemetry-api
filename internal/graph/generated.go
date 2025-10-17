@@ -2402,7 +2402,7 @@ type Attestation {
   time: Time!
 
   """
-  attestation is the data being attested to.
+  attestation is the JSON-encoded attestation.
   """
   attestation: String!
 
