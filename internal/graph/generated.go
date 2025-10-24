@@ -5951,7 +5951,9 @@ func (ec *executionContext) _Attestation_id(ctx context.Context, field graphql.C
 		ec.OperationContext,
 		field,
 		ec.fieldContext_Attestation_id,
-		func(ctx context.Context) (any, error) { return obj.ID, nil },
+		func(ctx context.Context) (any, error) {
+			return obj.ID, nil
+		},
 		nil,
 		ec.marshalNString2string,
 		true,
@@ -5978,7 +5980,9 @@ func (ec *executionContext) _Attestation_vehicleTokenId(ctx context.Context, fie
 		ec.OperationContext,
 		field,
 		ec.fieldContext_Attestation_vehicleTokenId,
-		func(ctx context.Context) (any, error) { return obj.VehicleTokenID, nil },
+		func(ctx context.Context) (any, error) {
+			return obj.VehicleTokenID, nil
+		},
 		nil,
 		ec.marshalNInt2int,
 		true,
@@ -6005,7 +6009,9 @@ func (ec *executionContext) _Attestation_time(ctx context.Context, field graphql
 		ec.OperationContext,
 		field,
 		ec.fieldContext_Attestation_time,
-		func(ctx context.Context) (any, error) { return obj.Time, nil },
+		func(ctx context.Context) (any, error) {
+			return obj.Time, nil
+		},
 		nil,
 		ec.marshalNTime2timeᚐTime,
 		true,
@@ -6032,7 +6038,9 @@ func (ec *executionContext) _Attestation_attestation(ctx context.Context, field 
 		ec.OperationContext,
 		field,
 		ec.fieldContext_Attestation_attestation,
-		func(ctx context.Context) (any, error) { return obj.Attestation, nil },
+		func(ctx context.Context) (any, error) {
+			return obj.Attestation, nil
+		},
 		nil,
 		ec.marshalNString2string,
 		true,
@@ -6059,7 +6067,9 @@ func (ec *executionContext) _Attestation_type(ctx context.Context, field graphql
 		ec.OperationContext,
 		field,
 		ec.fieldContext_Attestation_type,
-		func(ctx context.Context) (any, error) { return obj.Type, nil },
+		func(ctx context.Context) (any, error) {
+			return obj.Type, nil
+		},
 		nil,
 		ec.marshalNString2string,
 		true,
@@ -6086,7 +6096,9 @@ func (ec *executionContext) _Attestation_source(ctx context.Context, field graph
 		ec.OperationContext,
 		field,
 		ec.fieldContext_Attestation_source,
-		func(ctx context.Context) (any, error) { return obj.Source, nil },
+		func(ctx context.Context) (any, error) {
+			return obj.Source, nil
+		},
 		nil,
 		ec.marshalNAddress2githubᚗcomᚋethereumᚋgoᚑethereumᚋcommonᚐAddress,
 		true,
@@ -6113,7 +6125,9 @@ func (ec *executionContext) _Attestation_dataVersion(ctx context.Context, field 
 		ec.OperationContext,
 		field,
 		ec.fieldContext_Attestation_dataVersion,
-		func(ctx context.Context) (any, error) { return obj.DataVersion, nil },
+		func(ctx context.Context) (any, error) {
+			return obj.DataVersion, nil
+		},
 		nil,
 		ec.marshalNString2string,
 		true,
@@ -6140,7 +6154,9 @@ func (ec *executionContext) _Attestation_producer(ctx context.Context, field gra
 		ec.OperationContext,
 		field,
 		ec.fieldContext_Attestation_producer,
-		func(ctx context.Context) (any, error) { return obj.Producer, nil },
+		func(ctx context.Context) (any, error) {
+			return obj.Producer, nil
+		},
 		nil,
 		ec.marshalOString2ᚖstring,
 		true,
@@ -6167,7 +6183,9 @@ func (ec *executionContext) _Attestation_signature(ctx context.Context, field gr
 		ec.OperationContext,
 		field,
 		ec.fieldContext_Attestation_signature,
-		func(ctx context.Context) (any, error) { return obj.Signature, nil },
+		func(ctx context.Context) (any, error) {
+			return obj.Signature, nil
+		},
 		nil,
 		ec.marshalNString2string,
 		true,
@@ -6194,7 +6212,9 @@ func (ec *executionContext) _Attestation_tags(ctx context.Context, field graphql
 		ec.OperationContext,
 		field,
 		ec.fieldContext_Attestation_tags,
-		func(ctx context.Context) (any, error) { return obj.Tags, nil },
+		func(ctx context.Context) (any, error) {
+			return obj.Tags, nil
+		},
 		nil,
 		ec.marshalOString2ᚕstringᚄ,
 		true,
@@ -6221,7 +6241,9 @@ func (ec *executionContext) _DataSummary_numberOfSignals(ctx context.Context, fi
 		ec.OperationContext,
 		field,
 		ec.fieldContext_DataSummary_numberOfSignals,
-		func(ctx context.Context) (any, error) { return obj.NumberOfSignals, nil },
+		func(ctx context.Context) (any, error) {
+			return obj.NumberOfSignals, nil
+		},
 		nil,
 		ec.marshalNUint642uint64,
 		true,
@@ -6248,7 +6270,9 @@ func (ec *executionContext) _DataSummary_availableSignals(ctx context.Context, f
 		ec.OperationContext,
 		field,
 		ec.fieldContext_DataSummary_availableSignals,
-		func(ctx context.Context) (any, error) { return obj.AvailableSignals, nil },
+		func(ctx context.Context) (any, error) {
+			return obj.AvailableSignals, nil
+		},
 		nil,
 		ec.marshalNString2ᚕstringᚄ,
 		true,
@@ -6275,7 +6299,9 @@ func (ec *executionContext) _DataSummary_firstSeen(ctx context.Context, field gr
 		ec.OperationContext,
 		field,
 		ec.fieldContext_DataSummary_firstSeen,
-		func(ctx context.Context) (any, error) { return obj.FirstSeen, nil },
+		func(ctx context.Context) (any, error) {
+			return obj.FirstSeen, nil
+		},
 		nil,
 		ec.marshalNTime2timeᚐTime,
 		true,
@@ -6302,7 +6328,9 @@ func (ec *executionContext) _DataSummary_lastSeen(ctx context.Context, field gra
 		ec.OperationContext,
 		field,
 		ec.fieldContext_DataSummary_lastSeen,
-		func(ctx context.Context) (any, error) { return obj.LastSeen, nil },
+		func(ctx context.Context) (any, error) {
+			return obj.LastSeen, nil
+		},
 		nil,
 		ec.marshalNTime2timeᚐTime,
 		true,
@@ -6329,7 +6357,9 @@ func (ec *executionContext) _DataSummary_signalDataSummary(ctx context.Context, 
 		ec.OperationContext,
 		field,
 		ec.fieldContext_DataSummary_signalDataSummary,
-		func(ctx context.Context) (any, error) { return obj.SignalDataSummary, nil },
+		func(ctx context.Context) (any, error) {
+			return obj.SignalDataSummary, nil
+		},
 		nil,
 		ec.marshalNsignalDataSummary2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalDataSummaryᚄ,
 		true,
@@ -6366,7 +6396,9 @@ func (ec *executionContext) _DeviceActivity_lastActive(ctx context.Context, fiel
 		ec.OperationContext,
 		field,
 		ec.fieldContext_DeviceActivity_lastActive,
-		func(ctx context.Context) (any, error) { return obj.LastActive, nil },
+		func(ctx context.Context) (any, error) {
+			return obj.LastActive, nil
+		},
 		nil,
 		ec.marshalOTime2ᚖtimeᚐTime,
 		true,
@@ -6393,7 +6425,9 @@ func (ec *executionContext) _Event_timestamp(ctx context.Context, field graphql.
 		ec.OperationContext,
 		field,
 		ec.fieldContext_Event_timestamp,
-		func(ctx context.Context) (any, error) { return obj.Timestamp, nil },
+		func(ctx context.Context) (any, error) {
+			return obj.Timestamp, nil
+		},
 		nil,
 		ec.marshalNTime2timeᚐTime,
 		true,
@@ -6420,7 +6454,9 @@ func (ec *executionContext) _Event_name(ctx context.Context, field graphql.Colle
 		ec.OperationContext,
 		field,
 		ec.fieldContext_Event_name,
-		func(ctx context.Context) (any, error) { return obj.Name, nil },
+		func(ctx context.Context) (any, error) {
+			return obj.Name, nil
+		},
 		nil,
 		ec.marshalNString2string,
 		true,
@@ -6447,7 +6483,9 @@ func (ec *executionContext) _Event_source(ctx context.Context, field graphql.Col
 		ec.OperationContext,
 		field,
 		ec.fieldContext_Event_source,
-		func(ctx context.Context) (any, error) { return obj.Source, nil },
+		func(ctx context.Context) (any, error) {
+			return obj.Source, nil
+		},
 		nil,
 		ec.marshalNString2string,
 		true,
@@ -6474,7 +6512,9 @@ func (ec *executionContext) _Event_durationNs(ctx context.Context, field graphql
 		ec.OperationContext,
 		field,
 		ec.fieldContext_Event_durationNs,
-		func(ctx context.Context) (any, error) { return obj.DurationNs, nil },
+		func(ctx context.Context) (any, error) {
+			return obj.DurationNs, nil
+		},
 		nil,
 		ec.marshalNInt2int,
 		true,
@@ -6501,7 +6541,9 @@ func (ec *executionContext) _Event_metadata(ctx context.Context, field graphql.C
 		ec.OperationContext,
 		field,
 		ec.fieldContext_Event_metadata,
-		func(ctx context.Context) (any, error) { return obj.Metadata, nil },
+		func(ctx context.Context) (any, error) {
+			return obj.Metadata, nil
+		},
 		nil,
 		ec.marshalOString2ᚖstring,
 		true,
@@ -6528,7 +6570,9 @@ func (ec *executionContext) _Location_latitude(ctx context.Context, field graphq
 		ec.OperationContext,
 		field,
 		ec.fieldContext_Location_latitude,
-		func(ctx context.Context) (any, error) { return obj.Latitude, nil },
+		func(ctx context.Context) (any, error) {
+			return obj.Latitude, nil
+		},
 		nil,
 		ec.marshalNFloat2float64,
 		true,
@@ -6555,7 +6599,9 @@ func (ec *executionContext) _Location_longitude(ctx context.Context, field graph
 		ec.OperationContext,
 		field,
 		ec.fieldContext_Location_longitude,
-		func(ctx context.Context) (any, error) { return obj.Longitude, nil },
+		func(ctx context.Context) (any, error) {
+			return obj.Longitude, nil
+		},
 		nil,
 		ec.marshalNFloat2float64,
 		true,
@@ -6582,7 +6628,9 @@ func (ec *executionContext) _Location_hdop(ctx context.Context, field graphql.Co
 		ec.OperationContext,
 		field,
 		ec.fieldContext_Location_hdop,
-		func(ctx context.Context) (any, error) { return obj.Hdop, nil },
+		func(ctx context.Context) (any, error) {
+			return obj.Hdop, nil
+		},
 		nil,
 		ec.marshalNFloat2float64,
 		true,
@@ -6609,7 +6657,9 @@ func (ec *executionContext) _POMVC_vehicleTokenId(ctx context.Context, field gra
 		ec.OperationContext,
 		field,
 		ec.fieldContext_POMVC_vehicleTokenId,
-		func(ctx context.Context) (any, error) { return obj.VehicleTokenID, nil },
+		func(ctx context.Context) (any, error) {
+			return obj.VehicleTokenID, nil
+		},
 		nil,
 		ec.marshalOInt2ᚖint,
 		true,
@@ -6636,7 +6686,9 @@ func (ec *executionContext) _POMVC_recordedBy(ctx context.Context, field graphql
 		ec.OperationContext,
 		field,
 		ec.fieldContext_POMVC_recordedBy,
-		func(ctx context.Context) (any, error) { return obj.RecordedBy, nil },
+		func(ctx context.Context) (any, error) {
+			return obj.RecordedBy, nil
+		},
 		nil,
 		ec.marshalOString2ᚖstring,
 		true,
@@ -6663,7 +6715,9 @@ func (ec *executionContext) _POMVC_vehicleContractAddress(ctx context.Context, f
 		ec.OperationContext,
 		field,
 		ec.fieldContext_POMVC_vehicleContractAddress,
-		func(ctx context.Context) (any, error) { return obj.VehicleContractAddress, nil },
+		func(ctx context.Context) (any, error) {
+			return obj.VehicleContractAddress, nil
+		},
 		nil,
 		ec.marshalOString2ᚖstring,
 		true,
@@ -6690,7 +6744,9 @@ func (ec *executionContext) _POMVC_validFrom(ctx context.Context, field graphql.
 		ec.OperationContext,
 		field,
 		ec.fieldContext_POMVC_validFrom,
-		func(ctx context.Context) (any, error) { return obj.ValidFrom, nil },
+		func(ctx context.Context) (any, error) {
+			return obj.ValidFrom, nil
+		},
 		nil,
 		ec.marshalOTime2ᚖtimeᚐTime,
 		true,
@@ -6717,7 +6773,9 @@ func (ec *executionContext) _POMVC_rawVC(ctx context.Context, field graphql.Coll
 		ec.OperationContext,
 		field,
 		ec.fieldContext_POMVC_rawVC,
-		func(ctx context.Context) (any, error) { return obj.RawVc, nil },
+		func(ctx context.Context) (any, error) {
+			return obj.RawVc, nil
+		},
 		nil,
 		ec.marshalNString2string,
 		true,
@@ -6745,10 +6803,11 @@ func (ec *executionContext) _Query_signals(ctx context.Context, field graphql.Co
 		field,
 		ec.fieldContext_Query_signals,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.Query().Signals(ctx, fc.Args["tokenId"].(int), fc.Args["interval"].(string), fc.Args["from"].(time.Time), fc.Args["to"].(time.Time), fc.Args["filter"].(*model.SignalFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Query().Signals(ctx, fc.Args["tokenId"].(int), fc.Args["interval"].(string), fc.Args["from"].(time.Time), fc.Args["to"].(time.Time), fc.Args["filter"].(*model.SignalFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				if ec.directives.RequiresVehicleToken == nil {
@@ -6758,19 +6817,9 @@ func (ec *executionContext) _Query_signals(ctx context.Context, field graphql.Co
 				return ec.directives.RequiresVehicleToken(ctx, nil, directive0)
 			}
 
-			tmp, err := directive1(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.([]*model.SignalAggregations); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be []*github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalAggregations`, tmp)
+			next = directive1
+			return next
 		},
-		nil,
 		ec.marshalOSignalAggregations2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalAggregationsᚄ,
 		true,
 		false,
@@ -6978,10 +7027,11 @@ func (ec *executionContext) _Query_signalsLatest(ctx context.Context, field grap
 		field,
 		ec.fieldContext_Query_signalsLatest,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.Query().SignalsLatest(ctx, fc.Args["tokenId"].(int), fc.Args["filter"].(*model.SignalFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Query().SignalsLatest(ctx, fc.Args["tokenId"].(int), fc.Args["filter"].(*model.SignalFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				if ec.directives.RequiresVehicleToken == nil {
@@ -6991,19 +7041,9 @@ func (ec *executionContext) _Query_signalsLatest(ctx context.Context, field grap
 				return ec.directives.RequiresVehicleToken(ctx, nil, directive0)
 			}
 
-			tmp, err := directive1(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalCollection); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalCollection`, tmp)
+			next = directive1
+			return next
 		},
-		nil,
 		ec.marshalOSignalCollection2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalCollection,
 		true,
 		false,
@@ -7211,10 +7251,11 @@ func (ec *executionContext) _Query_availableSignals(ctx context.Context, field g
 		field,
 		ec.fieldContext_Query_availableSignals,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.Query().AvailableSignals(ctx, fc.Args["tokenId"].(int), fc.Args["filter"].(*model.SignalFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Query().AvailableSignals(ctx, fc.Args["tokenId"].(int), fc.Args["filter"].(*model.SignalFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				if ec.directives.RequiresVehicleToken == nil {
@@ -7224,19 +7265,9 @@ func (ec *executionContext) _Query_availableSignals(ctx context.Context, field g
 				return ec.directives.RequiresVehicleToken(ctx, nil, directive0)
 			}
 
-			tmp, err := directive1(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.([]string); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be []string`, tmp)
+			next = directive1
+			return next
 		},
-		nil,
 		ec.marshalOString2ᚕstringᚄ,
 		true,
 		false,
@@ -7274,10 +7305,11 @@ func (ec *executionContext) _Query_dataSummary(ctx context.Context, field graphq
 		field,
 		ec.fieldContext_Query_dataSummary,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.Query().DataSummary(ctx, fc.Args["tokenId"].(int), fc.Args["filter"].(*model.SignalFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Query().DataSummary(ctx, fc.Args["tokenId"].(int), fc.Args["filter"].(*model.SignalFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				if ec.directives.RequiresVehicleToken == nil {
@@ -7287,19 +7319,9 @@ func (ec *executionContext) _Query_dataSummary(ctx context.Context, field graphq
 				return ec.directives.RequiresVehicleToken(ctx, nil, directive0)
 			}
 
-			tmp, err := directive1(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.DataSummary); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.DataSummary`, tmp)
+			next = directive1
+			return next
 		},
-		nil,
 		ec.marshalODataSummary2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐDataSummary,
 		true,
 		false,
@@ -7412,10 +7434,11 @@ func (ec *executionContext) _Query_deviceActivity(ctx context.Context, field gra
 		field,
 		ec.fieldContext_Query_deviceActivity,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.Query().DeviceActivity(ctx, fc.Args["by"].(model.AftermarketDeviceBy))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Query().DeviceActivity(ctx, fc.Args["by"].(model.AftermarketDeviceBy))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				if ec.directives.RequiresManufacturerToken == nil {
@@ -7437,19 +7460,9 @@ func (ec *executionContext) _Query_deviceActivity(ctx context.Context, field gra
 				return ec.directives.RequiresAllOfPrivileges(ctx, nil, directive1, privileges)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.DeviceActivity); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.DeviceActivity`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalODeviceActivity2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐDeviceActivity,
 		true,
 		false,
@@ -7491,10 +7504,11 @@ func (ec *executionContext) _Query_events(ctx context.Context, field graphql.Col
 		field,
 		ec.fieldContext_Query_events,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.Query().Events(ctx, fc.Args["tokenId"].(int), fc.Args["from"].(time.Time), fc.Args["to"].(time.Time), fc.Args["filter"].(*model.EventFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Query().Events(ctx, fc.Args["tokenId"].(int), fc.Args["from"].(time.Time), fc.Args["to"].(time.Time), fc.Args["filter"].(*model.EventFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				if ec.directives.RequiresVehicleToken == nil {
@@ -7516,19 +7530,9 @@ func (ec *executionContext) _Query_events(ctx context.Context, field graphql.Col
 				return ec.directives.RequiresAllOfPrivileges(ctx, nil, directive1, privileges)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.([]*model.Event); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be []*github.com/DIMO-Network/telemetry-api/internal/graph/model.Event`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOEvent2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐEventᚄ,
 		true,
 		false,
@@ -7578,10 +7582,11 @@ func (ec *executionContext) _Query_vinVCLatest(ctx context.Context, field graphq
 		field,
 		ec.fieldContext_Query_vinVCLatest,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.Query().VinVCLatest(ctx, fc.Args["tokenId"].(int))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Query().VinVCLatest(ctx, fc.Args["tokenId"].(int))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				if ec.directives.RequiresVehicleToken == nil {
@@ -7603,19 +7608,9 @@ func (ec *executionContext) _Query_vinVCLatest(ctx context.Context, field graphq
 				return ec.directives.RequiresAllOfPrivileges(ctx, nil, directive1, privileges)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.Vinvc); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.Vinvc`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOVINVC2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐVinvc,
 		true,
 		false,
@@ -7673,10 +7668,11 @@ func (ec *executionContext) _Query_pomVCLatest(ctx context.Context, field graphq
 		field,
 		ec.fieldContext_Query_pomVCLatest,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.Query().PomVCLatest(ctx, fc.Args["tokenId"].(int))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Query().PomVCLatest(ctx, fc.Args["tokenId"].(int))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				if ec.directives.RequiresVehicleToken == nil {
@@ -7698,19 +7694,9 @@ func (ec *executionContext) _Query_pomVCLatest(ctx context.Context, field graphq
 				return ec.directives.RequiresAllOfPrivileges(ctx, nil, directive1, privileges)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.Pomvc); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.Pomvc`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOPOMVC2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐPomvc,
 		true,
 		false,
@@ -7867,7 +7853,9 @@ func (ec *executionContext) _SignalAggregations_timestamp(ctx context.Context, f
 		ec.OperationContext,
 		field,
 		ec.fieldContext_SignalAggregations_timestamp,
-		func(ctx context.Context) (any, error) { return obj.Timestamp, nil },
+		func(ctx context.Context) (any, error) {
+			return obj.Timestamp, nil
+		},
 		nil,
 		ec.marshalNTime2timeᚐTime,
 		true,
@@ -7895,10 +7883,11 @@ func (ec *executionContext) _SignalAggregations_currentLocationApproximateLatitu
 		field,
 		ec.fieldContext_SignalAggregations_currentLocationApproximateLatitude,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().CurrentLocationApproximateLatitude(ctx, obj, fc.Args["agg"].(model.FloatAggregation))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().CurrentLocationApproximateLatitude(ctx, obj, fc.Args["agg"].(model.FloatAggregation))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_APPROXIMATE_LOCATION", "VEHICLE_ALL_TIME_LOCATION"})
@@ -7927,19 +7916,9 @@ func (ec *executionContext) _SignalAggregations_currentLocationApproximateLatitu
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -7977,10 +7956,11 @@ func (ec *executionContext) _SignalAggregations_currentLocationApproximateLongit
 		field,
 		ec.fieldContext_SignalAggregations_currentLocationApproximateLongitude,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().CurrentLocationApproximateLongitude(ctx, obj, fc.Args["agg"].(model.FloatAggregation))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().CurrentLocationApproximateLongitude(ctx, obj, fc.Args["agg"].(model.FloatAggregation))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_APPROXIMATE_LOCATION", "VEHICLE_ALL_TIME_LOCATION"})
@@ -8009,19 +7989,9 @@ func (ec *executionContext) _SignalAggregations_currentLocationApproximateLongit
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -8059,10 +8029,11 @@ func (ec *executionContext) _SignalAggregations_angularVelocityYaw(ctx context.C
 		field,
 		ec.fieldContext_SignalAggregations_angularVelocityYaw,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().AngularVelocityYaw(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().AngularVelocityYaw(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -8091,19 +8062,9 @@ func (ec *executionContext) _SignalAggregations_angularVelocityYaw(ctx context.C
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -8141,10 +8102,11 @@ func (ec *executionContext) _SignalAggregations_cabinDoorRow1DriverSideIsOpen(ct
 		field,
 		ec.fieldContext_SignalAggregations_cabinDoorRow1DriverSideIsOpen,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().CabinDoorRow1DriverSideIsOpen(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().CabinDoorRow1DriverSideIsOpen(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -8173,19 +8135,9 @@ func (ec *executionContext) _SignalAggregations_cabinDoorRow1DriverSideIsOpen(ct
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -8223,10 +8175,11 @@ func (ec *executionContext) _SignalAggregations_cabinDoorRow1DriverSideWindowIsO
 		field,
 		ec.fieldContext_SignalAggregations_cabinDoorRow1DriverSideWindowIsOpen,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().CabinDoorRow1DriverSideWindowIsOpen(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().CabinDoorRow1DriverSideWindowIsOpen(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -8255,19 +8208,9 @@ func (ec *executionContext) _SignalAggregations_cabinDoorRow1DriverSideWindowIsO
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -8305,10 +8248,11 @@ func (ec *executionContext) _SignalAggregations_cabinDoorRow1PassengerSideIsOpen
 		field,
 		ec.fieldContext_SignalAggregations_cabinDoorRow1PassengerSideIsOpen,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().CabinDoorRow1PassengerSideIsOpen(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().CabinDoorRow1PassengerSideIsOpen(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -8337,19 +8281,9 @@ func (ec *executionContext) _SignalAggregations_cabinDoorRow1PassengerSideIsOpen
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -8387,10 +8321,11 @@ func (ec *executionContext) _SignalAggregations_cabinDoorRow1PassengerSideWindow
 		field,
 		ec.fieldContext_SignalAggregations_cabinDoorRow1PassengerSideWindowIsOpen,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().CabinDoorRow1PassengerSideWindowIsOpen(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().CabinDoorRow1PassengerSideWindowIsOpen(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -8419,19 +8354,9 @@ func (ec *executionContext) _SignalAggregations_cabinDoorRow1PassengerSideWindow
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -8469,10 +8394,11 @@ func (ec *executionContext) _SignalAggregations_cabinDoorRow2DriverSideIsOpen(ct
 		field,
 		ec.fieldContext_SignalAggregations_cabinDoorRow2DriverSideIsOpen,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().CabinDoorRow2DriverSideIsOpen(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().CabinDoorRow2DriverSideIsOpen(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -8501,19 +8427,9 @@ func (ec *executionContext) _SignalAggregations_cabinDoorRow2DriverSideIsOpen(ct
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -8551,10 +8467,11 @@ func (ec *executionContext) _SignalAggregations_cabinDoorRow2DriverSideWindowIsO
 		field,
 		ec.fieldContext_SignalAggregations_cabinDoorRow2DriverSideWindowIsOpen,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().CabinDoorRow2DriverSideWindowIsOpen(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().CabinDoorRow2DriverSideWindowIsOpen(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -8583,19 +8500,9 @@ func (ec *executionContext) _SignalAggregations_cabinDoorRow2DriverSideWindowIsO
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -8633,10 +8540,11 @@ func (ec *executionContext) _SignalAggregations_cabinDoorRow2PassengerSideIsOpen
 		field,
 		ec.fieldContext_SignalAggregations_cabinDoorRow2PassengerSideIsOpen,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().CabinDoorRow2PassengerSideIsOpen(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().CabinDoorRow2PassengerSideIsOpen(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -8665,19 +8573,9 @@ func (ec *executionContext) _SignalAggregations_cabinDoorRow2PassengerSideIsOpen
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -8715,10 +8613,11 @@ func (ec *executionContext) _SignalAggregations_cabinDoorRow2PassengerSideWindow
 		field,
 		ec.fieldContext_SignalAggregations_cabinDoorRow2PassengerSideWindowIsOpen,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().CabinDoorRow2PassengerSideWindowIsOpen(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().CabinDoorRow2PassengerSideWindowIsOpen(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -8747,19 +8646,9 @@ func (ec *executionContext) _SignalAggregations_cabinDoorRow2PassengerSideWindow
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -8797,10 +8686,11 @@ func (ec *executionContext) _SignalAggregations_chassisAxleRow1WheelLeftSpeed(ct
 		field,
 		ec.fieldContext_SignalAggregations_chassisAxleRow1WheelLeftSpeed,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().ChassisAxleRow1WheelLeftSpeed(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().ChassisAxleRow1WheelLeftSpeed(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -8829,19 +8719,9 @@ func (ec *executionContext) _SignalAggregations_chassisAxleRow1WheelLeftSpeed(ct
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -8879,10 +8759,11 @@ func (ec *executionContext) _SignalAggregations_chassisAxleRow1WheelLeftTirePres
 		field,
 		ec.fieldContext_SignalAggregations_chassisAxleRow1WheelLeftTirePressure,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().ChassisAxleRow1WheelLeftTirePressure(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().ChassisAxleRow1WheelLeftTirePressure(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -8911,19 +8792,9 @@ func (ec *executionContext) _SignalAggregations_chassisAxleRow1WheelLeftTirePres
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -8961,10 +8832,11 @@ func (ec *executionContext) _SignalAggregations_chassisAxleRow1WheelRightSpeed(c
 		field,
 		ec.fieldContext_SignalAggregations_chassisAxleRow1WheelRightSpeed,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().ChassisAxleRow1WheelRightSpeed(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().ChassisAxleRow1WheelRightSpeed(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -8993,19 +8865,9 @@ func (ec *executionContext) _SignalAggregations_chassisAxleRow1WheelRightSpeed(c
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -9043,10 +8905,11 @@ func (ec *executionContext) _SignalAggregations_chassisAxleRow1WheelRightTirePre
 		field,
 		ec.fieldContext_SignalAggregations_chassisAxleRow1WheelRightTirePressure,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().ChassisAxleRow1WheelRightTirePressure(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().ChassisAxleRow1WheelRightTirePressure(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -9075,19 +8938,9 @@ func (ec *executionContext) _SignalAggregations_chassisAxleRow1WheelRightTirePre
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -9125,10 +8978,11 @@ func (ec *executionContext) _SignalAggregations_chassisAxleRow2WheelLeftTirePres
 		field,
 		ec.fieldContext_SignalAggregations_chassisAxleRow2WheelLeftTirePressure,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().ChassisAxleRow2WheelLeftTirePressure(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().ChassisAxleRow2WheelLeftTirePressure(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -9157,19 +9011,9 @@ func (ec *executionContext) _SignalAggregations_chassisAxleRow2WheelLeftTirePres
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -9207,10 +9051,11 @@ func (ec *executionContext) _SignalAggregations_chassisAxleRow2WheelRightTirePre
 		field,
 		ec.fieldContext_SignalAggregations_chassisAxleRow2WheelRightTirePressure,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().ChassisAxleRow2WheelRightTirePressure(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().ChassisAxleRow2WheelRightTirePressure(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -9239,19 +9084,9 @@ func (ec *executionContext) _SignalAggregations_chassisAxleRow2WheelRightTirePre
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -9289,10 +9124,11 @@ func (ec *executionContext) _SignalAggregations_currentLocationAltitude(ctx cont
 		field,
 		ec.fieldContext_SignalAggregations_currentLocationAltitude,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().CurrentLocationAltitude(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().CurrentLocationAltitude(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_ALL_TIME_LOCATION"})
@@ -9321,19 +9157,9 @@ func (ec *executionContext) _SignalAggregations_currentLocationAltitude(ctx cont
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -9371,10 +9197,11 @@ func (ec *executionContext) _SignalAggregations_currentLocationCoordinates(ctx c
 		field,
 		ec.fieldContext_SignalAggregations_currentLocationCoordinates,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().CurrentLocationCoordinates(ctx, obj, fc.Args["agg"].(model.LocationAggregation), fc.Args["filter"].(*model.SignalLocationFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().CurrentLocationCoordinates(ctx, obj, fc.Args["agg"].(model.LocationAggregation), fc.Args["filter"].(*model.SignalLocationFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_ALL_TIME_LOCATION"})
@@ -9403,19 +9230,9 @@ func (ec *executionContext) _SignalAggregations_currentLocationCoordinates(ctx c
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.Location); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.Location`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOLocation2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐLocation,
 		true,
 		false,
@@ -9461,10 +9278,11 @@ func (ec *executionContext) _SignalAggregations_currentLocationHeading(ctx conte
 		field,
 		ec.fieldContext_SignalAggregations_currentLocationHeading,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().CurrentLocationHeading(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().CurrentLocationHeading(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_ALL_TIME_LOCATION"})
@@ -9493,19 +9311,9 @@ func (ec *executionContext) _SignalAggregations_currentLocationHeading(ctx conte
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -9543,10 +9351,11 @@ func (ec *executionContext) _SignalAggregations_currentLocationIsRedacted(ctx co
 		field,
 		ec.fieldContext_SignalAggregations_currentLocationIsRedacted,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().CurrentLocationIsRedacted(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().CurrentLocationIsRedacted(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_ALL_TIME_LOCATION"})
@@ -9575,19 +9384,9 @@ func (ec *executionContext) _SignalAggregations_currentLocationIsRedacted(ctx co
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -9625,10 +9424,11 @@ func (ec *executionContext) _SignalAggregations_currentLocationLatitude(ctx cont
 		field,
 		ec.fieldContext_SignalAggregations_currentLocationLatitude,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().CurrentLocationLatitude(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().CurrentLocationLatitude(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_ALL_TIME_LOCATION"})
@@ -9657,19 +9457,9 @@ func (ec *executionContext) _SignalAggregations_currentLocationLatitude(ctx cont
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -9707,10 +9497,11 @@ func (ec *executionContext) _SignalAggregations_currentLocationLongitude(ctx con
 		field,
 		ec.fieldContext_SignalAggregations_currentLocationLongitude,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().CurrentLocationLongitude(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().CurrentLocationLongitude(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_ALL_TIME_LOCATION"})
@@ -9739,19 +9530,9 @@ func (ec *executionContext) _SignalAggregations_currentLocationLongitude(ctx con
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -9789,10 +9570,11 @@ func (ec *executionContext) _SignalAggregations_dimoAftermarketHDOP(ctx context.
 		field,
 		ec.fieldContext_SignalAggregations_dimoAftermarketHDOP,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().DimoAftermarketHdop(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().DimoAftermarketHdop(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -9821,19 +9603,9 @@ func (ec *executionContext) _SignalAggregations_dimoAftermarketHDOP(ctx context.
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -9871,10 +9643,11 @@ func (ec *executionContext) _SignalAggregations_dimoAftermarketNSAT(ctx context.
 		field,
 		ec.fieldContext_SignalAggregations_dimoAftermarketNSAT,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().DimoAftermarketNsat(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().DimoAftermarketNsat(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -9903,19 +9676,9 @@ func (ec *executionContext) _SignalAggregations_dimoAftermarketNSAT(ctx context.
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -9953,10 +9716,11 @@ func (ec *executionContext) _SignalAggregations_dimoAftermarketSSID(ctx context.
 		field,
 		ec.fieldContext_SignalAggregations_dimoAftermarketSSID,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().DimoAftermarketSsid(ctx, obj, fc.Args["agg"].(model.StringAggregation))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().DimoAftermarketSsid(ctx, obj, fc.Args["agg"].(model.StringAggregation))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -9985,19 +9749,9 @@ func (ec *executionContext) _SignalAggregations_dimoAftermarketSSID(ctx context.
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*string); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *string`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOString2ᚖstring,
 		true,
 		false,
@@ -10035,10 +9789,11 @@ func (ec *executionContext) _SignalAggregations_dimoAftermarketWPAState(ctx cont
 		field,
 		ec.fieldContext_SignalAggregations_dimoAftermarketWPAState,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().DimoAftermarketWPAState(ctx, obj, fc.Args["agg"].(model.StringAggregation))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().DimoAftermarketWPAState(ctx, obj, fc.Args["agg"].(model.StringAggregation))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -10067,19 +9822,9 @@ func (ec *executionContext) _SignalAggregations_dimoAftermarketWPAState(ctx cont
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*string); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *string`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOString2ᚖstring,
 		true,
 		false,
@@ -10117,10 +9862,11 @@ func (ec *executionContext) _SignalAggregations_exteriorAirTemperature(ctx conte
 		field,
 		ec.fieldContext_SignalAggregations_exteriorAirTemperature,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().ExteriorAirTemperature(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().ExteriorAirTemperature(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -10149,19 +9895,9 @@ func (ec *executionContext) _SignalAggregations_exteriorAirTemperature(ctx conte
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -10199,10 +9935,11 @@ func (ec *executionContext) _SignalAggregations_isIgnitionOn(ctx context.Context
 		field,
 		ec.fieldContext_SignalAggregations_isIgnitionOn,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().IsIgnitionOn(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().IsIgnitionOn(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -10231,19 +9968,9 @@ func (ec *executionContext) _SignalAggregations_isIgnitionOn(ctx context.Context
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -10281,10 +10008,11 @@ func (ec *executionContext) _SignalAggregations_lowVoltageBatteryCurrentVoltage(
 		field,
 		ec.fieldContext_SignalAggregations_lowVoltageBatteryCurrentVoltage,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().LowVoltageBatteryCurrentVoltage(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().LowVoltageBatteryCurrentVoltage(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -10313,19 +10041,9 @@ func (ec *executionContext) _SignalAggregations_lowVoltageBatteryCurrentVoltage(
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -10363,10 +10081,11 @@ func (ec *executionContext) _SignalAggregations_obdBarometricPressure(ctx contex
 		field,
 		ec.fieldContext_SignalAggregations_obdBarometricPressure,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().ObdBarometricPressure(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().ObdBarometricPressure(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -10395,19 +10114,9 @@ func (ec *executionContext) _SignalAggregations_obdBarometricPressure(ctx contex
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -10445,10 +10154,11 @@ func (ec *executionContext) _SignalAggregations_obdCommandedEGR(ctx context.Cont
 		field,
 		ec.fieldContext_SignalAggregations_obdCommandedEGR,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().ObdCommandedEgr(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().ObdCommandedEgr(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -10477,19 +10187,9 @@ func (ec *executionContext) _SignalAggregations_obdCommandedEGR(ctx context.Cont
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -10527,10 +10227,11 @@ func (ec *executionContext) _SignalAggregations_obdCommandedEVAP(ctx context.Con
 		field,
 		ec.fieldContext_SignalAggregations_obdCommandedEVAP,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().ObdCommandedEvap(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().ObdCommandedEvap(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -10559,19 +10260,9 @@ func (ec *executionContext) _SignalAggregations_obdCommandedEVAP(ctx context.Con
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -10609,10 +10300,11 @@ func (ec *executionContext) _SignalAggregations_obdDTCList(ctx context.Context, 
 		field,
 		ec.fieldContext_SignalAggregations_obdDTCList,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().ObdDTCList(ctx, obj, fc.Args["agg"].(model.StringAggregation))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().ObdDTCList(ctx, obj, fc.Args["agg"].(model.StringAggregation))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -10641,19 +10333,9 @@ func (ec *executionContext) _SignalAggregations_obdDTCList(ctx context.Context, 
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*string); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *string`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOString2ᚖstring,
 		true,
 		false,
@@ -10691,10 +10373,11 @@ func (ec *executionContext) _SignalAggregations_obdDistanceSinceDTCClear(ctx con
 		field,
 		ec.fieldContext_SignalAggregations_obdDistanceSinceDTCClear,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().ObdDistanceSinceDTCClear(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().ObdDistanceSinceDTCClear(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -10723,19 +10406,9 @@ func (ec *executionContext) _SignalAggregations_obdDistanceSinceDTCClear(ctx con
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -10773,10 +10446,11 @@ func (ec *executionContext) _SignalAggregations_obdDistanceWithMIL(ctx context.C
 		field,
 		ec.fieldContext_SignalAggregations_obdDistanceWithMIL,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().ObdDistanceWithMil(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().ObdDistanceWithMil(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -10805,19 +10479,9 @@ func (ec *executionContext) _SignalAggregations_obdDistanceWithMIL(ctx context.C
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -10855,10 +10519,11 @@ func (ec *executionContext) _SignalAggregations_obdEngineLoad(ctx context.Contex
 		field,
 		ec.fieldContext_SignalAggregations_obdEngineLoad,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().ObdEngineLoad(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().ObdEngineLoad(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -10887,19 +10552,9 @@ func (ec *executionContext) _SignalAggregations_obdEngineLoad(ctx context.Contex
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -10937,10 +10592,11 @@ func (ec *executionContext) _SignalAggregations_obdFuelPressure(ctx context.Cont
 		field,
 		ec.fieldContext_SignalAggregations_obdFuelPressure,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().ObdFuelPressure(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().ObdFuelPressure(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -10969,19 +10625,9 @@ func (ec *executionContext) _SignalAggregations_obdFuelPressure(ctx context.Cont
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -11019,10 +10665,11 @@ func (ec *executionContext) _SignalAggregations_obdIntakeTemp(ctx context.Contex
 		field,
 		ec.fieldContext_SignalAggregations_obdIntakeTemp,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().ObdIntakeTemp(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().ObdIntakeTemp(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -11051,19 +10698,9 @@ func (ec *executionContext) _SignalAggregations_obdIntakeTemp(ctx context.Contex
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -11101,10 +10738,11 @@ func (ec *executionContext) _SignalAggregations_obdLongTermFuelTrim1(ctx context
 		field,
 		ec.fieldContext_SignalAggregations_obdLongTermFuelTrim1,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().ObdLongTermFuelTrim1(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().ObdLongTermFuelTrim1(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -11133,19 +10771,9 @@ func (ec *executionContext) _SignalAggregations_obdLongTermFuelTrim1(ctx context
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -11183,10 +10811,11 @@ func (ec *executionContext) _SignalAggregations_obdMAP(ctx context.Context, fiel
 		field,
 		ec.fieldContext_SignalAggregations_obdMAP,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().ObdMap(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().ObdMap(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -11215,19 +10844,9 @@ func (ec *executionContext) _SignalAggregations_obdMAP(ctx context.Context, fiel
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -11265,10 +10884,11 @@ func (ec *executionContext) _SignalAggregations_obdO2WRSensor1Voltage(ctx contex
 		field,
 		ec.fieldContext_SignalAggregations_obdO2WRSensor1Voltage,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().ObdO2WRSensor1Voltage(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().ObdO2WRSensor1Voltage(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -11297,19 +10917,9 @@ func (ec *executionContext) _SignalAggregations_obdO2WRSensor1Voltage(ctx contex
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -11347,10 +10957,11 @@ func (ec *executionContext) _SignalAggregations_obdO2WRSensor2Voltage(ctx contex
 		field,
 		ec.fieldContext_SignalAggregations_obdO2WRSensor2Voltage,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().ObdO2WRSensor2Voltage(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().ObdO2WRSensor2Voltage(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -11379,19 +10990,9 @@ func (ec *executionContext) _SignalAggregations_obdO2WRSensor2Voltage(ctx contex
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -11429,10 +11030,11 @@ func (ec *executionContext) _SignalAggregations_obdRunTime(ctx context.Context, 
 		field,
 		ec.fieldContext_SignalAggregations_obdRunTime,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().ObdRunTime(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().ObdRunTime(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -11461,19 +11063,9 @@ func (ec *executionContext) _SignalAggregations_obdRunTime(ctx context.Context, 
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -11511,10 +11103,11 @@ func (ec *executionContext) _SignalAggregations_obdShortTermFuelTrim1(ctx contex
 		field,
 		ec.fieldContext_SignalAggregations_obdShortTermFuelTrim1,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().ObdShortTermFuelTrim1(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().ObdShortTermFuelTrim1(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -11543,19 +11136,9 @@ func (ec *executionContext) _SignalAggregations_obdShortTermFuelTrim1(ctx contex
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -11593,10 +11176,11 @@ func (ec *executionContext) _SignalAggregations_obdStatusDTCCount(ctx context.Co
 		field,
 		ec.fieldContext_SignalAggregations_obdStatusDTCCount,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().ObdStatusDTCCount(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().ObdStatusDTCCount(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -11625,19 +11209,9 @@ func (ec *executionContext) _SignalAggregations_obdStatusDTCCount(ctx context.Co
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -11675,10 +11249,11 @@ func (ec *executionContext) _SignalAggregations_obdWarmupsSinceDTCClear(ctx cont
 		field,
 		ec.fieldContext_SignalAggregations_obdWarmupsSinceDTCClear,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().ObdWarmupsSinceDTCClear(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().ObdWarmupsSinceDTCClear(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -11707,19 +11282,9 @@ func (ec *executionContext) _SignalAggregations_obdWarmupsSinceDTCClear(ctx cont
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -11757,10 +11322,11 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineDiesel
 		field,
 		ec.fieldContext_SignalAggregations_powertrainCombustionEngineDieselExhaustFluidCapacity,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().PowertrainCombustionEngineDieselExhaustFluidCapacity(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().PowertrainCombustionEngineDieselExhaustFluidCapacity(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -11789,19 +11355,9 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineDiesel
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -11839,10 +11395,11 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineDiesel
 		field,
 		ec.fieldContext_SignalAggregations_powertrainCombustionEngineDieselExhaustFluidLevel,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().PowertrainCombustionEngineDieselExhaustFluidLevel(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().PowertrainCombustionEngineDieselExhaustFluidLevel(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -11871,19 +11428,9 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineDiesel
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -11921,10 +11468,11 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineECT(ct
 		field,
 		ec.fieldContext_SignalAggregations_powertrainCombustionEngineECT,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().PowertrainCombustionEngineEct(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().PowertrainCombustionEngineEct(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -11953,19 +11501,9 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineECT(ct
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -12003,10 +11541,11 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineEOP(ct
 		field,
 		ec.fieldContext_SignalAggregations_powertrainCombustionEngineEOP,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().PowertrainCombustionEngineEop(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().PowertrainCombustionEngineEop(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -12035,19 +11574,9 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineEOP(ct
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -12085,10 +11614,11 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineEOT(ct
 		field,
 		ec.fieldContext_SignalAggregations_powertrainCombustionEngineEOT,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().PowertrainCombustionEngineEot(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().PowertrainCombustionEngineEot(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -12117,19 +11647,9 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineEOT(ct
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -12167,10 +11687,11 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineEngine
 		field,
 		ec.fieldContext_SignalAggregations_powertrainCombustionEngineEngineOilLevel,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().PowertrainCombustionEngineEngineOilLevel(ctx, obj, fc.Args["agg"].(model.StringAggregation))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().PowertrainCombustionEngineEngineOilLevel(ctx, obj, fc.Args["agg"].(model.StringAggregation))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -12199,19 +11720,9 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineEngine
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*string); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *string`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOString2ᚖstring,
 		true,
 		false,
@@ -12249,10 +11760,11 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineEngine
 		field,
 		ec.fieldContext_SignalAggregations_powertrainCombustionEngineEngineOilRelativeLevel,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().PowertrainCombustionEngineEngineOilRelativeLevel(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().PowertrainCombustionEngineEngineOilRelativeLevel(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -12281,19 +11793,9 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineEngine
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -12331,10 +11833,11 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineMAF(ct
 		field,
 		ec.fieldContext_SignalAggregations_powertrainCombustionEngineMAF,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().PowertrainCombustionEngineMaf(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().PowertrainCombustionEngineMaf(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -12363,19 +11866,9 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineMAF(ct
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -12413,10 +11906,11 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineSpeed(
 		field,
 		ec.fieldContext_SignalAggregations_powertrainCombustionEngineSpeed,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().PowertrainCombustionEngineSpeed(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().PowertrainCombustionEngineSpeed(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -12445,19 +11939,9 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineSpeed(
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -12495,10 +11979,11 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineTPS(ct
 		field,
 		ec.fieldContext_SignalAggregations_powertrainCombustionEngineTPS,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().PowertrainCombustionEngineTps(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().PowertrainCombustionEngineTps(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -12527,19 +12012,9 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineTPS(ct
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -12577,10 +12052,11 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineTorque
 		field,
 		ec.fieldContext_SignalAggregations_powertrainCombustionEngineTorque,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().PowertrainCombustionEngineTorque(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().PowertrainCombustionEngineTorque(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -12609,19 +12085,9 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineTorque
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -12659,10 +12125,11 @@ func (ec *executionContext) _SignalAggregations_powertrainFuelSystemAbsoluteLeve
 		field,
 		ec.fieldContext_SignalAggregations_powertrainFuelSystemAbsoluteLevel,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().PowertrainFuelSystemAbsoluteLevel(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().PowertrainFuelSystemAbsoluteLevel(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -12691,19 +12158,9 @@ func (ec *executionContext) _SignalAggregations_powertrainFuelSystemAbsoluteLeve
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -12741,10 +12198,11 @@ func (ec *executionContext) _SignalAggregations_powertrainFuelSystemRelativeLeve
 		field,
 		ec.fieldContext_SignalAggregations_powertrainFuelSystemRelativeLevel,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().PowertrainFuelSystemRelativeLevel(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().PowertrainFuelSystemRelativeLevel(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -12773,19 +12231,9 @@ func (ec *executionContext) _SignalAggregations_powertrainFuelSystemRelativeLeve
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -12823,10 +12271,11 @@ func (ec *executionContext) _SignalAggregations_powertrainFuelSystemSupportedFue
 		field,
 		ec.fieldContext_SignalAggregations_powertrainFuelSystemSupportedFuelTypes,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().PowertrainFuelSystemSupportedFuelTypes(ctx, obj, fc.Args["agg"].(model.StringAggregation))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().PowertrainFuelSystemSupportedFuelTypes(ctx, obj, fc.Args["agg"].(model.StringAggregation))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -12855,19 +12304,9 @@ func (ec *executionContext) _SignalAggregations_powertrainFuelSystemSupportedFue
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*string); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *string`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOString2ᚖstring,
 		true,
 		false,
@@ -12905,10 +12344,11 @@ func (ec *executionContext) _SignalAggregations_powertrainRange(ctx context.Cont
 		field,
 		ec.fieldContext_SignalAggregations_powertrainRange,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().PowertrainRange(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().PowertrainRange(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -12937,19 +12377,9 @@ func (ec *executionContext) _SignalAggregations_powertrainRange(ctx context.Cont
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -12987,10 +12417,11 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryChargin
 		field,
 		ec.fieldContext_SignalAggregations_powertrainTractionBatteryChargingAddedEnergy,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().PowertrainTractionBatteryChargingAddedEnergy(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryChargingAddedEnergy(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -13019,19 +12450,9 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryChargin
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -13069,10 +12490,11 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryChargin
 		field,
 		ec.fieldContext_SignalAggregations_powertrainTractionBatteryChargingChargeCurrentAC,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().PowertrainTractionBatteryChargingChargeCurrentAc(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryChargingChargeCurrentAc(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -13101,19 +12523,9 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryChargin
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -13151,10 +12563,11 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryChargin
 		field,
 		ec.fieldContext_SignalAggregations_powertrainTractionBatteryChargingChargeLimit,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().PowertrainTractionBatteryChargingChargeLimit(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryChargingChargeLimit(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -13183,19 +12596,9 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryChargin
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -13233,10 +12636,11 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryChargin
 		field,
 		ec.fieldContext_SignalAggregations_powertrainTractionBatteryChargingChargeVoltageUnknownType,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().PowertrainTractionBatteryChargingChargeVoltageUnknownType(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryChargingChargeVoltageUnknownType(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -13265,19 +12669,9 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryChargin
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -13315,10 +12709,11 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryChargin
 		field,
 		ec.fieldContext_SignalAggregations_powertrainTractionBatteryChargingIsCharging,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().PowertrainTractionBatteryChargingIsCharging(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryChargingIsCharging(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -13347,19 +12742,9 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryChargin
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -13397,10 +12782,11 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryChargin
 		field,
 		ec.fieldContext_SignalAggregations_powertrainTractionBatteryChargingIsChargingCableConnected,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().PowertrainTractionBatteryChargingIsChargingCableConnected(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryChargingIsChargingCableConnected(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -13429,19 +12815,9 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryChargin
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -13479,10 +12855,11 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryChargin
 		field,
 		ec.fieldContext_SignalAggregations_powertrainTractionBatteryChargingPower,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().PowertrainTractionBatteryChargingPower(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryChargingPower(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -13511,19 +12888,9 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryChargin
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -13561,10 +12928,11 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryCurrent
 		field,
 		ec.fieldContext_SignalAggregations_powertrainTractionBatteryCurrentPower,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().PowertrainTractionBatteryCurrentPower(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryCurrentPower(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -13593,19 +12961,9 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryCurrent
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -13643,10 +13001,11 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryCurrent
 		field,
 		ec.fieldContext_SignalAggregations_powertrainTractionBatteryCurrentVoltage,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().PowertrainTractionBatteryCurrentVoltage(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryCurrentVoltage(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -13675,19 +13034,9 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryCurrent
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -13725,10 +13074,11 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryGrossCa
 		field,
 		ec.fieldContext_SignalAggregations_powertrainTractionBatteryGrossCapacity,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().PowertrainTractionBatteryGrossCapacity(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryGrossCapacity(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -13757,19 +13107,9 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryGrossCa
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -13807,10 +13147,11 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryRange(c
 		field,
 		ec.fieldContext_SignalAggregations_powertrainTractionBatteryRange,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().PowertrainTractionBatteryRange(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryRange(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -13839,19 +13180,9 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryRange(c
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -13889,10 +13220,11 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryStateOf
 		field,
 		ec.fieldContext_SignalAggregations_powertrainTractionBatteryStateOfChargeCurrent,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().PowertrainTractionBatteryStateOfChargeCurrent(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryStateOfChargeCurrent(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -13921,19 +13253,9 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryStateOf
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -13971,10 +13293,11 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryStateOf
 		field,
 		ec.fieldContext_SignalAggregations_powertrainTractionBatteryStateOfChargeCurrentEnergy,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().PowertrainTractionBatteryStateOfChargeCurrentEnergy(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryStateOfChargeCurrentEnergy(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -14003,19 +13326,9 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryStateOf
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -14053,10 +13366,11 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryStateOf
 		field,
 		ec.fieldContext_SignalAggregations_powertrainTractionBatteryStateOfHealth,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().PowertrainTractionBatteryStateOfHealth(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryStateOfHealth(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -14085,19 +13399,9 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryStateOf
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -14135,10 +13439,11 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryTempera
 		field,
 		ec.fieldContext_SignalAggregations_powertrainTractionBatteryTemperatureAverage,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().PowertrainTractionBatteryTemperatureAverage(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryTemperatureAverage(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -14167,19 +13472,9 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryTempera
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -14217,10 +13512,11 @@ func (ec *executionContext) _SignalAggregations_powertrainTransmissionCurrentGea
 		field,
 		ec.fieldContext_SignalAggregations_powertrainTransmissionCurrentGear,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().PowertrainTransmissionCurrentGear(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().PowertrainTransmissionCurrentGear(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -14249,19 +13545,9 @@ func (ec *executionContext) _SignalAggregations_powertrainTransmissionCurrentGea
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -14299,10 +13585,11 @@ func (ec *executionContext) _SignalAggregations_powertrainTransmissionTemperatur
 		field,
 		ec.fieldContext_SignalAggregations_powertrainTransmissionTemperature,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().PowertrainTransmissionTemperature(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().PowertrainTransmissionTemperature(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -14331,19 +13618,9 @@ func (ec *executionContext) _SignalAggregations_powertrainTransmissionTemperatur
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -14381,10 +13658,11 @@ func (ec *executionContext) _SignalAggregations_powertrainTransmissionTravelledD
 		field,
 		ec.fieldContext_SignalAggregations_powertrainTransmissionTravelledDistance,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().PowertrainTransmissionTravelledDistance(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().PowertrainTransmissionTravelledDistance(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -14413,19 +13691,9 @@ func (ec *executionContext) _SignalAggregations_powertrainTransmissionTravelledD
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -14463,10 +13731,11 @@ func (ec *executionContext) _SignalAggregations_powertrainType(ctx context.Conte
 		field,
 		ec.fieldContext_SignalAggregations_powertrainType,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().PowertrainType(ctx, obj, fc.Args["agg"].(model.StringAggregation))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().PowertrainType(ctx, obj, fc.Args["agg"].(model.StringAggregation))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -14495,19 +13764,9 @@ func (ec *executionContext) _SignalAggregations_powertrainType(ctx context.Conte
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*string); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *string`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOString2ᚖstring,
 		true,
 		false,
@@ -14545,10 +13804,11 @@ func (ec *executionContext) _SignalAggregations_serviceDistanceToService(ctx con
 		field,
 		ec.fieldContext_SignalAggregations_serviceDistanceToService,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().ServiceDistanceToService(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().ServiceDistanceToService(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -14577,19 +13837,9 @@ func (ec *executionContext) _SignalAggregations_serviceDistanceToService(ctx con
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -14627,10 +13877,11 @@ func (ec *executionContext) _SignalAggregations_speed(ctx context.Context, field
 		field,
 		ec.fieldContext_SignalAggregations_speed,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				fc := graphql.GetFieldContext(ctx)
-				return ec.resolvers.SignalAggregations().Speed(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
-			}
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().Speed(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -14659,19 +13910,9 @@ func (ec *executionContext) _SignalAggregations_speed(ctx context.Context, field
 				return ec.directives.HasAggregation(ctx, obj, directive2)
 			}
 
-			tmp, err := directive3(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*float64); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *float64`, tmp)
+			next = directive3
+			return next
 		},
-		nil,
 		ec.marshalOFloat2ᚖfloat64,
 		true,
 		false,
@@ -14708,7 +13949,9 @@ func (ec *executionContext) _SignalCollection_lastSeen(ctx context.Context, fiel
 		ec.OperationContext,
 		field,
 		ec.fieldContext_SignalCollection_lastSeen,
-		func(ctx context.Context) (any, error) { return obj.LastSeen, nil },
+		func(ctx context.Context) (any, error) {
+			return obj.LastSeen, nil
+		},
 		nil,
 		ec.marshalOTime2ᚖtimeᚐTime,
 		true,
@@ -14736,9 +13979,10 @@ func (ec *executionContext) _SignalCollection_currentLocationApproximateLatitude
 		field,
 		ec.fieldContext_SignalCollection_currentLocationApproximateLatitude,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.CurrentLocationApproximateLatitude, nil
-			}
+			return obj.CurrentLocationApproximateLatitude, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_APPROXIMATE_LOCATION", "VEHICLE_ALL_TIME_LOCATION"})
@@ -14760,19 +14004,9 @@ func (ec *executionContext) _SignalCollection_currentLocationApproximateLatitude
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -14805,9 +14039,10 @@ func (ec *executionContext) _SignalCollection_currentLocationApproximateLongitud
 		field,
 		ec.fieldContext_SignalCollection_currentLocationApproximateLongitude,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.CurrentLocationApproximateLongitude, nil
-			}
+			return obj.CurrentLocationApproximateLongitude, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_APPROXIMATE_LOCATION", "VEHICLE_ALL_TIME_LOCATION"})
@@ -14829,19 +14064,9 @@ func (ec *executionContext) _SignalCollection_currentLocationApproximateLongitud
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -14874,9 +14099,10 @@ func (ec *executionContext) _SignalCollection_angularVelocityYaw(ctx context.Con
 		field,
 		ec.fieldContext_SignalCollection_angularVelocityYaw,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.AngularVelocityYaw, nil
-			}
+			return obj.AngularVelocityYaw, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -14898,19 +14124,9 @@ func (ec *executionContext) _SignalCollection_angularVelocityYaw(ctx context.Con
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -14943,9 +14159,10 @@ func (ec *executionContext) _SignalCollection_cabinDoorRow1DriverSideIsOpen(ctx 
 		field,
 		ec.fieldContext_SignalCollection_cabinDoorRow1DriverSideIsOpen,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.CabinDoorRow1DriverSideIsOpen, nil
-			}
+			return obj.CabinDoorRow1DriverSideIsOpen, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -14967,19 +14184,9 @@ func (ec *executionContext) _SignalCollection_cabinDoorRow1DriverSideIsOpen(ctx 
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -15012,9 +14219,10 @@ func (ec *executionContext) _SignalCollection_cabinDoorRow1DriverSideWindowIsOpe
 		field,
 		ec.fieldContext_SignalCollection_cabinDoorRow1DriverSideWindowIsOpen,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.CabinDoorRow1DriverSideWindowIsOpen, nil
-			}
+			return obj.CabinDoorRow1DriverSideWindowIsOpen, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -15036,19 +14244,9 @@ func (ec *executionContext) _SignalCollection_cabinDoorRow1DriverSideWindowIsOpe
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -15081,9 +14279,10 @@ func (ec *executionContext) _SignalCollection_cabinDoorRow1PassengerSideIsOpen(c
 		field,
 		ec.fieldContext_SignalCollection_cabinDoorRow1PassengerSideIsOpen,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.CabinDoorRow1PassengerSideIsOpen, nil
-			}
+			return obj.CabinDoorRow1PassengerSideIsOpen, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -15105,19 +14304,9 @@ func (ec *executionContext) _SignalCollection_cabinDoorRow1PassengerSideIsOpen(c
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -15150,9 +14339,10 @@ func (ec *executionContext) _SignalCollection_cabinDoorRow1PassengerSideWindowIs
 		field,
 		ec.fieldContext_SignalCollection_cabinDoorRow1PassengerSideWindowIsOpen,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.CabinDoorRow1PassengerSideWindowIsOpen, nil
-			}
+			return obj.CabinDoorRow1PassengerSideWindowIsOpen, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -15174,19 +14364,9 @@ func (ec *executionContext) _SignalCollection_cabinDoorRow1PassengerSideWindowIs
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -15219,9 +14399,10 @@ func (ec *executionContext) _SignalCollection_cabinDoorRow2DriverSideIsOpen(ctx 
 		field,
 		ec.fieldContext_SignalCollection_cabinDoorRow2DriverSideIsOpen,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.CabinDoorRow2DriverSideIsOpen, nil
-			}
+			return obj.CabinDoorRow2DriverSideIsOpen, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -15243,19 +14424,9 @@ func (ec *executionContext) _SignalCollection_cabinDoorRow2DriverSideIsOpen(ctx 
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -15288,9 +14459,10 @@ func (ec *executionContext) _SignalCollection_cabinDoorRow2DriverSideWindowIsOpe
 		field,
 		ec.fieldContext_SignalCollection_cabinDoorRow2DriverSideWindowIsOpen,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.CabinDoorRow2DriverSideWindowIsOpen, nil
-			}
+			return obj.CabinDoorRow2DriverSideWindowIsOpen, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -15312,19 +14484,9 @@ func (ec *executionContext) _SignalCollection_cabinDoorRow2DriverSideWindowIsOpe
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -15357,9 +14519,10 @@ func (ec *executionContext) _SignalCollection_cabinDoorRow2PassengerSideIsOpen(c
 		field,
 		ec.fieldContext_SignalCollection_cabinDoorRow2PassengerSideIsOpen,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.CabinDoorRow2PassengerSideIsOpen, nil
-			}
+			return obj.CabinDoorRow2PassengerSideIsOpen, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -15381,19 +14544,9 @@ func (ec *executionContext) _SignalCollection_cabinDoorRow2PassengerSideIsOpen(c
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -15426,9 +14579,10 @@ func (ec *executionContext) _SignalCollection_cabinDoorRow2PassengerSideWindowIs
 		field,
 		ec.fieldContext_SignalCollection_cabinDoorRow2PassengerSideWindowIsOpen,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.CabinDoorRow2PassengerSideWindowIsOpen, nil
-			}
+			return obj.CabinDoorRow2PassengerSideWindowIsOpen, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -15450,19 +14604,9 @@ func (ec *executionContext) _SignalCollection_cabinDoorRow2PassengerSideWindowIs
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -15495,9 +14639,10 @@ func (ec *executionContext) _SignalCollection_chassisAxleRow1WheelLeftSpeed(ctx 
 		field,
 		ec.fieldContext_SignalCollection_chassisAxleRow1WheelLeftSpeed,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.ChassisAxleRow1WheelLeftSpeed, nil
-			}
+			return obj.ChassisAxleRow1WheelLeftSpeed, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -15519,19 +14664,9 @@ func (ec *executionContext) _SignalCollection_chassisAxleRow1WheelLeftSpeed(ctx 
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -15564,9 +14699,10 @@ func (ec *executionContext) _SignalCollection_chassisAxleRow1WheelLeftTirePressu
 		field,
 		ec.fieldContext_SignalCollection_chassisAxleRow1WheelLeftTirePressure,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.ChassisAxleRow1WheelLeftTirePressure, nil
-			}
+			return obj.ChassisAxleRow1WheelLeftTirePressure, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -15588,19 +14724,9 @@ func (ec *executionContext) _SignalCollection_chassisAxleRow1WheelLeftTirePressu
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -15633,9 +14759,10 @@ func (ec *executionContext) _SignalCollection_chassisAxleRow1WheelRightSpeed(ctx
 		field,
 		ec.fieldContext_SignalCollection_chassisAxleRow1WheelRightSpeed,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.ChassisAxleRow1WheelRightSpeed, nil
-			}
+			return obj.ChassisAxleRow1WheelRightSpeed, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -15657,19 +14784,9 @@ func (ec *executionContext) _SignalCollection_chassisAxleRow1WheelRightSpeed(ctx
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -15702,9 +14819,10 @@ func (ec *executionContext) _SignalCollection_chassisAxleRow1WheelRightTirePress
 		field,
 		ec.fieldContext_SignalCollection_chassisAxleRow1WheelRightTirePressure,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.ChassisAxleRow1WheelRightTirePressure, nil
-			}
+			return obj.ChassisAxleRow1WheelRightTirePressure, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -15726,19 +14844,9 @@ func (ec *executionContext) _SignalCollection_chassisAxleRow1WheelRightTirePress
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -15771,9 +14879,10 @@ func (ec *executionContext) _SignalCollection_chassisAxleRow2WheelLeftTirePressu
 		field,
 		ec.fieldContext_SignalCollection_chassisAxleRow2WheelLeftTirePressure,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.ChassisAxleRow2WheelLeftTirePressure, nil
-			}
+			return obj.ChassisAxleRow2WheelLeftTirePressure, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -15795,19 +14904,9 @@ func (ec *executionContext) _SignalCollection_chassisAxleRow2WheelLeftTirePressu
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -15840,9 +14939,10 @@ func (ec *executionContext) _SignalCollection_chassisAxleRow2WheelRightTirePress
 		field,
 		ec.fieldContext_SignalCollection_chassisAxleRow2WheelRightTirePressure,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.ChassisAxleRow2WheelRightTirePressure, nil
-			}
+			return obj.ChassisAxleRow2WheelRightTirePressure, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -15864,19 +14964,9 @@ func (ec *executionContext) _SignalCollection_chassisAxleRow2WheelRightTirePress
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -15909,9 +14999,10 @@ func (ec *executionContext) _SignalCollection_currentLocationAltitude(ctx contex
 		field,
 		ec.fieldContext_SignalCollection_currentLocationAltitude,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.CurrentLocationAltitude, nil
-			}
+			return obj.CurrentLocationAltitude, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_ALL_TIME_LOCATION"})
@@ -15933,19 +15024,9 @@ func (ec *executionContext) _SignalCollection_currentLocationAltitude(ctx contex
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -15978,9 +15059,10 @@ func (ec *executionContext) _SignalCollection_currentLocationCoordinates(ctx con
 		field,
 		ec.fieldContext_SignalCollection_currentLocationCoordinates,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.CurrentLocationCoordinates, nil
-			}
+			return obj.CurrentLocationCoordinates, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_ALL_TIME_LOCATION"})
@@ -16002,19 +15084,9 @@ func (ec *executionContext) _SignalCollection_currentLocationCoordinates(ctx con
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalLocation); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalLocation`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalLocation2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalLocation,
 		true,
 		false,
@@ -16047,9 +15119,10 @@ func (ec *executionContext) _SignalCollection_currentLocationHeading(ctx context
 		field,
 		ec.fieldContext_SignalCollection_currentLocationHeading,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.CurrentLocationHeading, nil
-			}
+			return obj.CurrentLocationHeading, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_ALL_TIME_LOCATION"})
@@ -16071,19 +15144,9 @@ func (ec *executionContext) _SignalCollection_currentLocationHeading(ctx context
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -16116,9 +15179,10 @@ func (ec *executionContext) _SignalCollection_currentLocationIsRedacted(ctx cont
 		field,
 		ec.fieldContext_SignalCollection_currentLocationIsRedacted,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.CurrentLocationIsRedacted, nil
-			}
+			return obj.CurrentLocationIsRedacted, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_ALL_TIME_LOCATION"})
@@ -16140,19 +15204,9 @@ func (ec *executionContext) _SignalCollection_currentLocationIsRedacted(ctx cont
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -16185,9 +15239,10 @@ func (ec *executionContext) _SignalCollection_currentLocationLatitude(ctx contex
 		field,
 		ec.fieldContext_SignalCollection_currentLocationLatitude,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.CurrentLocationLatitude, nil
-			}
+			return obj.CurrentLocationLatitude, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_ALL_TIME_LOCATION"})
@@ -16209,19 +15264,9 @@ func (ec *executionContext) _SignalCollection_currentLocationLatitude(ctx contex
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -16254,9 +15299,10 @@ func (ec *executionContext) _SignalCollection_currentLocationLongitude(ctx conte
 		field,
 		ec.fieldContext_SignalCollection_currentLocationLongitude,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.CurrentLocationLongitude, nil
-			}
+			return obj.CurrentLocationLongitude, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_ALL_TIME_LOCATION"})
@@ -16278,19 +15324,9 @@ func (ec *executionContext) _SignalCollection_currentLocationLongitude(ctx conte
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -16323,9 +15359,10 @@ func (ec *executionContext) _SignalCollection_dimoAftermarketHDOP(ctx context.Co
 		field,
 		ec.fieldContext_SignalCollection_dimoAftermarketHDOP,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.DIMOAftermarketHDOP, nil
-			}
+			return obj.DIMOAftermarketHDOP, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -16347,19 +15384,9 @@ func (ec *executionContext) _SignalCollection_dimoAftermarketHDOP(ctx context.Co
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -16392,9 +15419,10 @@ func (ec *executionContext) _SignalCollection_dimoAftermarketNSAT(ctx context.Co
 		field,
 		ec.fieldContext_SignalCollection_dimoAftermarketNSAT,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.DIMOAftermarketNSAT, nil
-			}
+			return obj.DIMOAftermarketNSAT, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -16416,19 +15444,9 @@ func (ec *executionContext) _SignalCollection_dimoAftermarketNSAT(ctx context.Co
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -16461,9 +15479,10 @@ func (ec *executionContext) _SignalCollection_dimoAftermarketSSID(ctx context.Co
 		field,
 		ec.fieldContext_SignalCollection_dimoAftermarketSSID,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.DIMOAftermarketSSID, nil
-			}
+			return obj.DIMOAftermarketSSID, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -16485,19 +15504,9 @@ func (ec *executionContext) _SignalCollection_dimoAftermarketSSID(ctx context.Co
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalString); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalString`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalString2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalString,
 		true,
 		false,
@@ -16530,9 +15539,10 @@ func (ec *executionContext) _SignalCollection_dimoAftermarketWPAState(ctx contex
 		field,
 		ec.fieldContext_SignalCollection_dimoAftermarketWPAState,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.DIMOAftermarketWPAState, nil
-			}
+			return obj.DIMOAftermarketWPAState, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -16554,19 +15564,9 @@ func (ec *executionContext) _SignalCollection_dimoAftermarketWPAState(ctx contex
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalString); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalString`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalString2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalString,
 		true,
 		false,
@@ -16599,9 +15599,10 @@ func (ec *executionContext) _SignalCollection_exteriorAirTemperature(ctx context
 		field,
 		ec.fieldContext_SignalCollection_exteriorAirTemperature,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.ExteriorAirTemperature, nil
-			}
+			return obj.ExteriorAirTemperature, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -16623,19 +15624,9 @@ func (ec *executionContext) _SignalCollection_exteriorAirTemperature(ctx context
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -16668,9 +15659,10 @@ func (ec *executionContext) _SignalCollection_isIgnitionOn(ctx context.Context, 
 		field,
 		ec.fieldContext_SignalCollection_isIgnitionOn,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.IsIgnitionOn, nil
-			}
+			return obj.IsIgnitionOn, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -16692,19 +15684,9 @@ func (ec *executionContext) _SignalCollection_isIgnitionOn(ctx context.Context, 
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -16737,9 +15719,10 @@ func (ec *executionContext) _SignalCollection_lowVoltageBatteryCurrentVoltage(ct
 		field,
 		ec.fieldContext_SignalCollection_lowVoltageBatteryCurrentVoltage,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.LowVoltageBatteryCurrentVoltage, nil
-			}
+			return obj.LowVoltageBatteryCurrentVoltage, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -16761,19 +15744,9 @@ func (ec *executionContext) _SignalCollection_lowVoltageBatteryCurrentVoltage(ct
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -16806,9 +15779,10 @@ func (ec *executionContext) _SignalCollection_obdBarometricPressure(ctx context.
 		field,
 		ec.fieldContext_SignalCollection_obdBarometricPressure,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.OBDBarometricPressure, nil
-			}
+			return obj.OBDBarometricPressure, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -16830,19 +15804,9 @@ func (ec *executionContext) _SignalCollection_obdBarometricPressure(ctx context.
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -16875,9 +15839,10 @@ func (ec *executionContext) _SignalCollection_obdCommandedEGR(ctx context.Contex
 		field,
 		ec.fieldContext_SignalCollection_obdCommandedEGR,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.OBDCommandedEGR, nil
-			}
+			return obj.OBDCommandedEGR, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -16899,19 +15864,9 @@ func (ec *executionContext) _SignalCollection_obdCommandedEGR(ctx context.Contex
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -16944,9 +15899,10 @@ func (ec *executionContext) _SignalCollection_obdCommandedEVAP(ctx context.Conte
 		field,
 		ec.fieldContext_SignalCollection_obdCommandedEVAP,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.OBDCommandedEVAP, nil
-			}
+			return obj.OBDCommandedEVAP, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -16968,19 +15924,9 @@ func (ec *executionContext) _SignalCollection_obdCommandedEVAP(ctx context.Conte
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -17013,9 +15959,10 @@ func (ec *executionContext) _SignalCollection_obdDTCList(ctx context.Context, fi
 		field,
 		ec.fieldContext_SignalCollection_obdDTCList,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.OBDDTCList, nil
-			}
+			return obj.OBDDTCList, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -17037,19 +15984,9 @@ func (ec *executionContext) _SignalCollection_obdDTCList(ctx context.Context, fi
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalString); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalString`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalString2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalString,
 		true,
 		false,
@@ -17082,9 +16019,10 @@ func (ec *executionContext) _SignalCollection_obdDistanceSinceDTCClear(ctx conte
 		field,
 		ec.fieldContext_SignalCollection_obdDistanceSinceDTCClear,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.OBDDistanceSinceDTCClear, nil
-			}
+			return obj.OBDDistanceSinceDTCClear, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -17106,19 +16044,9 @@ func (ec *executionContext) _SignalCollection_obdDistanceSinceDTCClear(ctx conte
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -17151,9 +16079,10 @@ func (ec *executionContext) _SignalCollection_obdDistanceWithMIL(ctx context.Con
 		field,
 		ec.fieldContext_SignalCollection_obdDistanceWithMIL,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.OBDDistanceWithMIL, nil
-			}
+			return obj.OBDDistanceWithMIL, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -17175,19 +16104,9 @@ func (ec *executionContext) _SignalCollection_obdDistanceWithMIL(ctx context.Con
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -17220,9 +16139,10 @@ func (ec *executionContext) _SignalCollection_obdEngineLoad(ctx context.Context,
 		field,
 		ec.fieldContext_SignalCollection_obdEngineLoad,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.OBDEngineLoad, nil
-			}
+			return obj.OBDEngineLoad, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -17244,19 +16164,9 @@ func (ec *executionContext) _SignalCollection_obdEngineLoad(ctx context.Context,
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -17289,9 +16199,10 @@ func (ec *executionContext) _SignalCollection_obdFuelPressure(ctx context.Contex
 		field,
 		ec.fieldContext_SignalCollection_obdFuelPressure,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.OBDFuelPressure, nil
-			}
+			return obj.OBDFuelPressure, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -17313,19 +16224,9 @@ func (ec *executionContext) _SignalCollection_obdFuelPressure(ctx context.Contex
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -17358,9 +16259,10 @@ func (ec *executionContext) _SignalCollection_obdIntakeTemp(ctx context.Context,
 		field,
 		ec.fieldContext_SignalCollection_obdIntakeTemp,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.OBDIntakeTemp, nil
-			}
+			return obj.OBDIntakeTemp, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -17382,19 +16284,9 @@ func (ec *executionContext) _SignalCollection_obdIntakeTemp(ctx context.Context,
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -17427,9 +16319,10 @@ func (ec *executionContext) _SignalCollection_obdLongTermFuelTrim1(ctx context.C
 		field,
 		ec.fieldContext_SignalCollection_obdLongTermFuelTrim1,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.OBDLongTermFuelTrim1, nil
-			}
+			return obj.OBDLongTermFuelTrim1, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -17451,19 +16344,9 @@ func (ec *executionContext) _SignalCollection_obdLongTermFuelTrim1(ctx context.C
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -17496,9 +16379,10 @@ func (ec *executionContext) _SignalCollection_obdMAP(ctx context.Context, field 
 		field,
 		ec.fieldContext_SignalCollection_obdMAP,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.OBDMAP, nil
-			}
+			return obj.OBDMAP, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -17520,19 +16404,9 @@ func (ec *executionContext) _SignalCollection_obdMAP(ctx context.Context, field 
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -17565,9 +16439,10 @@ func (ec *executionContext) _SignalCollection_obdO2WRSensor1Voltage(ctx context.
 		field,
 		ec.fieldContext_SignalCollection_obdO2WRSensor1Voltage,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.OBDO2WRSensor1Voltage, nil
-			}
+			return obj.OBDO2WRSensor1Voltage, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -17589,19 +16464,9 @@ func (ec *executionContext) _SignalCollection_obdO2WRSensor1Voltage(ctx context.
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -17634,9 +16499,10 @@ func (ec *executionContext) _SignalCollection_obdO2WRSensor2Voltage(ctx context.
 		field,
 		ec.fieldContext_SignalCollection_obdO2WRSensor2Voltage,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.OBDO2WRSensor2Voltage, nil
-			}
+			return obj.OBDO2WRSensor2Voltage, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -17658,19 +16524,9 @@ func (ec *executionContext) _SignalCollection_obdO2WRSensor2Voltage(ctx context.
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -17703,9 +16559,10 @@ func (ec *executionContext) _SignalCollection_obdRunTime(ctx context.Context, fi
 		field,
 		ec.fieldContext_SignalCollection_obdRunTime,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.OBDRunTime, nil
-			}
+			return obj.OBDRunTime, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -17727,19 +16584,9 @@ func (ec *executionContext) _SignalCollection_obdRunTime(ctx context.Context, fi
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -17772,9 +16619,10 @@ func (ec *executionContext) _SignalCollection_obdShortTermFuelTrim1(ctx context.
 		field,
 		ec.fieldContext_SignalCollection_obdShortTermFuelTrim1,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.OBDShortTermFuelTrim1, nil
-			}
+			return obj.OBDShortTermFuelTrim1, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -17796,19 +16644,9 @@ func (ec *executionContext) _SignalCollection_obdShortTermFuelTrim1(ctx context.
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -17841,9 +16679,10 @@ func (ec *executionContext) _SignalCollection_obdStatusDTCCount(ctx context.Cont
 		field,
 		ec.fieldContext_SignalCollection_obdStatusDTCCount,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.OBDStatusDTCCount, nil
-			}
+			return obj.OBDStatusDTCCount, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -17865,19 +16704,9 @@ func (ec *executionContext) _SignalCollection_obdStatusDTCCount(ctx context.Cont
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -17910,9 +16739,10 @@ func (ec *executionContext) _SignalCollection_obdWarmupsSinceDTCClear(ctx contex
 		field,
 		ec.fieldContext_SignalCollection_obdWarmupsSinceDTCClear,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.OBDWarmupsSinceDTCClear, nil
-			}
+			return obj.OBDWarmupsSinceDTCClear, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -17934,19 +16764,9 @@ func (ec *executionContext) _SignalCollection_obdWarmupsSinceDTCClear(ctx contex
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -17979,9 +16799,10 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineDieselEx
 		field,
 		ec.fieldContext_SignalCollection_powertrainCombustionEngineDieselExhaustFluidCapacity,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.PowertrainCombustionEngineDieselExhaustFluidCapacity, nil
-			}
+			return obj.PowertrainCombustionEngineDieselExhaustFluidCapacity, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -18003,19 +16824,9 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineDieselEx
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -18048,9 +16859,10 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineDieselEx
 		field,
 		ec.fieldContext_SignalCollection_powertrainCombustionEngineDieselExhaustFluidLevel,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.PowertrainCombustionEngineDieselExhaustFluidLevel, nil
-			}
+			return obj.PowertrainCombustionEngineDieselExhaustFluidLevel, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -18072,19 +16884,9 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineDieselEx
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -18117,9 +16919,10 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineECT(ctx 
 		field,
 		ec.fieldContext_SignalCollection_powertrainCombustionEngineECT,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.PowertrainCombustionEngineECT, nil
-			}
+			return obj.PowertrainCombustionEngineECT, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -18141,19 +16944,9 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineECT(ctx 
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -18186,9 +16979,10 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineEOP(ctx 
 		field,
 		ec.fieldContext_SignalCollection_powertrainCombustionEngineEOP,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.PowertrainCombustionEngineEOP, nil
-			}
+			return obj.PowertrainCombustionEngineEOP, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -18210,19 +17004,9 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineEOP(ctx 
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -18255,9 +17039,10 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineEOT(ctx 
 		field,
 		ec.fieldContext_SignalCollection_powertrainCombustionEngineEOT,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.PowertrainCombustionEngineEOT, nil
-			}
+			return obj.PowertrainCombustionEngineEOT, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -18279,19 +17064,9 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineEOT(ctx 
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -18324,9 +17099,10 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineEngineOi
 		field,
 		ec.fieldContext_SignalCollection_powertrainCombustionEngineEngineOilLevel,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.PowertrainCombustionEngineEngineOilLevel, nil
-			}
+			return obj.PowertrainCombustionEngineEngineOilLevel, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -18348,19 +17124,9 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineEngineOi
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalString); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalString`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalString2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalString,
 		true,
 		false,
@@ -18393,9 +17159,10 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineEngineOi
 		field,
 		ec.fieldContext_SignalCollection_powertrainCombustionEngineEngineOilRelativeLevel,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.PowertrainCombustionEngineEngineOilRelativeLevel, nil
-			}
+			return obj.PowertrainCombustionEngineEngineOilRelativeLevel, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -18417,19 +17184,9 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineEngineOi
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -18462,9 +17219,10 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineMAF(ctx 
 		field,
 		ec.fieldContext_SignalCollection_powertrainCombustionEngineMAF,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.PowertrainCombustionEngineMAF, nil
-			}
+			return obj.PowertrainCombustionEngineMAF, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -18486,19 +17244,9 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineMAF(ctx 
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -18531,9 +17279,10 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineSpeed(ct
 		field,
 		ec.fieldContext_SignalCollection_powertrainCombustionEngineSpeed,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.PowertrainCombustionEngineSpeed, nil
-			}
+			return obj.PowertrainCombustionEngineSpeed, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -18555,19 +17304,9 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineSpeed(ct
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -18600,9 +17339,10 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineTPS(ctx 
 		field,
 		ec.fieldContext_SignalCollection_powertrainCombustionEngineTPS,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.PowertrainCombustionEngineTPS, nil
-			}
+			return obj.PowertrainCombustionEngineTPS, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -18624,19 +17364,9 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineTPS(ctx 
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -18669,9 +17399,10 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineTorque(c
 		field,
 		ec.fieldContext_SignalCollection_powertrainCombustionEngineTorque,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.PowertrainCombustionEngineTorque, nil
-			}
+			return obj.PowertrainCombustionEngineTorque, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -18693,19 +17424,9 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineTorque(c
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -18738,9 +17459,10 @@ func (ec *executionContext) _SignalCollection_powertrainFuelSystemAbsoluteLevel(
 		field,
 		ec.fieldContext_SignalCollection_powertrainFuelSystemAbsoluteLevel,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.PowertrainFuelSystemAbsoluteLevel, nil
-			}
+			return obj.PowertrainFuelSystemAbsoluteLevel, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -18762,19 +17484,9 @@ func (ec *executionContext) _SignalCollection_powertrainFuelSystemAbsoluteLevel(
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -18807,9 +17519,10 @@ func (ec *executionContext) _SignalCollection_powertrainFuelSystemRelativeLevel(
 		field,
 		ec.fieldContext_SignalCollection_powertrainFuelSystemRelativeLevel,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.PowertrainFuelSystemRelativeLevel, nil
-			}
+			return obj.PowertrainFuelSystemRelativeLevel, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -18831,19 +17544,9 @@ func (ec *executionContext) _SignalCollection_powertrainFuelSystemRelativeLevel(
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -18876,9 +17579,10 @@ func (ec *executionContext) _SignalCollection_powertrainFuelSystemSupportedFuelT
 		field,
 		ec.fieldContext_SignalCollection_powertrainFuelSystemSupportedFuelTypes,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.PowertrainFuelSystemSupportedFuelTypes, nil
-			}
+			return obj.PowertrainFuelSystemSupportedFuelTypes, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -18900,19 +17604,9 @@ func (ec *executionContext) _SignalCollection_powertrainFuelSystemSupportedFuelT
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalString); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalString`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalString2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalString,
 		true,
 		false,
@@ -18945,9 +17639,10 @@ func (ec *executionContext) _SignalCollection_powertrainRange(ctx context.Contex
 		field,
 		ec.fieldContext_SignalCollection_powertrainRange,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.PowertrainRange, nil
-			}
+			return obj.PowertrainRange, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -18969,19 +17664,9 @@ func (ec *executionContext) _SignalCollection_powertrainRange(ctx context.Contex
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -19014,9 +17699,10 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryChargingA
 		field,
 		ec.fieldContext_SignalCollection_powertrainTractionBatteryChargingAddedEnergy,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.PowertrainTractionBatteryChargingAddedEnergy, nil
-			}
+			return obj.PowertrainTractionBatteryChargingAddedEnergy, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -19038,19 +17724,9 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryChargingA
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -19083,9 +17759,10 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryChargingC
 		field,
 		ec.fieldContext_SignalCollection_powertrainTractionBatteryChargingChargeCurrentAC,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.PowertrainTractionBatteryChargingChargeCurrentAC, nil
-			}
+			return obj.PowertrainTractionBatteryChargingChargeCurrentAC, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -19107,19 +17784,9 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryChargingC
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -19152,9 +17819,10 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryChargingC
 		field,
 		ec.fieldContext_SignalCollection_powertrainTractionBatteryChargingChargeLimit,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.PowertrainTractionBatteryChargingChargeLimit, nil
-			}
+			return obj.PowertrainTractionBatteryChargingChargeLimit, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -19176,19 +17844,9 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryChargingC
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -19221,9 +17879,10 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryChargingC
 		field,
 		ec.fieldContext_SignalCollection_powertrainTractionBatteryChargingChargeVoltageUnknownType,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.PowertrainTractionBatteryChargingChargeVoltageUnknownType, nil
-			}
+			return obj.PowertrainTractionBatteryChargingChargeVoltageUnknownType, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -19245,19 +17904,9 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryChargingC
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -19290,9 +17939,10 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryChargingI
 		field,
 		ec.fieldContext_SignalCollection_powertrainTractionBatteryChargingIsCharging,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.PowertrainTractionBatteryChargingIsCharging, nil
-			}
+			return obj.PowertrainTractionBatteryChargingIsCharging, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -19314,19 +17964,9 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryChargingI
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -19359,9 +17999,10 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryChargingI
 		field,
 		ec.fieldContext_SignalCollection_powertrainTractionBatteryChargingIsChargingCableConnected,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.PowertrainTractionBatteryChargingIsChargingCableConnected, nil
-			}
+			return obj.PowertrainTractionBatteryChargingIsChargingCableConnected, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -19383,19 +18024,9 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryChargingI
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -19428,9 +18059,10 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryChargingP
 		field,
 		ec.fieldContext_SignalCollection_powertrainTractionBatteryChargingPower,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.PowertrainTractionBatteryChargingPower, nil
-			}
+			return obj.PowertrainTractionBatteryChargingPower, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -19452,19 +18084,9 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryChargingP
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -19497,9 +18119,10 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryCurrentPo
 		field,
 		ec.fieldContext_SignalCollection_powertrainTractionBatteryCurrentPower,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.PowertrainTractionBatteryCurrentPower, nil
-			}
+			return obj.PowertrainTractionBatteryCurrentPower, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -19521,19 +18144,9 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryCurrentPo
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -19566,9 +18179,10 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryCurrentVo
 		field,
 		ec.fieldContext_SignalCollection_powertrainTractionBatteryCurrentVoltage,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.PowertrainTractionBatteryCurrentVoltage, nil
-			}
+			return obj.PowertrainTractionBatteryCurrentVoltage, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -19590,19 +18204,9 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryCurrentVo
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -19635,9 +18239,10 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryGrossCapa
 		field,
 		ec.fieldContext_SignalCollection_powertrainTractionBatteryGrossCapacity,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.PowertrainTractionBatteryGrossCapacity, nil
-			}
+			return obj.PowertrainTractionBatteryGrossCapacity, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -19659,19 +18264,9 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryGrossCapa
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -19704,9 +18299,10 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryRange(ctx
 		field,
 		ec.fieldContext_SignalCollection_powertrainTractionBatteryRange,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.PowertrainTractionBatteryRange, nil
-			}
+			return obj.PowertrainTractionBatteryRange, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -19728,19 +18324,9 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryRange(ctx
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -19773,9 +18359,10 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryStateOfCh
 		field,
 		ec.fieldContext_SignalCollection_powertrainTractionBatteryStateOfChargeCurrent,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.PowertrainTractionBatteryStateOfChargeCurrent, nil
-			}
+			return obj.PowertrainTractionBatteryStateOfChargeCurrent, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -19797,19 +18384,9 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryStateOfCh
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -19842,9 +18419,10 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryStateOfCh
 		field,
 		ec.fieldContext_SignalCollection_powertrainTractionBatteryStateOfChargeCurrentEnergy,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.PowertrainTractionBatteryStateOfChargeCurrentEnergy, nil
-			}
+			return obj.PowertrainTractionBatteryStateOfChargeCurrentEnergy, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -19866,19 +18444,9 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryStateOfCh
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -19911,9 +18479,10 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryStateOfHe
 		field,
 		ec.fieldContext_SignalCollection_powertrainTractionBatteryStateOfHealth,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.PowertrainTractionBatteryStateOfHealth, nil
-			}
+			return obj.PowertrainTractionBatteryStateOfHealth, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -19935,19 +18504,9 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryStateOfHe
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -19980,9 +18539,10 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryTemperatu
 		field,
 		ec.fieldContext_SignalCollection_powertrainTractionBatteryTemperatureAverage,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.PowertrainTractionBatteryTemperatureAverage, nil
-			}
+			return obj.PowertrainTractionBatteryTemperatureAverage, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -20004,19 +18564,9 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryTemperatu
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -20049,9 +18599,10 @@ func (ec *executionContext) _SignalCollection_powertrainTransmissionCurrentGear(
 		field,
 		ec.fieldContext_SignalCollection_powertrainTransmissionCurrentGear,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.PowertrainTransmissionCurrentGear, nil
-			}
+			return obj.PowertrainTransmissionCurrentGear, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -20073,19 +18624,9 @@ func (ec *executionContext) _SignalCollection_powertrainTransmissionCurrentGear(
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -20118,9 +18659,10 @@ func (ec *executionContext) _SignalCollection_powertrainTransmissionTemperature(
 		field,
 		ec.fieldContext_SignalCollection_powertrainTransmissionTemperature,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.PowertrainTransmissionTemperature, nil
-			}
+			return obj.PowertrainTransmissionTemperature, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -20142,19 +18684,9 @@ func (ec *executionContext) _SignalCollection_powertrainTransmissionTemperature(
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -20187,9 +18719,10 @@ func (ec *executionContext) _SignalCollection_powertrainTransmissionTravelledDis
 		field,
 		ec.fieldContext_SignalCollection_powertrainTransmissionTravelledDistance,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.PowertrainTransmissionTravelledDistance, nil
-			}
+			return obj.PowertrainTransmissionTravelledDistance, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -20211,19 +18744,9 @@ func (ec *executionContext) _SignalCollection_powertrainTransmissionTravelledDis
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -20256,9 +18779,10 @@ func (ec *executionContext) _SignalCollection_powertrainType(ctx context.Context
 		field,
 		ec.fieldContext_SignalCollection_powertrainType,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.PowertrainType, nil
-			}
+			return obj.PowertrainType, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -20280,19 +18804,9 @@ func (ec *executionContext) _SignalCollection_powertrainType(ctx context.Context
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalString); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalString`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalString2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalString,
 		true,
 		false,
@@ -20325,9 +18839,10 @@ func (ec *executionContext) _SignalCollection_serviceDistanceToService(ctx conte
 		field,
 		ec.fieldContext_SignalCollection_serviceDistanceToService,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.ServiceDistanceToService, nil
-			}
+			return obj.ServiceDistanceToService, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -20349,19 +18864,9 @@ func (ec *executionContext) _SignalCollection_serviceDistanceToService(ctx conte
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -20394,9 +18899,10 @@ func (ec *executionContext) _SignalCollection_speed(ctx context.Context, field g
 		field,
 		ec.fieldContext_SignalCollection_speed,
 		func(ctx context.Context) (any, error) {
-			directive0 := func(ctx context.Context) (any, error) {
-				return obj.Speed, nil
-			}
+			return obj.Speed, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
@@ -20418,19 +18924,9 @@ func (ec *executionContext) _SignalCollection_speed(ctx context.Context, field g
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 
-			tmp, err := directive2(ctx)
-			if err != nil {
-				return nil, graphql.ErrorOnPath(ctx, err)
-			}
-			if tmp == nil {
-				return nil, nil
-			}
-			if data, ok := tmp.(*model.SignalFloat); ok {
-				return data, nil
-			}
-			return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/DIMO-Network/telemetry-api/internal/graph/model.SignalFloat`, tmp)
+			next = directive2
+			return next
 		},
-		nil,
 		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
 		true,
 		false,
@@ -20462,7 +18958,9 @@ func (ec *executionContext) _SignalFloat_timestamp(ctx context.Context, field gr
 		ec.OperationContext,
 		field,
 		ec.fieldContext_SignalFloat_timestamp,
-		func(ctx context.Context) (any, error) { return obj.Timestamp, nil },
+		func(ctx context.Context) (any, error) {
+			return obj.Timestamp, nil
+		},
 		nil,
 		ec.marshalNTime2timeᚐTime,
 		true,
@@ -20489,7 +18987,9 @@ func (ec *executionContext) _SignalFloat_value(ctx context.Context, field graphq
 		ec.OperationContext,
 		field,
 		ec.fieldContext_SignalFloat_value,
-		func(ctx context.Context) (any, error) { return obj.Value, nil },
+		func(ctx context.Context) (any, error) {
+			return obj.Value, nil
+		},
 		nil,
 		ec.marshalNFloat2float64,
 		true,
@@ -20516,7 +19016,9 @@ func (ec *executionContext) _SignalLocation_timestamp(ctx context.Context, field
 		ec.OperationContext,
 		field,
 		ec.fieldContext_SignalLocation_timestamp,
-		func(ctx context.Context) (any, error) { return obj.Timestamp, nil },
+		func(ctx context.Context) (any, error) {
+			return obj.Timestamp, nil
+		},
 		nil,
 		ec.marshalNTime2timeᚐTime,
 		true,
@@ -20543,7 +19045,9 @@ func (ec *executionContext) _SignalLocation_value(ctx context.Context, field gra
 		ec.OperationContext,
 		field,
 		ec.fieldContext_SignalLocation_value,
-		func(ctx context.Context) (any, error) { return obj.Value, nil },
+		func(ctx context.Context) (any, error) {
+			return obj.Value, nil
+		},
 		nil,
 		ec.marshalNLocation2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐLocation,
 		true,
@@ -20578,7 +19082,9 @@ func (ec *executionContext) _SignalString_timestamp(ctx context.Context, field g
 		ec.OperationContext,
 		field,
 		ec.fieldContext_SignalString_timestamp,
-		func(ctx context.Context) (any, error) { return obj.Timestamp, nil },
+		func(ctx context.Context) (any, error) {
+			return obj.Timestamp, nil
+		},
 		nil,
 		ec.marshalNTime2timeᚐTime,
 		true,
@@ -20605,7 +19111,9 @@ func (ec *executionContext) _SignalString_value(ctx context.Context, field graph
 		ec.OperationContext,
 		field,
 		ec.fieldContext_SignalString_value,
-		func(ctx context.Context) (any, error) { return obj.Value, nil },
+		func(ctx context.Context) (any, error) {
+			return obj.Value, nil
+		},
 		nil,
 		ec.marshalNString2string,
 		true,
@@ -20632,7 +19140,9 @@ func (ec *executionContext) _VINVC_vehicleTokenId(ctx context.Context, field gra
 		ec.OperationContext,
 		field,
 		ec.fieldContext_VINVC_vehicleTokenId,
-		func(ctx context.Context) (any, error) { return obj.VehicleTokenID, nil },
+		func(ctx context.Context) (any, error) {
+			return obj.VehicleTokenID, nil
+		},
 		nil,
 		ec.marshalOInt2ᚖint,
 		true,
@@ -20659,7 +19169,9 @@ func (ec *executionContext) _VINVC_vin(ctx context.Context, field graphql.Collec
 		ec.OperationContext,
 		field,
 		ec.fieldContext_VINVC_vin,
-		func(ctx context.Context) (any, error) { return obj.Vin, nil },
+		func(ctx context.Context) (any, error) {
+			return obj.Vin, nil
+		},
 		nil,
 		ec.marshalOString2ᚖstring,
 		true,
@@ -20686,7 +19198,9 @@ func (ec *executionContext) _VINVC_recordedBy(ctx context.Context, field graphql
 		ec.OperationContext,
 		field,
 		ec.fieldContext_VINVC_recordedBy,
-		func(ctx context.Context) (any, error) { return obj.RecordedBy, nil },
+		func(ctx context.Context) (any, error) {
+			return obj.RecordedBy, nil
+		},
 		nil,
 		ec.marshalOString2ᚖstring,
 		true,
@@ -20713,7 +19227,9 @@ func (ec *executionContext) _VINVC_recordedAt(ctx context.Context, field graphql
 		ec.OperationContext,
 		field,
 		ec.fieldContext_VINVC_recordedAt,
-		func(ctx context.Context) (any, error) { return obj.RecordedAt, nil },
+		func(ctx context.Context) (any, error) {
+			return obj.RecordedAt, nil
+		},
 		nil,
 		ec.marshalOTime2ᚖtimeᚐTime,
 		true,
@@ -20740,7 +19256,9 @@ func (ec *executionContext) _VINVC_countryCode(ctx context.Context, field graphq
 		ec.OperationContext,
 		field,
 		ec.fieldContext_VINVC_countryCode,
-		func(ctx context.Context) (any, error) { return obj.CountryCode, nil },
+		func(ctx context.Context) (any, error) {
+			return obj.CountryCode, nil
+		},
 		nil,
 		ec.marshalOString2ᚖstring,
 		true,
@@ -20767,7 +19285,9 @@ func (ec *executionContext) _VINVC_vehicleContractAddress(ctx context.Context, f
 		ec.OperationContext,
 		field,
 		ec.fieldContext_VINVC_vehicleContractAddress,
-		func(ctx context.Context) (any, error) { return obj.VehicleContractAddress, nil },
+		func(ctx context.Context) (any, error) {
+			return obj.VehicleContractAddress, nil
+		},
 		nil,
 		ec.marshalOString2ᚖstring,
 		true,
@@ -20794,7 +19314,9 @@ func (ec *executionContext) _VINVC_validFrom(ctx context.Context, field graphql.
 		ec.OperationContext,
 		field,
 		ec.fieldContext_VINVC_validFrom,
-		func(ctx context.Context) (any, error) { return obj.ValidFrom, nil },
+		func(ctx context.Context) (any, error) {
+			return obj.ValidFrom, nil
+		},
 		nil,
 		ec.marshalOTime2ᚖtimeᚐTime,
 		true,
@@ -20821,7 +19343,9 @@ func (ec *executionContext) _VINVC_validTo(ctx context.Context, field graphql.Co
 		ec.OperationContext,
 		field,
 		ec.fieldContext_VINVC_validTo,
-		func(ctx context.Context) (any, error) { return obj.ValidTo, nil },
+		func(ctx context.Context) (any, error) {
+			return obj.ValidTo, nil
+		},
 		nil,
 		ec.marshalOTime2ᚖtimeᚐTime,
 		true,
@@ -20848,7 +19372,9 @@ func (ec *executionContext) _VINVC_rawVC(ctx context.Context, field graphql.Coll
 		ec.OperationContext,
 		field,
 		ec.fieldContext_VINVC_rawVC,
-		func(ctx context.Context) (any, error) { return obj.RawVc, nil },
+		func(ctx context.Context) (any, error) {
+			return obj.RawVc, nil
+		},
 		nil,
 		ec.marshalNString2string,
 		true,
@@ -20875,7 +19401,9 @@ func (ec *executionContext) ___Directive_name(ctx context.Context, field graphql
 		ec.OperationContext,
 		field,
 		ec.fieldContext___Directive_name,
-		func(ctx context.Context) (any, error) { return obj.Name, nil },
+		func(ctx context.Context) (any, error) {
+			return obj.Name, nil
+		},
 		nil,
 		ec.marshalNString2string,
 		true,
@@ -20931,7 +19459,9 @@ func (ec *executionContext) ___Directive_isRepeatable(ctx context.Context, field
 		ec.OperationContext,
 		field,
 		ec.fieldContext___Directive_isRepeatable,
-		func(ctx context.Context) (any, error) { return obj.IsRepeatable, nil },
+		func(ctx context.Context) (any, error) {
+			return obj.IsRepeatable, nil
+		},
 		nil,
 		ec.marshalNBoolean2bool,
 		true,
@@ -20958,7 +19488,9 @@ func (ec *executionContext) ___Directive_locations(ctx context.Context, field gr
 		ec.OperationContext,
 		field,
 		ec.fieldContext___Directive_locations,
-		func(ctx context.Context) (any, error) { return obj.Locations, nil },
+		func(ctx context.Context) (any, error) {
+			return obj.Locations, nil
+		},
 		nil,
 		ec.marshalN__DirectiveLocation2ᚕstringᚄ,
 		true,
@@ -20985,7 +19517,9 @@ func (ec *executionContext) ___Directive_args(ctx context.Context, field graphql
 		ec.OperationContext,
 		field,
 		ec.fieldContext___Directive_args,
-		func(ctx context.Context) (any, error) { return obj.Args, nil },
+		func(ctx context.Context) (any, error) {
+			return obj.Args, nil
+		},
 		nil,
 		ec.marshalN__InputValue2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐInputValueᚄ,
 		true,
@@ -21037,7 +19571,9 @@ func (ec *executionContext) ___EnumValue_name(ctx context.Context, field graphql
 		ec.OperationContext,
 		field,
 		ec.fieldContext___EnumValue_name,
-		func(ctx context.Context) (any, error) { return obj.Name, nil },
+		func(ctx context.Context) (any, error) {
+			return obj.Name, nil
+		},
 		nil,
 		ec.marshalNString2string,
 		true,
@@ -21151,7 +19687,9 @@ func (ec *executionContext) ___Field_name(ctx context.Context, field graphql.Col
 		ec.OperationContext,
 		field,
 		ec.fieldContext___Field_name,
-		func(ctx context.Context) (any, error) { return obj.Name, nil },
+		func(ctx context.Context) (any, error) {
+			return obj.Name, nil
+		},
 		nil,
 		ec.marshalNString2string,
 		true,
@@ -21207,7 +19745,9 @@ func (ec *executionContext) ___Field_args(ctx context.Context, field graphql.Col
 		ec.OperationContext,
 		field,
 		ec.fieldContext___Field_args,
-		func(ctx context.Context) (any, error) { return obj.Args, nil },
+		func(ctx context.Context) (any, error) {
+			return obj.Args, nil
+		},
 		nil,
 		ec.marshalN__InputValue2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐInputValueᚄ,
 		true,
@@ -21259,7 +19799,9 @@ func (ec *executionContext) ___Field_type(ctx context.Context, field graphql.Col
 		ec.OperationContext,
 		field,
 		ec.fieldContext___Field_type,
-		func(ctx context.Context) (any, error) { return obj.Type, nil },
+		func(ctx context.Context) (any, error) {
+			return obj.Type, nil
+		},
 		nil,
 		ec.marshalN__Type2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType,
 		true,
@@ -21368,7 +19910,9 @@ func (ec *executionContext) ___InputValue_name(ctx context.Context, field graphq
 		ec.OperationContext,
 		field,
 		ec.fieldContext___InputValue_name,
-		func(ctx context.Context) (any, error) { return obj.Name, nil },
+		func(ctx context.Context) (any, error) {
+			return obj.Name, nil
+		},
 		nil,
 		ec.marshalNString2string,
 		true,
@@ -21424,7 +19968,9 @@ func (ec *executionContext) ___InputValue_type(ctx context.Context, field graphq
 		ec.OperationContext,
 		field,
 		ec.fieldContext___InputValue_type,
-		func(ctx context.Context) (any, error) { return obj.Type, nil },
+		func(ctx context.Context) (any, error) {
+			return obj.Type, nil
+		},
 		nil,
 		ec.marshalN__Type2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType,
 		true,
@@ -21475,7 +20021,9 @@ func (ec *executionContext) ___InputValue_defaultValue(ctx context.Context, fiel
 		ec.OperationContext,
 		field,
 		ec.fieldContext___InputValue_defaultValue,
-		func(ctx context.Context) (any, error) { return obj.DefaultValue, nil },
+		func(ctx context.Context) (any, error) {
+			return obj.DefaultValue, nil
+		},
 		nil,
 		ec.marshalOString2ᚖstring,
 		true,
@@ -22295,7 +20843,9 @@ func (ec *executionContext) _signalDataSummary_name(ctx context.Context, field g
 		ec.OperationContext,
 		field,
 		ec.fieldContext_signalDataSummary_name,
-		func(ctx context.Context) (any, error) { return obj.Name, nil },
+		func(ctx context.Context) (any, error) {
+			return obj.Name, nil
+		},
 		nil,
 		ec.marshalNString2string,
 		true,
@@ -22322,7 +20872,9 @@ func (ec *executionContext) _signalDataSummary_numberOfSignals(ctx context.Conte
 		ec.OperationContext,
 		field,
 		ec.fieldContext_signalDataSummary_numberOfSignals,
-		func(ctx context.Context) (any, error) { return obj.NumberOfSignals, nil },
+		func(ctx context.Context) (any, error) {
+			return obj.NumberOfSignals, nil
+		},
 		nil,
 		ec.marshalNUint642uint64,
 		true,
@@ -22349,7 +20901,9 @@ func (ec *executionContext) _signalDataSummary_firstSeen(ctx context.Context, fi
 		ec.OperationContext,
 		field,
 		ec.fieldContext_signalDataSummary_firstSeen,
-		func(ctx context.Context) (any, error) { return obj.FirstSeen, nil },
+		func(ctx context.Context) (any, error) {
+			return obj.FirstSeen, nil
+		},
 		nil,
 		ec.marshalNTime2timeᚐTime,
 		true,
@@ -22376,7 +20930,9 @@ func (ec *executionContext) _signalDataSummary_lastSeen(ctx context.Context, fie
 		ec.OperationContext,
 		field,
 		ec.fieldContext_signalDataSummary_lastSeen,
-		func(ctx context.Context) (any, error) { return obj.LastSeen, nil },
+		func(ctx context.Context) (any, error) {
+			return obj.LastSeen, nil
+		},
 		nil,
 		ec.marshalNTime2timeᚐTime,
 		true,
