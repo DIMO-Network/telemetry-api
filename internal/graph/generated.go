@@ -141,6 +141,7 @@ type ComplexityRoot struct {
 		DimoAftermarketHdop                                       func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
 		DimoAftermarketNsat                                       func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
 		DimoAftermarketSsid                                       func(childComplexity int, agg model.StringAggregation) int
+		DimoAftermarketUnplugDetection                            func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
 		DimoAftermarketWPAState                                   func(childComplexity int, agg model.StringAggregation) int
 		ExteriorAirTemperature                                    func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
 		IsIgnitionOn                                              func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
@@ -228,6 +229,7 @@ type ComplexityRoot struct {
 		DIMOAftermarketHDOP                                       func(childComplexity int) int
 		DIMOAftermarketNSAT                                       func(childComplexity int) int
 		DIMOAftermarketSSID                                       func(childComplexity int) int
+		DIMOAftermarketUnplugDetection                            func(childComplexity int) int
 		DIMOAftermarketWPAState                                   func(childComplexity int) int
 		ExteriorAirTemperature                                    func(childComplexity int) int
 		IsIgnitionOn                                              func(childComplexity int) int
@@ -361,6 +363,7 @@ type SignalAggregationsResolver interface {
 	DimoAftermarketHdop(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
 	DimoAftermarketNsat(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
 	DimoAftermarketSsid(ctx context.Context, obj *model.SignalAggregations, agg model.StringAggregation) (*string, error)
+	DimoAftermarketUnplugDetection(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
 	DimoAftermarketWPAState(ctx context.Context, obj *model.SignalAggregations, agg model.StringAggregation) (*string, error)
 	ExteriorAirTemperature(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
 	IsIgnitionOn(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
@@ -1005,6 +1008,17 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.SignalAggregations.DimoAftermarketSsid(childComplexity, args["agg"].(model.StringAggregation)), true
+	case "SignalAggregations.dimoAftermarketUnplugDetection":
+		if e.complexity.SignalAggregations.DimoAftermarketUnplugDetection == nil {
+			break
+		}
+
+		args, err := ec.field_SignalAggregations_dimoAftermarketUnplugDetection_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.SignalAggregations.DimoAftermarketUnplugDetection(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.dimoAftermarketWPAState":
 		if e.complexity.SignalAggregations.DimoAftermarketWPAState == nil {
 			break
@@ -1795,6 +1809,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.SignalCollection.DIMOAftermarketSSID(childComplexity), true
+	case "SignalCollection.dimoAftermarketUnplugDetection":
+		if e.complexity.SignalCollection.DIMOAftermarketUnplugDetection == nil {
+			break
+		}
+
+		return e.complexity.SignalCollection.DIMOAftermarketUnplugDetection(childComplexity), true
 	case "SignalCollection.dimoAftermarketWPAState":
 		if e.complexity.SignalCollection.DIMOAftermarketWPAState == nil {
 			break
@@ -3193,6 +3213,15 @@ extend type SignalAggregations {
   ):  String @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketSSID", forceResolver: true) @isSignal @hasAggregation
   
   """
+  device unplug detection
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  dimoAftermarketUnplugDetection(
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketUnplugDetection", forceResolver: true) @isSignal @hasAggregation
+  
+  """
   Indicate the current WPA state for the device's wifi, e.g. "CONNECTED", "SCANNING", "DISCONNECTED"
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
@@ -3903,6 +3932,12 @@ extend type SignalCollection {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   dimoAftermarketSSID: SignalString @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketSSID") @isSignal
+  
+  """
+  device unplug detection
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  dimoAftermarketUnplugDetection: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketUnplugDetection") @isSignal
   
   """
   Indicate the current WPA state for the device's wifi, e.g. "CONNECTED", "SCANNING", "DISCONNECTED"
@@ -5003,6 +5038,22 @@ func (ec *executionContext) field_SignalAggregations_dimoAftermarketSSID_args(ct
 		return nil, err
 	}
 	args["agg"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_SignalAggregations_dimoAftermarketUnplugDetection_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
+	if err != nil {
+		return nil, err
+	}
+	args["agg"] = arg0
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 
@@ -6888,6 +6939,8 @@ func (ec *executionContext) fieldContext_Query_signals(ctx context.Context, fiel
 				return ec.fieldContext_SignalAggregations_dimoAftermarketNSAT(ctx, field)
 			case "dimoAftermarketSSID":
 				return ec.fieldContext_SignalAggregations_dimoAftermarketSSID(ctx, field)
+			case "dimoAftermarketUnplugDetection":
+				return ec.fieldContext_SignalAggregations_dimoAftermarketUnplugDetection(ctx, field)
 			case "dimoAftermarketWPAState":
 				return ec.fieldContext_SignalAggregations_dimoAftermarketWPAState(ctx, field)
 			case "exteriorAirTemperature":
@@ -7112,6 +7165,8 @@ func (ec *executionContext) fieldContext_Query_signalsLatest(ctx context.Context
 				return ec.fieldContext_SignalCollection_dimoAftermarketNSAT(ctx, field)
 			case "dimoAftermarketSSID":
 				return ec.fieldContext_SignalCollection_dimoAftermarketSSID(ctx, field)
+			case "dimoAftermarketUnplugDetection":
+				return ec.fieldContext_SignalCollection_dimoAftermarketUnplugDetection(ctx, field)
 			case "dimoAftermarketWPAState":
 				return ec.fieldContext_SignalCollection_dimoAftermarketWPAState(ctx, field)
 			case "exteriorAirTemperature":
@@ -9776,6 +9831,79 @@ func (ec *executionContext) fieldContext_SignalAggregations_dimoAftermarketSSID(
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_SignalAggregations_dimoAftermarketSSID_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SignalAggregations_dimoAftermarketUnplugDetection(ctx context.Context, field graphql.CollectedField, obj *model.SignalAggregations) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SignalAggregations_dimoAftermarketUnplugDetection,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().DimoAftermarketUnplugDetection(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
+
+			directive1 := func(ctx context.Context) (any, error) {
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				if err != nil {
+					var zeroVal *float64
+					return zeroVal, err
+				}
+				if ec.directives.RequiresAllOfPrivileges == nil {
+					var zeroVal *float64
+					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
+				}
+				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+			}
+			directive2 := func(ctx context.Context) (any, error) {
+				if ec.directives.IsSignal == nil {
+					var zeroVal *float64
+					return zeroVal, errors.New("directive isSignal is not implemented")
+				}
+				return ec.directives.IsSignal(ctx, obj, directive1)
+			}
+			directive3 := func(ctx context.Context) (any, error) {
+				if ec.directives.HasAggregation == nil {
+					var zeroVal *float64
+					return zeroVal, errors.New("directive hasAggregation is not implemented")
+				}
+				return ec.directives.HasAggregation(ctx, obj, directive2)
+			}
+
+			next = directive3
+			return next
+		},
+		ec.marshalOFloat2ᚖfloat64,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_SignalAggregations_dimoAftermarketUnplugDetection(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignalAggregations",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_SignalAggregations_dimoAftermarketUnplugDetection_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -15527,6 +15655,66 @@ func (ec *executionContext) fieldContext_SignalCollection_dimoAftermarketSSID(_ 
 				return ec.fieldContext_SignalString_value(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type SignalString", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SignalCollection_dimoAftermarketUnplugDetection(ctx context.Context, field graphql.CollectedField, obj *model.SignalCollection) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SignalCollection_dimoAftermarketUnplugDetection,
+		func(ctx context.Context) (any, error) {
+			return obj.DIMOAftermarketUnplugDetection, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
+
+			directive1 := func(ctx context.Context) (any, error) {
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				if err != nil {
+					var zeroVal *model.SignalFloat
+					return zeroVal, err
+				}
+				if ec.directives.RequiresAllOfPrivileges == nil {
+					var zeroVal *model.SignalFloat
+					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
+				}
+				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+			}
+			directive2 := func(ctx context.Context) (any, error) {
+				if ec.directives.IsSignal == nil {
+					var zeroVal *model.SignalFloat
+					return zeroVal, errors.New("directive isSignal is not implemented")
+				}
+				return ec.directives.IsSignal(ctx, obj, directive1)
+			}
+
+			next = directive2
+			return next
+		},
+		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_SignalCollection_dimoAftermarketUnplugDetection(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignalCollection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "timestamp":
+				return ec.fieldContext_SignalFloat_timestamp(ctx, field)
+			case "value":
+				return ec.fieldContext_SignalFloat_value(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SignalFloat", field.Name)
 		},
 	}
 	return fc, nil
@@ -22865,6 +23053,39 @@ func (ec *executionContext) _SignalAggregations(ctx context.Context, sel ast.Sel
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "dimoAftermarketUnplugDetection":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._SignalAggregations_dimoAftermarketUnplugDetection(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "dimoAftermarketWPAState":
 			field := field
 
@@ -24834,6 +25055,8 @@ func (ec *executionContext) _SignalCollection(ctx context.Context, sel ast.Selec
 			out.Values[i] = ec._SignalCollection_dimoAftermarketNSAT(ctx, field, obj)
 		case "dimoAftermarketSSID":
 			out.Values[i] = ec._SignalCollection_dimoAftermarketSSID(ctx, field, obj)
+		case "dimoAftermarketUnplugDetection":
+			out.Values[i] = ec._SignalCollection_dimoAftermarketUnplugDetection(ctx, field, obj)
 		case "dimoAftermarketWPAState":
 			out.Values[i] = ec._SignalCollection_dimoAftermarketWPAState(ctx, field, obj)
 		case "exteriorAirTemperature":

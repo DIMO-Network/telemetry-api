@@ -238,6 +238,9 @@ type SignalCollection struct {
 	// Service Set Identifier for the wifi.
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	DIMOAftermarketSSID *SignalString `json:"dimoAftermarketSSID,omitempty"`
+	// device unplug detection
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	DIMOAftermarketUnplugDetection *SignalFloat `json:"dimoAftermarketUnplugDetection,omitempty"`
 	// Indicate the current WPA state for the device's wifi, e.g. "CONNECTED", "SCANNING", "DISCONNECTED"
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	DIMOAftermarketWPAState *SignalString `json:"dimoAftermarketWPAState,omitempty"`

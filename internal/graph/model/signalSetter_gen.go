@@ -133,6 +133,11 @@ func SetCollectionField(collection *SignalCollection, signal *vss.Signal) {
 			Timestamp: signal.Timestamp,
 			Value:     signal.ValueString,
 		}
+	case "dimoAftermarketUnplugDetection":
+		collection.DIMOAftermarketUnplugDetection = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
 	case "dimoAftermarketWPAState":
 		collection.DIMOAftermarketWPAState = &SignalString{
 			Timestamp: signal.Timestamp,

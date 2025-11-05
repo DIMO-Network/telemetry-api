@@ -251,6 +251,16 @@ func (r *signalAggregationsResolver) DimoAftermarketSsid(ctx context.Context, ob
 	return &vs, nil
 }
 
+// DimoAftermarketUnplugDetection is the resolver for the dimoAftermarketUnplugDetection
+func (r *signalAggregationsResolver) DimoAftermarketUnplugDetection(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error) {
+	fieldCtx := graphql.GetFieldContext(ctx)
+	vn, ok := obj.ValueNumbers[fieldCtx.Field.Alias]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
 // DimoAftermarketWPAState is the resolver for the dimoAftermarketWPAState
 func (r *signalAggregationsResolver) DimoAftermarketWPAState(ctx context.Context, obj *model.SignalAggregations, agg model.StringAggregation) (*string, error) {
 	fieldCtx := graphql.GetFieldContext(ctx)

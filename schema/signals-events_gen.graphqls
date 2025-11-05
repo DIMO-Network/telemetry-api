@@ -227,6 +227,15 @@ extend type SignalAggregations {
   ):  String @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketSSID", forceResolver: true) @isSignal @hasAggregation
   
   """
+  device unplug detection
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  dimoAftermarketUnplugDetection(
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketUnplugDetection", forceResolver: true) @isSignal @hasAggregation
+  
+  """
   Indicate the current WPA state for the device's wifi, e.g. "CONNECTED", "SCANNING", "DISCONNECTED"
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
@@ -937,6 +946,12 @@ extend type SignalCollection {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   dimoAftermarketSSID: SignalString @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketSSID") @isSignal
+  
+  """
+  device unplug detection
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  dimoAftermarketUnplugDetection: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketUnplugDetection") @isSignal
   
   """
   Indicate the current WPA state for the device's wifi, e.g. "CONNECTED", "SCANNING", "DISCONNECTED"
