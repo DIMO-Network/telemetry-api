@@ -198,6 +198,11 @@ func SetCollectionField(collection *SignalCollection, signal *vss.Signal) {
 			Timestamp: signal.Timestamp,
 			Value:     signal.ValueNumber,
 		}
+	case "obdIsPluggedIn":
+		collection.OBDIsPluggedIn = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
 	case "obdLongTermFuelTrim1":
 		collection.OBDLongTermFuelTrim1 = &SignalFloat{
 			Timestamp: signal.Timestamp,

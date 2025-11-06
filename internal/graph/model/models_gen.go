@@ -287,6 +287,9 @@ type SignalCollection struct {
 	// Unit: 'celsius'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	OBDIntakeTemp *SignalFloat `json:"obdIntakeTemp,omitempty"`
+	// Aftermarket device plugged in status. 1 = device plugged in, 0 = device unplugged.
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	OBDIsPluggedIn *SignalFloat `json:"obdIsPluggedIn,omitempty"`
 	// PID 07 - Long Term (learned) Fuel Trim - Bank 1 - negative percent leaner, positive percent richer
 	// Unit: 'percent'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]

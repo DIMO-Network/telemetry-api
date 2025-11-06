@@ -154,6 +154,7 @@ type ComplexityRoot struct {
 		ObdEngineLoad                                             func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
 		ObdFuelPressure                                           func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
 		ObdIntakeTemp                                             func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		ObdIsPluggedIn                                            func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
 		ObdLongTermFuelTrim1                                      func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
 		ObdMap                                                    func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
 		ObdO2WRSensor1Voltage                                     func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
@@ -242,6 +243,7 @@ type ComplexityRoot struct {
 		OBDEngineLoad                                             func(childComplexity int) int
 		OBDFuelPressure                                           func(childComplexity int) int
 		OBDIntakeTemp                                             func(childComplexity int) int
+		OBDIsPluggedIn                                            func(childComplexity int) int
 		OBDLongTermFuelTrim1                                      func(childComplexity int) int
 		OBDMAP                                                    func(childComplexity int) int
 		OBDO2WRSensor1Voltage                                     func(childComplexity int) int
@@ -374,6 +376,7 @@ type SignalAggregationsResolver interface {
 	ObdEngineLoad(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
 	ObdFuelPressure(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
 	ObdIntakeTemp(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	ObdIsPluggedIn(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
 	ObdLongTermFuelTrim1(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
 	ObdMap(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
 	ObdO2WRSensor1Voltage(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
@@ -1148,6 +1151,17 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.SignalAggregations.ObdIntakeTemp(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+	case "SignalAggregations.obdIsPluggedIn":
+		if e.complexity.SignalAggregations.ObdIsPluggedIn == nil {
+			break
+		}
+
+		args, err := ec.field_SignalAggregations_obdIsPluggedIn_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.SignalAggregations.ObdIsPluggedIn(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.obdLongTermFuelTrim1":
 		if e.complexity.SignalAggregations.ObdLongTermFuelTrim1 == nil {
 			break
@@ -1879,6 +1893,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.SignalCollection.OBDIntakeTemp(childComplexity), true
+	case "SignalCollection.obdIsPluggedIn":
+		if e.complexity.SignalCollection.OBDIsPluggedIn == nil {
+			break
+		}
+
+		return e.complexity.SignalCollection.OBDIsPluggedIn(childComplexity), true
 	case "SignalCollection.obdLongTermFuelTrim1":
 		if e.complexity.SignalCollection.OBDLongTermFuelTrim1 == nil {
 			break
@@ -3318,6 +3338,15 @@ extend type SignalAggregations {
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDIntakeTemp", forceResolver: true) @isSignal @hasAggregation
   
   """
+  Aftermarket device plugged in status. 1 = device plugged in, 0 = device unplugged.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  obdIsPluggedIn(
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDIsPluggedIn", forceResolver: true) @isSignal @hasAggregation
+  
+  """
   PID 07 - Long Term (learned) Fuel Trim - Bank 1 - negative percent leaner, positive percent richer
   Unit: 'percent'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
@@ -3991,6 +4020,12 @@ extend type SignalCollection {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   obdIntakeTemp: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDIntakeTemp") @isSignal
+  
+  """
+  Aftermarket device plugged in status. 1 = device plugged in, 0 = device unplugged.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  obdIsPluggedIn: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDIsPluggedIn") @isSignal
   
   """
   PID 07 - Long Term (learned) Fuel Trim - Bank 1 - negative percent leaner, positive percent richer
@@ -5189,6 +5224,22 @@ func (ec *executionContext) field_SignalAggregations_obdFuelPressure_args(ctx co
 }
 
 func (ec *executionContext) field_SignalAggregations_obdIntakeTemp_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
+	if err != nil {
+		return nil, err
+	}
+	args["agg"] = arg0
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_SignalAggregations_obdIsPluggedIn_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
 	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
@@ -6914,6 +6965,8 @@ func (ec *executionContext) fieldContext_Query_signals(ctx context.Context, fiel
 				return ec.fieldContext_SignalAggregations_obdFuelPressure(ctx, field)
 			case "obdIntakeTemp":
 				return ec.fieldContext_SignalAggregations_obdIntakeTemp(ctx, field)
+			case "obdIsPluggedIn":
+				return ec.fieldContext_SignalAggregations_obdIsPluggedIn(ctx, field)
 			case "obdLongTermFuelTrim1":
 				return ec.fieldContext_SignalAggregations_obdLongTermFuelTrim1(ctx, field)
 			case "obdMAP":
@@ -7138,6 +7191,8 @@ func (ec *executionContext) fieldContext_Query_signalsLatest(ctx context.Context
 				return ec.fieldContext_SignalCollection_obdFuelPressure(ctx, field)
 			case "obdIntakeTemp":
 				return ec.fieldContext_SignalCollection_obdIntakeTemp(ctx, field)
+			case "obdIsPluggedIn":
+				return ec.fieldContext_SignalCollection_obdIsPluggedIn(ctx, field)
 			case "obdLongTermFuelTrim1":
 				return ec.fieldContext_SignalCollection_obdLongTermFuelTrim1(ctx, field)
 			case "obdMAP":
@@ -10725,6 +10780,79 @@ func (ec *executionContext) fieldContext_SignalAggregations_obdIntakeTemp(ctx co
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_SignalAggregations_obdIntakeTemp_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SignalAggregations_obdIsPluggedIn(ctx context.Context, field graphql.CollectedField, obj *model.SignalAggregations) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SignalAggregations_obdIsPluggedIn,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().ObdIsPluggedIn(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
+
+			directive1 := func(ctx context.Context) (any, error) {
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				if err != nil {
+					var zeroVal *float64
+					return zeroVal, err
+				}
+				if ec.directives.RequiresAllOfPrivileges == nil {
+					var zeroVal *float64
+					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
+				}
+				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+			}
+			directive2 := func(ctx context.Context) (any, error) {
+				if ec.directives.IsSignal == nil {
+					var zeroVal *float64
+					return zeroVal, errors.New("directive isSignal is not implemented")
+				}
+				return ec.directives.IsSignal(ctx, obj, directive1)
+			}
+			directive3 := func(ctx context.Context) (any, error) {
+				if ec.directives.HasAggregation == nil {
+					var zeroVal *float64
+					return zeroVal, errors.New("directive hasAggregation is not implemented")
+				}
+				return ec.directives.HasAggregation(ctx, obj, directive2)
+			}
+
+			next = directive3
+			return next
+		},
+		ec.marshalOFloat2ᚖfloat64,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_SignalAggregations_obdIsPluggedIn(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignalAggregations",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_SignalAggregations_obdIsPluggedIn_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -16294,6 +16422,66 @@ func (ec *executionContext) _SignalCollection_obdIntakeTemp(ctx context.Context,
 }
 
 func (ec *executionContext) fieldContext_SignalCollection_obdIntakeTemp(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignalCollection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "timestamp":
+				return ec.fieldContext_SignalFloat_timestamp(ctx, field)
+			case "value":
+				return ec.fieldContext_SignalFloat_value(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SignalFloat", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SignalCollection_obdIsPluggedIn(ctx context.Context, field graphql.CollectedField, obj *model.SignalCollection) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SignalCollection_obdIsPluggedIn,
+		func(ctx context.Context) (any, error) {
+			return obj.OBDIsPluggedIn, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
+
+			directive1 := func(ctx context.Context) (any, error) {
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				if err != nil {
+					var zeroVal *model.SignalFloat
+					return zeroVal, err
+				}
+				if ec.directives.RequiresAllOfPrivileges == nil {
+					var zeroVal *model.SignalFloat
+					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
+				}
+				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+			}
+			directive2 := func(ctx context.Context) (any, error) {
+				if ec.directives.IsSignal == nil {
+					var zeroVal *model.SignalFloat
+					return zeroVal, errors.New("directive isSignal is not implemented")
+				}
+				return ec.directives.IsSignal(ctx, obj, directive1)
+			}
+
+			next = directive2
+			return next
+		},
+		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_SignalCollection_obdIsPluggedIn(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalCollection",
 		Field:      field,
@@ -23294,6 +23482,39 @@ func (ec *executionContext) _SignalAggregations(ctx context.Context, sel ast.Sel
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "obdIsPluggedIn":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._SignalAggregations_obdIsPluggedIn(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "obdLongTermFuelTrim1":
 			field := field
 
@@ -24860,6 +25081,8 @@ func (ec *executionContext) _SignalCollection(ctx context.Context, sel ast.Selec
 			out.Values[i] = ec._SignalCollection_obdFuelPressure(ctx, field, obj)
 		case "obdIntakeTemp":
 			out.Values[i] = ec._SignalCollection_obdIntakeTemp(ctx, field, obj)
+		case "obdIsPluggedIn":
+			out.Values[i] = ec._SignalCollection_obdIsPluggedIn(ctx, field, obj)
 		case "obdLongTermFuelTrim1":
 			out.Values[i] = ec._SignalCollection_obdLongTermFuelTrim1(ctx, field, obj)
 		case "obdMAP":

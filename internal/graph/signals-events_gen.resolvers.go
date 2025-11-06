@@ -381,6 +381,16 @@ func (r *signalAggregationsResolver) ObdIntakeTemp(ctx context.Context, obj *mod
 	return &vn, nil
 }
 
+// ObdIsPluggedIn is the resolver for the obdIsPluggedIn
+func (r *signalAggregationsResolver) ObdIsPluggedIn(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error) {
+	fieldCtx := graphql.GetFieldContext(ctx)
+	vn, ok := obj.ValueNumbers[fieldCtx.Field.Alias]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
 // ObdLongTermFuelTrim1 is the resolver for the obdLongTermFuelTrim1
 func (r *signalAggregationsResolver) ObdLongTermFuelTrim1(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error) {
 	fieldCtx := graphql.GetFieldContext(ctx)

@@ -352,6 +352,15 @@ extend type SignalAggregations {
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDIntakeTemp", forceResolver: true) @isSignal @hasAggregation
   
   """
+  Aftermarket device plugged in status. 1 = device plugged in, 0 = device unplugged.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  obdIsPluggedIn(
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDIsPluggedIn", forceResolver: true) @isSignal @hasAggregation
+  
+  """
   PID 07 - Long Term (learned) Fuel Trim - Bank 1 - negative percent leaner, positive percent richer
   Unit: 'percent'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
@@ -1025,6 +1034,12 @@ extend type SignalCollection {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   obdIntakeTemp: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDIntakeTemp") @isSignal
+  
+  """
+  Aftermarket device plugged in status. 1 = device plugged in, 0 = device unplugged.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  obdIsPluggedIn: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDIsPluggedIn") @isSignal
   
   """
   PID 07 - Long Term (learned) Fuel Trim - Bank 1 - negative percent leaner, positive percent richer
