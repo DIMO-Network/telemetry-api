@@ -1,0 +1,259 @@
+package ch
+
+import (
+	"context"
+	"fmt"
+	"time"
+
+	"github.com/ClickHouse/clickhouse-go/v2"
+	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
+)
+
+const (
+	defaultCUSUMWindowSeconds       = 60  // 1-minute windows for frequency measurement
+	defaultCUSUMThreshold           = 5.0 // CUSUM threshold for detecting change points
+	defaultCUSUMDrift               = 0.5 // Drift parameter (half of expected change magnitude)
+	defaultCUSUMBaselineSignalCount = 1.0 // Baseline signal count per window when idle
+)
+
+// ChangePointDetector detects segments using CUSUM (Cumulative Sum) change point detection
+// CUSUM monitors cumulative deviation from expected baseline to detect regime changes
+// When vehicle becomes active, signal frequency increases significantly
+type ChangePointDetector struct {
+	conn clickhouse.Conn
+}
+
+// CUSUMWindow represents a time window with CUSUM statistic
+type CUSUMWindow struct {
+	WindowStart time.Time
+	WindowEnd   time.Time
+	SignalCount uint32  // Changed from uint64 to match signal_window_aggregates table
+	CUSUMStat   float64 // Cumulative sum statistic
+	IsActive    bool    // Whether CUSUM exceeded threshold
+}
+
+// DetectSegments implements CUSUM-based change point detection
+func (d *ChangePointDetector) DetectSegments(
+	ctx context.Context,
+	tokenID uint32,
+	from, to time.Time,
+	filter *model.SignalFilter,
+	config *model.SegmentConfig,
+) ([]*Segment, error) {
+	// Apply configuration defaults
+	maxGap := defaultMinIdleSeconds
+	minDuration := defaultMinSegmentDurationSeconds
+
+	if config != nil {
+		if config.MinIdleSeconds != nil {
+			maxGap = *config.MinIdleSeconds
+		}
+		if config.MinSegmentDurationSeconds != nil {
+			minDuration = *config.MinSegmentDurationSeconds
+		}
+	}
+
+	// Query signal counts per window
+	windowCounts, err := d.getWindowSignalCounts(ctx, tokenID, from, to, filter)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get window signal counts: %w", err)
+	}
+
+	if len(windowCounts) == 0 {
+		return nil, nil
+	}
+
+	// Apply CUSUM algorithm in Go (requires sequential processing)
+	activeWindows := d.applyCUSUM(windowCounts)
+
+	if len(activeWindows) == 0 {
+		return nil, nil
+	}
+
+	// Merge active windows into segments
+	segments := mergeWindowsIntoSegments(tokenID, activeWindows, from, to, maxGap, minDuration)
+
+	return segments, nil
+}
+
+// getWindowSignalCounts gets signal counts per time window
+// Uses pre-computed signal_window_aggregates materialized view for optimal performance
+func (d *ChangePointDetector) getWindowSignalCounts(
+	ctx context.Context,
+	tokenID uint32,
+	from, to time.Time,
+	filter *model.SignalFilter,
+) ([]CUSUMWindow, error) {
+	windowSize := defaultCUSUMWindowSeconds
+
+	// Note: Currently ignores filter.Source since materialized view doesn't have source
+	// If source filtering is needed, fallback to direct signal table query
+	if filter != nil && filter.Source != nil {
+		return d.getWindowSignalCountsDirect(ctx, tokenID, from, to, filter)
+	}
+
+	// Use pre-computed materialized view for much better performance
+	query := `
+SELECT
+    window_start,
+    window_start + INTERVAL window_size_seconds second AS window_end,
+    signal_count
+FROM signal_window_aggregates
+WHERE token_id = ?
+  AND window_size_seconds = ?
+  AND window_start >= ?
+  AND window_start < ?
+ORDER BY window_start`
+
+	rows, err := d.conn.Query(ctx, query, tokenID, windowSize, from, to)
+	if err != nil {
+		return nil, fmt.Errorf("failed querying window counts: %w", err)
+	}
+	defer rows.Close()
+
+	var windows []CUSUMWindow
+	for rows.Next() {
+		var w CUSUMWindow
+		err := rows.Scan(&w.WindowStart, &w.WindowEnd, &w.SignalCount)
+		if err != nil {
+			return nil, fmt.Errorf("failed scanning window: %w", err)
+		}
+		windows = append(windows, w)
+	}
+
+	if rows.Err() != nil {
+		return nil, fmt.Errorf("window row error: %w", rows.Err())
+	}
+
+	return windows, nil
+}
+
+// getWindowSignalCountsDirect gets signal counts directly from signal table (with source filtering)
+// Fallback when source filtering is needed (materialized view doesn't have source column)
+func (d *ChangePointDetector) getWindowSignalCountsDirect(
+	ctx context.Context,
+	tokenID uint32,
+	from, to time.Time,
+	filter *model.SignalFilter,
+) ([]CUSUMWindow, error) {
+	windowSize := defaultCUSUMWindowSeconds
+
+	// Build source filter
+	sourceFilter := ""
+	args := []any{tokenID, from, to}
+	if filter != nil && filter.Source != nil {
+		sourceFilter = "AND source = ?"
+		args = append(args, *filter.Source)
+	}
+
+	query := fmt.Sprintf(`
+SELECT
+    window_start,
+    window_start + INTERVAL %d second AS window_end,
+    signal_count
+FROM (
+    SELECT
+        toStartOfInterval(timestamp, INTERVAL %d second) AS window_start,
+        count() AS signal_count
+    FROM signal
+    WHERE token_id = ?
+      AND timestamp >= ?
+      AND timestamp < ?
+      %s
+    GROUP BY toStartOfInterval(timestamp, INTERVAL %d second)
+)
+ORDER BY window_start`,
+		windowSize,
+		windowSize,
+		sourceFilter,
+		windowSize,
+	)
+
+	rows, err := d.conn.Query(ctx, query, args...)
+	if err != nil {
+		return nil, fmt.Errorf("failed querying window counts: %w", err)
+	}
+	defer rows.Close()
+
+	var windows []CUSUMWindow
+	for rows.Next() {
+		var w CUSUMWindow
+		err := rows.Scan(&w.WindowStart, &w.WindowEnd, &w.SignalCount)
+		if err != nil {
+			return nil, fmt.Errorf("failed scanning window: %w", err)
+		}
+		windows = append(windows, w)
+	}
+
+	if rows.Err() != nil {
+		return nil, fmt.Errorf("window row error: %w", rows.Err())
+	}
+
+	return windows, nil
+}
+
+// applyCUSUM applies the CUSUM algorithm to detect change points in signal frequency
+// CUSUM detects when cumulative deviation from baseline exceeds threshold
+//
+// Algorithm:
+//
+//	S[t] = max(0, S[t-1] + (x[t] - μ - k))
+//	where:
+//	  - x[t] is the signal count at time t
+//	  - μ is the baseline (expected idle count)
+//	  - k is the drift parameter (allowable deviation)
+//	  - S[t] > threshold indicates active period
+func (d *ChangePointDetector) applyCUSUM(windows []CUSUMWindow) []ActiveWindow {
+	if len(windows) == 0 {
+		return nil
+	}
+
+	// CUSUM parameters
+	baseline := defaultCUSUMBaselineSignalCount // Expected signal count when idle
+	drift := defaultCUSUMDrift                  // Allowable deviation (k parameter)
+	threshold := defaultCUSUMThreshold          // Detection threshold (h parameter)
+
+	var activeWindows []ActiveWindow
+	cusumStat := 0.0
+
+	for i := range windows {
+		// Calculate deviation from baseline
+		deviation := float64(windows[i].SignalCount) - baseline - drift
+
+		// Update CUSUM statistic (non-negative cumulative sum)
+		cusumStat = max(0, cusumStat+deviation)
+
+		// Store statistic for debugging/analysis
+		windows[i].CUSUMStat = cusumStat
+
+		// Check if CUSUM exceeds threshold (detected change point / active period)
+		if cusumStat > threshold {
+			windows[i].IsActive = true
+
+			// Convert to ActiveWindow for segment merging
+			activeWindows = append(activeWindows, ActiveWindow{
+				WindowStart:         windows[i].WindowStart,
+				WindowEnd:           windows[i].WindowEnd,
+				SignalCount:         uint32(windows[i].SignalCount),
+				DistinctSignalCount: 0, // Not tracked in this detector
+			})
+		} else {
+			windows[i].IsActive = false
+		}
+	}
+
+	return activeWindows
+}
+
+// max returns the maximum of two float64 values
+func max(a, b float64) float64 {
+	if a > b {
+		return a
+	}
+	return b
+}
+
+// GetMechanismName returns the name of this detection mechanism
+func (d *ChangePointDetector) GetMechanismName() string {
+	return "changePointDetection"
+}

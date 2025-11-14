@@ -7,8 +7,8 @@ import (
 
 	chconfig "github.com/DIMO-Network/clickhouse-infra/pkg/connect/config"
 	"github.com/DIMO-Network/clickhouse-infra/pkg/container"
-	sigmigrations "github.com/DIMO-Network/model-garage/pkg/migrations"
 	"github.com/DIMO-Network/model-garage/pkg/vss"
+	"github.com/DIMO-Network/telemetry-api/migrations"
 	"github.com/stretchr/testify/require"
 )
 
@@ -26,7 +26,7 @@ func setupClickhouseContainer(t *testing.T) *container.Container {
 		t.Fatalf("Failed to get clickhouse connection: %v", err)
 	}
 
-	err = sigmigrations.RunGoose(ctx, []string{"up", "-v"}, db)
+	err = migrations.RunGoose(ctx, []string{"up", "-v"}, db)
 	if err != nil {
 		t.Fatalf("Failed to run migrations: %v", err)
 	}

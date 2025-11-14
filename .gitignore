@@ -28,4 +28,7 @@ __debug_bin*
 *.code-workspace
 .history/
 
+# Real vehicle data
+*.csv
+
 

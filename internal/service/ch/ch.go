@@ -138,7 +138,7 @@ func (s *Service) getSignals(ctx context.Context, stmt string, args []any) ([]*v
 	if err != nil {
 		return nil, fmt.Errorf("failed querying clickhouse: %w", err)
 	}
-	signals := []*vss.Signal{}
+	signals := make([]*vss.Signal, 0, 100) // Pre-allocate with reasonable initial capacity
 	for rows.Next() {
 		var signal vss.Signal
 		err := rows.Scan(&signal.Name, &signal.Timestamp, &signal.ValueNumber, &signal.ValueString, &signal.ValueLocation)
@@ -192,7 +192,7 @@ func (s *Service) getAggSignals(ctx context.Context, stmt string, args []any) ([
 	if err != nil {
 		return nil, fmt.Errorf("failed querying clickhouse: %w", err)
 	}
-	signals := []*AggSignal{}
+	signals := make([]*AggSignal, 0, 100) // Pre-allocate with reasonable initial capacity
 	for rows.Next() {
 		var signal AggSignal
 		err := rows.Scan(&signal.SignalType, &signal.SignalIndex, &signal.Timestamp, &signal.ValueNumber, &signal.ValueString, &signal.ValueLocation)
@@ -241,7 +241,7 @@ func (s *Service) GetSignalSummaries(ctx context.Context, tokenId uint32, filter
 	if err != nil {
 		return nil, fmt.Errorf("failed querying clickhouse: %w", err)
 	}
-	signalSummaries := []*model.SignalDataSummary{}
+	signalSummaries := make([]*model.SignalDataSummary, 0, 50) // Pre-allocate with reasonable initial capacity
 	for rows.Next() {
 		var signalSummary model.SignalDataSummary
 		err := rows.Scan(&signalSummary.Name, &signalSummary.NumberOfSignals, &signalSummary.FirstSeen, &signalSummary.LastSeen)
@@ -270,7 +270,7 @@ func (s *Service) GetEvents(ctx context.Context, subject string, from, to time.T
 	if err != nil {
 		return nil, fmt.Errorf("failed querying clickhouse for events: %w", err)
 	}
-	events := []*vss.Event{}
+	events := make([]*vss.Event, 0, 100) // Pre-allocate with reasonable initial capacity
 	for rows.Next() {
 		var event vss.Event
 		err := rows.Scan(&event.Name, &event.Source, &event.Timestamp, &event.DurationNs, &event.Metadata, &event.Tags)

@@ -38,6 +38,7 @@ type CHService interface {
 	GetAvailableSignals(ctx context.Context, tokenID uint32, filter *model.SignalFilter) ([]string, error)
 	GetSignalSummaries(ctx context.Context, tokenID uint32, filter *model.SignalFilter) ([]*model.SignalDataSummary, error)
 	GetEvents(ctx context.Context, subject string, from, to time.Time, filter *model.EventFilter) ([]*vss.Event, error)
+	GetSegments(ctx context.Context, tokenID uint32, from, to time.Time, mechanism model.DetectionMechanism, filter *model.SignalFilter, config *model.SegmentConfig) ([]*ch.Segment, error)
 }
 
 // Repository is the base repository for all repositories.
@@ -84,7 +85,8 @@ func (r *Repository) GetSignal(ctx context.Context, aggArgs *model.AggregatedSig
 
 	// combine signals with the same timestamp by iterating over all signals
 	// if the timestamp differs from the previous signal, create a new SignalAggregations object
-	var allAggs []*model.SignalAggregations
+	// Pre-allocate slice with estimated capacity to avoid reallocations
+	allAggs := make([]*model.SignalAggregations, 0, len(signals)/2) // Estimate: ~2 signals per aggregation
 	var currAggs *model.SignalAggregations
 	lastTS := time.Time{}
 

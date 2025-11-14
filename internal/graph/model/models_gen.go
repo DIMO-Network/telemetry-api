@@ -140,6 +140,49 @@ type Pomvc struct {
 type Query struct {
 }
 
+type Segment struct {
+	// Unique identifier in DID format with fragment:
+	// did:nft:{chainID}:{vehicleContract}_{tokenID}#segment-{unix_timestamp}
+	//
+	// Example: did:nft:137:0xbA5738a18d83D41847dfFbDC6101d37C69c9B0cF_186612#segment-1739647800
+	//
+	// The timestamp is seconds since Unix epoch (1970-01-01). Stable across
+	// queries if segment start is in underlying data source.
+	SegmentID string `json:"segmentId"`
+	// Segment start timestamp (actual activity start transition)
+	StartTime time.Time `json:"startTime"`
+	// Segment end timestamp (activity end after debounce period).
+	// Null if segment is ongoing (extends beyond query range).
+	EndTime *time.Time `json:"endTime,omitempty"`
+	// Duration in seconds.
+	// If ongoing: from start to query 'to' time.
+	// If complete: from start to end.
+	DurationSeconds int `json:"durationSeconds"`
+	// True if segment extends beyond query time range (last activity is ongoing).
+	IsOngoing bool `json:"isOngoing"`
+	// True if segment started before query time range.
+	// Indicates startTime may be approximate.
+	StartedBeforeRange bool `json:"startedBeforeRange"`
+}
+
+type SegmentConfig struct {
+	// Minimum idle time (seconds) before segment is considered ended.
+	// For ignitionDetection: filters noise from brief ignition OFF events.
+	// For frequencyAnalysis: maximum gap between active windows to merge.
+	// Default: 300 (5 minutes), Min: 60, Max: 3600
+	MinIdleSeconds *int `json:"minIdleSeconds,omitempty"`
+	// Minimum segment duration (seconds) to include in results.
+	// Filters very short segments (testing, engine cycling).
+	// Default: 60 (1 minute), Min: 1, Max: 3600
+	MinSegmentDurationSeconds *int `json:"minSegmentDurationSeconds,omitempty"`
+	// [frequencyAnalysis only] Minimum signal count per window for activity detection.
+	// Higher values = more conservative (filters parked telemetry better).
+	// Lower values = more sensitive (works for sparse signal vehicles).
+	// Default: 10 (tuned to match ignition detection accuracy)
+	// Min: 3, Max: 100
+	SignalCountThreshold *int `json:"signalCountThreshold,omitempty"`
+}
+
 type SignalCollection struct {
 	// The last time any signal was seen matching the filter.
 	LastSeen *time.Time `json:"lastSeen,omitempty"`
@@ -571,6 +614,72 @@ type SignalDataSummary struct {
 	FirstSeen time.Time `json:"firstSeen"`
 	// last seen timestamp
 	LastSeen time.Time `json:"lastSeen"`
+}
+
+type DetectionMechanism string
+
+const (
+	// Ignition-based detection: Segments are identified by isIgnitionOn state transitions.
+	// Most reliable for vehicles with proper ignition signal support.
+	DetectionMechanismIgnitionDetection DetectionMechanism = "ignitionDetection"
+	// Frequency analysis: Segments are detected by analyzing signal update patterns.
+	// Uses pre-computed materialized view for optimal performance.
+	// Ideal for real-time APIs and bulk queries.
+	DetectionMechanismFrequencyAnalysis DetectionMechanism = "frequencyAnalysis"
+	// Change point detection: Uses CUSUM algorithm to detect statistical regime changes.
+	// Monitors cumulative deviation in signal frequency via materialized view.
+	// Excellent noise resistance with 100% accuracy match to ignition baseline.
+	// Best alternative when ignition signal is unavailable - same accuracy, same speed as frequency analysis.
+	DetectionMechanismChangePointDetection DetectionMechanism = "changePointDetection"
+)
+
+var AllDetectionMechanism = []DetectionMechanism{
+	DetectionMechanismIgnitionDetection,
+	DetectionMechanismFrequencyAnalysis,
+	DetectionMechanismChangePointDetection,
+}
+
+func (e DetectionMechanism) IsValid() bool {
+	switch e {
+	case DetectionMechanismIgnitionDetection, DetectionMechanismFrequencyAnalysis, DetectionMechanismChangePointDetection:
+		return true
+	}
+	return false
+}
+
+func (e DetectionMechanism) String() string {
+	return string(e)
+}
+
+func (e *DetectionMechanism) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = DetectionMechanism(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid DetectionMechanism", str)
+	}
+	return nil
+}
+
+func (e DetectionMechanism) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *DetectionMechanism) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e DetectionMechanism) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
 }
 
 type FloatAggregation string
