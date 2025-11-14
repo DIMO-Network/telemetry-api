@@ -8,7 +8,6 @@ CREATE TABLE IF NOT EXISTS signal_window_aggregates (
     distinct_signal_count UInt16
 )
 ENGINE = ReplacingMergeTree()
-PARTITION BY toYYYYMM(window_start)
 ORDER BY (token_id, window_start, window_size_seconds)
 SETTINGS index_granularity = 8192;
 -- +goose StatementEnd

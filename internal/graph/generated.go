@@ -3075,7 +3075,7 @@ extend type Query {
   Detection mechanisms:
   - ignitionDetection: Uses 'isIgnitionOn' signal with configurable debouncing
   - frequencyAnalysis: Analyzes signal update frequency to detect activity periods
-  - sparseSampling: Samples 5-10% of signals for cost-effective detection
+  - changePoint: Analyzes signal update frequency to detect activity periods using CUSUM algorithm
   
   Segment IDs are stable and consistent across queries as long as the segment start
   is captured in the underlying data source.
@@ -3109,7 +3109,7 @@ input SegmentConfig {
   """
   [frequencyAnalysis only] Minimum signal count per window for activity detection.
   Higher values = more conservative (filters parked telemetry better).
-  Lower values = more sensitive (works for sparse signal vehicles).
+  Lower values = more sensitive 
   Default: 10 (tuned to match ignition detection accuracy)
   Min: 3, Max: 100
   """

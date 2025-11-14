@@ -13,7 +13,6 @@ CREATE TABLE IF NOT EXISTS signal_state_changes (
   INDEX idx_token_name_ts (token_id, signal_name, timestamp) TYPE minmax GRANULARITY 4
 )
 ENGINE = MergeTree()
-PARTITION BY toYYYYMM(timestamp)
 ORDER BY (token_id, signal_name, timestamp)
 SETTINGS index_granularity = 8192;
 -- +goose StatementEnd
