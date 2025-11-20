@@ -109,7 +109,7 @@ type ComplexityRoot struct {
 		DeviceActivity   func(childComplexity int, by model.AftermarketDeviceBy) int
 		Events           func(childComplexity int, tokenID int, from time.Time, to time.Time, filter *model.EventFilter) int
 		PomVCLatest      func(childComplexity int, tokenID int) int
-		Segments         func(childComplexity int, tokenID int, from time.Time, to time.Time, mechanism model.DetectionMechanism, filter *model.SignalFilter, config *model.SegmentConfig) int
+		Segments         func(childComplexity int, tokenID int, from time.Time, to time.Time, mechanism model.DetectionMechanism, config *model.SegmentConfig) int
 		Signals          func(childComplexity int, tokenID int, interval string, from time.Time, to time.Time, filter *model.SignalFilter) int
 		SignalsLatest    func(childComplexity int, tokenID int, filter *model.SignalFilter) int
 		VinVCLatest      func(childComplexity int, tokenID int) int
@@ -343,7 +343,7 @@ type QueryResolver interface {
 	Attestations(ctx context.Context, tokenID *int, subject *string, filter *model.AttestationFilter) ([]*model.Attestation, error)
 	DeviceActivity(ctx context.Context, by model.AftermarketDeviceBy) (*model.DeviceActivity, error)
 	Events(ctx context.Context, tokenID int, from time.Time, to time.Time, filter *model.EventFilter) ([]*model.Event, error)
-	Segments(ctx context.Context, tokenID int, from time.Time, to time.Time, mechanism model.DetectionMechanism, filter *model.SignalFilter, config *model.SegmentConfig) ([]*model.Segment, error)
+	Segments(ctx context.Context, tokenID int, from time.Time, to time.Time, mechanism model.DetectionMechanism, config *model.SegmentConfig) ([]*model.Segment, error)
 	VinVCLatest(ctx context.Context, tokenID int) (*model.Vinvc, error)
 	PomVCLatest(ctx context.Context, tokenID int) (*model.Pomvc, error)
 }
@@ -709,7 +709,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Query.Segments(childComplexity, args["tokenId"].(int), args["from"].(time.Time), args["to"].(time.Time), args["mechanism"].(model.DetectionMechanism), args["filter"].(*model.SignalFilter), args["config"].(*model.SegmentConfig)), true
+		return e.complexity.Query.Segments(childComplexity, args["tokenId"].(int), args["from"].(time.Time), args["to"].(time.Time), args["mechanism"].(model.DetectionMechanism), args["config"].(*model.SegmentConfig)), true
 	case "Query.signals":
 		if e.complexity.Query.Signals == nil {
 			break
@@ -3075,7 +3075,7 @@ extend type Query {
   Detection mechanisms:
   - ignitionDetection: Uses 'isIgnitionOn' signal with configurable debouncing
   - frequencyAnalysis: Analyzes signal update frequency to detect activity periods
-  - changePoint: Analyzes signal update frequency to detect activity periods using CUSUM algorithm
+  - sparseSampling: Samples 5-10% of signals for cost-effective detection
   
   Segment IDs are stable and consistent across queries as long as the segment start
   is captured in the underlying data source.
@@ -3085,7 +3085,6 @@ extend type Query {
     from: Time!
     to: Time!
     mechanism: DetectionMechanism!
-    filter: SignalFilter
     config: SegmentConfig
   ): [Segment!] @requiresVehicleToken
 }
@@ -3109,7 +3108,7 @@ input SegmentConfig {
   """
   [frequencyAnalysis only] Minimum signal count per window for activity detection.
   Higher values = more conservative (filters parked telemetry better).
-  Lower values = more sensitive 
+  Lower values = more sensitive (works for sparse signal vehicles).
   Default: 10 (tuned to match ignition detection accuracy)
   Min: 3, Max: 100
   """
@@ -4780,16 +4779,11 @@ func (ec *executionContext) field_Query_segments_args(ctx context.Context, rawAr
 		return nil, err
 	}
 	args["mechanism"] = arg3
-	arg4, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFilter)
+	arg4, err := graphql.ProcessArgField(ctx, rawArgs, "config", ec.unmarshalOSegmentConfig2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSegmentConfig)
 	if err != nil {
 		return nil, err
 	}
-	args["filter"] = arg4
-	arg5, err := graphql.ProcessArgField(ctx, rawArgs, "config", ec.unmarshalOSegmentConfig2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSegmentConfig)
-	if err != nil {
-		return nil, err
-	}
-	args["config"] = arg5
+	args["config"] = arg4
 	return args, nil
 }
 
@@ -7849,7 +7843,7 @@ func (ec *executionContext) _Query_segments(ctx context.Context, field graphql.C
 		ec.fieldContext_Query_segments,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Query().Segments(ctx, fc.Args["tokenId"].(int), fc.Args["from"].(time.Time), fc.Args["to"].(time.Time), fc.Args["mechanism"].(model.DetectionMechanism), fc.Args["filter"].(*model.SignalFilter), fc.Args["config"].(*model.SegmentConfig))
+			return ec.resolvers.Query().Segments(ctx, fc.Args["tokenId"].(int), fc.Args["from"].(time.Time), fc.Args["to"].(time.Time), fc.Args["mechanism"].(model.DetectionMechanism), fc.Args["config"].(*model.SegmentConfig))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next

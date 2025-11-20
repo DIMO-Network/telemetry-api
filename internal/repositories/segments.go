@@ -65,7 +65,7 @@ func validateSegmentConfig(config *model.SegmentConfig) error {
 }
 
 // GetSegments returns segments detected using the specified mechanism in the time range
-func (r *Repository) GetSegments(ctx context.Context, tokenID int, from, to time.Time, mechanism model.DetectionMechanism, filter *model.SignalFilter, config *model.SegmentConfig) ([]*model.Segment, error) {
+func (r *Repository) GetSegments(ctx context.Context, tokenID int, from, to time.Time, mechanism model.DetectionMechanism, config *model.SegmentConfig) ([]*model.Segment, error) {
 	// Validate inputs
 	if err := validateSegmentArgs(tokenID, from, to); err != nil {
 		return nil, errorhandler.NewBadRequestError(ctx, err)
@@ -76,7 +76,7 @@ func (r *Repository) GetSegments(ctx context.Context, tokenID int, from, to time
 	}
 
 	// Query from ClickHouse service
-	chSegments, err := r.chService.GetSegments(ctx, uint32(tokenID), from, to, mechanism, filter, config)
+	chSegments, err := r.chService.GetSegments(ctx, uint32(tokenID), from, to, mechanism, config)
 	if err != nil {
 		return nil, handleDBError(ctx, err)
 	}
@@ -107,4 +107,3 @@ func (r *Repository) GetSegments(ctx context.Context, tokenID int, from, to time
 
 	return segments, nil
 }
-

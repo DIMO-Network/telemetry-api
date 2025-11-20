@@ -38,7 +38,7 @@ type CHService interface {
 	GetAvailableSignals(ctx context.Context, tokenID uint32, filter *model.SignalFilter) ([]string, error)
 	GetSignalSummaries(ctx context.Context, tokenID uint32, filter *model.SignalFilter) ([]*model.SignalDataSummary, error)
 	GetEvents(ctx context.Context, subject string, from, to time.Time, filter *model.EventFilter) ([]*vss.Event, error)
-	GetSegments(ctx context.Context, tokenID uint32, from, to time.Time, mechanism model.DetectionMechanism, filter *model.SignalFilter, config *model.SegmentConfig) ([]*ch.Segment, error)
+	GetSegments(ctx context.Context, tokenID uint32, from, to time.Time, mechanism model.DetectionMechanism, config *model.SegmentConfig) ([]*ch.Segment, error)
 }
 
 // Repository is the base repository for all repositories.

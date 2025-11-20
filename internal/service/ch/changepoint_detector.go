@@ -37,7 +37,6 @@ func (d *ChangePointDetector) DetectSegments(
 	ctx context.Context,
 	tokenID uint32,
 	from, to time.Time,
-	filter *model.SignalFilter,
 	config *model.SegmentConfig,
 ) ([]*Segment, error) {
 	// Apply configuration defaults
@@ -54,7 +53,7 @@ func (d *ChangePointDetector) DetectSegments(
 	}
 
 	// Query signal counts per window
-	windowCounts, err := d.getWindowSignalCounts(ctx, tokenID, from, to, filter)
+	windowCounts, err := d.getWindowSignalCounts(ctx, tokenID, from, to)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get window signal counts: %w", err)
 	}
@@ -82,15 +81,8 @@ func (d *ChangePointDetector) getWindowSignalCounts(
 	ctx context.Context,
 	tokenID uint32,
 	from, to time.Time,
-	filter *model.SignalFilter,
 ) ([]CUSUMWindow, error) {
 	windowSize := defaultCUSUMWindowSeconds
-
-	// Note: Currently ignores filter.Source since materialized view doesn't have source
-	// If source filtering is needed, fallback to direct signal table query
-	if filter != nil && filter.Source != nil {
-		return d.getWindowSignalCountsDirect(ctx, tokenID, from, to, filter)
-	}
 
 	// Use pre-computed materialized view for much better performance
 	query := `
@@ -106,70 +98,6 @@ WHERE token_id = ?
 ORDER BY window_start`
 
 	rows, err := d.conn.Query(ctx, query, tokenID, windowSize, from, to)
-	if err != nil {
-		return nil, fmt.Errorf("failed querying window counts: %w", err)
-	}
-	defer rows.Close()
-
-	var windows []CUSUMWindow
-	for rows.Next() {
-		var w CUSUMWindow
-		err := rows.Scan(&w.WindowStart, &w.WindowEnd, &w.SignalCount)
-		if err != nil {
-			return nil, fmt.Errorf("failed scanning window: %w", err)
-		}
-		windows = append(windows, w)
-	}
-
-	if rows.Err() != nil {
-		return nil, fmt.Errorf("window row error: %w", rows.Err())
-	}
-
-	return windows, nil
-}
-
-// getWindowSignalCountsDirect gets signal counts directly from signal table (with source filtering)
-// Fallback when source filtering is needed (materialized view doesn't have source column)
-func (d *ChangePointDetector) getWindowSignalCountsDirect(
-	ctx context.Context,
-	tokenID uint32,
-	from, to time.Time,
-	filter *model.SignalFilter,
-) ([]CUSUMWindow, error) {
-	windowSize := defaultCUSUMWindowSeconds
-
-	// Build source filter
-	sourceFilter := ""
-	args := []any{tokenID, from, to}
-	if filter != nil && filter.Source != nil {
-		sourceFilter = "AND source = ?"
-		args = append(args, *filter.Source)
-	}
-
-	query := fmt.Sprintf(`
-SELECT
-    window_start,
-    window_start + INTERVAL %d second AS window_end,
-    signal_count
-FROM (
-    SELECT
-        toStartOfInterval(timestamp, INTERVAL %d second) AS window_start,
-        count() AS signal_count
-    FROM signal
-    WHERE token_id = ?
-      AND timestamp >= ?
-      AND timestamp < ?
-      %s
-    GROUP BY toStartOfInterval(timestamp, INTERVAL %d second)
-)
-ORDER BY window_start`,
-		windowSize,
-		windowSize,
-		sourceFilter,
-		windowSize,
-	)
-
-	rows, err := d.conn.Query(ctx, query, args...)
 	if err != nil {
 		return nil, fmt.Errorf("failed querying window counts: %w", err)
 	}

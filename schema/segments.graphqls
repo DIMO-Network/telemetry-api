@@ -39,17 +39,9 @@ extend type Query {
     from: Time!
     to: Time!
     mechanism: DetectionMechanism!
-    filter: SignalFilter
     config: SegmentConfig
   ): [Segment!] @requiresVehicleToken
 }
-
-Consumers:
-  I feel like my trips are when i leave to when i return home, unless i was there for like an hour.
-Delivery Drivers:
-  My trip is either the whole day or each leg of the dropoff, but the business team would want to catch when you're parked for 15 minutes itself of delivering
-Heavy Trucking:
-  They start the vehicle, and then load it for 45 minutes, and want to eplicitlcy "label" the loading time. 
 
 input SegmentConfig {
   """

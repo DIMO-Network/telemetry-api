@@ -25,7 +25,6 @@ type SegmentDetector interface {
 		ctx context.Context,
 		tokenID uint32,
 		from, to time.Time,
-		filter *model.SignalFilter,
 		config *model.SegmentConfig,
 	) ([]*Segment, error)
 

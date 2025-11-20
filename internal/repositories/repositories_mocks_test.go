@@ -105,18 +105,18 @@ func (mr *MockCHServiceMockRecorder) GetLatestSignals(ctx, latestArgs any) *gomo
 }
 
 // GetSegments mocks base method.
-func (m *MockCHService) GetSegments(ctx context.Context, tokenID uint32, from, to time.Time, mechanism model.DetectionMechanism, filter *model.SignalFilter, config *model.SegmentConfig) ([]*ch.Segment, error) {
+func (m *MockCHService) GetSegments(ctx context.Context, tokenID uint32, from, to time.Time, mechanism model.DetectionMechanism, config *model.SegmentConfig) ([]*ch.Segment, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetSegments", ctx, tokenID, from, to, mechanism, filter, config)
+	ret := m.ctrl.Call(m, "GetSegments", ctx, tokenID, from, to, mechanism, config)
 	ret0, _ := ret[0].([]*ch.Segment)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetSegments indicates an expected call of GetSegments.
-func (mr *MockCHServiceMockRecorder) GetSegments(ctx, tokenID, from, to, mechanism, filter, config any) *gomock.Call {
+func (mr *MockCHServiceMockRecorder) GetSegments(ctx, tokenID, from, to, mechanism, config any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSegments", reflect.TypeOf((*MockCHService)(nil).GetSegments), ctx, tokenID, from, to, mechanism, filter, config)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSegments", reflect.TypeOf((*MockCHService)(nil).GetSegments), ctx, tokenID, from, to, mechanism, config)
 }
 
 // GetSignalSummaries mocks base method.

@@ -18,7 +18,6 @@ func (s *Service) GetSegments(
 	tokenID uint32,
 	from, to time.Time,
 	mechanism model.DetectionMechanism,
-	filter *model.SignalFilter,
 	config *model.SegmentConfig,
 ) ([]*Segment, error) {
 	// Validate date range
@@ -41,7 +40,7 @@ func (s *Service) GetSegments(
 	}
 
 	// Detect segments using mechanism-specific logic
-	segments, err := detector.DetectSegments(ctx, tokenID, from, to, filter, config)
+	segments, err := detector.DetectSegments(ctx, tokenID, from, to, config)
 	if err != nil {
 		return nil, err
 	}

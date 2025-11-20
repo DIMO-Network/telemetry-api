@@ -197,7 +197,7 @@ func TestDetectorComparison(t *testing.T) {
 
 		for _, mech := range mechanisms {
 			start := time.Now()
-			segments, err := svc.GetSegments(ctx, tokenID, dayStart, dayEnd, mech.mechanism, nil, nil)
+			segments, err := svc.GetSegments(ctx, tokenID, dayStart, dayEnd, mech.mechanism, nil)
 			queryTime := time.Since(start)
 
 			require.NoError(t, err, "GetSegments should succeed for %s on %s", mech.name, dayStr)

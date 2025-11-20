@@ -31,7 +31,6 @@ func (d *IgnitionDetector) DetectSegments(
 	ctx context.Context,
 	tokenID uint32,
 	from, to time.Time,
-	filter *model.SignalFilter,
 	config *model.SegmentConfig,
 ) ([]*Segment, error) {
 	// Apply defaults
@@ -48,7 +47,7 @@ func (d *IgnitionDetector) DetectSegments(
 	}
 
 	// Fetch all state changes from the database
-	stmt, args := d.getStateChangesQuery(tokenID, from, to, filter)
+	stmt, args := d.getStateChangesQuery(tokenID, from, to)
 
 	rows, err := d.conn.Query(ctx, stmt, args...)
 	if err != nil {
@@ -77,7 +76,7 @@ func (d *IgnitionDetector) DetectSegments(
 }
 
 // getStateChangesQuery builds a query to fetch state changes from signal_state_changes table
-func (d *IgnitionDetector) getStateChangesQuery(tokenID uint32, from, to time.Time, filter *model.SignalFilter) (string, []any) {
+func (d *IgnitionDetector) getStateChangesQuery(tokenID uint32, from, to time.Time) (string, []any) {
 	query := `
 SELECT
   timestamp,
@@ -90,13 +89,6 @@ WHERE token_id = ?
   AND timestamp < ?`
 
 	args := []any{tokenID, from, to}
-
-	// Add optional source filter
-	if filter != nil && filter.Source != nil {
-		query += `
-  AND source = ?`
-		args = append(args, *filter.Source)
-	}
 
 	query += `
   AND prev_state != new_state
