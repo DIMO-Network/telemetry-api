@@ -40,7 +40,7 @@ extend type Query {
     to: Time!
     mechanism: DetectionMechanism!
     config: SegmentConfig
-  ): [Segment!] @requiresVehicleToken
+  ): [Segment!] @requiresVehicleToken @requiresAllOfPrivileges(privileges: [VEHICLE_ALL_TIME_LOCATION, VEHICLE_NON_LOCATION_DATA])
 }
 
 input SegmentConfig {

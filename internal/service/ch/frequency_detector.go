@@ -165,6 +165,20 @@ func mergeWindowsIntoSegments(
 		// Check if segment extends beyond query range (ongoing)
 		isOngoing := currentEnd.Equal(to) || currentEnd.After(to)
 
+		// Also consider ongoing if we are querying near real-time (to is close to Now)
+		// and the segment ended recently (within maxGapSeconds).
+		// This handles the case where the vehicle is still active but we haven't seen
+		// the *next* window yet, or the gap hasn't exceeded maxGapSeconds.
+		if !isOngoing {
+			now := time.Now()
+			idleDuration := time.Duration(maxGapSeconds) * time.Second
+			// If 'to' is within recent history (to >= Now - idle_time)
+			// AND the segment ended within recent history (currentEnd >= Now - idle_time)
+			if to.After(now.Add(-idleDuration)) && currentEnd.After(now.Add(-idleDuration)) {
+				isOngoing = true
+			}
+		}
+
 		var endTime *time.Time
 		if !isOngoing {
 			endTime = &currentEnd
