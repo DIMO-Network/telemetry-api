@@ -29,6 +29,10 @@ func validateSegmentArgs(tokenID int, from, to time.Time) error {
 		return fmt.Errorf("from and to times cannot be equal")
 	}
 
+	if to.After(time.Now()) {
+		return fmt.Errorf("to time cannot be in the future")
+	}
+
 	maxDuration := maxDateRangeDays * 24 * time.Hour
 	if to.Sub(from) > maxDuration {
 		return fmt.Errorf("date range exceeds maximum of %d days", maxDateRangeDays)
