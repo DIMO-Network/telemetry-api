@@ -132,7 +132,7 @@ func TestPermission(t *testing.T) {
 					to: "2023-01-02T00:00:00Z"
 					mechanism: ignitionDetection
 				) {
-					segmentId
+					startTime
 				}
 			}`,
 			permissions: []string{tokenclaims.PermissionGetLocationHistory, tokenclaims.PermissionGetNonLocationHistory},
@@ -147,7 +147,7 @@ func TestPermission(t *testing.T) {
 					to: "2023-01-02T00:00:00Z"
 					mechanism: ignitionDetection
 				) {
-					segmentId
+					startTime
 				}
 			}`,
 			permissions: []string{tokenclaims.PermissionGetNonLocationHistory},
@@ -163,7 +163,7 @@ func TestPermission(t *testing.T) {
 					to: "2023-01-02T00:00:00Z"
 					mechanism: ignitionDetection
 				) {
-					segmentId
+					startTime
 				}
 			}`,
 			permissions: []string{tokenclaims.PermissionGetLocationHistory},

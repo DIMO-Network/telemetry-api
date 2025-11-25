@@ -3,10 +3,8 @@ package repositories
 import (
 	"context"
 	"fmt"
-	"math/big"
 	"time"
 
-	"github.com/DIMO-Network/cloudevent"
 	"github.com/DIMO-Network/server-garage/pkg/gql/errorhandler"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 )
@@ -85,22 +83,10 @@ func (r *Repository) GetSegments(ctx context.Context, tokenID int, from, to time
 		return nil, handleDBError(ctx, err)
 	}
 
-	// Convert to GraphQL model with DID-formatted segment IDs
+	// Convert to GraphQL model
 	segments := make([]*model.Segment, len(chSegments))
 	for i, chSegment := range chSegments {
-		// Generate DID: did:nft:{chainID}:{vehicleContract}_{tokenID}#segment-{timestamp_seconds}
-		vehicleDID := cloudevent.ERC721DID{
-			ChainID:         r.chainID,
-			ContractAddress: r.vehicleAddress,
-			TokenID:         big.NewInt(int64(chSegment.TokenID)),
-		}.String()
-
-		// Append fragment identifier for segment (Unix timestamp in seconds)
-		timestampSeconds := chSegment.StartTime.Unix()
-		segmentDID := fmt.Sprintf("%s#segment-%d", vehicleDID, timestampSeconds)
-
 		segments[i] = &model.Segment{
-			SegmentID:          segmentDID,
 			StartTime:          chSegment.StartTime,
 			EndTime:            chSegment.EndTime,
 			DurationSeconds:    int(chSegment.DurationSeconds),

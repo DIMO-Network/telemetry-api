@@ -127,7 +127,6 @@ func (d *IgnitionDetector) buildSegmentsWithDebouncing(tokenID uint32, stateChan
 			if int(duration) >= minDuration {
 				segments = append(segments, &Segment{
 					TokenID:            tokenID,
-					SegmentID:          fmt.Sprintf("segment-%d", currentSegmentStart.Unix()),
 					StartTime:          *currentSegmentStart,
 					EndTime:            &segmentEnd,
 					DurationSeconds:    duration,
@@ -147,7 +146,6 @@ func (d *IgnitionDetector) buildSegmentsWithDebouncing(tokenID uint32, stateChan
 		if int(duration) >= minDuration {
 			segments = append(segments, &Segment{
 				TokenID:            tokenID,
-				SegmentID:          fmt.Sprintf("segment-%d", currentSegmentStart.Unix()),
 				StartTime:          *currentSegmentStart,
 				EndTime:            nil,
 				DurationSeconds:    duration,

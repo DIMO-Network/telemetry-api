@@ -10,7 +10,6 @@ import (
 // Segment represents a detected vehicle usage segment
 type Segment struct {
 	TokenID            uint32
-	SegmentID          string
 	StartTime          time.Time
 	EndTime            *time.Time
 	DurationSeconds    int32

@@ -141,14 +141,6 @@ type Query struct {
 }
 
 type Segment struct {
-	// Unique identifier in DID format with fragment:
-	// did:nft:{chainID}:{vehicleContract}_{tokenID}#segment-{unix_timestamp}
-	//
-	// Example: did:nft:137:0xbA5738a18d83D41847dfFbDC6101d37C69c9B0cF_186612#segment-1739647800
-	//
-	// The timestamp is seconds since Unix epoch (1970-01-01). Stable across
-	// queries if segment start is in underlying data source.
-	SegmentID string `json:"segmentId"`
 	// Segment start timestamp (actual activity start transition)
 	StartTime time.Time `json:"startTime"`
 	// Segment end timestamp (activity end after debounce period).

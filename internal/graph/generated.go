@@ -119,7 +119,6 @@ type ComplexityRoot struct {
 		DurationSeconds    func(childComplexity int) int
 		EndTime            func(childComplexity int) int
 		IsOngoing          func(childComplexity int) int
-		SegmentID          func(childComplexity int) int
 		StartTime          func(childComplexity int) int
 		StartedBeforeRange func(childComplexity int) int
 	}
@@ -762,12 +761,6 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Segment.IsOngoing(childComplexity), true
-	case "Segment.segmentId":
-		if e.complexity.Segment.SegmentID == nil {
-			break
-		}
-
-		return e.complexity.Segment.SegmentID(childComplexity), true
 	case "Segment.startTime":
 		if e.complexity.Segment.StartTime == nil {
 			break
@@ -3086,7 +3079,7 @@ extend type Query {
     to: Time!
     mechanism: DetectionMechanism!
     config: SegmentConfig
-  ): [Segment!] @requiresVehicleToken
+  ): [Segment!] @requiresVehicleToken @requiresAllOfPrivileges(privileges: [VEHICLE_ALL_TIME_LOCATION, VEHICLE_NON_LOCATION_DATA])
 }
 
 input SegmentConfig {
@@ -3116,17 +3109,6 @@ input SegmentConfig {
 }
 
 type Segment {
-  """
-  Unique identifier in DID format with fragment:
-  did:nft:{chainID}:{vehicleContract}_{tokenID}#segment-{unix_timestamp}
-  
-  Example: did:nft:137:0xbA5738a18d83D41847dfFbDC6101d37C69c9B0cF_186612#segment-1739647800
-  
-  The timestamp is seconds since Unix epoch (1970-01-01). Stable across 
-  queries if segment start is in underlying data source.
-  """
-  segmentId: String!
-  
   """
   Segment start timestamp (actual activity start transition)
   """
@@ -7855,8 +7837,20 @@ func (ec *executionContext) _Query_segments(ctx context.Context, field graphql.C
 				}
 				return ec.directives.RequiresVehicleToken(ctx, nil, directive0)
 			}
+			directive2 := func(ctx context.Context) (any, error) {
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_ALL_TIME_LOCATION", "VEHICLE_NON_LOCATION_DATA"})
+				if err != nil {
+					var zeroVal []*model.Segment
+					return zeroVal, err
+				}
+				if ec.directives.RequiresAllOfPrivileges == nil {
+					var zeroVal []*model.Segment
+					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
+				}
+				return ec.directives.RequiresAllOfPrivileges(ctx, nil, directive1, privileges)
+			}
 
-			next = directive1
+			next = directive2
 			return next
 		},
 		ec.marshalOSegment2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSegmentᚄ,
@@ -7873,8 +7867,6 @@ func (ec *executionContext) fieldContext_Query_segments(ctx context.Context, fie
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "segmentId":
-				return ec.fieldContext_Segment_segmentId(ctx, field)
 			case "startTime":
 				return ec.fieldContext_Segment_startTime(ctx, field)
 			case "endTime":
@@ -8170,35 +8162,6 @@ func (ec *executionContext) fieldContext_Query___schema(_ context.Context, field
 				return ec.fieldContext___Schema_directives(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type __Schema", field.Name)
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Segment_segmentId(ctx context.Context, field graphql.CollectedField, obj *model.Segment) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_Segment_segmentId,
-		func(ctx context.Context) (any, error) {
-			return obj.SegmentID, nil
-		},
-		nil,
-		ec.marshalNString2string,
-		true,
-		true,
-	)
-}
-
-func (ec *executionContext) fieldContext_Segment_segmentId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Segment",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	return fc, nil
@@ -22707,11 +22670,6 @@ func (ec *executionContext) _Segment(ctx context.Context, sel ast.SelectionSet, 
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Segment")
-		case "segmentId":
-			out.Values[i] = ec._Segment_segmentId(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
 		case "startTime":
 			out.Values[i] = ec._Segment_startTime(ctx, field, obj)
 			if out.Values[i] == graphql.Null {

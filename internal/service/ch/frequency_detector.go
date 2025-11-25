@@ -145,7 +145,6 @@ func mergeWindowsIntoSegments(
 				endTime := currentEnd
 				segments = append(segments, &Segment{
 					TokenID:            tokenID,
-					SegmentID:          fmt.Sprintf("segment-%d", currentStart.Unix()),
 					StartTime:          currentStart,
 					EndTime:            &endTime,
 					DurationSeconds:    duration,
@@ -190,7 +189,6 @@ func mergeWindowsIntoSegments(
 
 		segments = append(segments, &Segment{
 			TokenID:            tokenID,
-			SegmentID:          fmt.Sprintf("segment-%d", currentStart.Unix()),
 			StartTime:          currentStart,
 			EndTime:            endTime,
 			DurationSeconds:    duration,
