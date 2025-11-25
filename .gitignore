@@ -27,8 +27,3 @@ settings.yaml
 __debug_bin*
 *.code-workspace
 .history/
-
-# Real vehicle data
-*.csv
-
-
