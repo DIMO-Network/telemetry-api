@@ -11,7 +11,9 @@ import (
 	"github.com/DIMO-Network/telemetry-api/internal/config"
 	"github.com/ethereum/go-ethereum/common"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/status"
 )
 
 // FetchAPIService implements the FetchAPIService interface using gRPC
@@ -60,6 +62,9 @@ func (c *FetchAPIService) GetAllCloudEvents(ctx context.Context, filter *pb.Adva
 		Limit:           limit,
 	})
 	if err != nil {
+		if status.Code(err) == codes.NotFound {
+			return []cloudevent.CloudEvent[json.RawMessage]{}, nil
+		}
 		return nil, fmt.Errorf("failed to get files: %w", err)
 	}
 
