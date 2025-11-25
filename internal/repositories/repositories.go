@@ -86,7 +86,7 @@ func (r *Repository) GetSignal(ctx context.Context, aggArgs *model.AggregatedSig
 	// combine signals with the same timestamp by iterating over all signals
 	// if the timestamp differs from the previous signal, create a new SignalAggregations object
 	// Pre-allocate slice with estimated capacity to avoid reallocations
-	allAggs := make([]*model.SignalAggregations, 0, len(signals)/2) // Estimate: ~2 signals per aggregation
+	var allAggs []*model.SignalAggregations
 	var currAggs *model.SignalAggregations
 	lastTS := time.Time{}
 
