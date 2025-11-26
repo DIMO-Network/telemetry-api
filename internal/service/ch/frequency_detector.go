@@ -11,7 +11,7 @@ import (
 
 const (
 	defaultWindowSizeSeconds            = 60 // 1 minute windows
-	defaultSignalCountThreshold         = 12 // Minimum signals per window for activity
+	defaultSignalCountThreshold         = 10 // Minimum signals per window for activity
 	defaultDistinctSignalCountThreshold = 2  // Minimum distinct signal types per window
 )
 

@@ -10,8 +10,8 @@ import (
 )
 
 const (
-	defaultMinIdleSeconds            = 600 // 5 minutes
-	defaultMinSegmentDurationSeconds = 150 // 5 minutes
+	defaultMinIdleSeconds            = 300 // 5 minutes
+	defaultMinSegmentDurationSeconds = 300 // 5 minutes
 )
 
 // IgnitionDetector detects segments using ignition state transitions

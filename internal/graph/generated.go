@@ -3096,7 +3096,7 @@ input SegmentConfig {
   Filters very short segments (testing, engine cycling).
   Default: 60 (1 minute), Min: 1, Max: 3600
   """
-  minSegmentDurationSeconds: Int = 60
+  minSegmentDurationSeconds: Int = 300
   
   """
   [frequencyAnalysis only] Minimum signal count per window for activity detection.
@@ -21792,7 +21792,7 @@ func (ec *executionContext) unmarshalInputSegmentConfig(ctx context.Context, obj
 		asMap["minIdleSeconds"] = 300
 	}
 	if _, present := asMap["minSegmentDurationSeconds"]; !present {
-		asMap["minSegmentDurationSeconds"] = 60
+		asMap["minSegmentDurationSeconds"] = 300
 	}
 	if _, present := asMap["signalCountThreshold"]; !present {
 		asMap["signalCountThreshold"] = 10
