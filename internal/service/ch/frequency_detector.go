@@ -81,6 +81,10 @@ func (d *FrequencyDetector) DetectSegments(
 
 // getActiveWindows queries signal data with deduplication
 // Uses FINAL to ensure ReplacingMergeTree deduplication before aggregation
+//
+// Performance notes:
+// - PREWHERE filters on primary key (token_id) before FINAL merge
+// - Pre-allocates result slice based on expected window count
 func (d *FrequencyDetector) getActiveWindows(
 	ctx context.Context,
 	tokenID uint32,
@@ -90,7 +94,7 @@ func (d *FrequencyDetector) getActiveWindows(
 	distinctSignalThreshold int,
 ) ([]ActiveWindow, error) {
 	// Query signal table directly with FINAL for accurate counts
-	// Uses toStartOfInterval for flexible window sizes
+	// PREWHERE on token_id filters before FINAL merge (primary key optimization)
 	query := `
 SELECT
     toStartOfInterval(timestamp, INTERVAL ? second) AS window_start,
@@ -98,8 +102,8 @@ SELECT
     count() AS signal_count,
     uniq(name) AS distinct_signal_count
 FROM signal FINAL
-WHERE token_id = ?
-  AND timestamp >= ?
+PREWHERE token_id = ?
+WHERE timestamp >= ?
   AND timestamp < ?
 GROUP BY window_start
 HAVING signal_count >= ? AND distinct_signal_count >= ?
@@ -111,7 +115,10 @@ ORDER BY window_start`
 	}
 	defer rows.Close()
 
-	var windows []ActiveWindow
+	// Pre-allocate based on expected number of windows
+	expectedWindows := int(to.Sub(from).Seconds()) / windowSizeSeconds
+	windows := make([]ActiveWindow, 0, expectedWindows)
+
 	for rows.Next() {
 		var w ActiveWindow
 		err := rows.Scan(&w.WindowStart, &w.WindowEnd, &w.SignalCount, &w.DistinctSignalCount)
@@ -140,7 +147,12 @@ func mergeWindowsIntoSegments(
 		return nil
 	}
 
-	var segments []*Segment
+	// Cache time.Now() once to avoid repeated syscalls
+	now := time.Now()
+	idleDuration := time.Duration(maxGapSeconds) * time.Second
+
+	// Pre-allocate estimate: assume average of 2 trips per query
+	segments := make([]*Segment, 0, 4)
 	currentStart := windows[0].WindowStart
 	currentEnd := windows[0].WindowEnd
 
@@ -181,11 +193,10 @@ func mergeWindowsIntoSegments(
 		// This handles the case where the vehicle is still active but we haven't seen
 		// the *next* window yet, or the gap hasn't exceeded maxGapSeconds.
 		if !isOngoing {
-			now := time.Now()
-			idleDuration := time.Duration(maxGapSeconds) * time.Second
 			// If 'to' is within recent history (to >= Now - idle_time)
 			// AND the segment ended within recent history (currentEnd >= Now - idle_time)
-			if to.After(now.Add(-idleDuration)) && currentEnd.After(now.Add(-idleDuration)) {
+			recentThreshold := now.Add(-idleDuration)
+			if to.After(recentThreshold) && currentEnd.After(recentThreshold) {
 				isOngoing = true
 			}
 		}

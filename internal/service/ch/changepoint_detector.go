@@ -91,6 +91,10 @@ func (d *ChangePointDetector) DetectSegments(
 
 // getWindowSignalCounts gets signal counts per time window
 // Uses FINAL to ensure ReplacingMergeTree deduplication before aggregation
+//
+// Performance notes:
+// - PREWHERE filters on primary key (token_id) before FINAL merge
+// - Pre-allocates result slice based on expected window count
 func (d *ChangePointDetector) getWindowSignalCounts(
 	ctx context.Context,
 	tokenID uint32,
@@ -100,7 +104,7 @@ func (d *ChangePointDetector) getWindowSignalCounts(
 	distinctSignalThreshold int,
 ) ([]CUSUMWindow, error) {
 	// Query signal table directly with FINAL for accurate counts
-	// Uses toStartOfInterval for flexible window sizes
+	// PREWHERE on token_id filters before FINAL merge (primary key optimization)
 	query := `
 SELECT
     toStartOfInterval(timestamp, INTERVAL ? second) AS window_start,
@@ -108,8 +112,8 @@ SELECT
     count() AS signal_count,
     uniq(name) AS distinct_signal_count
 FROM signal FINAL
-WHERE token_id = ?
-  AND timestamp >= ?
+PREWHERE token_id = ?
+WHERE timestamp >= ?
   AND timestamp < ?
 GROUP BY window_start
 HAVING signal_count >= ? AND distinct_signal_count >= ?
@@ -121,7 +125,10 @@ ORDER BY window_start`
 	}
 	defer rows.Close()
 
-	var windows []CUSUMWindow
+	// Pre-allocate based on expected number of windows
+	expectedWindows := int(to.Sub(from).Seconds()) / windowSizeSeconds
+	windows := make([]CUSUMWindow, 0, expectedWindows)
+
 	for rows.Next() {
 		var w CUSUMWindow
 		err := rows.Scan(&w.WindowStart, &w.WindowEnd, &w.SignalCount, &w.DistinctSignalCount)
@@ -150,7 +157,8 @@ ORDER BY window_start`
 //	  - k is the drift parameter (allowable deviation)
 //	  - S[t] > threshold indicates active period
 func (d *ChangePointDetector) applyCUSUM(windows []CUSUMWindow) []ActiveWindow {
-	if len(windows) == 0 {
+	n := len(windows)
+	if n == 0 {
 		return nil
 	}
 
@@ -159,7 +167,8 @@ func (d *ChangePointDetector) applyCUSUM(windows []CUSUMWindow) []ActiveWindow {
 	drift := defaultCUSUMDrift                  // Allowable deviation (k parameter)
 	threshold := defaultCUSUMThreshold          // Detection threshold (h parameter)
 
-	var activeWindows []ActiveWindow
+	// Pre-allocate: assume ~50% of windows will be active (reasonable estimate)
+	activeWindows := make([]ActiveWindow, 0, n/2)
 	cusumStat := 0.0
 
 	for i := range windows {
