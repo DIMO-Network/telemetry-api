@@ -3,6 +3,7 @@ package ch
 import (
 	"context"
 	"encoding/csv"
+	"encoding/json"
 	"fmt"
 	"os"
 	"strconv"
@@ -41,22 +42,44 @@ func TestDetectorQueriesWithSampleData(t *testing.T) {
 	conn, err := chContainer.GetClickHouseAsConn()
 	require.NoError(t, err)
 
-	// Load CSVs
-	t.Log("=== Loading Sample Data ===")
-	loadSignalStateChanges(t, conn, "../../../.sample-data/signal_state_changes_2025-11-26.csv")
-	loadSignalWindowAggregates(t, conn, "../../../.sample-data/signal_window_aggregates_2025-11-26.csv")
-
 	// Instantiate Service
 	svc := &Service{conn: conn}
 
 	// Use last 30 days as time range for all detectors
-	tokenID := uint32(22892)
+	tokenID := uint32(162682)
 	to := time.Now().UTC()
 	from := to.AddDate(0, 0, -30) // 30 days ago
 
 	t.Logf("Time range: %s to %s", from.Format(time.RFC3339), to.Format(time.RFC3339))
 
-	// Test FrequencyDetector (uses signal_window_aggregates)
+	// ============================================================
+	// PART 1: Test IgnitionDetector (uses signal_state_changes only)
+	// ============================================================
+	t.Log("\n=== Loading signal_state_changes for IgnitionDetector ===")
+	loadSignalStateChanges(t, conn, "../../../.sample-data/signal_state_changes_2025-11-26.csv")
+
+	t.Log("\n=== IgnitionDetector Query ===")
+	printIgnitionDetectorQuery(t, tokenID, from, to)
+
+	t.Logf("Testing IgnitionDetector for token %d", tokenID)
+	segmentsIgn, err := svc.GetSegments(ctx, tokenID, from, to, model.DetectionMechanismIgnitionDetection, nil)
+	require.NoError(t, err)
+	t.Logf("Found %d segments (IgnitionDetector)", len(segmentsIgn))
+	printSegments(t, "IgnitionDetector", segmentsIgn)
+
+	// ============================================================
+	// PART 2: Truncate and test FrequencyDetector/ChangePointDetector
+	// ============================================================
+	t.Log("\n=== Truncating tables ===")
+	err = conn.Exec(ctx, "TRUNCATE TABLE signal")
+	require.NoError(t, err)
+	err = conn.Exec(ctx, "TRUNCATE TABLE signal_state_changes")
+	require.NoError(t, err)
+
+	t.Log("\n=== Loading signals for FrequencyDetector/ChangePointDetector ===")
+	loadSignals(t, conn, "../../../.sample-data/signals_token_id_ 22892_2025-11-26.csv")
+
+	// Test FrequencyDetector (uses signal FINAL with query-time dedup)
 	t.Log("\n=== FrequencyDetector Query ===")
 	printFrequencyDetectorQuery(t, tokenID, from, to)
 
@@ -66,7 +89,7 @@ func TestDetectorQueriesWithSampleData(t *testing.T) {
 	t.Logf("Found %d segments (FrequencyDetector)", len(segmentsFreq))
 	printSegments(t, "FrequencyDetector", segmentsFreq)
 
-	// Test ChangePointDetector (uses signal_window_aggregates)
+	// Test ChangePointDetector (uses signal FINAL with query-time dedup)
 	t.Log("\n=== ChangePointDetector Query ===")
 	printChangePointDetectorQuery(t, tokenID, from, to)
 
@@ -75,16 +98,6 @@ func TestDetectorQueriesWithSampleData(t *testing.T) {
 	require.NoError(t, err)
 	t.Logf("Found %d segments (ChangePointDetector)", len(segmentsCP))
 	printSegments(t, "ChangePointDetector", segmentsCP)
-
-	// Test IgnitionDetector (uses signal_state_changes)
-	t.Log("\n=== IgnitionDetector Query ===")
-	printIgnitionDetectorQuery(t, tokenID, from, to)
-
-	t.Logf("Testing IgnitionDetector for token %d", tokenID)
-	segmentsIgn, err := svc.GetSegments(ctx, tokenID, from, to, model.DetectionMechanismIgnitionDetection, nil)
-	require.NoError(t, err)
-	t.Logf("Found %d segments (IgnitionDetector)", len(segmentsIgn))
-	printSegments(t, "IgnitionDetector", segmentsIgn)
 }
 
 func printSegments(t *testing.T, detectorName string, segments []*Segment) {
@@ -123,49 +136,57 @@ func printSegments(t *testing.T, detectorName string, segments []*Segment) {
 }
 
 func printFrequencyDetectorQuery(t *testing.T, tokenID uint32, from, to time.Time) {
-	windowSize := 60      // defaultWindowSizeSeconds
-	signalThreshold := 12 // defaultSignalCountThreshold
+	windowSize := 60             // defaultWindowSizeSeconds
+	signalThreshold := 12        // defaultSignalCountThreshold
+	distinctSignalThreshold := 2 // defaultDistinctSignalCountThreshold
 
 	query := fmt.Sprintf(`
 SELECT
-    window_start,
-    window_start + INTERVAL window_size_seconds second AS window_end,
-    sum(signal_count) as signal_count,
-    uniqMerge(distinct_signals) as distinct_signal_count
-FROM signal_window_aggregates
+    toStartOfInterval(timestamp, INTERVAL %d second) AS window_start,
+    toStartOfInterval(timestamp, INTERVAL %d second) + INTERVAL %d second AS window_end,
+    count() AS signal_count,
+    uniq(name) AS distinct_signal_count
+FROM signal FINAL
 WHERE token_id = %d
-  AND window_size_seconds = %d
-  AND window_start >= '%s'
-  AND window_start < '%s'
-GROUP BY window_start, window_size_seconds
-HAVING signal_count >= %d
+  AND timestamp >= '%s'
+  AND timestamp < '%s'
+GROUP BY window_start
+HAVING signal_count >= %d AND distinct_signal_count >= %d
 ORDER BY window_start`,
-		tokenID, windowSize,
+		windowSize, windowSize, windowSize,
+		tokenID,
 		from.Format("2006-01-02 15:04:05"),
 		to.Format("2006-01-02 15:04:05"),
-		signalThreshold)
+		signalThreshold,
+		distinctSignalThreshold)
 
 	t.Logf("Query:\n%s\n", query)
 }
 
 func printChangePointDetectorQuery(t *testing.T, tokenID uint32, from, to time.Time) {
-	windowSize := 60 // defaultCUSUMWindowSeconds
+	windowSize := 60             // defaultCUSUMWindowSeconds
+	signalThreshold := 12        // defaultCUSUMSignalCountThreshold
+	distinctSignalThreshold := 2 // defaultCUSUMDistinctSignalCountThreshold
 
 	query := fmt.Sprintf(`
 SELECT
-    window_start,
-    window_start + INTERVAL window_size_seconds second AS window_end,
-    sum(signal_count) as signal_count
-FROM signal_window_aggregates
+    toStartOfInterval(timestamp, INTERVAL %d second) AS window_start,
+    toStartOfInterval(timestamp, INTERVAL %d second) + INTERVAL %d second AS window_end,
+    count() AS signal_count,
+    uniq(name) AS distinct_signal_count
+FROM signal FINAL
 WHERE token_id = %d
-  AND window_size_seconds = %d
-  AND window_start >= '%s'
-  AND window_start < '%s'
-GROUP BY window_start, window_size_seconds
+  AND timestamp >= '%s'
+  AND timestamp < '%s'
+GROUP BY window_start
+HAVING signal_count >= %d AND distinct_signal_count >= %d
 ORDER BY window_start`,
-		tokenID, windowSize,
+		windowSize, windowSize, windowSize,
+		tokenID,
 		from.Format("2006-01-02 15:04:05"),
-		to.Format("2006-01-02 15:04:05"))
+		to.Format("2006-01-02 15:04:05"),
+		signalThreshold,
+		distinctSignalThreshold)
 
 	t.Logf("Query:\n%s\n", query)
 }
@@ -239,7 +260,7 @@ func loadSignalStateChanges(t *testing.T, conn clickhouse.Conn, path string) {
 	require.NoError(t, err)
 }
 
-func loadSignalWindowAggregates(t *testing.T, conn clickhouse.Conn, path string) {
+func loadSignals(t *testing.T, conn clickhouse.Conn, path string) {
 	file, err := os.Open(path)
 	require.NoError(t, err)
 	defer file.Close()
@@ -256,39 +277,41 @@ func loadSignalWindowAggregates(t *testing.T, conn clickhouse.Conn, path string)
 		colIdx[h] = i
 	}
 
-	// Use Exec for each row because distinct_signals is AggregateFunction which is hard to insert via driver binding from Go string
-	// And we only need token 45 for the test, so it shouldn't be too slow.
-	ctx := context.Background()
+	batch, err := conn.PrepareBatch(context.Background(), "INSERT INTO signal")
+	require.NoError(t, err)
 
 	for i := 1; i < len(records); i++ {
 		row := records[i]
 
 		tokenID, _ := strconv.ParseUint(row[colIdx["token_id"]], 10, 32)
-		if tokenID != 22892 {
-			continue
+		timestamp, _ := parseTimestamp(row[colIdx["timestamp"]])
+		valueNumber, _ := strconv.ParseFloat(row[colIdx["value_number"]], 64)
+
+		// Parse value_location JSON
+		var loc struct {
+			Latitude  float64 `json:"latitude"`
+			Longitude float64 `json:"longitude"`
+			Hdop      float64 `json:"hdop"`
 		}
+		_ = json.Unmarshal([]byte(row[colIdx["value_location"]]), &loc)
 
-		windowStart, _ := parseTimestamp(row[colIdx["window_start"]])
-		windowSize, _ := strconv.ParseUint(row[colIdx["window_size_seconds"]], 10, 32)
-		signalCount, _ := strconv.ParseUint(row[colIdx["signal_count"]], 10, 64)
-		// Distinct signals ignored, we insert dummy state
-
-		// Construct query using literals for safety/simplicity with AggregateFunction
-		query := fmt.Sprintf(`
-			INSERT INTO signal_window_aggregates 
-			(token_id, window_start, window_size_seconds, signal_count, distinct_signals)
-			SELECT
-			%d, toDateTime64('%s', 6, 'UTC'), %d, %d, uniqState(toUInt64(1))
-		`,
-			tokenID,
-			windowStart.Format("2006-01-02 15:04:05.000000"),
-			windowSize,
-			signalCount,
+		err := batch.Append(
+			uint32(tokenID),
+			timestamp,
+			row[colIdx["name"]],
+			row[colIdx["source"]],
+			row[colIdx["producer"]],
+			row[colIdx["cloud_event_id"]],
+			valueNumber,
+			row[colIdx["value_string"]],
+			[]interface{}{loc.Latitude, loc.Longitude, loc.Hdop},
 		)
-
-		err := conn.Exec(ctx, query)
-		require.NoError(t, err, "Failed to insert row %d", i)
+		require.NoError(t, err, "Failed to append row %d", i)
 	}
+
+	err = batch.Send()
+	require.NoError(t, err)
+	t.Logf("Loaded %d signal rows", len(records)-1)
 }
 
 func parseTimestamp(ts string) (time.Time, error) {

@@ -10,8 +10,9 @@ import (
 )
 
 const (
-	defaultWindowSizeSeconds    = 60 // 1 minute windows
-	defaultSignalCountThreshold = 12 // Minimum signals per window for activity
+	defaultWindowSizeSeconds            = 60 // 1 minute windows
+	defaultSignalCountThreshold         = 12 // Minimum signals per window for activity
+	defaultDistinctSignalCountThreshold = 2  // Minimum distinct signal types per window
 )
 
 // FrequencyDetector detects segments using frequency analysis of signal updates
@@ -52,8 +53,10 @@ func (d *FrequencyDetector) DetectSegments(
 		}
 	}
 
-	// Query active windows from pre-aggregated table
-	windows, err := d.getActiveWindows(ctx, tokenID, from, to, signalThreshold)
+	// Query active windows with dynamic window size
+	windowSize := defaultWindowSizeSeconds
+	distinctSignalThreshold := defaultDistinctSignalCountThreshold
+	windows, err := d.getActiveWindows(ctx, tokenID, from, to, windowSize, signalThreshold, distinctSignalThreshold)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get active windows: %w", err)
 	}
@@ -68,33 +71,33 @@ func (d *FrequencyDetector) DetectSegments(
 	return segments, nil
 }
 
-// getActiveWindows queries pre-aggregated window data
+// getActiveWindows queries signal data with deduplication
+// Uses FINAL to ensure ReplacingMergeTree deduplication before aggregation
 func (d *FrequencyDetector) getActiveWindows(
 	ctx context.Context,
 	tokenID uint32,
 	from, to time.Time,
+	windowSizeSeconds int,
 	signalThreshold int,
+	distinctSignalThreshold int,
 ) ([]ActiveWindow, error) {
-	// Always use 1-minute windows (60 seconds) for finest granularity
-	// Coarser windows (5m, 1h) available for future optimization
-	windowSize := defaultWindowSizeSeconds
-
+	// Query signal table directly with FINAL for accurate counts
+	// Uses toStartOfInterval for flexible window sizes
 	query := `
 SELECT
-    window_start,
-    window_start + INTERVAL window_size_seconds second AS window_end,
-    sum(signal_count) as signal_count,
-    uniqMerge(distinct_signals) as distinct_signal_count
-FROM signal_window_aggregates
+    toStartOfInterval(timestamp, INTERVAL ? second) AS window_start,
+    toStartOfInterval(timestamp, INTERVAL ? second) + INTERVAL ? second AS window_end,
+    count() AS signal_count,
+    uniq(name) AS distinct_signal_count
+FROM signal FINAL
 WHERE token_id = ?
-  AND window_size_seconds = ?
-  AND window_start >= ?
-  AND window_start < ?
-GROUP BY window_start, window_size_seconds
-HAVING signal_count >= ?
+  AND timestamp >= ?
+  AND timestamp < ?
+GROUP BY window_start
+HAVING signal_count >= ? AND distinct_signal_count >= ?
 ORDER BY window_start`
 
-	rows, err := d.conn.Query(ctx, query, tokenID, windowSize, from, to, signalThreshold)
+	rows, err := d.conn.Query(ctx, query, windowSizeSeconds, windowSizeSeconds, windowSizeSeconds, tokenID, from, to, signalThreshold, distinctSignalThreshold)
 	if err != nil {
 		return nil, fmt.Errorf("failed querying active windows: %w", err)
 	}

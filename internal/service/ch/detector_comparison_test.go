@@ -66,7 +66,6 @@ func TestDetectorComparison(t *testing.T) {
 	t.Log("=== Cleaning tables ===")
 	conn.Exec(ctx, "TRUNCATE TABLE signal")
 	conn.Exec(ctx, "TRUNCATE TABLE signal_state_changes")
-	conn.Exec(ctx, "TRUNCATE TABLE signal_window_aggregates")
 
 	// Load real vehicle data
 	t.Log("=== Loading real vehicle data ===")
@@ -137,15 +136,9 @@ func TestDetectorComparison(t *testing.T) {
 	`)
 	require.NoError(t, err, "Failed to populate signal_state_changes")
 
-	// Wait for frequency analysis materialized view to populate
+	// Wait for signal_state_changes materialized view to populate
 	t.Log("=== Waiting for materialized views to populate ===")
 	time.Sleep(500 * time.Millisecond)
-
-	// Verify MV populated
-	var windowCount uint64
-	err = conn.QueryRow(ctx, "SELECT count() FROM signal_window_aggregates").Scan(&windowCount)
-	require.NoError(t, err)
-	t.Logf("Frequency analysis windows created: %d", windowCount)
 
 	var stateChangeCount uint64
 	err = conn.QueryRow(ctx, "SELECT count() FROM signal_state_changes WHERE signal_name = 'isIgnitionOn'").Scan(&stateChangeCount)

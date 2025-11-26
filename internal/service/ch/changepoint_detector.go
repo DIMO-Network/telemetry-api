@@ -10,10 +10,12 @@ import (
 )
 
 const (
-	defaultCUSUMWindowSeconds       = 60  // 1-minute windows for frequency measurement
-	defaultCUSUMThreshold           = 5.0 // CUSUM threshold for detecting change points
-	defaultCUSUMDrift               = 0.5 // Drift parameter (half of expected change magnitude)
-	defaultCUSUMBaselineSignalCount = 1.0 // Baseline signal count per window when idle
+	defaultCUSUMWindowSeconds                = 60  // 1-minute windows for frequency measurement
+	defaultCUSUMThreshold                    = 5.0 // CUSUM threshold for detecting change points
+	defaultCUSUMDrift                        = 0.5 // Drift parameter (half of expected change magnitude)
+	defaultCUSUMBaselineSignalCount          = 1.0 // Baseline signal count per window when idle
+	defaultCUSUMSignalCountThreshold         = 12  // Minimum signals per window for activity
+	defaultCUSUMDistinctSignalCountThreshold = 2   // Minimum distinct signal types per window
 )
 
 // ChangePointDetector detects segments using CUSUM (Cumulative Sum) change point detection
@@ -25,11 +27,12 @@ type ChangePointDetector struct {
 
 // CUSUMWindow represents a time window with CUSUM statistic
 type CUSUMWindow struct {
-	WindowStart time.Time
-	WindowEnd   time.Time
-	SignalCount uint64  // Changed from uint32 to match signal_window_aggregates table
-	CUSUMStat   float64 // Cumulative sum statistic
-	IsActive    bool    // Whether CUSUM exceeded threshold
+	WindowStart         time.Time
+	WindowEnd           time.Time
+	SignalCount         uint64
+	DistinctSignalCount uint64
+	CUSUMStat           float64 // Cumulative sum statistic
+	IsActive            bool    // Whether CUSUM exceeded threshold
 }
 
 // DetectSegments implements CUSUM-based change point detection
@@ -52,8 +55,11 @@ func (d *ChangePointDetector) DetectSegments(
 		}
 	}
 
-	// Query signal counts per window
-	windowCounts, err := d.getWindowSignalCounts(ctx, tokenID, from, to)
+	// Query signal counts per window with dynamic window size
+	windowSize := defaultCUSUMWindowSeconds
+	signalThreshold := defaultCUSUMSignalCountThreshold
+	distinctSignalThreshold := defaultCUSUMDistinctSignalCountThreshold
+	windowCounts, err := d.getWindowSignalCounts(ctx, tokenID, from, to, windowSize, signalThreshold, distinctSignalThreshold)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get window signal counts: %w", err)
 	}
@@ -76,29 +82,32 @@ func (d *ChangePointDetector) DetectSegments(
 }
 
 // getWindowSignalCounts gets signal counts per time window
-// Uses pre-computed signal_window_aggregates materialized view for optimal performance
+// Uses FINAL to ensure ReplacingMergeTree deduplication before aggregation
 func (d *ChangePointDetector) getWindowSignalCounts(
 	ctx context.Context,
 	tokenID uint32,
 	from, to time.Time,
+	windowSizeSeconds int,
+	signalThreshold int,
+	distinctSignalThreshold int,
 ) ([]CUSUMWindow, error) {
-	windowSize := defaultCUSUMWindowSeconds
-
-	// Use pre-computed materialized view for much better performance
+	// Query signal table directly with FINAL for accurate counts
+	// Uses toStartOfInterval for flexible window sizes
 	query := `
 SELECT
-    window_start,
-    window_start + INTERVAL window_size_seconds second AS window_end,
-    sum(signal_count) as signal_count
-FROM signal_window_aggregates
+    toStartOfInterval(timestamp, INTERVAL ? second) AS window_start,
+    toStartOfInterval(timestamp, INTERVAL ? second) + INTERVAL ? second AS window_end,
+    count() AS signal_count,
+    uniq(name) AS distinct_signal_count
+FROM signal FINAL
 WHERE token_id = ?
-  AND window_size_seconds = ?
-  AND window_start >= ?
-  AND window_start < ?
-GROUP BY window_start, window_size_seconds
+  AND timestamp >= ?
+  AND timestamp < ?
+GROUP BY window_start
+HAVING signal_count >= ? AND distinct_signal_count >= ?
 ORDER BY window_start`
 
-	rows, err := d.conn.Query(ctx, query, tokenID, windowSize, from, to)
+	rows, err := d.conn.Query(ctx, query, windowSizeSeconds, windowSizeSeconds, windowSizeSeconds, tokenID, from, to, signalThreshold, distinctSignalThreshold)
 	if err != nil {
 		return nil, fmt.Errorf("failed querying window counts: %w", err)
 	}
@@ -107,7 +116,7 @@ ORDER BY window_start`
 	var windows []CUSUMWindow
 	for rows.Next() {
 		var w CUSUMWindow
-		err := rows.Scan(&w.WindowStart, &w.WindowEnd, &w.SignalCount)
+		err := rows.Scan(&w.WindowStart, &w.WindowEnd, &w.SignalCount, &w.DistinctSignalCount)
 		if err != nil {
 			return nil, fmt.Errorf("failed scanning window: %w", err)
 		}
@@ -164,7 +173,7 @@ func (d *ChangePointDetector) applyCUSUM(windows []CUSUMWindow) []ActiveWindow {
 				WindowStart:         windows[i].WindowStart,
 				WindowEnd:           windows[i].WindowEnd,
 				SignalCount:         windows[i].SignalCount,
-				DistinctSignalCount: 0, // Not tracked in this detector
+				DistinctSignalCount: windows[i].DistinctSignalCount,
 			})
 		} else {
 			windows[i].IsActive = false
