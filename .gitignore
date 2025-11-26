@@ -27,3 +27,4 @@ settings.yaml
 __debug_bin*
 *.code-workspace
 .history/
+.sample-data/

@@ -82,7 +82,7 @@ SELECT
   timestamp,
   new_state,
   prev_state
-FROM signal_state_changes
+FROM signal_state_changes FINAL
 WHERE token_id = ?
   AND signal_name = 'isIgnitionOn'
   AND timestamp >= ?

@@ -27,7 +27,7 @@ type ChangePointDetector struct {
 type CUSUMWindow struct {
 	WindowStart time.Time
 	WindowEnd   time.Time
-	SignalCount uint32  // Changed from uint64 to match signal_window_aggregates table
+	SignalCount uint64  // Changed from uint32 to match signal_window_aggregates table
 	CUSUMStat   float64 // Cumulative sum statistic
 	IsActive    bool    // Whether CUSUM exceeded threshold
 }
@@ -89,12 +89,13 @@ func (d *ChangePointDetector) getWindowSignalCounts(
 SELECT
     window_start,
     window_start + INTERVAL window_size_seconds second AS window_end,
-    signal_count
+    sum(signal_count) as signal_count
 FROM signal_window_aggregates
 WHERE token_id = ?
   AND window_size_seconds = ?
   AND window_start >= ?
   AND window_start < ?
+GROUP BY window_start, window_size_seconds
 ORDER BY window_start`
 
 	rows, err := d.conn.Query(ctx, query, tokenID, windowSize, from, to)
@@ -162,7 +163,7 @@ func (d *ChangePointDetector) applyCUSUM(windows []CUSUMWindow) []ActiveWindow {
 			activeWindows = append(activeWindows, ActiveWindow{
 				WindowStart:         windows[i].WindowStart,
 				WindowEnd:           windows[i].WindowEnd,
-				SignalCount:         uint32(windows[i].SignalCount),
+				SignalCount:         windows[i].SignalCount,
 				DistinctSignalCount: 0, // Not tracked in this detector
 			})
 		} else {

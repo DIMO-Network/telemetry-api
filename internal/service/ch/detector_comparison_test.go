@@ -70,7 +70,12 @@ func TestDetectorComparison(t *testing.T) {
 
 	// Load real vehicle data
 	t.Log("=== Loading real vehicle data ===")
-	signals, err := loadSignalsFromCSV("../../../real_vehicle_data copy.csv")
+	csvPath := "../../../real_vehicle_data copy.csv"
+	if _, err := os.Stat(csvPath); os.IsNotExist(err) {
+		t.Skipf("Skipping detector comparison test: %s not found", csvPath)
+	}
+
+	signals, err := loadSignalsFromCSV(csvPath)
 	require.NoError(t, err, "Failed to load CSV data")
 	require.NotEmpty(t, signals, "CSV should contain signals")
 

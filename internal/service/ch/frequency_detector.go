@@ -24,8 +24,8 @@ type FrequencyDetector struct {
 type ActiveWindow struct {
 	WindowStart         time.Time
 	WindowEnd           time.Time
-	SignalCount         uint32
-	DistinctSignalCount uint16
+	SignalCount         uint64
+	DistinctSignalCount uint64
 }
 
 // DetectSegments implements frequency-based segment detection
@@ -83,14 +83,15 @@ func (d *FrequencyDetector) getActiveWindows(
 SELECT
     window_start,
     window_start + INTERVAL window_size_seconds second AS window_end,
-    signal_count,
-    distinct_signal_count
+    sum(signal_count) as signal_count,
+    uniqMerge(distinct_signals) as distinct_signal_count
 FROM signal_window_aggregates
 WHERE token_id = ?
   AND window_size_seconds = ?
   AND window_start >= ?
   AND window_start < ?
-  AND signal_count >= ?
+GROUP BY window_start, window_size_seconds
+HAVING signal_count >= ?
 ORDER BY window_start`
 
 	rows, err := d.conn.Query(ctx, query, tokenID, windowSize, from, to, signalThreshold)
