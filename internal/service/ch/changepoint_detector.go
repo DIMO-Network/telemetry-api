@@ -123,7 +123,7 @@ ORDER BY window_start`
 	if err != nil {
 		return nil, fmt.Errorf("failed querying window counts: %w", err)
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	// Pre-allocate based on expected number of windows
 	expectedWindows := int(to.Sub(from).Seconds()) / windowSizeSeconds

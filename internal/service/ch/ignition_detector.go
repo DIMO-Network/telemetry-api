@@ -60,7 +60,7 @@ func (d *IgnitionDetector) DetectSegments(
 	if err != nil {
 		return nil, fmt.Errorf("failed querying clickhouse for state changes: %w", err)
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	var stateChanges []StateChange
 	for rows.Next() {
