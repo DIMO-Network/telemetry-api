@@ -52,14 +52,14 @@ func validateSegmentConfig(config *model.SegmentConfig) error {
 	}
 
 	if config.MinSegmentDurationSeconds != nil {
-		if *config.MinSegmentDurationSeconds < 1 || *config.MinSegmentDurationSeconds > 3600 {
-			return fmt.Errorf("minSegmentDurationSeconds must be between 1 and 3600")
+		if *config.MinSegmentDurationSeconds < 60 || *config.MinSegmentDurationSeconds > 3600 {
+			return fmt.Errorf("minSegmentDurationSeconds must be between 60 and 3600")
 		}
 	}
 
 	if config.SignalCountThreshold != nil {
-		if *config.SignalCountThreshold < 3 || *config.SignalCountThreshold > 100 {
-			return fmt.Errorf("signalCountThreshold must be between 3 and 100")
+		if *config.SignalCountThreshold < 1 || *config.SignalCountThreshold > 3600 {
+			return fmt.Errorf("signalCountThreshold must be between 1 and 3600")
 		}
 	}
 

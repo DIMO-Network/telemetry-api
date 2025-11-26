@@ -165,13 +165,13 @@ type SegmentConfig struct {
 	MinIdleSeconds *int `json:"minIdleSeconds,omitempty"`
 	// Minimum segment duration (seconds) to include in results.
 	// Filters very short segments (testing, engine cycling).
-	// Default: 60 (1 minute), Min: 1, Max: 3600
+	// Default: 240 (4 minutes), Min: 60, Max: 3600
 	MinSegmentDurationSeconds *int `json:"minSegmentDurationSeconds,omitempty"`
 	// [frequencyAnalysis only] Minimum signal count per window for activity detection.
 	// Higher values = more conservative (filters parked telemetry better).
 	// Lower values = more sensitive (works for sparse signal vehicles).
 	// Default: 10 (tuned to match ignition detection accuracy)
-	// Min: 3, Max: 100
+	// Min: 1, Max: 3600
 	SignalCountThreshold *int `json:"signalCountThreshold,omitempty"`
 }
 

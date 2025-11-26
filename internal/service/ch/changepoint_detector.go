@@ -14,7 +14,7 @@ const (
 	defaultCUSUMThreshold                    = 5.0 // CUSUM threshold for detecting change points
 	defaultCUSUMDrift                        = 0.5 // Drift parameter (half of expected change magnitude)
 	defaultCUSUMBaselineSignalCount          = 1.0 // Baseline signal count per window when idle
-	defaultCUSUMSignalCountThreshold         = 12  // Minimum signals per window for activity
+	defaultCUSUMSignalCountThreshold         = 10  // Minimum signals per window for activity
 	defaultCUSUMDistinctSignalCountThreshold = 2   // Minimum distinct signal types per window
 )
 
