@@ -25,6 +25,11 @@ type ChangePointDetector struct {
 	conn clickhouse.Conn
 }
 
+// NewChangePointDetector creates a new ChangePointDetector with the given connection
+func NewChangePointDetector(conn clickhouse.Conn) *ChangePointDetector {
+	return &ChangePointDetector{conn: conn}
+}
+
 // CUSUMWindow represents a time window with CUSUM statistic
 type CUSUMWindow struct {
 	WindowStart         time.Time

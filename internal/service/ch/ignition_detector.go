@@ -19,6 +19,11 @@ type IgnitionDetector struct {
 	conn clickhouse.Conn
 }
 
+// NewIgnitionDetector creates a new IgnitionDetector with the given connection
+func NewIgnitionDetector(conn clickhouse.Conn) *IgnitionDetector {
+	return &IgnitionDetector{conn: conn}
+}
+
 // StateChange represents a single state change from the signal_state_changes table
 type StateChange struct {
 	Timestamp time.Time

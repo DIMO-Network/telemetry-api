@@ -21,6 +21,11 @@ type FrequencyDetector struct {
 	conn clickhouse.Conn
 }
 
+// NewFrequencyDetector creates a new FrequencyDetector with the given connection
+func NewFrequencyDetector(conn clickhouse.Conn) *FrequencyDetector {
+	return &FrequencyDetector{conn: conn}
+}
+
 // ActiveWindow represents a time window with sufficient signal activity
 type ActiveWindow struct {
 	WindowStart         time.Time
