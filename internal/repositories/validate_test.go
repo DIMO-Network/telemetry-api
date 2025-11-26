@@ -54,3 +54,39 @@ func TestValidateEventArgs(t *testing.T) {
 	})
 
 }
+
+func TestValidateSegmentArgs(t *testing.T) {
+	validFrom := time.Now().Add(-time.Hour)
+	validTo := time.Now()
+
+	t.Run("valid args", func(t *testing.T) {
+		err := validateSegmentArgs(1, validFrom, validTo)
+		require.NoError(t, err)
+	})
+
+	t.Run("tokenID <= 0", func(t *testing.T) {
+		err := validateSegmentArgs(0, validFrom, validTo)
+		require.Error(t, err)
+	})
+
+	t.Run("from after to", func(t *testing.T) {
+		err := validateSegmentArgs(1, validTo.Add(time.Minute), validTo)
+		require.Error(t, err)
+	})
+
+	t.Run("from equal to", func(t *testing.T) {
+		err := validateSegmentArgs(1, validFrom, validFrom)
+		require.Error(t, err)
+	})
+
+	t.Run("to in future", func(t *testing.T) {
+		err := validateSegmentArgs(1, validFrom, time.Now().Add(time.Hour))
+		require.ErrorContains(t, err, "to time cannot be in the future")
+	})
+
+	t.Run("date range exceeded", func(t *testing.T) {
+		from := validTo.Add(-31 * 24 * time.Hour)
+		err := validateSegmentArgs(1, from, validTo)
+		require.Error(t, err)
+	})
+}

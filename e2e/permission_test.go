@@ -122,6 +122,53 @@ func TestPermission(t *testing.T) {
 			permissions: []string{tokenclaims.PermissionGetNonLocationHistory},
 			expectedErr: "unauthorized: requires at least one of the following privileges [privilege:GetApproximateLocation privilege:GetLocationHistory]",
 		},
+		{
+			name:    "Segments permissions success",
+			tokenID: 39718,
+			query: `query {
+				segments(
+					tokenId: 39718
+					from: "2023-01-01T00:00:00Z"
+					to: "2023-01-02T00:00:00Z"
+					mechanism: ignitionDetection
+				) {
+					startTime
+				}
+			}`,
+			permissions: []string{tokenclaims.PermissionGetLocationHistory, tokenclaims.PermissionGetNonLocationHistory},
+		},
+		{
+			name:    "Segments permissions missing location history",
+			tokenID: 39718,
+			query: `query {
+				segments(
+					tokenId: 39718
+					from: "2023-01-01T00:00:00Z"
+					to: "2023-01-02T00:00:00Z"
+					mechanism: ignitionDetection
+				) {
+					startTime
+				}
+			}`,
+			permissions: []string{tokenclaims.PermissionGetNonLocationHistory},
+			expectedErr: "unauthorized: missing required privilege(s) privilege:GetLocationHistory",
+		},
+		{
+			name:    "Segments permissions missing non-location",
+			tokenID: 39718,
+			query: `query {
+				segments(
+					tokenId: 39718
+					from: "2023-01-01T00:00:00Z"
+					to: "2023-01-02T00:00:00Z"
+					mechanism: ignitionDetection
+				) {
+					startTime
+				}
+			}`,
+			permissions: []string{tokenclaims.PermissionGetLocationHistory},
+			expectedErr: "unauthorized: missing required privilege(s) privilege:GetNonLocationHistory",
+		},
 	}
 
 	for _, tt := range tests {
