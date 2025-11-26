@@ -195,4 +195,3 @@ func TestBuildSegmentsWithDebouncing(t *testing.T) {
 		require.Equal(t, int32(600), result[0].DurationSeconds) // 10 minutes = 600 seconds
 	})
 }
-
