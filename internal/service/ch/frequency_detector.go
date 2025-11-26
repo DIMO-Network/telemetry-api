@@ -59,9 +59,12 @@ func (d *FrequencyDetector) DetectSegments(
 	}
 
 	// Query active windows with dynamic window size
+	// Look back maxGap seconds before 'from' to detect segments that started before the query range
+	// This allows us to properly set StartedBeforeRange for ongoing trips
 	windowSize := defaultWindowSizeSeconds
 	distinctSignalThreshold := defaultDistinctSignalCountThreshold
-	windows, err := d.getActiveWindows(ctx, tokenID, from, to, windowSize, signalThreshold, distinctSignalThreshold)
+	lookbackFrom := from.Add(-time.Duration(maxGap) * time.Second)
+	windows, err := d.getActiveWindows(ctx, tokenID, lookbackFrom, to, windowSize, signalThreshold, distinctSignalThreshold)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get active windows: %w", err)
 	}

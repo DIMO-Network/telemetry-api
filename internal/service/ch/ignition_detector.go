@@ -51,8 +51,10 @@ func (d *IgnitionDetector) DetectSegments(
 		}
 	}
 
-	// Fetch all state changes from the database
-	stmt, args := d.getStateChangesQuery(tokenID, from, to)
+	// Fetch all state changes with a single query that includes:
+	// 1. The most recent state change before 'from' (to detect ongoing trips)
+	// 2. All state changes within the query range [from, to)
+	stmt, args := d.getStateChangesQueryWithLookback(tokenID, from, to)
 
 	rows, err := d.conn.Query(ctx, stmt, args...)
 	if err != nil {
@@ -80,24 +82,40 @@ func (d *IgnitionDetector) DetectSegments(
 	return segments, nil
 }
 
-// getStateChangesQuery builds a query to fetch state changes from signal_state_changes table
-func (d *IgnitionDetector) getStateChangesQuery(tokenID uint32, from, to time.Time) (string, []any) {
+// getStateChangesQueryWithLookback builds a single query that fetches:
+// 1. The most recent state change before 'from' (if ignition was ON, we have an ongoing trip)
+// 2. All state changes within the range [from, to)
+// Results are ordered by timestamp.
+func (d *IgnitionDetector) getStateChangesQueryWithLookback(tokenID uint32, from, to time.Time) (string, []any) {
+	// Use UNION ALL to combine:
+	// - Last state change before 'from' (LIMIT 1, ordered DESC then re-ordered)
+	// - All state changes in range [from, to)
 	query := `
-SELECT
-  timestamp,
-  new_state,
-  prev_state
-FROM signal_state_changes FINAL
-WHERE token_id = ?
-  AND signal_name = 'isIgnitionOn'
-  AND timestamp >= ?
-  AND timestamp < ?`
+SELECT timestamp, new_state, prev_state FROM (
+  -- Most recent state change before 'from' (to detect ongoing trips)
+  SELECT timestamp, new_state, prev_state
+  FROM signal_state_changes FINAL
+  WHERE token_id = ?
+    AND signal_name = 'isIgnitionOn'
+    AND timestamp < ?
+    AND prev_state != new_state
+  ORDER BY timestamp DESC
+  LIMIT 1
 
-	args := []any{tokenID, from, to}
+  UNION ALL
 
-	query += `
-  AND prev_state != new_state
+  -- All state changes within the query range
+  SELECT timestamp, new_state, prev_state
+  FROM signal_state_changes FINAL
+  WHERE token_id = ?
+    AND signal_name = 'isIgnitionOn'
+    AND timestamp >= ?
+    AND timestamp < ?
+    AND prev_state != new_state
+)
 ORDER BY timestamp`
+
+	args := []any{tokenID, from, tokenID, from, to}
 
 	return query, args
 }

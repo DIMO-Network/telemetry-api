@@ -61,10 +61,13 @@ func (d *ChangePointDetector) DetectSegments(
 	}
 
 	// Query signal counts per window with dynamic window size
+	// Look back maxGap seconds before 'from' to detect segments that started before the query range
+	// This allows us to properly set StartedBeforeRange for ongoing trips
 	windowSize := defaultCUSUMWindowSeconds
 	signalThreshold := defaultCUSUMSignalCountThreshold
 	distinctSignalThreshold := defaultCUSUMDistinctSignalCountThreshold
-	windowCounts, err := d.getWindowSignalCounts(ctx, tokenID, from, to, windowSize, signalThreshold, distinctSignalThreshold)
+	lookbackFrom := from.Add(-time.Duration(maxGap) * time.Second)
+	windowCounts, err := d.getWindowSignalCounts(ctx, tokenID, lookbackFrom, to, windowSize, signalThreshold, distinctSignalThreshold)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get window signal counts: %w", err)
 	}

@@ -295,4 +295,61 @@ func TestSegmentDetectors(t *testing.T) {
 				i+1, seg.StartTime.Format(time.RFC3339), seg.EndTime, seg.DurationSeconds, seg.IsOngoing)
 		}
 	})
+
+	// Test StartedBeforeRange flag
+	// Query with 'from' set to middle of trip 1 (90 seconds after start)
+	// Trip 1 should have StartedBeforeRange = true
+	// Trip 2 should have StartedBeforeRange = false
+	fromMidTrip1 := baseTime.Add(90 * time.Second)
+
+	t.Run("IgnitionDetector_StartedBeforeRange", func(t *testing.T) {
+		detector := ch.NewIgnitionDetector(conn)
+		segments, err := detector.DetectSegments(ctx, testTokenID, fromMidTrip1, to, nil)
+		require.NoError(t, err)
+
+		t.Logf("Query from=%s (mid-trip1)", fromMidTrip1.Format(time.RFC3339))
+		for i, seg := range segments {
+			t.Logf("  Segment %d: start=%s, startedBeforeRange=%v",
+				i+1, seg.StartTime.Format(time.RFC3339), seg.StartedBeforeRange)
+		}
+
+		require.Len(t, segments, 2, "Expected 2 trips")
+		assert.True(t, segments[0].StartedBeforeRange, "Trip 1 should have StartedBeforeRange=true (started at %s, query from=%s)",
+			segments[0].StartTime.Format(time.RFC3339), fromMidTrip1.Format(time.RFC3339))
+		assert.False(t, segments[1].StartedBeforeRange, "Trip 2 should have StartedBeforeRange=false")
+	})
+
+	t.Run("FrequencyDetector_StartedBeforeRange", func(t *testing.T) {
+		detector := ch.NewFrequencyDetector(conn)
+		segments, err := detector.DetectSegments(ctx, testTokenID, fromMidTrip1, to, nil)
+		require.NoError(t, err)
+
+		t.Logf("Query from=%s (mid-trip1)", fromMidTrip1.Format(time.RFC3339))
+		for i, seg := range segments {
+			t.Logf("  Segment %d: start=%s, startedBeforeRange=%v",
+				i+1, seg.StartTime.Format(time.RFC3339), seg.StartedBeforeRange)
+		}
+
+		require.Len(t, segments, 2, "Expected 2 trips")
+		assert.True(t, segments[0].StartedBeforeRange, "Trip 1 should have StartedBeforeRange=true (started at %s, query from=%s)",
+			segments[0].StartTime.Format(time.RFC3339), fromMidTrip1.Format(time.RFC3339))
+		assert.False(t, segments[1].StartedBeforeRange, "Trip 2 should have StartedBeforeRange=false")
+	})
+
+	t.Run("ChangePointDetector_StartedBeforeRange", func(t *testing.T) {
+		detector := ch.NewChangePointDetector(conn)
+		segments, err := detector.DetectSegments(ctx, testTokenID, fromMidTrip1, to, nil)
+		require.NoError(t, err)
+
+		t.Logf("Query from=%s (mid-trip1)", fromMidTrip1.Format(time.RFC3339))
+		for i, seg := range segments {
+			t.Logf("  Segment %d: start=%s, startedBeforeRange=%v",
+				i+1, seg.StartTime.Format(time.RFC3339), seg.StartedBeforeRange)
+		}
+
+		require.Len(t, segments, 2, "Expected 2 trips")
+		assert.True(t, segments[0].StartedBeforeRange, "Trip 1 should have StartedBeforeRange=true (started at %s, query from=%s)",
+			segments[0].StartTime.Format(time.RFC3339), fromMidTrip1.Format(time.RFC3339))
+		assert.False(t, segments[1].StartedBeforeRange, "Trip 2 should have StartedBeforeRange=false")
+	})
 }
