@@ -352,6 +352,15 @@ extend type SignalAggregations {
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDIntakeTemp", forceResolver: true) @isSignal @hasAggregation
   
   """
+  Engine block status, 0 = engine unblocked, 1 = engine blocked
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  obdIsEngineBlocked(
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDIsEngineBlocked", forceResolver: true) @isSignal @hasAggregation
+  
+  """
   Aftermarket device plugged in status. 1 = device plugged in, 0 = device unplugged.
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
@@ -1034,6 +1043,12 @@ extend type SignalCollection {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   obdIntakeTemp: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDIntakeTemp") @isSignal
+  
+  """
+  Engine block status, 0 = engine unblocked, 1 = engine blocked
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  obdIsEngineBlocked: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDIsEngineBlocked") @isSignal
   
   """
   Aftermarket device plugged in status. 1 = device plugged in, 0 = device unplugged.

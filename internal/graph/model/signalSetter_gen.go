@@ -198,6 +198,11 @@ func SetCollectionField(collection *SignalCollection, signal *vss.Signal) {
 			Timestamp: signal.Timestamp,
 			Value:     signal.ValueNumber,
 		}
+	case "obdIsEngineBlocked":
+		collection.OBDIsEngineBlocked = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
 	case "obdIsPluggedIn":
 		collection.OBDIsPluggedIn = &SignalFloat{
 			Timestamp: signal.Timestamp,

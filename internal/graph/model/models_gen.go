@@ -322,6 +322,9 @@ type SignalCollection struct {
 	// Unit: 'celsius'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	OBDIntakeTemp *SignalFloat `json:"obdIntakeTemp,omitempty"`
+	// Engine block status, 0 = engine unblocked, 1 = engine blocked
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	OBDIsEngineBlocked *SignalFloat `json:"obdIsEngineBlocked,omitempty"`
 	// Aftermarket device plugged in status. 1 = device plugged in, 0 = device unplugged.
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	OBDIsPluggedIn *SignalFloat `json:"obdIsPluggedIn,omitempty"`
