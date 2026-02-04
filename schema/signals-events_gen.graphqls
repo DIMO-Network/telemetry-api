@@ -11,6 +11,42 @@ extend type SignalAggregations {
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "AngularVelocityYaw", forceResolver: true) @isSignal @hasAggregation
   
   """
+  Indicates whether the airbag/SRS warning telltale is active.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  bodyLightsIsAirbagWarningOn(
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "BodyLightsIsAirbagWarningOn", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  Indicates whether the vehicle is locked via the central locking system. True = vehicle locked. False = vehicle unlocked.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  bodyLockIsLocked(
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "BodyLockIsLocked", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  Is item open or closed? True = Fully or partially open. False = Fully closed.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  bodyTrunkFrontIsOpen(
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "BodyTrunkFrontIsOpen", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  Is item open or closed? True = Fully or partially open. False = Fully closed.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  bodyTrunkRearIsOpen(
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "BodyTrunkRearIsOpen", forceResolver: true) @isSignal @hasAggregation
+  
+  """
   Is item open or closed? True = Fully or partially open. False = Fully closed.
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
@@ -83,6 +119,69 @@ extend type SignalAggregations {
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "CabinDoorRow2PassengerSideWindowIsOpen", forceResolver: true) @isSignal @hasAggregation
   
   """
+  Is the belt engaged.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  cabinSeatRow1DriverSideIsBelted(
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "CabinSeatRow1DriverSideIsBelted", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  Is the belt engaged.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  cabinSeatRow1PassengerSideIsBelted(
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "CabinSeatRow1PassengerSideIsBelted", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  Is the belt engaged.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  cabinSeatRow2DriverSideIsBelted(
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "CabinSeatRow2DriverSideIsBelted", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  Is the belt engaged.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  cabinSeatRow2MiddleIsBelted(
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "CabinSeatRow2MiddleIsBelted", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  Is the belt engaged.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  cabinSeatRow2PassengerSideIsBelted(
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "CabinSeatRow2PassengerSideIsBelted", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  Is the belt engaged.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  cabinSeatRow3DriverSideIsBelted(
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "CabinSeatRow3DriverSideIsBelted", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  Is the belt engaged.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  cabinSeatRow3PassengerSideIsBelted(
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "CabinSeatRow3PassengerSideIsBelted", forceResolver: true) @isSignal @hasAggregation
+  
+  """
   Rotational speed of a vehicle's wheel.
   Unit: 'km/h'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
@@ -141,6 +240,102 @@ extend type SignalAggregations {
     agg: FloatAggregation!,
     filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisAxleRow2WheelRightTirePressure", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  Measured Load on axle row 3.
+  Unit: 'kg'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  chassisAxleRow3Weight(
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisAxleRow3Weight", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  Measured Load on axle row 3.
+  Unit: 'kg'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  chassisAxleRow4Weight(
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisAxleRow4Weight", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  Measured Load on axle row 3.
+  Unit: 'kg'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  chassisAxleRow5Weight(
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisAxleRow5Weight", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  Indicates whether the ABS warning telltale is active (any non-off state).
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  chassisBrakeABSIsWarningOn(
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisBrakeABSIsWarningOn", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  Pneumatic pressure in the service brake circuit or reservoir
+  Unit: 'kPa'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  chassisBrakeCircuit1PressurePrimary(
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisBrakeCircuit1PressurePrimary", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  Pneumatic pressure in the service brake circuit or reservoir
+  Unit: 'kPa'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  chassisBrakeCircuit2PressurePrimary(
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisBrakeCircuit2PressurePrimary", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  Indicates whether the brake pedal is pressed.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  chassisBrakeIsPedalPressed(
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisBrakeIsPedalPressed", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  Brake pedal position as percent. 0 = Not depressed. 100 = Fully depressed.
+  Unit: 'percent' Min: '0' Max: '100'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  chassisBrakePedalPosition(
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisBrakePedalPosition", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  Parking brake status. True = Parking Brake is Engaged. False = Parking Brake is not Engaged.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  chassisParkingBrakeIsEngaged(
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisParkingBrakeIsEngaged", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  Indicates whether the tire system warning telltale is active
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  chassisTireSystemIsWarningOn(
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisTireSystemIsWarningOn", forceResolver: true) @isSignal @hasAggregation
   
   """
   Current altitude relative to WGS 84 reference ellipsoid, as measured at the position of GNSS receiver antenna.
@@ -342,6 +537,24 @@ extend type SignalAggregations {
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDFuelPressure", forceResolver: true) @isSignal @hasAggregation
   
   """
+  PID 5E - Engine fuel rate
+  Unit: 'l/h'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  obdFuelRate(
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDFuelRate", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  Fuel type names decoded from PID 51.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  obdFuelTypeName(
+    agg: StringAggregation!
+  ):  String @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDFuelTypeName", forceResolver: true) @isSignal @hasAggregation
+  
+  """
   PID 0F - Intake temperature
   Unit: 'celsius'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
@@ -359,6 +572,15 @@ extend type SignalAggregations {
     agg: FloatAggregation!,
     filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDIsEngineBlocked", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  PID 1E - Auxiliary input status (power take off)
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  obdIsPTOActive(
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDIsPTOActive", forceResolver: true) @isSignal @hasAggregation
   
   """
   Aftermarket device plugged in status. 1 = device plugged in, 0 = device unplugged.
@@ -408,6 +630,16 @@ extend type SignalAggregations {
     agg: FloatAggregation!,
     filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDO2WRSensor2Voltage", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  PID 5C - Engine oil temperature
+  Unit: 'celsius'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  obdOilTemperature(
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDOilTemperature", forceResolver: true) @isSignal @hasAggregation
   
   """
   PID 1F - Engine run time
@@ -556,6 +788,16 @@ extend type SignalAggregations {
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineTorque", forceResolver: true) @isSignal @hasAggregation
   
   """
+  Actual engine output torque as a percentage of reference engine torque (FMS / J1939 parameter SPN 513).
+  Unit: 'percent'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  powertrainCombustionEngineTorquePercent(
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineTorquePercent", forceResolver: true) @isSignal @hasAggregation
+  
+  """
   Current available fuel in the fuel tank expressed in liters.
   Unit: 'l'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
@@ -564,6 +806,16 @@ extend type SignalAggregations {
     agg: FloatAggregation!,
     filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainFuelSystemAbsoluteLevel", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  Accumulated fuel consumption (totalized) reported by the vehicle (FMS SPN 250).
+  Unit: 'l'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  powertrainFuelSystemAccumulatedConsumption(
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainFuelSystemAccumulatedConsumption", forceResolver: true) @isSignal @hasAggregation
   
   """
   Level in fuel tank as percent of capacity. 0 = empty. 100 = full.
@@ -751,6 +1003,42 @@ extend type SignalAggregations {
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTransmissionCurrentGear", forceResolver: true) @isSignal @hasAggregation
   
   """
+  Indicates if the Clutch switch is operated, so engine and transmission are partially or fully decoupled. False = Clutch switch not operated. True = Clutch switch operated.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  powertrainTransmissionIsClutchSwitchOperated(
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTransmissionIsClutchSwitchOperated", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  Actual retarder torque as a percentage (FMS / J1939 SPN 520).
+  Unit: 'percent'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  powertrainTransmissionRetarderActualTorque(
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTransmissionRetarderActualTorque", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  Active engine torque mode.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  powertrainTransmissionRetarderTorqueMode(
+    agg: StringAggregation!
+  ):  String @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTransmissionRetarderTorqueMode", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  The selected gear. 0=Neutral, 1/2/..=Forward, -1/-2/..=Reverse, 126=Park.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  powertrainTransmissionSelectedGear(
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTransmissionSelectedGear", forceResolver: true) @isSignal @hasAggregation
+  
+  """
   The current gearbox temperature.
   Unit: 'celsius'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
@@ -789,6 +1077,16 @@ extend type SignalAggregations {
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ServiceDistanceToService", forceResolver: true) @isSignal @hasAggregation
   
   """
+  Remaining time to service (of any kind). Negative values indicate service overdue.
+  Unit: 's'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  serviceTimeToService(
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ServiceTimeToService", forceResolver: true) @isSignal @hasAggregation
+  
+  """
   Vehicle speed.
   Unit: 'km/h'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
@@ -807,6 +1105,30 @@ extend type SignalCollection {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   angularVelocityYaw: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "AngularVelocityYaw") @isSignal
+  
+  """
+  Indicates whether the airbag/SRS warning telltale is active.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  bodyLightsIsAirbagWarningOn: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "BodyLightsIsAirbagWarningOn") @isSignal
+  
+  """
+  Indicates whether the vehicle is locked via the central locking system. True = vehicle locked. False = vehicle unlocked.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  bodyLockIsLocked: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "BodyLockIsLocked") @isSignal
+  
+  """
+  Is item open or closed? True = Fully or partially open. False = Fully closed.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  bodyTrunkFrontIsOpen: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "BodyTrunkFrontIsOpen") @isSignal
+  
+  """
+  Is item open or closed? True = Fully or partially open. False = Fully closed.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  bodyTrunkRearIsOpen: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "BodyTrunkRearIsOpen") @isSignal
   
   """
   Is item open or closed? True = Fully or partially open. False = Fully closed.
@@ -857,6 +1179,48 @@ extend type SignalCollection {
   cabinDoorRow2PassengerSideWindowIsOpen: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "CabinDoorRow2PassengerSideWindowIsOpen") @isSignal
   
   """
+  Is the belt engaged.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  cabinSeatRow1DriverSideIsBelted: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "CabinSeatRow1DriverSideIsBelted") @isSignal
+  
+  """
+  Is the belt engaged.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  cabinSeatRow1PassengerSideIsBelted: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "CabinSeatRow1PassengerSideIsBelted") @isSignal
+  
+  """
+  Is the belt engaged.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  cabinSeatRow2DriverSideIsBelted: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "CabinSeatRow2DriverSideIsBelted") @isSignal
+  
+  """
+  Is the belt engaged.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  cabinSeatRow2MiddleIsBelted: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "CabinSeatRow2MiddleIsBelted") @isSignal
+  
+  """
+  Is the belt engaged.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  cabinSeatRow2PassengerSideIsBelted: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "CabinSeatRow2PassengerSideIsBelted") @isSignal
+  
+  """
+  Is the belt engaged.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  cabinSeatRow3DriverSideIsBelted: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "CabinSeatRow3DriverSideIsBelted") @isSignal
+  
+  """
+  Is the belt engaged.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  cabinSeatRow3PassengerSideIsBelted: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "CabinSeatRow3PassengerSideIsBelted") @isSignal
+  
+  """
   Rotational speed of a vehicle's wheel.
   Unit: 'km/h'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
@@ -897,6 +1261,72 @@ extend type SignalCollection {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   chassisAxleRow2WheelRightTirePressure: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisAxleRow2WheelRightTirePressure") @isSignal
+  
+  """
+  Measured Load on axle row 3.
+  Unit: 'kg'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  chassisAxleRow3Weight: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisAxleRow3Weight") @isSignal
+  
+  """
+  Measured Load on axle row 3.
+  Unit: 'kg'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  chassisAxleRow4Weight: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisAxleRow4Weight") @isSignal
+  
+  """
+  Measured Load on axle row 3.
+  Unit: 'kg'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  chassisAxleRow5Weight: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisAxleRow5Weight") @isSignal
+  
+  """
+  Indicates whether the ABS warning telltale is active (any non-off state).
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  chassisBrakeABSIsWarningOn: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisBrakeABSIsWarningOn") @isSignal
+  
+  """
+  Pneumatic pressure in the service brake circuit or reservoir
+  Unit: 'kPa'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  chassisBrakeCircuit1PressurePrimary: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisBrakeCircuit1PressurePrimary") @isSignal
+  
+  """
+  Pneumatic pressure in the service brake circuit or reservoir
+  Unit: 'kPa'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  chassisBrakeCircuit2PressurePrimary: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisBrakeCircuit2PressurePrimary") @isSignal
+  
+  """
+  Indicates whether the brake pedal is pressed.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  chassisBrakeIsPedalPressed: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisBrakeIsPedalPressed") @isSignal
+  
+  """
+  Brake pedal position as percent. 0 = Not depressed. 100 = Fully depressed.
+  Unit: 'percent' Min: '0' Max: '100'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  chassisBrakePedalPosition: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisBrakePedalPosition") @isSignal
+  
+  """
+  Parking brake status. True = Parking Brake is Engaged. False = Parking Brake is not Engaged.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  chassisParkingBrakeIsEngaged: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisParkingBrakeIsEngaged") @isSignal
+  
+  """
+  Indicates whether the tire system warning telltale is active
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  chassisTireSystemIsWarningOn: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisTireSystemIsWarningOn") @isSignal
   
   """
   Current altitude relative to WGS 84 reference ellipsoid, as measured at the position of GNSS receiver antenna.
@@ -1038,6 +1468,19 @@ extend type SignalCollection {
   obdFuelPressure: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDFuelPressure") @isSignal
   
   """
+  PID 5E - Engine fuel rate
+  Unit: 'l/h'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  obdFuelRate: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDFuelRate") @isSignal
+  
+  """
+  Fuel type names decoded from PID 51.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  obdFuelTypeName: SignalString @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDFuelTypeName") @isSignal
+  
+  """
   PID 0F - Intake temperature
   Unit: 'celsius'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
@@ -1049,6 +1492,12 @@ extend type SignalCollection {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   obdIsEngineBlocked: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDIsEngineBlocked") @isSignal
+  
+  """
+  PID 1E - Auxiliary input status (power take off)
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  obdIsPTOActive: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDIsPTOActive") @isSignal
   
   """
   Aftermarket device plugged in status. 1 = device plugged in, 0 = device unplugged.
@@ -1083,6 +1532,13 @@ extend type SignalCollection {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   obdO2WRSensor2Voltage: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDO2WRSensor2Voltage") @isSignal
+  
+  """
+  PID 5C - Engine oil temperature
+  Unit: 'celsius'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  obdOilTemperature: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDOilTemperature") @isSignal
   
   """
   PID 1F - Engine run time
@@ -1187,11 +1643,25 @@ extend type SignalCollection {
   powertrainCombustionEngineTorque: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineTorque") @isSignal
   
   """
+  Actual engine output torque as a percentage of reference engine torque (FMS / J1939 parameter SPN 513).
+  Unit: 'percent'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  powertrainCombustionEngineTorquePercent: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainCombustionEngineTorquePercent") @isSignal
+  
+  """
   Current available fuel in the fuel tank expressed in liters.
   Unit: 'l'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainFuelSystemAbsoluteLevel: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainFuelSystemAbsoluteLevel") @isSignal
+  
+  """
+  Accumulated fuel consumption (totalized) reported by the vehicle (FMS SPN 250).
+  Unit: 'l'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  powertrainFuelSystemAccumulatedConsumption: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainFuelSystemAccumulatedConsumption") @isSignal
   
   """
   Level in fuel tank as percent of capacity. 0 = empty. 100 = full.
@@ -1323,6 +1793,31 @@ extend type SignalCollection {
   powertrainTransmissionCurrentGear: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTransmissionCurrentGear") @isSignal
   
   """
+  Indicates if the Clutch switch is operated, so engine and transmission are partially or fully decoupled. False = Clutch switch not operated. True = Clutch switch operated.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  powertrainTransmissionIsClutchSwitchOperated: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTransmissionIsClutchSwitchOperated") @isSignal
+  
+  """
+  Actual retarder torque as a percentage (FMS / J1939 SPN 520).
+  Unit: 'percent'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  powertrainTransmissionRetarderActualTorque: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTransmissionRetarderActualTorque") @isSignal
+  
+  """
+  Active engine torque mode.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  powertrainTransmissionRetarderTorqueMode: SignalString @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTransmissionRetarderTorqueMode") @isSignal
+  
+  """
+  The selected gear. 0=Neutral, 1/2/..=Forward, -1/-2/..=Reverse, 126=Park.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  powertrainTransmissionSelectedGear: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTransmissionSelectedGear") @isSignal
+  
+  """
   The current gearbox temperature.
   Unit: 'celsius'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
@@ -1348,6 +1843,13 @@ extend type SignalCollection {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   serviceDistanceToService: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ServiceDistanceToService") @isSignal
+  
+  """
+  Remaining time to service (of any kind). Negative values indicate service overdue.
+  Unit: 's'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  serviceTimeToService: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ServiceTimeToService") @isSignal
   
   """
   Vehicle speed.

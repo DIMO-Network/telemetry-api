@@ -21,6 +21,46 @@ func (r *signalAggregationsResolver) AngularVelocityYaw(ctx context.Context, obj
 	return &vn, nil
 }
 
+// BodyLightsIsAirbagWarningOn is the resolver for the bodyLightsIsAirbagWarningOn
+func (r *signalAggregationsResolver) BodyLightsIsAirbagWarningOn(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error) {
+	fieldCtx := graphql.GetFieldContext(ctx)
+	vn, ok := obj.ValueNumbers[fieldCtx.Field.Alias]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
+// BodyLockIsLocked is the resolver for the bodyLockIsLocked
+func (r *signalAggregationsResolver) BodyLockIsLocked(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error) {
+	fieldCtx := graphql.GetFieldContext(ctx)
+	vn, ok := obj.ValueNumbers[fieldCtx.Field.Alias]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
+// BodyTrunkFrontIsOpen is the resolver for the bodyTrunkFrontIsOpen
+func (r *signalAggregationsResolver) BodyTrunkFrontIsOpen(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error) {
+	fieldCtx := graphql.GetFieldContext(ctx)
+	vn, ok := obj.ValueNumbers[fieldCtx.Field.Alias]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
+// BodyTrunkRearIsOpen is the resolver for the bodyTrunkRearIsOpen
+func (r *signalAggregationsResolver) BodyTrunkRearIsOpen(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error) {
+	fieldCtx := graphql.GetFieldContext(ctx)
+	vn, ok := obj.ValueNumbers[fieldCtx.Field.Alias]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
 // CabinDoorRow1DriverSideIsOpen is the resolver for the cabinDoorRow1DriverSideIsOpen
 func (r *signalAggregationsResolver) CabinDoorRow1DriverSideIsOpen(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error) {
 	fieldCtx := graphql.GetFieldContext(ctx)
@@ -101,6 +141,76 @@ func (r *signalAggregationsResolver) CabinDoorRow2PassengerSideWindowIsOpen(ctx 
 	return &vn, nil
 }
 
+// CabinSeatRow1DriverSideIsBelted is the resolver for the cabinSeatRow1DriverSideIsBelted
+func (r *signalAggregationsResolver) CabinSeatRow1DriverSideIsBelted(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error) {
+	fieldCtx := graphql.GetFieldContext(ctx)
+	vn, ok := obj.ValueNumbers[fieldCtx.Field.Alias]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
+// CabinSeatRow1PassengerSideIsBelted is the resolver for the cabinSeatRow1PassengerSideIsBelted
+func (r *signalAggregationsResolver) CabinSeatRow1PassengerSideIsBelted(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error) {
+	fieldCtx := graphql.GetFieldContext(ctx)
+	vn, ok := obj.ValueNumbers[fieldCtx.Field.Alias]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
+// CabinSeatRow2DriverSideIsBelted is the resolver for the cabinSeatRow2DriverSideIsBelted
+func (r *signalAggregationsResolver) CabinSeatRow2DriverSideIsBelted(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error) {
+	fieldCtx := graphql.GetFieldContext(ctx)
+	vn, ok := obj.ValueNumbers[fieldCtx.Field.Alias]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
+// CabinSeatRow2MiddleIsBelted is the resolver for the cabinSeatRow2MiddleIsBelted
+func (r *signalAggregationsResolver) CabinSeatRow2MiddleIsBelted(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error) {
+	fieldCtx := graphql.GetFieldContext(ctx)
+	vn, ok := obj.ValueNumbers[fieldCtx.Field.Alias]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
+// CabinSeatRow2PassengerSideIsBelted is the resolver for the cabinSeatRow2PassengerSideIsBelted
+func (r *signalAggregationsResolver) CabinSeatRow2PassengerSideIsBelted(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error) {
+	fieldCtx := graphql.GetFieldContext(ctx)
+	vn, ok := obj.ValueNumbers[fieldCtx.Field.Alias]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
+// CabinSeatRow3DriverSideIsBelted is the resolver for the cabinSeatRow3DriverSideIsBelted
+func (r *signalAggregationsResolver) CabinSeatRow3DriverSideIsBelted(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error) {
+	fieldCtx := graphql.GetFieldContext(ctx)
+	vn, ok := obj.ValueNumbers[fieldCtx.Field.Alias]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
+// CabinSeatRow3PassengerSideIsBelted is the resolver for the cabinSeatRow3PassengerSideIsBelted
+func (r *signalAggregationsResolver) CabinSeatRow3PassengerSideIsBelted(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error) {
+	fieldCtx := graphql.GetFieldContext(ctx)
+	vn, ok := obj.ValueNumbers[fieldCtx.Field.Alias]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
 // ChassisAxleRow1WheelLeftSpeed is the resolver for the chassisAxleRow1WheelLeftSpeed
 func (r *signalAggregationsResolver) ChassisAxleRow1WheelLeftSpeed(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error) {
 	fieldCtx := graphql.GetFieldContext(ctx)
@@ -153,6 +263,106 @@ func (r *signalAggregationsResolver) ChassisAxleRow2WheelLeftTirePressure(ctx co
 
 // ChassisAxleRow2WheelRightTirePressure is the resolver for the chassisAxleRow2WheelRightTirePressure
 func (r *signalAggregationsResolver) ChassisAxleRow2WheelRightTirePressure(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error) {
+	fieldCtx := graphql.GetFieldContext(ctx)
+	vn, ok := obj.ValueNumbers[fieldCtx.Field.Alias]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
+// ChassisAxleRow3Weight is the resolver for the chassisAxleRow3Weight
+func (r *signalAggregationsResolver) ChassisAxleRow3Weight(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error) {
+	fieldCtx := graphql.GetFieldContext(ctx)
+	vn, ok := obj.ValueNumbers[fieldCtx.Field.Alias]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
+// ChassisAxleRow4Weight is the resolver for the chassisAxleRow4Weight
+func (r *signalAggregationsResolver) ChassisAxleRow4Weight(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error) {
+	fieldCtx := graphql.GetFieldContext(ctx)
+	vn, ok := obj.ValueNumbers[fieldCtx.Field.Alias]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
+// ChassisAxleRow5Weight is the resolver for the chassisAxleRow5Weight
+func (r *signalAggregationsResolver) ChassisAxleRow5Weight(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error) {
+	fieldCtx := graphql.GetFieldContext(ctx)
+	vn, ok := obj.ValueNumbers[fieldCtx.Field.Alias]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
+// ChassisBrakeABSIsWarningOn is the resolver for the chassisBrakeABSIsWarningOn
+func (r *signalAggregationsResolver) ChassisBrakeABSIsWarningOn(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error) {
+	fieldCtx := graphql.GetFieldContext(ctx)
+	vn, ok := obj.ValueNumbers[fieldCtx.Field.Alias]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
+// ChassisBrakeCircuit1PressurePrimary is the resolver for the chassisBrakeCircuit1PressurePrimary
+func (r *signalAggregationsResolver) ChassisBrakeCircuit1PressurePrimary(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error) {
+	fieldCtx := graphql.GetFieldContext(ctx)
+	vn, ok := obj.ValueNumbers[fieldCtx.Field.Alias]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
+// ChassisBrakeCircuit2PressurePrimary is the resolver for the chassisBrakeCircuit2PressurePrimary
+func (r *signalAggregationsResolver) ChassisBrakeCircuit2PressurePrimary(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error) {
+	fieldCtx := graphql.GetFieldContext(ctx)
+	vn, ok := obj.ValueNumbers[fieldCtx.Field.Alias]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
+// ChassisBrakeIsPedalPressed is the resolver for the chassisBrakeIsPedalPressed
+func (r *signalAggregationsResolver) ChassisBrakeIsPedalPressed(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error) {
+	fieldCtx := graphql.GetFieldContext(ctx)
+	vn, ok := obj.ValueNumbers[fieldCtx.Field.Alias]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
+// ChassisBrakePedalPosition is the resolver for the chassisBrakePedalPosition
+func (r *signalAggregationsResolver) ChassisBrakePedalPosition(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error) {
+	fieldCtx := graphql.GetFieldContext(ctx)
+	vn, ok := obj.ValueNumbers[fieldCtx.Field.Alias]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
+// ChassisParkingBrakeIsEngaged is the resolver for the chassisParkingBrakeIsEngaged
+func (r *signalAggregationsResolver) ChassisParkingBrakeIsEngaged(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error) {
+	fieldCtx := graphql.GetFieldContext(ctx)
+	vn, ok := obj.ValueNumbers[fieldCtx.Field.Alias]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
+// ChassisTireSystemIsWarningOn is the resolver for the chassisTireSystemIsWarningOn
+func (r *signalAggregationsResolver) ChassisTireSystemIsWarningOn(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error) {
 	fieldCtx := graphql.GetFieldContext(ctx)
 	vn, ok := obj.ValueNumbers[fieldCtx.Field.Alias]
 	if !ok {
@@ -371,6 +581,26 @@ func (r *signalAggregationsResolver) ObdFuelPressure(ctx context.Context, obj *m
 	return &vn, nil
 }
 
+// ObdFuelRate is the resolver for the obdFuelRate
+func (r *signalAggregationsResolver) ObdFuelRate(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error) {
+	fieldCtx := graphql.GetFieldContext(ctx)
+	vn, ok := obj.ValueNumbers[fieldCtx.Field.Alias]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
+// ObdFuelTypeName is the resolver for the obdFuelTypeName
+func (r *signalAggregationsResolver) ObdFuelTypeName(ctx context.Context, obj *model.SignalAggregations, agg model.StringAggregation) (*string, error) {
+	fieldCtx := graphql.GetFieldContext(ctx)
+	vs, ok := obj.ValueStrings[fieldCtx.Field.Alias]
+	if !ok {
+		return nil, nil
+	}
+	return &vs, nil
+}
+
 // ObdIntakeTemp is the resolver for the obdIntakeTemp
 func (r *signalAggregationsResolver) ObdIntakeTemp(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error) {
 	fieldCtx := graphql.GetFieldContext(ctx)
@@ -383,6 +613,16 @@ func (r *signalAggregationsResolver) ObdIntakeTemp(ctx context.Context, obj *mod
 
 // ObdIsEngineBlocked is the resolver for the obdIsEngineBlocked
 func (r *signalAggregationsResolver) ObdIsEngineBlocked(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error) {
+	fieldCtx := graphql.GetFieldContext(ctx)
+	vn, ok := obj.ValueNumbers[fieldCtx.Field.Alias]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
+// ObdIsPTOActive is the resolver for the obdIsPTOActive
+func (r *signalAggregationsResolver) ObdIsPTOActive(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error) {
 	fieldCtx := graphql.GetFieldContext(ctx)
 	vn, ok := obj.ValueNumbers[fieldCtx.Field.Alias]
 	if !ok {
@@ -433,6 +673,16 @@ func (r *signalAggregationsResolver) ObdO2WRSensor1Voltage(ctx context.Context, 
 
 // ObdO2WRSensor2Voltage is the resolver for the obdO2WRSensor2Voltage
 func (r *signalAggregationsResolver) ObdO2WRSensor2Voltage(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error) {
+	fieldCtx := graphql.GetFieldContext(ctx)
+	vn, ok := obj.ValueNumbers[fieldCtx.Field.Alias]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
+// ObdOilTemperature is the resolver for the obdOilTemperature
+func (r *signalAggregationsResolver) ObdOilTemperature(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error) {
 	fieldCtx := graphql.GetFieldContext(ctx)
 	vn, ok := obj.ValueNumbers[fieldCtx.Field.Alias]
 	if !ok {
@@ -591,8 +841,28 @@ func (r *signalAggregationsResolver) PowertrainCombustionEngineTorque(ctx contex
 	return &vn, nil
 }
 
+// PowertrainCombustionEngineTorquePercent is the resolver for the powertrainCombustionEngineTorquePercent
+func (r *signalAggregationsResolver) PowertrainCombustionEngineTorquePercent(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error) {
+	fieldCtx := graphql.GetFieldContext(ctx)
+	vn, ok := obj.ValueNumbers[fieldCtx.Field.Alias]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
 // PowertrainFuelSystemAbsoluteLevel is the resolver for the powertrainFuelSystemAbsoluteLevel
 func (r *signalAggregationsResolver) PowertrainFuelSystemAbsoluteLevel(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error) {
+	fieldCtx := graphql.GetFieldContext(ctx)
+	vn, ok := obj.ValueNumbers[fieldCtx.Field.Alias]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
+// PowertrainFuelSystemAccumulatedConsumption is the resolver for the powertrainFuelSystemAccumulatedConsumption
+func (r *signalAggregationsResolver) PowertrainFuelSystemAccumulatedConsumption(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error) {
 	fieldCtx := graphql.GetFieldContext(ctx)
 	vn, ok := obj.ValueNumbers[fieldCtx.Field.Alias]
 	if !ok {
@@ -791,6 +1061,46 @@ func (r *signalAggregationsResolver) PowertrainTransmissionCurrentGear(ctx conte
 	return &vn, nil
 }
 
+// PowertrainTransmissionIsClutchSwitchOperated is the resolver for the powertrainTransmissionIsClutchSwitchOperated
+func (r *signalAggregationsResolver) PowertrainTransmissionIsClutchSwitchOperated(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error) {
+	fieldCtx := graphql.GetFieldContext(ctx)
+	vn, ok := obj.ValueNumbers[fieldCtx.Field.Alias]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
+// PowertrainTransmissionRetarderActualTorque is the resolver for the powertrainTransmissionRetarderActualTorque
+func (r *signalAggregationsResolver) PowertrainTransmissionRetarderActualTorque(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error) {
+	fieldCtx := graphql.GetFieldContext(ctx)
+	vn, ok := obj.ValueNumbers[fieldCtx.Field.Alias]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
+// PowertrainTransmissionRetarderTorqueMode is the resolver for the powertrainTransmissionRetarderTorqueMode
+func (r *signalAggregationsResolver) PowertrainTransmissionRetarderTorqueMode(ctx context.Context, obj *model.SignalAggregations, agg model.StringAggregation) (*string, error) {
+	fieldCtx := graphql.GetFieldContext(ctx)
+	vs, ok := obj.ValueStrings[fieldCtx.Field.Alias]
+	if !ok {
+		return nil, nil
+	}
+	return &vs, nil
+}
+
+// PowertrainTransmissionSelectedGear is the resolver for the powertrainTransmissionSelectedGear
+func (r *signalAggregationsResolver) PowertrainTransmissionSelectedGear(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error) {
+	fieldCtx := graphql.GetFieldContext(ctx)
+	vn, ok := obj.ValueNumbers[fieldCtx.Field.Alias]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
 // PowertrainTransmissionTemperature is the resolver for the powertrainTransmissionTemperature
 func (r *signalAggregationsResolver) PowertrainTransmissionTemperature(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error) {
 	fieldCtx := graphql.GetFieldContext(ctx)
@@ -823,6 +1133,16 @@ func (r *signalAggregationsResolver) PowertrainType(ctx context.Context, obj *mo
 
 // ServiceDistanceToService is the resolver for the serviceDistanceToService
 func (r *signalAggregationsResolver) ServiceDistanceToService(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error) {
+	fieldCtx := graphql.GetFieldContext(ctx)
+	vn, ok := obj.ValueNumbers[fieldCtx.Field.Alias]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
+// ServiceTimeToService is the resolver for the serviceTimeToService
+func (r *signalAggregationsResolver) ServiceTimeToService(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error) {
 	fieldCtx := graphql.GetFieldContext(ctx)
 	vn, ok := obj.ValueNumbers[fieldCtx.Field.Alias]
 	if !ok {
