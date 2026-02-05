@@ -194,6 +194,18 @@ type SignalCollection struct {
 	// Unit: 'degrees/s'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	AngularVelocityYaw *SignalFloat `json:"angularVelocityYaw,omitempty"`
+	// Indicates whether the airbag/SRS warning telltale is active.
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	BodyLightsIsAirbagWarningOn *SignalFloat `json:"bodyLightsIsAirbagWarningOn,omitempty"`
+	// Indicates whether the vehicle is locked via the central locking system. True = vehicle locked. False = vehicle unlocked.
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	BodyLockIsLocked *SignalFloat `json:"bodyLockIsLocked,omitempty"`
+	// Is item open or closed? True = Fully or partially open. False = Fully closed.
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	BodyTrunkFrontIsOpen *SignalFloat `json:"bodyTrunkFrontIsOpen,omitempty"`
+	// Is item open or closed? True = Fully or partially open. False = Fully closed.
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	BodyTrunkRearIsOpen *SignalFloat `json:"bodyTrunkRearIsOpen,omitempty"`
 	// Is item open or closed? True = Fully or partially open. False = Fully closed.
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	CabinDoorRow1DriverSideIsOpen *SignalFloat `json:"cabinDoorRow1DriverSideIsOpen,omitempty"`
@@ -218,6 +230,27 @@ type SignalCollection struct {
 	// Is item open or closed? True = Fully or partially open. False = Fully closed.
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	CabinDoorRow2PassengerSideWindowIsOpen *SignalFloat `json:"cabinDoorRow2PassengerSideWindowIsOpen,omitempty"`
+	// Is the belt engaged.
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	CabinSeatRow1DriverSideIsBelted *SignalFloat `json:"cabinSeatRow1DriverSideIsBelted,omitempty"`
+	// Is the belt engaged.
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	CabinSeatRow1PassengerSideIsBelted *SignalFloat `json:"cabinSeatRow1PassengerSideIsBelted,omitempty"`
+	// Is the belt engaged.
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	CabinSeatRow2DriverSideIsBelted *SignalFloat `json:"cabinSeatRow2DriverSideIsBelted,omitempty"`
+	// Is the belt engaged.
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	CabinSeatRow2MiddleIsBelted *SignalFloat `json:"cabinSeatRow2MiddleIsBelted,omitempty"`
+	// Is the belt engaged.
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	CabinSeatRow2PassengerSideIsBelted *SignalFloat `json:"cabinSeatRow2PassengerSideIsBelted,omitempty"`
+	// Is the belt engaged.
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	CabinSeatRow3DriverSideIsBelted *SignalFloat `json:"cabinSeatRow3DriverSideIsBelted,omitempty"`
+	// Is the belt engaged.
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	CabinSeatRow3PassengerSideIsBelted *SignalFloat `json:"cabinSeatRow3PassengerSideIsBelted,omitempty"`
 	// Rotational speed of a vehicle's wheel.
 	// Unit: 'km/h'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
@@ -242,6 +275,42 @@ type SignalCollection struct {
 	// Unit: 'kPa'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	ChassisAxleRow2WheelRightTirePressure *SignalFloat `json:"chassisAxleRow2WheelRightTirePressure,omitempty"`
+	// Measured Load on axle row 3.
+	// Unit: 'kg'
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	ChassisAxleRow3Weight *SignalFloat `json:"chassisAxleRow3Weight,omitempty"`
+	// Measured Load on axle row 3.
+	// Unit: 'kg'
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	ChassisAxleRow4Weight *SignalFloat `json:"chassisAxleRow4Weight,omitempty"`
+	// Measured Load on axle row 3.
+	// Unit: 'kg'
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	ChassisAxleRow5Weight *SignalFloat `json:"chassisAxleRow5Weight,omitempty"`
+	// Indicates whether the ABS warning telltale is active (any non-off state).
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	ChassisBrakeABSIsWarningOn *SignalFloat `json:"chassisBrakeABSIsWarningOn,omitempty"`
+	// Pneumatic pressure in the service brake circuit or reservoir
+	// Unit: 'kPa'
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	ChassisBrakeCircuit1PressurePrimary *SignalFloat `json:"chassisBrakeCircuit1PressurePrimary,omitempty"`
+	// Pneumatic pressure in the service brake circuit or reservoir
+	// Unit: 'kPa'
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	ChassisBrakeCircuit2PressurePrimary *SignalFloat `json:"chassisBrakeCircuit2PressurePrimary,omitempty"`
+	// Indicates whether the brake pedal is pressed.
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	ChassisBrakeIsPedalPressed *SignalFloat `json:"chassisBrakeIsPedalPressed,omitempty"`
+	// Brake pedal position as percent. 0 = Not depressed. 100 = Fully depressed.
+	// Unit: 'percent' Min: '0' Max: '100'
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	ChassisBrakePedalPosition *SignalFloat `json:"chassisBrakePedalPosition,omitempty"`
+	// Parking brake status. True = Parking Brake is Engaged. False = Parking Brake is not Engaged.
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	ChassisParkingBrakeIsEngaged *SignalFloat `json:"chassisParkingBrakeIsEngaged,omitempty"`
+	// Indicates whether the tire system warning telltale is active
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	ChassisTireSystemIsWarningOn *SignalFloat `json:"chassisTireSystemIsWarningOn,omitempty"`
 	// Current altitude relative to WGS 84 reference ellipsoid, as measured at the position of GNSS receiver antenna.
 	// Unit: 'm'
 	// Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
@@ -318,6 +387,13 @@ type SignalCollection struct {
 	// Unit: 'kPa'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	OBDFuelPressure *SignalFloat `json:"obdFuelPressure,omitempty"`
+	// PID 5E - Engine fuel rate
+	// Unit: 'l/h'
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	OBDFuelRate *SignalFloat `json:"obdFuelRate,omitempty"`
+	// Fuel type names decoded from PID 51.
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	OBDFuelTypeName *SignalString `json:"obdFuelTypeName,omitempty"`
 	// PID 0F - Intake temperature
 	// Unit: 'celsius'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
@@ -325,6 +401,9 @@ type SignalCollection struct {
 	// Engine block status, 0 = engine unblocked, 1 = engine blocked
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	OBDIsEngineBlocked *SignalFloat `json:"obdIsEngineBlocked,omitempty"`
+	// PID 1E - Auxiliary input status (power take off)
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	OBDIsPTOActive *SignalFloat `json:"obdIsPTOActive,omitempty"`
 	// Aftermarket device plugged in status. 1 = device plugged in, 0 = device unplugged.
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	OBDIsPluggedIn *SignalFloat `json:"obdIsPluggedIn,omitempty"`
@@ -344,6 +423,10 @@ type SignalCollection struct {
 	// Unit: 'V'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	OBDO2WRSensor2Voltage *SignalFloat `json:"obdO2WRSensor2Voltage,omitempty"`
+	// PID 5C - Engine oil temperature
+	// Unit: 'celsius'
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	OBDOilTemperature *SignalFloat `json:"obdOilTemperature,omitempty"`
 	// PID 1F - Engine run time
 	// Unit: 's'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
@@ -401,10 +484,18 @@ type SignalCollection struct {
 	// Unit: 'Nm'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainCombustionEngineTorque *SignalFloat `json:"powertrainCombustionEngineTorque,omitempty"`
+	// Actual engine output torque as a percentage of reference engine torque (FMS / J1939 parameter SPN 513).
+	// Unit: 'percent'
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	PowertrainCombustionEngineTorquePercent *SignalFloat `json:"powertrainCombustionEngineTorquePercent,omitempty"`
 	// Current available fuel in the fuel tank expressed in liters.
 	// Unit: 'l'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainFuelSystemAbsoluteLevel *SignalFloat `json:"powertrainFuelSystemAbsoluteLevel,omitempty"`
+	// Accumulated fuel consumption (totalized) reported by the vehicle (FMS SPN 250).
+	// Unit: 'l'
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	PowertrainFuelSystemAccumulatedConsumption *SignalFloat `json:"powertrainFuelSystemAccumulatedConsumption,omitempty"`
 	// Level in fuel tank as percent of capacity. 0 = empty. 100 = full.
 	// Unit: 'percent' Min: '0' Max: '100'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
@@ -477,6 +568,19 @@ type SignalCollection struct {
 	// The current gear. 0=Neutral, 1/2/..=Forward, -1/-2/..=Reverse.
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainTransmissionCurrentGear *SignalFloat `json:"powertrainTransmissionCurrentGear,omitempty"`
+	// Indicates if the Clutch switch is operated, so engine and transmission are partially or fully decoupled. False = Clutch switch not operated. True = Clutch switch operated.
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	PowertrainTransmissionIsClutchSwitchOperated *SignalFloat `json:"powertrainTransmissionIsClutchSwitchOperated,omitempty"`
+	// Actual retarder torque as a percentage (FMS / J1939 SPN 520).
+	// Unit: 'percent'
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	PowertrainTransmissionRetarderActualTorque *SignalFloat `json:"powertrainTransmissionRetarderActualTorque,omitempty"`
+	// Active engine torque mode.
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	PowertrainTransmissionRetarderTorqueMode *SignalString `json:"powertrainTransmissionRetarderTorqueMode,omitempty"`
+	// The selected gear. 0=Neutral, 1/2/..=Forward, -1/-2/..=Reverse, 126=Park.
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	PowertrainTransmissionSelectedGear *SignalFloat `json:"powertrainTransmissionSelectedGear,omitempty"`
 	// The current gearbox temperature.
 	// Unit: 'celsius'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
@@ -492,6 +596,10 @@ type SignalCollection struct {
 	// Unit: 'km'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	ServiceDistanceToService *SignalFloat `json:"serviceDistanceToService,omitempty"`
+	// Remaining time to service (of any kind). Negative values indicate service overdue.
+	// Unit: 's'
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	ServiceTimeToService *SignalFloat `json:"serviceTimeToService,omitempty"`
 	// Vehicle speed.
 	// Unit: 'km/h'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]

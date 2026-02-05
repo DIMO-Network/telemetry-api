@@ -14,6 +14,26 @@ func SetCollectionField(collection *SignalCollection, signal *vss.Signal) {
 			Timestamp: signal.Timestamp,
 			Value:     signal.ValueNumber,
 		}
+	case "bodyLightsIsAirbagWarningOn":
+		collection.BodyLightsIsAirbagWarningOn = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
+	case "bodyLockIsLocked":
+		collection.BodyLockIsLocked = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
+	case "bodyTrunkFrontIsOpen":
+		collection.BodyTrunkFrontIsOpen = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
+	case "bodyTrunkRearIsOpen":
+		collection.BodyTrunkRearIsOpen = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
 	case "cabinDoorRow1DriverSideIsOpen":
 		collection.CabinDoorRow1DriverSideIsOpen = &SignalFloat{
 			Timestamp: signal.Timestamp,
@@ -54,6 +74,41 @@ func SetCollectionField(collection *SignalCollection, signal *vss.Signal) {
 			Timestamp: signal.Timestamp,
 			Value:     signal.ValueNumber,
 		}
+	case "cabinSeatRow1DriverSideIsBelted":
+		collection.CabinSeatRow1DriverSideIsBelted = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
+	case "cabinSeatRow1PassengerSideIsBelted":
+		collection.CabinSeatRow1PassengerSideIsBelted = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
+	case "cabinSeatRow2DriverSideIsBelted":
+		collection.CabinSeatRow2DriverSideIsBelted = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
+	case "cabinSeatRow2MiddleIsBelted":
+		collection.CabinSeatRow2MiddleIsBelted = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
+	case "cabinSeatRow2PassengerSideIsBelted":
+		collection.CabinSeatRow2PassengerSideIsBelted = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
+	case "cabinSeatRow3DriverSideIsBelted":
+		collection.CabinSeatRow3DriverSideIsBelted = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
+	case "cabinSeatRow3PassengerSideIsBelted":
+		collection.CabinSeatRow3PassengerSideIsBelted = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
 	case "chassisAxleRow1WheelLeftSpeed":
 		collection.ChassisAxleRow1WheelLeftSpeed = &SignalFloat{
 			Timestamp: signal.Timestamp,
@@ -81,6 +136,56 @@ func SetCollectionField(collection *SignalCollection, signal *vss.Signal) {
 		}
 	case "chassisAxleRow2WheelRightTirePressure":
 		collection.ChassisAxleRow2WheelRightTirePressure = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
+	case "chassisAxleRow3Weight":
+		collection.ChassisAxleRow3Weight = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
+	case "chassisAxleRow4Weight":
+		collection.ChassisAxleRow4Weight = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
+	case "chassisAxleRow5Weight":
+		collection.ChassisAxleRow5Weight = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
+	case "chassisBrakeABSIsWarningOn":
+		collection.ChassisBrakeABSIsWarningOn = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
+	case "chassisBrakeCircuit1PressurePrimary":
+		collection.ChassisBrakeCircuit1PressurePrimary = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
+	case "chassisBrakeCircuit2PressurePrimary":
+		collection.ChassisBrakeCircuit2PressurePrimary = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
+	case "chassisBrakeIsPedalPressed":
+		collection.ChassisBrakeIsPedalPressed = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
+	case "chassisBrakePedalPosition":
+		collection.ChassisBrakePedalPosition = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
+	case "chassisParkingBrakeIsEngaged":
+		collection.ChassisParkingBrakeIsEngaged = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
+	case "chassisTireSystemIsWarningOn":
+		collection.ChassisTireSystemIsWarningOn = &SignalFloat{
 			Timestamp: signal.Timestamp,
 			Value:     signal.ValueNumber,
 		}
@@ -193,6 +298,16 @@ func SetCollectionField(collection *SignalCollection, signal *vss.Signal) {
 			Timestamp: signal.Timestamp,
 			Value:     signal.ValueNumber,
 		}
+	case "obdFuelRate":
+		collection.OBDFuelRate = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
+	case "obdFuelTypeName":
+		collection.OBDFuelTypeName = &SignalString{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueString,
+		}
 	case "obdIntakeTemp":
 		collection.OBDIntakeTemp = &SignalFloat{
 			Timestamp: signal.Timestamp,
@@ -200,6 +315,11 @@ func SetCollectionField(collection *SignalCollection, signal *vss.Signal) {
 		}
 	case "obdIsEngineBlocked":
 		collection.OBDIsEngineBlocked = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
+	case "obdIsPTOActive":
+		collection.OBDIsPTOActive = &SignalFloat{
 			Timestamp: signal.Timestamp,
 			Value:     signal.ValueNumber,
 		}
@@ -225,6 +345,11 @@ func SetCollectionField(collection *SignalCollection, signal *vss.Signal) {
 		}
 	case "obdO2WRSensor2Voltage":
 		collection.OBDO2WRSensor2Voltage = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
+	case "obdOilTemperature":
+		collection.OBDOilTemperature = &SignalFloat{
 			Timestamp: signal.Timestamp,
 			Value:     signal.ValueNumber,
 		}
@@ -303,8 +428,18 @@ func SetCollectionField(collection *SignalCollection, signal *vss.Signal) {
 			Timestamp: signal.Timestamp,
 			Value:     signal.ValueNumber,
 		}
+	case "powertrainCombustionEngineTorquePercent":
+		collection.PowertrainCombustionEngineTorquePercent = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
 	case "powertrainFuelSystemAbsoluteLevel":
 		collection.PowertrainFuelSystemAbsoluteLevel = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
+	case "powertrainFuelSystemAccumulatedConsumption":
+		collection.PowertrainFuelSystemAccumulatedConsumption = &SignalFloat{
 			Timestamp: signal.Timestamp,
 			Value:     signal.ValueNumber,
 		}
@@ -403,6 +538,26 @@ func SetCollectionField(collection *SignalCollection, signal *vss.Signal) {
 			Timestamp: signal.Timestamp,
 			Value:     signal.ValueNumber,
 		}
+	case "powertrainTransmissionIsClutchSwitchOperated":
+		collection.PowertrainTransmissionIsClutchSwitchOperated = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
+	case "powertrainTransmissionRetarderActualTorque":
+		collection.PowertrainTransmissionRetarderActualTorque = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
+	case "powertrainTransmissionRetarderTorqueMode":
+		collection.PowertrainTransmissionRetarderTorqueMode = &SignalString{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueString,
+		}
+	case "powertrainTransmissionSelectedGear":
+		collection.PowertrainTransmissionSelectedGear = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
 	case "powertrainTransmissionTemperature":
 		collection.PowertrainTransmissionTemperature = &SignalFloat{
 			Timestamp: signal.Timestamp,
@@ -420,6 +575,11 @@ func SetCollectionField(collection *SignalCollection, signal *vss.Signal) {
 		}
 	case "serviceDistanceToService":
 		collection.ServiceDistanceToService = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
+	case "serviceTimeToService":
+		collection.ServiceTimeToService = &SignalFloat{
 			Timestamp: signal.Timestamp,
 			Value:     signal.ValueNumber,
 		}
