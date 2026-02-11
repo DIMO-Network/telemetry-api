@@ -35,6 +35,8 @@ func (s *Service) GetSegments(
 		detector = &FrequencyDetector{conn: s.conn}
 	case model.DetectionMechanismChangePointDetection:
 		detector = &ChangePointDetector{conn: s.conn}
+	case model.DetectionMechanismStaticRpm:
+		detector = &StaticRpmDetector{conn: s.conn}
 	default:
 		return nil, fmt.Errorf("unknown detection mechanism: %s", mechanism)
 	}

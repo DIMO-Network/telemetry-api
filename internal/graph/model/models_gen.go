@@ -167,12 +167,14 @@ type SegmentConfig struct {
 	// Filters very short segments (testing, engine cycling).
 	// Default: 240 (4 minutes), Min: 60, Max: 3600
 	MinSegmentDurationSeconds *int `json:"minSegmentDurationSeconds,omitempty"`
-	// [frequencyAnalysis only] Minimum signal count per window for activity detection.
-	// Higher values = more conservative (filters parked telemetry better).
-	// Lower values = more sensitive (works for sparse signal vehicles).
-	// Default: 10 (tuned to match ignition detection accuracy)
-	// Min: 1, Max: 3600
+	// [frequencyAnalysis] Minimum signal count per window for activity detection.
+	// [staticRpm] Minimum samples per window to consider it idle (same semantics).
+	// Higher values = more conservative. Lower values = more sensitive.
+	// Default: 10, Min: 1, Max: 3600
 	SignalCountThreshold *int `json:"signalCountThreshold,omitempty"`
+	// [staticRpm only] Upper bound for idle RPM. Windows with max(RPM) <= this are considered idle.
+	// Default: 1500, Min: 300, Max: 3000
+	MaxIdleRpm *int `json:"maxIdleRpm,omitempty"`
 }
 
 type SignalCollection struct {
@@ -626,17 +628,21 @@ const (
 	// Excellent noise resistance with 100% accuracy match to ignition baseline.
 	// Best alternative when ignition signal is unavailable - same accuracy, same speed as frequency analysis.
 	DetectionMechanismChangePointDetection DetectionMechanism = "changePointDetection"
+	// Static RPM: Segments are contiguous periods where engine RPM remains in idle range.
+	// Uses repeated windows of idle RPM (e.g. powertrainCombustionEngineSpeed <= maxIdleRpm) merged like trips.
+	DetectionMechanismStaticRpm DetectionMechanism = "staticRpm"
 )
 
 var AllDetectionMechanism = []DetectionMechanism{
 	DetectionMechanismIgnitionDetection,
 	DetectionMechanismFrequencyAnalysis,
 	DetectionMechanismChangePointDetection,
+	DetectionMechanismStaticRpm,
 }
 
 func (e DetectionMechanism) IsValid() bool {
 	switch e {
-	case DetectionMechanismIgnitionDetection, DetectionMechanismFrequencyAnalysis, DetectionMechanismChangePointDetection:
+	case DetectionMechanismIgnitionDetection, DetectionMechanismFrequencyAnalysis, DetectionMechanismChangePointDetection, DetectionMechanismStaticRpm:
 		return true
 	}
 	return false

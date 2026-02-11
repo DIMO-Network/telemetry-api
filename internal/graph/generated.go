@@ -3078,6 +3078,12 @@ input EventFilter {
   Best alternative when ignition signal is unavailable - same accuracy, same speed as frequency analysis.
   """
   changePointDetection
+
+  """
+  Static RPM: Segments are contiguous periods where engine RPM remains in idle range.
+  Uses repeated windows of idle RPM (e.g. powertrainCombustionEngineSpeed <= maxIdleRpm) merged like trips.
+  """
+  staticRpm
 }
 
 extend type Query {
@@ -3119,13 +3125,18 @@ input SegmentConfig {
   minSegmentDurationSeconds: Int = 240
   
   """
-  [frequencyAnalysis only] Minimum signal count per window for activity detection.
-  Higher values = more conservative (filters parked telemetry better).
-  Lower values = more sensitive (works for sparse signal vehicles).
-  Default: 10 (tuned to match ignition detection accuracy)
-  Min: 1, Max: 3600
+  [frequencyAnalysis] Minimum signal count per window for activity detection.
+  [staticRpm] Minimum samples per window to consider it idle (same semantics).
+  Higher values = more conservative. Lower values = more sensitive.
+  Default: 10, Min: 1, Max: 3600
   """
   signalCountThreshold: Int = 10
+
+  """
+  [staticRpm only] Upper bound for idle RPM. Windows with max(RPM) <= this are considered idle.
+  Default: 1500, Min: 300, Max: 3000
+  """
+  maxIdleRpm: Int = 1500
 }
 
 type Segment {
@@ -21985,8 +21996,11 @@ func (ec *executionContext) unmarshalInputSegmentConfig(ctx context.Context, obj
 	if _, present := asMap["signalCountThreshold"]; !present {
 		asMap["signalCountThreshold"] = 10
 	}
+	if _, present := asMap["maxIdleRpm"]; !present {
+		asMap["maxIdleRpm"] = 1500
+	}
 
-	fieldsInOrder := [...]string{"minIdleSeconds", "minSegmentDurationSeconds", "signalCountThreshold"}
+	fieldsInOrder := [...]string{"minIdleSeconds", "minSegmentDurationSeconds", "signalCountThreshold", "maxIdleRpm"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -22014,6 +22028,13 @@ func (ec *executionContext) unmarshalInputSegmentConfig(ctx context.Context, obj
 				return it, err
 			}
 			it.SignalCountThreshold = data
+		case "maxIdleRpm":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("maxIdleRpm"))
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.MaxIdleRpm = data
 		}
 	}
 

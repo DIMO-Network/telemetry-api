@@ -39,8 +39,9 @@ func validateSegmentArgs(tokenID int, from, to time.Time) error {
 	return nil
 }
 
-// validateSegmentConfig validates the segment configuration parameters
-func validateSegmentConfig(config *model.SegmentConfig) error {
+// validateSegmentConfig validates the segment configuration parameters.
+// When mechanism is staticRpm, also validates idling-specific fields.
+func validateSegmentConfig(config *model.SegmentConfig, mechanism model.DetectionMechanism) error {
 	if config == nil {
 		return nil
 	}
@@ -63,6 +64,14 @@ func validateSegmentConfig(config *model.SegmentConfig) error {
 		}
 	}
 
+	if mechanism == model.DetectionMechanismStaticRpm {
+		if config.MaxIdleRpm != nil {
+			if *config.MaxIdleRpm < 300 || *config.MaxIdleRpm > 3000 {
+				return fmt.Errorf("maxIdleRpm must be between 300 and 3000")
+			}
+		}
+	}
+
 	return nil
 }
 
@@ -73,7 +82,7 @@ func (r *Repository) GetSegments(ctx context.Context, tokenID int, from, to time
 		return nil, errorhandler.NewBadRequestError(ctx, err)
 	}
 
-	if err := validateSegmentConfig(config); err != nil {
+	if err := validateSegmentConfig(config, mechanism); err != nil {
 		return nil, errorhandler.NewBadRequestError(ctx, err)
 	}
 

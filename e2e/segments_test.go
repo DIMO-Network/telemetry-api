@@ -352,4 +352,50 @@ func TestSegmentDetectors(t *testing.T) {
 			segments[0].StartTime.Format(time.RFC3339), fromMidTrip1.Format(time.RFC3339))
 		assert.False(t, segments[1].StartedBeforeRange, "Trip 2 should have StartedBeforeRange=false")
 	})
+
+	// Excessive idling: insert engine speed (RPM) in idle range for a contiguous period
+	idleStart := baseTime.Add(48 * time.Hour)
+	idleDurationSec := 15 * 60 // 15 minutes
+	t.Run("StaticRpm", func(t *testing.T) {
+		idleSignals := generateIdleRpmSignals(idleStart, idleDurationSec)
+		insertTestSignals(t, conn, idleSignals)
+
+		fromIdle := idleStart.Add(-1 * time.Hour)
+		toIdle := idleStart.Add(time.Duration(idleDurationSec)*time.Second + 1*time.Hour)
+
+		detector := ch.NewStaticRpmDetector(conn)
+		segments, err := detector.DetectSegments(ctx, testTokenID, fromIdle, toIdle, nil)
+		require.NoError(t, err)
+
+		require.Len(t, segments, 1, "Expected 1 static RPM (idling) segment")
+		seg := segments[0]
+		assert.False(t, seg.IsOngoing)
+		assert.NotNil(t, seg.EndTime)
+		// minSegmentDurationSeconds default is 240 (4 min); we have 15 min of idle
+		assert.GreaterOrEqual(t, seg.DurationSeconds, int32(240))
+		t.Logf("Idling segment: %s - %v (duration: %ds)",
+			seg.StartTime.Format(time.RFC3339), seg.EndTime, seg.DurationSeconds)
+	})
+}
+
+// generateIdleRpmSignals creates powertrainCombustionEngineSpeed signals in idle range (e.g. 800 rpm)
+// at 10s intervals for the given duration so 60s windows have enough samples and max(rpm) <= 1000.
+func generateIdleRpmSignals(startTime time.Time, durationSeconds int) []testSignal {
+	const engineSpeedName = "powertrainCombustionEngineSpeed"
+	const idleRpm = 800.0
+	signals := []testSignal{}
+	for offset := 0; offset < durationSeconds; offset += 10 {
+		ts := startTime.Add(time.Duration(offset) * time.Second)
+		signals = append(signals, testSignal{
+			TokenID:      testTokenID,
+			Timestamp:    ts,
+			Name:         engineSpeedName,
+			ValueNumber:  idleRpm,
+			ValueString:  "",
+			Source:       testSource,
+			Producer:     testProducer,
+			CloudEventID: fmt.Sprintf("idle-%s-%d", ts.Format("150405"), offset),
+		})
+	}
+	return signals
 }

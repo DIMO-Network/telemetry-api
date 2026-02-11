@@ -90,3 +90,35 @@ func TestValidateSegmentArgs(t *testing.T) {
 		require.Error(t, err)
 	})
 }
+
+func TestValidateSegmentConfig(t *testing.T) {
+	validConfig := &model.SegmentConfig{}
+	otherMechanism := model.DetectionMechanismIgnitionDetection
+	idlingMechanism := model.DetectionMechanismStaticRpm
+
+	t.Run("nil config", func(t *testing.T) {
+		require.NoError(t, validateSegmentConfig(nil, otherMechanism))
+		require.NoError(t, validateSegmentConfig(nil, idlingMechanism))
+	})
+
+	t.Run("valid config other mechanism", func(t *testing.T) {
+		require.NoError(t, validateSegmentConfig(validConfig, otherMechanism))
+	})
+
+	t.Run("valid config staticRpm with idling fields", func(t *testing.T) {
+		cfg := &model.SegmentConfig{
+			MaxIdleRpm:             ptr(1000),
+			SignalCountThreshold:   ptr(5),
+		}
+		require.NoError(t, validateSegmentConfig(cfg, idlingMechanism))
+	})
+
+	t.Run("staticRpm maxIdleRpm out of range", func(t *testing.T) {
+		cfg := &model.SegmentConfig{MaxIdleRpm: ptr(100)}
+		require.Error(t, validateSegmentConfig(cfg, idlingMechanism))
+		cfg.MaxIdleRpm = ptr(4000)
+		require.Error(t, validateSegmentConfig(cfg, idlingMechanism))
+	})
+}
+
+func ptr(i int) *int { return &i }
