@@ -13,7 +13,7 @@ const (
 	defaultIdleWindowSizeSeconds     = 60   // 1 minute windows (same as frequency detector)
 	defaultMaxIdleRpm                = 1500
 	engineSpeedSignalName            = "powertrainCombustionEngineSpeed" // fixed; not configurable
-	defaultSignalCountThresholdIdle  = 10   // same default as frequency detector
+	defaultSignalCountThresholdIdle  = 2    // powertrainCombustionEngineSpeed ~2/min; min samples per 1min window
 	defaultMinIdleRpmForEngineRunning = 0   // min_rpm > this to exclude engine-off
 )
 
