@@ -364,8 +364,6 @@ func unionAll(allStatements []string, allArgs [][]any) (string, []any) {
 	return unionStmt, args
 }
 
-const FieldCurrentLocation = "currentLocation"
-
 // getAggQuery creates a single query to perform multiple aggregations on the signal data in the same time range and interval.
 // This function returns an error if no aggregations are provided.
 /*
@@ -425,7 +423,7 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 	for i, agg := range aggArgs.FloatArgs {
 		name := agg.Name
 		if name == vss.FieldCurrentLocationLatitude || name == vss.FieldCurrentLocationLongitude {
-			name = FieldCurrentLocation
+			name = vss.FieldCurrentLocationCoordinates
 		}
 		valuesArgs = append(valuesArgs, aggTableEntry(FloatType, i, name))
 	}
@@ -435,8 +433,8 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 	for i, agg := range model.AllFloatAggregation {
 		if _, ok := aggArgs.ApproxLocArgs[agg]; ok {
 			valuesArgs = append(valuesArgs,
-				aggTableEntry(AppLocType, 2*i, FieldCurrentLocation),
-				aggTableEntry(AppLocType, 2*i+1, FieldCurrentLocation))
+				aggTableEntry(AppLocType, 2*i, vss.FieldCurrentLocationCoordinates),
+				aggTableEntry(AppLocType, 2*i+1, vss.FieldCurrentLocationCoordinates))
 		}
 	}
 	for i, agg := range aggArgs.LocationArgs {
