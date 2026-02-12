@@ -22,32 +22,18 @@ func TestApproximateLocation(t *testing.T) {
 	endLoc := h3.LatLng{Lat: 40.73899538333504, Lng: -73.99386110247163}
 	signals := []vss.Signal{
 		{
-			Source:      ch.SourceTranslations["smartcar"][0],
-			Timestamp:   locationTime.Add(-time.Hour * 24),
-			Name:        vss.FieldCurrentLocationLatitude,
-			ValueNumber: startLoc.Lat,
-			TokenID:     39718,
+			Source:        ch.SourceTranslations["smartcar"][0],
+			Timestamp:     locationTime.Add(-time.Hour * 24),
+			Name:          "currentLocation",
+			ValueLocation: vss.Location{Latitude: startLoc.Lat, Longitude: startLoc.Lng},
+			TokenID:       39718,
 		},
 		{
-			Source:      ch.SourceTranslations["smartcar"][0],
-			Timestamp:   locationTime.Add(-time.Hour * 24),
-			Name:        vss.FieldCurrentLocationLongitude,
-			ValueNumber: startLoc.Lng,
-			TokenID:     39718,
-		},
-		{
-			Source:      ch.SourceTranslations["smartcar"][0],
-			Timestamp:   locationTime,
-			Name:        vss.FieldCurrentLocationLatitude,
-			ValueNumber: endLoc.Lat,
-			TokenID:     39718,
-		},
-		{
-			Source:      ch.SourceTranslations["smartcar"][0],
-			Timestamp:   locationTime,
-			Name:        vss.FieldCurrentLocationLongitude,
-			ValueNumber: endLoc.Lng,
-			TokenID:     39718,
+			Source:        ch.SourceTranslations["smartcar"][0],
+			Timestamp:     locationTime,
+			Name:          "currentLocation",
+			ValueLocation: vss.Location{Latitude: endLoc.Lat, Longitude: endLoc.Lng},
+			TokenID:       39718,
 		},
 	}
 

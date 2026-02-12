@@ -53,17 +53,6 @@ const (
 	latestTimestamp = "max(" + vss.TimestampCol + ") as ts"
 )
 
-// Aggregation functions for float signals.
-const (
-	avgGroup        = "avg(" + vss.ValueNumberCol + ")"
-	randFloatGroup  = "groupArraySample(1, %d)(" + vss.ValueNumberCol + ")[1]"
-	minGroup        = "min(" + vss.ValueNumberCol + ")"
-	maxGroup        = "max(" + vss.ValueNumberCol + ")"
-	medGroup        = "median(" + vss.ValueNumberCol + ")"
-	firstFloatGroup = "argMin(" + vss.ValueNumberCol + ", " + vss.TimestampCol + ")"
-	lastFloatGroup  = "argMax(" + vss.ValueNumberCol + ", " + vss.TimestampCol + ")"
-)
-
 // Aggregation functions for string signals.
 const (
 	randStringGroup  = "groupArraySample(1, %d)(" + vss.ValueStringCol + ")[1]"
@@ -164,6 +153,17 @@ func selectInterval(microSeconds int64, origin time.Time) qm.QueryMod {
 		vss.TimestampCol, microSeconds, origin.UnixMicro(), IntervalGroup))
 }
 
+func getFloatSelectExpr(field string) string {
+	switch field {
+	case vss.FieldCurrentLocationLatitude:
+		return vss.ValueLocationCol + ".latitude"
+	case vss.FieldCurrentLocationLongitude:
+		return vss.ValueLocationCol + ".longitude"
+	default:
+		return vss.ValueNumberCol
+	}
+}
+
 func selectNumberAggs(numberAggs []model.FloatSignalArgs, appLocAggs map[model.FloatAggregation]struct{}) qm.QueryMod {
 	if len(numberAggs) == 0 && len(appLocAggs) == 0 {
 		return qm.Select("NULL AS " + AggNumberCol)
@@ -171,13 +171,14 @@ func selectNumberAggs(numberAggs []model.FloatSignalArgs, appLocAggs map[model.F
 	// Add a CASE statement for each name and its corresponding aggregation function
 	caseStmts := make([]string, 0, len(numberAggs)+2*len(appLocAggs))
 	for i, agg := range numberAggs {
-		caseStmts = append(caseStmts, fmt.Sprintf("WHEN %s = %d AND %s = %d THEN %s", signalTypeCol, FloatType, signalIndexCol, i, getFloatAggFunc(agg.Agg)))
+		caseStmts = append(caseStmts, fmt.Sprintf("WHEN %s = %d AND %s = %d THEN %s", signalTypeCol, FloatType, signalIndexCol, i, getFloatAggFunc(agg.Agg, getFloatSelectExpr(agg.Name))))
 	}
 	for i, agg := range model.AllFloatAggregation {
 		if _, ok := appLocAggs[agg]; ok {
 			caseStmts = append(caseStmts,
-				fmt.Sprintf("WHEN %s = %d AND %s = %d THEN %s", signalTypeCol, AppLocType, signalIndexCol, 2*i, getFloatAggFunc(agg)),
-				fmt.Sprintf("WHEN %s = %d AND %s = %d THEN %s", signalTypeCol, AppLocType, signalIndexCol, 2*i+1, getFloatAggFunc(agg)))
+				fmt.Sprintf("WHEN %s = %d AND %s = %d THEN %s", signalTypeCol, AppLocType, signalIndexCol, 2*i, getFloatAggFunc(agg, getFloatSelectExpr(vss.FieldCurrentLocationLatitude))),
+				fmt.Sprintf("WHEN %s = %d AND %s = %d THEN %s", signalTypeCol, AppLocType, signalIndexCol, 2*i+1, getFloatAggFunc(agg, getFloatSelectExpr(vss.FieldCurrentLocationLongitude))),
+			)
 		}
 	}
 	caseStmt := fmt.Sprintf("CASE %s ELSE NULL END AS %s", strings.Join(caseStmts, " "), AggNumberCol)
@@ -211,24 +212,24 @@ func selectLocationAggs(stringAggs []model.LocationSignalArgs) qm.QueryMod {
 }
 
 // returns a string representation of the aggregation function based on the aggregation type.
-func getFloatAggFunc(aggType model.FloatAggregation) string {
-	aggStr := avgGroup
+func getFloatAggFunc(aggType model.FloatAggregation, selectExpr string) string {
+	aggStr := "avg(" + selectExpr + ")"
 	switch aggType {
 	case model.FloatAggregationAvg:
-		aggStr = avgGroup
+		aggStr = "avg(" + selectExpr + ")"
 	case model.FloatAggregationRand:
 		seed := time.Now().UnixMilli()
-		aggStr = fmt.Sprintf(randFloatGroup, seed)
+		aggStr = fmt.Sprintf("groupArraySample(1, %d)("+selectExpr+")[1]", seed)
 	case model.FloatAggregationMin:
-		aggStr = minGroup
+		aggStr = "min(" + selectExpr + ")"
 	case model.FloatAggregationMax:
-		aggStr = maxGroup
+		aggStr = "max(" + selectExpr + ")"
 	case model.FloatAggregationMed:
-		aggStr = medGroup
+		aggStr = "median(" + selectExpr + ")"
 	case model.FloatAggregationFirst:
-		aggStr = firstFloatGroup
+		aggStr = "argMin(" + selectExpr + ", " + vss.TimestampCol + ")"
 	case model.FloatAggregationLast:
-		aggStr = lastFloatGroup
+		aggStr = "argMax(" + selectExpr + ", " + vss.TimestampCol + ")"
 	}
 	return aggStr
 }
@@ -420,7 +421,11 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 	// You can see the alternatives in the issue and they are ugly.
 	valuesArgs := make([]string, 0, numAggs)
 	for i, agg := range aggArgs.FloatArgs {
-		valuesArgs = append(valuesArgs, aggTableEntry(FloatType, i, agg.Name))
+		name := agg.Name
+		if name == vss.FieldCurrentLocationLatitude || name == vss.FieldCurrentLocationLongitude {
+			name = vss.FieldCurrentLocationCoordinates
+		}
+		valuesArgs = append(valuesArgs, aggTableEntry(FloatType, i, name))
 	}
 	for i, agg := range aggArgs.StringArgs {
 		valuesArgs = append(valuesArgs, aggTableEntry(StringType, i, agg.Name))
@@ -428,8 +433,8 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 	for i, agg := range model.AllFloatAggregation {
 		if _, ok := aggArgs.ApproxLocArgs[agg]; ok {
 			valuesArgs = append(valuesArgs,
-				aggTableEntry(AppLocType, 2*i, vss.FieldCurrentLocationLatitude),
-				aggTableEntry(AppLocType, 2*i+1, vss.FieldCurrentLocationLongitude))
+				aggTableEntry(AppLocType, 2*i, vss.FieldCurrentLocationCoordinates+".latitude"),
+				aggTableEntry(AppLocType, 2*i+1, vss.FieldCurrentLocationCoordinates+".longitude"))
 		}
 	}
 	for i, agg := range aggArgs.LocationArgs {
@@ -447,7 +452,7 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 			fieldFilters := []qm.QueryMod{
 				qmhelper.Where(signalIndexCol, qmhelper.EQ, i),
 			}
-			fieldFilters = append(fieldFilters, buildFloatConditionList(agg.Filter)...)
+			fieldFilters = append(fieldFilters, buildFloatConditionList(agg.Filter, getFloatSelectExpr(agg.Name))...)
 
 			// It's okay to also use Or2 for the first entry: it's simply ignored.
 			innerFloatFilters = append(innerFloatFilters, qm.Or2(qm.Expr(fieldFilters...)))
@@ -517,7 +522,7 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 	return stmt, args, nil
 }
 
-func buildFloatConditionList(fil *model.SignalFloatFilter) []qm.QueryMod {
+func buildFloatConditionList(fil *model.SignalFloatFilter, selectExpr string) []qm.QueryMod {
 	if fil == nil {
 		return nil
 	}
@@ -525,33 +530,33 @@ func buildFloatConditionList(fil *model.SignalFloatFilter) []qm.QueryMod {
 	var mods []qm.QueryMod
 
 	if fil.Eq != nil {
-		mods = append(mods, qmhelper.Where(vss.ValueNumberCol, qmhelper.EQ, *fil.Eq))
+		mods = append(mods, qmhelper.Where(selectExpr, qmhelper.EQ, *fil.Eq))
 	}
 	if fil.Neq != nil {
-		mods = append(mods, qmhelper.Where(vss.ValueNumberCol, qmhelper.NEQ, *fil.Neq))
+		mods = append(mods, qmhelper.Where(selectExpr, qmhelper.NEQ, *fil.Neq))
 	}
 	if fil.Gt != nil {
-		mods = append(mods, qmhelper.Where(vss.ValueNumberCol, qmhelper.GT, *fil.Gt))
+		mods = append(mods, qmhelper.Where(selectExpr, qmhelper.GT, *fil.Gt))
 	}
 	if fil.Lt != nil {
-		mods = append(mods, qmhelper.Where(vss.ValueNumberCol, qmhelper.LT, *fil.Lt))
+		mods = append(mods, qmhelper.Where(selectExpr, qmhelper.LT, *fil.Lt))
 	}
 	if fil.Gte != nil {
-		mods = append(mods, qmhelper.Where(vss.ValueNumberCol, qmhelper.GTE, *fil.Gte))
+		mods = append(mods, qmhelper.Where(selectExpr, qmhelper.GTE, *fil.Gte))
 	}
 	if fil.Lte != nil {
-		mods = append(mods, qmhelper.Where(vss.ValueNumberCol, qmhelper.LTE, *fil.Lte))
+		mods = append(mods, qmhelper.Where(selectExpr, qmhelper.LTE, *fil.Lte))
 	}
 	if len(fil.NotIn) != 0 {
-		mods = append(mods, qm.WhereNotIn(vss.ValueNumberCol+" NOT IN ?", fil.NotIn))
+		mods = append(mods, qm.WhereNotIn(selectExpr+" NOT IN ?", fil.NotIn))
 	}
 	if len(fil.In) != 0 {
-		mods = append(mods, qm.WhereIn(vss.ValueNumberCol+" IN ?", fil.In))
+		mods = append(mods, qm.WhereIn(selectExpr+" IN ?", fil.In))
 	}
 
 	var orMods []qm.QueryMod
 	for _, cond := range fil.Or {
-		clauseMods := buildFloatConditionList(cond)
+		clauseMods := buildFloatConditionList(cond, selectExpr)
 		if len(clauseMods) != 0 {
 			orMods = append(orMods, qm.Or2(qm.Expr(clauseMods...)))
 		}

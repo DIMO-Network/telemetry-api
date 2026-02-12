@@ -10,6 +10,9 @@ import (
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 )
 
+// signalLocationType is the name of the GraphQL SignalLocation type.
+const signalLocationType = "SignalLocation"
+
 // aggregationArgsFromContext creates an aggregated signals arguments from the context and the provided arguments.
 func aggregationArgsFromContext(ctx context.Context, tokenID int, interval string, from time.Time, to time.Time, filter *model.SignalFilter) (*model.AggregatedSignalArgs, error) {
 	// 1h 1s
@@ -102,10 +105,9 @@ func latestArgsFromContext(ctx context.Context, tokenID int, filter *model.Signa
 			continue
 		}
 
-		if field.Name == model.ApproximateLatField || field.Name == model.ApproximateLongField {
-			latestArgs.SignalNames[vss.FieldCurrentLocationLatitude] = struct{}{}
-			latestArgs.SignalNames[vss.FieldCurrentLocationLongitude] = struct{}{}
-		} else if field.Definition.Type.Name() == "SignalLocation" {
+		if field.Name == model.ApproximateLatField || field.Name == model.ApproximateLongField || field.Name == vss.FieldCurrentLocationLatitude || field.Name == vss.FieldCurrentLocationLongitude {
+			latestArgs.LocationSignalNames[vss.FieldCurrentLocationCoordinates] = struct{}{}
+		} else if field.Definition.Type.Name() == signalLocationType {
 			latestArgs.LocationSignalNames[field.Name] = struct{}{}
 		} else {
 			latestArgs.SignalNames[field.Name] = struct{}{}
