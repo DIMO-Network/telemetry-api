@@ -433,8 +433,8 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 	for i, agg := range model.AllFloatAggregation {
 		if _, ok := aggArgs.ApproxLocArgs[agg]; ok {
 			valuesArgs = append(valuesArgs,
-				aggTableEntry(AppLocType, 2*i, vss.FieldCurrentLocationCoordinates),
-				aggTableEntry(AppLocType, 2*i+1, vss.FieldCurrentLocationCoordinates))
+				aggTableEntry(AppLocType, 2*i, vss.FieldCurrentLocationCoordinates+".latitude"),
+				aggTableEntry(AppLocType, 2*i+1, vss.FieldCurrentLocationCoordinates+".longitude"))
 		}
 	}
 	for i, agg := range aggArgs.LocationArgs {
