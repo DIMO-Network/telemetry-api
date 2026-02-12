@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/DIMO-Network/cloudevent"
+	"github.com/DIMO-Network/token-exchange-api/pkg/tokenclaims"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -22,7 +23,7 @@ func TestVINVCLatest(t *testing.T) {
 	services.FetchServer.SetCloudEventReturn(testEvent)
 
 	// Create auth token
-	token := services.Auth.CreateVehicleToken(t, "39718", []int{5})
+	token := services.Auth.CreateVehicleToken(t, 39718, []string{tokenclaims.PermissionGetVINCredential})
 
 	query := `
 	query VIN {

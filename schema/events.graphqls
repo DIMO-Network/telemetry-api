@@ -59,10 +59,3 @@ input EventFilter {
   """
   source: StringValueFilter
 }
-
-input StringValueFilter {
-  eq: String
-  neq: String
-  notIn: [String!]
-  in: [String!]
-}

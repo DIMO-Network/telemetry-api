@@ -36,7 +36,9 @@ type CHService interface {
 	GetAggregatedSignals(ctx context.Context, aggArgs *model.AggregatedSignalArgs) ([]*ch.AggSignal, error)
 	GetLatestSignals(ctx context.Context, latestArgs *model.LatestSignalsArgs) ([]*vss.Signal, error)
 	GetAvailableSignals(ctx context.Context, tokenID uint32, filter *model.SignalFilter) ([]string, error)
+	GetSignalSummaries(ctx context.Context, tokenID uint32, filter *model.SignalFilter) ([]*model.SignalDataSummary, error)
 	GetEvents(ctx context.Context, subject string, from, to time.Time, filter *model.EventFilter) ([]*vss.Event, error)
+	GetSegments(ctx context.Context, tokenID uint32, from, to time.Time, mechanism model.DetectionMechanism, config *model.SegmentConfig) ([]*ch.Segment, error)
 }
 
 // Repository is the base repository for all repositories.
@@ -91,10 +93,11 @@ func (r *Repository) GetSignal(ctx context.Context, aggArgs *model.AggregatedSig
 		if !lastTS.Equal(signal.Timestamp) {
 			lastTS = signal.Timestamp
 			currAggs = &model.SignalAggregations{
-				Timestamp:     signal.Timestamp,
-				ValueNumbers:  make(map[string]float64),
-				ValueStrings:  make(map[string]string),
-				AppLocNumbers: make(map[model.AppLocKey]float64),
+				Timestamp:      signal.Timestamp,
+				ValueNumbers:   make(map[string]float64),
+				ValueStrings:   make(map[string]string),
+				AppLocNumbers:  make(map[model.AppLocKey]float64),
+				ValueLocations: make(map[string]vss.Location),
 			}
 			allAggs = append(allAggs, currAggs)
 		}
@@ -118,6 +121,11 @@ func (r *Repository) GetSignal(ctx context.Context, aggArgs *model.AggregatedSig
 			name := parityToLocationSignalName[aggParity]
 			agg := model.AllFloatAggregation[aggIndex]
 			currAggs.AppLocNumbers[model.AppLocKey{Aggregation: agg, Name: name}] = signal.ValueNumber
+		case ch.LocType:
+			if len(aggArgs.LocationArgs) <= int(signal.SignalIndex) {
+				return nil, fmt.Errorf("only %d location signal requests, but the query returned index %d", len(aggArgs.LocationArgs), signal.SignalIndex)
+			}
+			currAggs.ValueLocations[aggArgs.LocationArgs[signal.SignalIndex].Alias] = signal.ValueLocation
 		default:
 			return nil, fmt.Errorf("scanned a row with unrecognized type number %d", signal.SignalType)
 		}
@@ -207,6 +215,35 @@ func (r *Repository) GetAvailableSignals(ctx context.Context, tokenID uint32, fi
 		}
 	}
 	return retSignals, nil
+}
+
+// GetDataSummary returns the signal metadata for the given tokenID and filter.
+func (r *Repository) GetDataSummary(ctx context.Context, tokenID uint32, filter *model.SignalFilter) (*model.DataSummary, error) {
+	signalDataSummary, err := r.chService.GetSignalSummaries(ctx, tokenID, filter)
+	if err != nil {
+		return nil, handleDBError(ctx, err)
+	}
+	totalCount := uint64(0)
+	minTimestamp := time.Now().UTC()
+	maxTimestamp := time.Date(1900, 1, 1, 0, 0, 0, 0, time.UTC)
+	availableSignals := make([]string, len(signalDataSummary))
+	for i, metadata := range signalDataSummary {
+		availableSignals[i] = metadata.Name
+		totalCount += metadata.NumberOfSignals
+		if metadata.FirstSeen.Before(minTimestamp) {
+			minTimestamp = metadata.FirstSeen
+		}
+		if metadata.LastSeen.After(maxTimestamp) {
+			maxTimestamp = metadata.LastSeen
+		}
+	}
+	return &model.DataSummary{
+		NumberOfSignals:   totalCount,
+		FirstSeen:         minTimestamp,
+		LastSeen:          maxTimestamp,
+		AvailableSignals:  availableSignals,
+		SignalDataSummary: signalDataSummary,
+	}, nil
 }
 
 // GetEvents returns the events for the given tokenID, from, to and filter.

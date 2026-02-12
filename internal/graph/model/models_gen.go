@@ -20,24 +20,26 @@ type AftermarketDeviceBy struct {
 }
 
 type Attestation struct {
-	// ID is the ID of the attestation.
-	ID string `json:"ID"`
+	// id is the id of the attestation.
+	ID string `json:"id"`
 	// vehicleTokenId is the token ID of the vehicle.
 	VehicleTokenID int `json:"vehicleTokenId"`
 	// time represents the time the attestation was made at.
 	Time time.Time `json:"time"`
-	// attestation is the data being attested to.
+	// attestation is the JSON-encoded attestation.
 	Attestation string `json:"attestation"`
 	// type
 	Type string `json:"type"`
-	// source
+	// source is the address that created and signed the attestation
 	Source common.Address `json:"source"`
 	// dataversion
 	DataVersion string `json:"dataVersion"`
-	// producer
+	// producer of the attestation data
 	Producer *string `json:"producer,omitempty"`
-	// signature
+	// signature of the attestation data
 	Signature string `json:"signature"`
+	// tags tags associated with the attestation.
+	Tags []string `json:"tags,omitempty"`
 }
 
 // AttestationFilter holds the filter parameters for the attestation querys.
@@ -56,6 +58,21 @@ type AttestationFilter struct {
 	After *time.Time `json:"after,omitempty"`
 	// Limit attestations returned to this value. Defaults to 10.
 	Limit *int `json:"limit,omitempty"`
+	// Filter attestations by tags.
+	Tags *StringArrayFilter `json:"tags,omitempty"`
+}
+
+type DataSummary struct {
+	// Total number of signals collected
+	NumberOfSignals uint64 `json:"numberOfSignals"`
+	// available signal names
+	AvailableSignals []string `json:"availableSignals"`
+	// first seen timestamp
+	FirstSeen time.Time `json:"firstSeen"`
+	// last seen timestamp
+	LastSeen time.Time `json:"lastSeen"`
+	// data summary of an individual signal
+	SignalDataSummary []*SignalDataSummary `json:"signalDataSummary"`
 }
 
 type DeviceActivity struct {
@@ -81,6 +98,29 @@ type EventFilter struct {
 	Name *StringValueFilter `json:"name,omitempty"`
 	// source is the name of the source connection that created the event.
 	Source *StringValueFilter `json:"source,omitempty"`
+	// tags is the tags of the event.
+	// available tags: behavior.harshAcceleration, behavior.harshBraking, behavior.harshCornering, safety.collision
+	Tags *StringArrayFilter `json:"tags,omitempty"`
+}
+
+type FilterLocation struct {
+	// Latitude in the range [-90, 90].
+	Latitude float64 `json:"latitude"`
+	// Longitude in the range [-180, 180].
+	Longitude float64 `json:"longitude"`
+}
+
+type InCircleFilter struct {
+	// Center of the filter circle.
+	Center *FilterLocation `json:"center"`
+	// Radius of the circle around the center, in kilometers (km).
+	Radius float64 `json:"radius"`
+}
+
+type Location struct {
+	Latitude  float64 `json:"latitude"`
+	Longitude float64 `json:"longitude"`
+	Hdop      float64 `json:"hdop"`
 }
 
 type Pomvc struct {
@@ -98,6 +138,41 @@ type Pomvc struct {
 
 // The root query type for the GraphQL schema.
 type Query struct {
+}
+
+type Segment struct {
+	// Segment start timestamp (actual activity start transition)
+	StartTime time.Time `json:"startTime"`
+	// Segment end timestamp (activity end after debounce period).
+	// Null if segment is ongoing (extends beyond query range).
+	EndTime *time.Time `json:"endTime,omitempty"`
+	// Duration in seconds.
+	// If ongoing: from start to query 'to' time.
+	// If complete: from start to end.
+	DurationSeconds int `json:"durationSeconds"`
+	// True if segment extends beyond query time range (last activity is ongoing).
+	IsOngoing bool `json:"isOngoing"`
+	// True if segment started before query time range.
+	// Indicates startTime may be approximate.
+	StartedBeforeRange bool `json:"startedBeforeRange"`
+}
+
+type SegmentConfig struct {
+	// Minimum idle time (seconds) before segment is considered ended.
+	// For ignitionDetection: filters noise from brief ignition OFF events.
+	// For frequencyAnalysis: maximum gap between active windows to merge.
+	// Default: 300 (5 minutes), Min: 60, Max: 3600
+	MinIdleSeconds *int `json:"minIdleSeconds,omitempty"`
+	// Minimum segment duration (seconds) to include in results.
+	// Filters very short segments (testing, engine cycling).
+	// Default: 240 (4 minutes), Min: 60, Max: 3600
+	MinSegmentDurationSeconds *int `json:"minSegmentDurationSeconds,omitempty"`
+	// [frequencyAnalysis only] Minimum signal count per window for activity detection.
+	// Higher values = more conservative (filters parked telemetry better).
+	// Lower values = more sensitive (works for sparse signal vehicles).
+	// Default: 10 (tuned to match ignition detection accuracy)
+	// Min: 1, Max: 3600
+	SignalCountThreshold *int `json:"signalCountThreshold,omitempty"`
 }
 
 type SignalCollection struct {
@@ -119,6 +194,18 @@ type SignalCollection struct {
 	// Unit: 'degrees/s'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	AngularVelocityYaw *SignalFloat `json:"angularVelocityYaw,omitempty"`
+	// Indicates whether the airbag/SRS warning telltale is active.
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	BodyLightsIsAirbagWarningOn *SignalFloat `json:"bodyLightsIsAirbagWarningOn,omitempty"`
+	// Indicates whether the vehicle is locked via the central locking system. True = vehicle locked. False = vehicle unlocked.
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	BodyLockIsLocked *SignalFloat `json:"bodyLockIsLocked,omitempty"`
+	// Is item open or closed? True = Fully or partially open. False = Fully closed.
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	BodyTrunkFrontIsOpen *SignalFloat `json:"bodyTrunkFrontIsOpen,omitempty"`
+	// Is item open or closed? True = Fully or partially open. False = Fully closed.
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	BodyTrunkRearIsOpen *SignalFloat `json:"bodyTrunkRearIsOpen,omitempty"`
 	// Is item open or closed? True = Fully or partially open. False = Fully closed.
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	CabinDoorRow1DriverSideIsOpen *SignalFloat `json:"cabinDoorRow1DriverSideIsOpen,omitempty"`
@@ -143,6 +230,27 @@ type SignalCollection struct {
 	// Is item open or closed? True = Fully or partially open. False = Fully closed.
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	CabinDoorRow2PassengerSideWindowIsOpen *SignalFloat `json:"cabinDoorRow2PassengerSideWindowIsOpen,omitempty"`
+	// Is the belt engaged.
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	CabinSeatRow1DriverSideIsBelted *SignalFloat `json:"cabinSeatRow1DriverSideIsBelted,omitempty"`
+	// Is the belt engaged.
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	CabinSeatRow1PassengerSideIsBelted *SignalFloat `json:"cabinSeatRow1PassengerSideIsBelted,omitempty"`
+	// Is the belt engaged.
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	CabinSeatRow2DriverSideIsBelted *SignalFloat `json:"cabinSeatRow2DriverSideIsBelted,omitempty"`
+	// Is the belt engaged.
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	CabinSeatRow2MiddleIsBelted *SignalFloat `json:"cabinSeatRow2MiddleIsBelted,omitempty"`
+	// Is the belt engaged.
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	CabinSeatRow2PassengerSideIsBelted *SignalFloat `json:"cabinSeatRow2PassengerSideIsBelted,omitempty"`
+	// Is the belt engaged.
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	CabinSeatRow3DriverSideIsBelted *SignalFloat `json:"cabinSeatRow3DriverSideIsBelted,omitempty"`
+	// Is the belt engaged.
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	CabinSeatRow3PassengerSideIsBelted *SignalFloat `json:"cabinSeatRow3PassengerSideIsBelted,omitempty"`
 	// Rotational speed of a vehicle's wheel.
 	// Unit: 'km/h'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
@@ -167,10 +275,49 @@ type SignalCollection struct {
 	// Unit: 'kPa'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	ChassisAxleRow2WheelRightTirePressure *SignalFloat `json:"chassisAxleRow2WheelRightTirePressure,omitempty"`
+	// Measured Load on axle row 3.
+	// Unit: 'kg'
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	ChassisAxleRow3Weight *SignalFloat `json:"chassisAxleRow3Weight,omitempty"`
+	// Measured Load on axle row 3.
+	// Unit: 'kg'
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	ChassisAxleRow4Weight *SignalFloat `json:"chassisAxleRow4Weight,omitempty"`
+	// Measured Load on axle row 3.
+	// Unit: 'kg'
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	ChassisAxleRow5Weight *SignalFloat `json:"chassisAxleRow5Weight,omitempty"`
+	// Indicates whether the ABS warning telltale is active (any non-off state).
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	ChassisBrakeABSIsWarningOn *SignalFloat `json:"chassisBrakeABSIsWarningOn,omitempty"`
+	// Pneumatic pressure in the service brake circuit or reservoir
+	// Unit: 'kPa'
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	ChassisBrakeCircuit1PressurePrimary *SignalFloat `json:"chassisBrakeCircuit1PressurePrimary,omitempty"`
+	// Pneumatic pressure in the service brake circuit or reservoir
+	// Unit: 'kPa'
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	ChassisBrakeCircuit2PressurePrimary *SignalFloat `json:"chassisBrakeCircuit2PressurePrimary,omitempty"`
+	// Indicates whether the brake pedal is pressed.
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	ChassisBrakeIsPedalPressed *SignalFloat `json:"chassisBrakeIsPedalPressed,omitempty"`
+	// Brake pedal position as percent. 0 = Not depressed. 100 = Fully depressed.
+	// Unit: 'percent' Min: '0' Max: '100'
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	ChassisBrakePedalPosition *SignalFloat `json:"chassisBrakePedalPosition,omitempty"`
+	// Parking brake status. True = Parking Brake is Engaged. False = Parking Brake is not Engaged.
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	ChassisParkingBrakeIsEngaged *SignalFloat `json:"chassisParkingBrakeIsEngaged,omitempty"`
+	// Indicates whether the tire system warning telltale is active
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	ChassisTireSystemIsWarningOn *SignalFloat `json:"chassisTireSystemIsWarningOn,omitempty"`
 	// Current altitude relative to WGS 84 reference ellipsoid, as measured at the position of GNSS receiver antenna.
 	// Unit: 'm'
 	// Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
 	CurrentLocationAltitude *SignalFloat `json:"currentLocationAltitude,omitempty"`
+	// Current location of the vehicle in WGS 84 coordinates.
+	// Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
+	CurrentLocationCoordinates *SignalLocation `json:"currentLocationCoordinates,omitempty"`
 	// Current heading relative to geographic north. 0 = North, 90 = East, 180 = South, 270 = West.
 	// Unit: 'degrees' Min: '0' Max: '360'
 	// Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
@@ -240,10 +387,26 @@ type SignalCollection struct {
 	// Unit: 'kPa'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	OBDFuelPressure *SignalFloat `json:"obdFuelPressure,omitempty"`
+	// PID 5E - Engine fuel rate
+	// Unit: 'l/h'
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	OBDFuelRate *SignalFloat `json:"obdFuelRate,omitempty"`
+	// Fuel type names decoded from PID 51.
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	OBDFuelTypeName *SignalString `json:"obdFuelTypeName,omitempty"`
 	// PID 0F - Intake temperature
 	// Unit: 'celsius'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	OBDIntakeTemp *SignalFloat `json:"obdIntakeTemp,omitempty"`
+	// Engine block status, 0 = engine unblocked, 1 = engine blocked
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	OBDIsEngineBlocked *SignalFloat `json:"obdIsEngineBlocked,omitempty"`
+	// PID 1E - Auxiliary input status (power take off)
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	OBDIsPTOActive *SignalFloat `json:"obdIsPTOActive,omitempty"`
+	// Aftermarket device plugged in status. 1 = device plugged in, 0 = device unplugged.
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	OBDIsPluggedIn *SignalFloat `json:"obdIsPluggedIn,omitempty"`
 	// PID 07 - Long Term (learned) Fuel Trim - Bank 1 - negative percent leaner, positive percent richer
 	// Unit: 'percent'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
@@ -260,6 +423,10 @@ type SignalCollection struct {
 	// Unit: 'V'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	OBDO2WRSensor2Voltage *SignalFloat `json:"obdO2WRSensor2Voltage,omitempty"`
+	// PID 5C - Engine oil temperature
+	// Unit: 'celsius'
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	OBDOilTemperature *SignalFloat `json:"obdOilTemperature,omitempty"`
 	// PID 1F - Engine run time
 	// Unit: 's'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
@@ -317,10 +484,18 @@ type SignalCollection struct {
 	// Unit: 'Nm'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainCombustionEngineTorque *SignalFloat `json:"powertrainCombustionEngineTorque,omitempty"`
+	// Actual engine output torque as a percentage of reference engine torque (FMS / J1939 parameter SPN 513).
+	// Unit: 'percent'
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	PowertrainCombustionEngineTorquePercent *SignalFloat `json:"powertrainCombustionEngineTorquePercent,omitempty"`
 	// Current available fuel in the fuel tank expressed in liters.
 	// Unit: 'l'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainFuelSystemAbsoluteLevel *SignalFloat `json:"powertrainFuelSystemAbsoluteLevel,omitempty"`
+	// Accumulated fuel consumption (totalized) reported by the vehicle (FMS SPN 250).
+	// Unit: 'l'
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	PowertrainFuelSystemAccumulatedConsumption *SignalFloat `json:"powertrainFuelSystemAccumulatedConsumption,omitempty"`
 	// Level in fuel tank as percent of capacity. 0 = empty. 100 = full.
 	// Unit: 'percent' Min: '0' Max: '100'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
@@ -351,6 +526,13 @@ type SignalCollection struct {
 	// True if charging is ongoing. Charging is considered to be ongoing if energy is flowing from charger to vehicle.
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainTractionBatteryChargingIsCharging *SignalFloat `json:"powertrainTractionBatteryChargingIsCharging,omitempty"`
+	// Indicates if a charging cable is physically connected to the vehicle or not.
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	PowertrainTractionBatteryChargingIsChargingCableConnected *SignalFloat `json:"powertrainTractionBatteryChargingIsChargingCableConnected,omitempty"`
+	// Instantaneous charging power recorded during a charging event.
+	// Unit: 'kW'
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	PowertrainTractionBatteryChargingPower *SignalFloat `json:"powertrainTractionBatteryChargingPower,omitempty"`
 	// Current electrical energy flowing in/out of battery. Positive = Energy flowing in to battery, e.g. during charging. Negative = Energy flowing out of battery, e.g. during driving.
 	// Unit: 'W'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
@@ -375,6 +557,10 @@ type SignalCollection struct {
 	// Unit: 'kWh'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainTractionBatteryStateOfChargeCurrentEnergy *SignalFloat `json:"powertrainTractionBatteryStateOfChargeCurrentEnergy,omitempty"`
+	// Calculated battery state of health at standard conditions.
+	// Unit: 'percent' Min: '0' Max: '100'
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	PowertrainTractionBatteryStateOfHealth *SignalFloat `json:"powertrainTractionBatteryStateOfHealth,omitempty"`
 	// Current average temperature of the battery cells.
 	// Unit: 'celsius'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
@@ -382,6 +568,19 @@ type SignalCollection struct {
 	// The current gear. 0=Neutral, 1/2/..=Forward, -1/-2/..=Reverse.
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainTransmissionCurrentGear *SignalFloat `json:"powertrainTransmissionCurrentGear,omitempty"`
+	// Indicates if the Clutch switch is operated, so engine and transmission are partially or fully decoupled. False = Clutch switch not operated. True = Clutch switch operated.
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	PowertrainTransmissionIsClutchSwitchOperated *SignalFloat `json:"powertrainTransmissionIsClutchSwitchOperated,omitempty"`
+	// Actual retarder torque as a percentage (FMS / J1939 SPN 520).
+	// Unit: 'percent'
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	PowertrainTransmissionRetarderActualTorque *SignalFloat `json:"powertrainTransmissionRetarderActualTorque,omitempty"`
+	// Active engine torque mode.
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	PowertrainTransmissionRetarderTorqueMode *SignalString `json:"powertrainTransmissionRetarderTorqueMode,omitempty"`
+	// The selected gear. 0=Neutral, 1/2/..=Forward, -1/-2/..=Reverse, 126=Park.
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	PowertrainTransmissionSelectedGear *SignalFloat `json:"powertrainTransmissionSelectedGear,omitempty"`
 	// The current gearbox temperature.
 	// Unit: 'celsius'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
@@ -397,6 +596,10 @@ type SignalCollection struct {
 	// Unit: 'km'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	ServiceDistanceToService *SignalFloat `json:"serviceDistanceToService,omitempty"`
+	// Remaining time to service (of any kind). Negative values indicate service overdue.
+	// Unit: 's'
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	ServiceTimeToService *SignalFloat `json:"serviceTimeToService,omitempty"`
 	// Vehicle speed.
 	// Unit: 'km/h'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
@@ -429,6 +632,26 @@ type SignalFloatFilter struct {
 	Or    []*SignalFloatFilter `json:"or,omitempty"`
 }
 
+type SignalLocation struct {
+	// timestamp of when this data was colllected
+	Timestamp time.Time `json:"timestamp"`
+	// value of the signal
+	Value *Location `json:"value"`
+}
+
+// Filters that apply to locations.
+type SignalLocationFilter struct {
+	// Filter for locations within a polygon. The vertices should be ordered
+	// clockwise or counterclockwise, and there must be at least 3.
+	//
+	// May produce inaccurate results around the poles and the antimeridian.
+	InPolygon []*FilterLocation `json:"inPolygon,omitempty"`
+	// Filter for locations within a given distance of a given point. Distances
+	// are computed using WGS 84, and points that are exactly a distance `radius`
+	// from the `center` will be included.
+	InCircle *InCircleFilter `json:"inCircle,omitempty"`
+}
+
 type SignalString struct {
 	// timestamp of when this data was colllected
 	Timestamp time.Time `json:"timestamp"`
@@ -436,11 +659,32 @@ type SignalString struct {
 	Value string `json:"value"`
 }
 
+// Filters that apply to string arrays.
+type StringArrayFilter struct {
+	// containsAny array of strings containing any of the strings in the array
+	ContainsAny []string `json:"containsAny,omitempty"`
+	// containsAll array of strings containing all of the strings in the array
+	ContainsAll []string `json:"containsAll,omitempty"`
+	// notContainsAny array of strings does not contain any of the strings in the array
+	NotContainsAny []string `json:"notContainsAny,omitempty"`
+	// notContainsAll array of strings does not contain all of the strings in the array
+	NotContainsAll []string `json:"notContainsAll,omitempty"`
+	// or array of string array filters
+	Or []*StringArrayFilter `json:"or,omitempty"`
+}
+
+// Filters that apply to strings.
 type StringValueFilter struct {
-	Eq    *string  `json:"eq,omitempty"`
-	Neq   *string  `json:"neq,omitempty"`
+	// eq string equal to the string
+	Eq *string `json:"eq,omitempty"`
+	// neq string not equal to the string
+	Neq *string `json:"neq,omitempty"`
+	// notIn array of strings not in the array
 	NotIn []string `json:"notIn,omitempty"`
-	In    []string `json:"in,omitempty"`
+	// in array of strings in the array
+	In []string `json:"in,omitempty"`
+	// or array of string value filters
+	Or []*StringValueFilter `json:"or,omitempty"`
 }
 
 type Vinvc struct {
@@ -462,6 +706,83 @@ type Vinvc struct {
 	ValidTo *time.Time `json:"validTo,omitempty"`
 	// rawVC is the raw VC JSON.
 	RawVc string `json:"rawVC"`
+}
+
+type SignalDataSummary struct {
+	// signal name
+	Name string `json:"name"`
+	// number of this specific signal
+	NumberOfSignals uint64 `json:"numberOfSignals"`
+	// first seen timestamp
+	FirstSeen time.Time `json:"firstSeen"`
+	// last seen timestamp
+	LastSeen time.Time `json:"lastSeen"`
+}
+
+type DetectionMechanism string
+
+const (
+	// Ignition-based detection: Segments are identified by isIgnitionOn state transitions.
+	// Most reliable for vehicles with proper ignition signal support.
+	DetectionMechanismIgnitionDetection DetectionMechanism = "ignitionDetection"
+	// Frequency analysis: Segments are detected by analyzing signal update patterns.
+	// Uses pre-computed materialized view for optimal performance.
+	// Ideal for real-time APIs and bulk queries.
+	DetectionMechanismFrequencyAnalysis DetectionMechanism = "frequencyAnalysis"
+	// Change point detection: Uses CUSUM algorithm to detect statistical regime changes.
+	// Monitors cumulative deviation in signal frequency via materialized view.
+	// Excellent noise resistance with 100% accuracy match to ignition baseline.
+	// Best alternative when ignition signal is unavailable - same accuracy, same speed as frequency analysis.
+	DetectionMechanismChangePointDetection DetectionMechanism = "changePointDetection"
+)
+
+var AllDetectionMechanism = []DetectionMechanism{
+	DetectionMechanismIgnitionDetection,
+	DetectionMechanismFrequencyAnalysis,
+	DetectionMechanismChangePointDetection,
+}
+
+func (e DetectionMechanism) IsValid() bool {
+	switch e {
+	case DetectionMechanismIgnitionDetection, DetectionMechanismFrequencyAnalysis, DetectionMechanismChangePointDetection:
+		return true
+	}
+	return false
+}
+
+func (e DetectionMechanism) String() string {
+	return string(e)
+}
+
+func (e *DetectionMechanism) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = DetectionMechanism(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid DetectionMechanism", str)
+	}
+	return nil
+}
+
+func (e DetectionMechanism) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *DetectionMechanism) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e DetectionMechanism) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
 }
 
 type FloatAggregation string
@@ -529,60 +850,52 @@ func (e FloatAggregation) MarshalJSON() ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
-type Privilege string
+type LocationAggregation string
 
 const (
-	PrivilegeVehicleNonLocationData     Privilege = "VEHICLE_NON_LOCATION_DATA"
-	PrivilegeVehicleCommands            Privilege = "VEHICLE_COMMANDS"
-	PrivilegeVehicleCurrentLocation     Privilege = "VEHICLE_CURRENT_LOCATION"
-	PrivilegeVehicleAllTimeLocation     Privilege = "VEHICLE_ALL_TIME_LOCATION"
-	PrivilegeVehicleVinCredential       Privilege = "VEHICLE_VIN_CREDENTIAL"
-	PrivilegeVehicleApproximateLocation Privilege = "VEHICLE_APPROXIMATE_LOCATION"
-	PrivilegeManufacturerDeviceLastSeen Privilege = "MANUFACTURER_DEVICE_LAST_SEEN"
-	PrivilegeVehicleRawData             Privilege = "VEHICLE_RAW_DATA"
+	LocationAggregationAvg   LocationAggregation = "AVG"
+	LocationAggregationRand  LocationAggregation = "RAND"
+	LocationAggregationFirst LocationAggregation = "FIRST"
+	LocationAggregationLast  LocationAggregation = "LAST"
 )
 
-var AllPrivilege = []Privilege{
-	PrivilegeVehicleNonLocationData,
-	PrivilegeVehicleCommands,
-	PrivilegeVehicleCurrentLocation,
-	PrivilegeVehicleAllTimeLocation,
-	PrivilegeVehicleVinCredential,
-	PrivilegeVehicleApproximateLocation,
-	PrivilegeManufacturerDeviceLastSeen,
-	PrivilegeVehicleRawData,
+var AllLocationAggregation = []LocationAggregation{
+	LocationAggregationAvg,
+	LocationAggregationRand,
+	LocationAggregationFirst,
+	LocationAggregationLast,
 }
 
-func (e Privilege) IsValid() bool {
+func (e LocationAggregation) IsValid() bool {
 	switch e {
-	case PrivilegeVehicleNonLocationData, PrivilegeVehicleCommands, PrivilegeVehicleCurrentLocation, PrivilegeVehicleAllTimeLocation, PrivilegeVehicleVinCredential, PrivilegeVehicleApproximateLocation, PrivilegeManufacturerDeviceLastSeen, PrivilegeVehicleRawData:
+	case LocationAggregationAvg, LocationAggregationRand, LocationAggregationFirst, LocationAggregationLast:
 		return true
 	}
 	return false
 }
 
-func (e Privilege) String() string {
+func (e LocationAggregation) String() string {
 	return string(e)
 }
 
-func (e *Privilege) UnmarshalGQL(v any) error {
+func (e *LocationAggregation) UnmarshalGQL(v any) error {
 	str, ok := v.(string)
 	if !ok {
 		return fmt.Errorf("enums must be strings")
 	}
 
-	*e = Privilege(str)
+	*e = LocationAggregation(str)
 	if !e.IsValid() {
-		return fmt.Errorf("%s is not a valid Privilege", str)
+		return fmt.Errorf("%s is not a valid LocationAggregation", str)
 	}
 	return nil
 }
 
-func (e Privilege) MarshalGQL(w io.Writer) {
+func (e LocationAggregation) MarshalGQL(w io.Writer) {
 	fmt.Fprint(w, strconv.Quote(e.String()))
 }
 
-func (e *Privilege) UnmarshalJSON(b []byte) error {
+func (e *LocationAggregation) UnmarshalJSON(b []byte) error {
 	s, err := strconv.Unquote(string(b))
 	if err != nil {
 		return err
@@ -590,7 +903,7 @@ func (e *Privilege) UnmarshalJSON(b []byte) error {
 	return e.UnmarshalGQL(s)
 }
 
-func (e Privilege) MarshalJSON() ([]byte, error) {
+func (e LocationAggregation) MarshalJSON() ([]byte, error) {
 	var buf bytes.Buffer
 	e.MarshalGQL(&buf)
 	return buf.Bytes(), nil

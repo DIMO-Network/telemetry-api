@@ -7,8 +7,6 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/DIMO-Network/shared/pkg/privileges"
-	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	jwtmiddleware "github.com/auth0/go-jwt-middleware/v2"
 	"github.com/auth0/go-jwt-middleware/v2/jwks"
 	"github.com/auth0/go-jwt-middleware/v2/validator"
@@ -58,11 +56,6 @@ func NewJWTMiddleware(issuer, jwksURI string) (*jwtmiddleware.JWTMiddleware, err
 // AddClaimHandler is a middleware that fills in GraphQL-friendly privilege information on
 // the *TelemetryClaim object in the context.
 func AddClaimHandler(next http.Handler, vehicleAddr, mfrAddr common.Address) http.Handler {
-	contractPrivMaps := map[common.Address]map[privileges.Privilege]model.Privilege{
-		vehicleAddr: vehiclePrivToAPI,
-		mfrAddr:     manufacturerPrivToAPI,
-	}
-
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		claims, ok := GetValidatedClaims(r.Context())
 		if !ok || claims.CustomClaims == nil {
@@ -77,9 +70,6 @@ func AddClaimHandler(next http.Handler, vehicleAddr, mfrAddr common.Address) htt
 			jwtmiddleware.DefaultErrorHandler(w, r, jwtmiddleware.ErrJWTMissing)
 			return
 		}
-
-		telClaim.SetPrivileges(contractPrivMaps)
-
 		// add the custom claims to the context under a new custom key
 		r = r.Clone(context.WithValue(r.Context(), TelemetryClaimContextKey{}, telClaim))
 		next.ServeHTTP(w, r)

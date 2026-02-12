@@ -8,10 +8,10 @@ import (
 
 	"github.com/DIMO-Network/model-garage/pkg/vss"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
-	"github.com/volatiletech/sqlboiler/v4/drivers"
-	"github.com/volatiletech/sqlboiler/v4/queries"
-	"github.com/volatiletech/sqlboiler/v4/queries/qm"
-	"github.com/volatiletech/sqlboiler/v4/queries/qmhelper"
+	"github.com/aarondl/sqlboiler/v4/drivers"
+	"github.com/aarondl/sqlboiler/v4/queries"
+	"github.com/aarondl/sqlboiler/v4/queries/qm"
+	"github.com/aarondl/sqlboiler/v4/queries/qmhelper"
 )
 
 const (
@@ -19,6 +19,7 @@ const (
 	IntervalGroup     = "group_timestamp"
 	AggNumberCol      = "agg_number"
 	AggStringCol      = "agg_string"
+	AggLocationCol    = "agg_location"
 	aggTableName      = "agg_table"
 	tokenIDWhere      = vss.TokenIDCol + " = ?"
 	eventSubjectWhere = vss.EventSubjectCol + " = ?"
@@ -36,18 +37,19 @@ const (
 
 // varibles for the last seen signal query.
 const (
-	lastSeenName  = "'" + model.LastSeenField + "' AS name"
-	numValAsNull  = "NULL AS " + vss.ValueNumberCol
-	strValAsNull  = "NULL AS " + vss.ValueStringCol
-	locValAsZeros = "CAST((0, 0, 0) AS Tuple(latitude Float64, longitude Float64, hdop Float64)) AS " + vss.ValueLocationCol
-	lastSeenTS    = "max(" + vss.TimestampCol + ") AS ts"
+	lastSeenName = "'" + model.LastSeenField + "' AS name"
+	numValAsNull = "NULL AS " + vss.ValueNumberCol
+	strValAsNull = "NULL AS " + vss.ValueStringCol
+	locValAsZero = "CAST(tuple(0, 0, 0), 'Tuple(latitude Float64, longitude Float64, hdop Float64)') AS " + vss.ValueLocationCol
+
+	lastSeenTS = "max(" + vss.TimestampCol + ") AS ts"
 )
 
 // Aggregation functions for latest signals.
 const (
 	latestString    = "argMax(" + vss.ValueStringCol + ", " + vss.TimestampCol + ") as " + vss.ValueStringCol
 	latestNumber    = "argMax(" + vss.ValueNumberCol + ", " + vss.TimestampCol + ") as " + vss.ValueNumberCol
-	latestLocation  = "argMax(" + vss.ValueLocationCol + ", " + vss.TimestampCol + ") as " + vss.ValueLocationCol
+	latestLocation  = "argMax(" + vss.ValueLocationCol + ", " + vss.TimestampCol + ") as " + AggLocationCol
 	latestTimestamp = "max(" + vss.TimestampCol + ") as ts"
 )
 
@@ -58,6 +60,13 @@ const (
 	topGroup         = "arrayStringConcat(topK(1, 10)(" + vss.ValueStringCol + "))"
 	firstStringGroup = "argMin(" + vss.ValueStringCol + ", " + vss.TimestampCol + ")"
 	lastStringGroup  = "argMax(" + vss.ValueStringCol + ", " + vss.TimestampCol + ")"
+)
+
+const (
+	avgLocationGroup   = "CAST(tuple(avg(" + vss.ValueLocationCol + ".latitude), avg(" + vss.ValueLocationCol + ".longitude), avg(" + vss.ValueLocationCol + ".hdop)), 'Tuple(latitude Float64, longitude Float64, hdop Float64)')"
+	randLocationGroup  = "groupArraySample(1, %d)(" + vss.ValueLocationCol + ")[1]"
+	firstLocationGroup = "argMin(" + vss.ValueLocationCol + ", " + vss.TimestampCol + ")"
+	lastLocationGroup  = "argMax(" + vss.ValueLocationCol + ", " + vss.TimestampCol + ")"
 )
 
 var SourceTranslations = map[string][]string{
@@ -85,6 +94,7 @@ const (
 	// AppLocType is the type for rows needed to compute approximate
 	// locations.
 	AppLocType FieldType = 3
+	LocType    FieldType = 4
 )
 
 func (t *FieldType) Scan(value any) error {
@@ -93,7 +103,7 @@ func (t *FieldType) Scan(value any) error {
 		return fmt.Errorf("expected value of type uint8, but got type %T", value)
 	}
 
-	if w == 0 || w > 3 {
+	if w == 0 || w > 4 {
 		return fmt.Errorf("invalid value %d for field type", w)
 	}
 
@@ -156,7 +166,7 @@ func getFloatSelectExpr(field string) string {
 
 func selectNumberAggs(numberAggs []model.FloatSignalArgs, appLocAggs map[model.FloatAggregation]struct{}) qm.QueryMod {
 	if len(numberAggs) == 0 && len(appLocAggs) == 0 {
-		return qm.Select("NULL AS " + vss.ValueNumberCol)
+		return qm.Select("NULL AS " + AggNumberCol)
 	}
 	// Add a CASE statement for each name and its corresponding aggregation function
 	caseStmts := make([]string, 0, len(numberAggs)+2*len(appLocAggs))
@@ -177,7 +187,7 @@ func selectNumberAggs(numberAggs []model.FloatSignalArgs, appLocAggs map[model.F
 
 func selectStringAggs(stringAggs []model.StringSignalArgs) qm.QueryMod {
 	if len(stringAggs) == 0 {
-		return qm.Select("NULL AS " + vss.ValueStringCol)
+		return qm.Select("NULL AS " + AggStringCol)
 	}
 	// Add a CASE statement for each name and its corresponding aggregation function
 	caseStmts := make([]string, 0, len(stringAggs))
@@ -185,6 +195,19 @@ func selectStringAggs(stringAggs []model.StringSignalArgs) qm.QueryMod {
 		caseStmts = append(caseStmts, fmt.Sprintf("WHEN %s = %d AND %s = %d THEN %s", signalTypeCol, StringType, signalIndexCol, i, getStringAgg(agg.Agg)))
 	}
 	caseStmt := fmt.Sprintf("CASE %s ELSE NULL END AS %s", strings.Join(caseStmts, " "), AggStringCol)
+	return qm.Select(caseStmt)
+}
+
+func selectLocationAggs(stringAggs []model.LocationSignalArgs) qm.QueryMod {
+	if len(stringAggs) == 0 {
+		return qm.Select("CAST(tuple(0, 0, 0), 'Tuple(latitude Float64, longitude Float64, hdop Float64)') AS " + AggLocationCol)
+	}
+	// Add a CASE statement for each name and its corresponding aggregation function
+	caseStmts := make([]string, 0, len(stringAggs))
+	for i, agg := range stringAggs {
+		caseStmts = append(caseStmts, fmt.Sprintf("WHEN %s = %d AND %s = %d THEN %s", signalTypeCol, LocType, signalIndexCol, i, getLocationAgg(agg.Agg)))
+	}
+	caseStmt := fmt.Sprintf("CASE %s ELSE CAST(tuple(0, 0, 0), 'Tuple(latitude Float64, longitude Float64, hdop Float64)') END AS %s", strings.Join(caseStmts, " "), AggLocationCol)
 	return qm.Select(caseStmt)
 }
 
@@ -230,6 +253,21 @@ func getStringAgg(aggType model.StringAggregation) string {
 	return aggStr
 }
 
+func getLocationAgg(aggType model.LocationAggregation) string {
+	aggLoc := firstLocationGroup
+	switch aggType {
+	case model.LocationAggregationAvg:
+		aggLoc = avgLocationGroup
+	case model.LocationAggregationRand:
+		aggLoc = randLocationGroup
+	case model.LocationAggregationFirst:
+		aggLoc = firstLocationGroup
+	case model.LocationAggregationLast:
+		aggLoc = lastLocationGroup
+	}
+	return aggLoc
+}
+
 // getLatestQuery creates a query to get the latest signal value for each signal names
 // returns the query statement and the arguments list,
 /*
@@ -251,6 +289,12 @@ func getLatestQuery(latestArgs *model.LatestSignalsArgs) (string, []any) {
 	for name := range latestArgs.SignalNames {
 		signalNames = append(signalNames, name)
 	}
+
+	locationSignalNames := make([]string, 0, len(latestArgs.LocationSignalNames))
+	for name := range latestArgs.LocationSignalNames {
+		locationSignalNames = append(locationSignalNames, name)
+	}
+
 	mods := []qm.QueryMod{
 		qm.Select(vss.NameCol),
 		qm.Select(latestTimestamp),
@@ -259,7 +303,18 @@ func getLatestQuery(latestArgs *model.LatestSignalsArgs) (string, []any) {
 		qm.Select(latestLocation),
 		qm.From(vss.TableName),
 		qm.Where(tokenIDWhere, latestArgs.TokenID),
-		qm.WhereIn(nameIn, signalNames),
+		qm.Expr(
+			qm.WhereIn(nameIn, signalNames),
+			qm.Or2(
+				qm.Expr(
+					qm.WhereIn(nameIn, locationSignalNames),
+					qm.Expr(
+						qmhelper.Where(vss.ValueLocationCol+".latitude", qmhelper.NEQ, 0),
+						qm.Or2(qmhelper.Where(vss.ValueLocationCol+".longitude", qmhelper.NEQ, 0)),
+					),
+				),
+			),
+		),
 		qm.GroupBy(vss.NameCol),
 	}
 	mods = append(mods, getFilterMods(latestArgs.Filter)...)
@@ -288,7 +343,7 @@ func getLastSeenQuery(sigArgs *model.SignalArgs) (string, []any) {
 		qm.Select(lastSeenTS),
 		qm.Select(numValAsNull),
 		qm.Select(strValAsNull),
-		qm.Select(locValAsZeros),
+		qm.Select(locValAsZero),
 		qm.From(vss.TableName),
 		qm.Where(tokenIDWhere, sigArgs.TokenID),
 	}
@@ -358,7 +413,7 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 		return "", nil, nil
 	}
 
-	numAggs := len(aggArgs.FloatArgs) + len(aggArgs.StringArgs) + 2*len(aggArgs.ApproxLocArgs)
+	numAggs := len(aggArgs.FloatArgs) + len(aggArgs.StringArgs) + 2*len(aggArgs.ApproxLocArgs) + len(aggArgs.LocationArgs)
 	if numAggs == 0 {
 		return "", nil, errors.New("no aggregations requested")
 	}
@@ -384,23 +439,65 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 				aggTableEntry(AppLocType, 2*i+1, FieldCurrentLocation))
 		}
 	}
+	for i, agg := range aggArgs.LocationArgs {
+		valuesArgs = append(valuesArgs, aggTableEntry(LocType, i, agg.Name))
+	}
 	valueTable := fmt.Sprintf("VALUES('%s', %s) as %s ON %s.%s = %s.%s", valueTableDef, strings.Join(valuesArgs, ", "), aggTableName, vss.TableName, vss.NameCol, aggTableName, vss.NameCol)
 
-	floatFilters := []qm.QueryMod{
-		// Make sure non-float rows can still get returned.
-		qmhelper.Where(signalTypeCol, qmhelper.NEQ, FloatType),
+	var perSignalFilters []qm.QueryMod
+
+	if len(aggArgs.FloatArgs) != 0 {
+		// These are for float fields. One sub-Expr per field.
+		var innerFloatFilters []qm.QueryMod
+
+		for i, agg := range aggArgs.FloatArgs {
+			fieldFilters := []qm.QueryMod{
+				qmhelper.Where(signalIndexCol, qmhelper.EQ, i),
+			}
+			fieldFilters = append(fieldFilters, buildFloatConditionList(agg.Filter, getFloatSelectExpr(agg.Name))...)
+
+			// It's okay to also use Or2 for the first entry: it's simply ignored.
+			innerFloatFilters = append(innerFloatFilters, qm.Or2(qm.Expr(fieldFilters...)))
+		}
+
+		perSignalFilters = append(perSignalFilters, qm.Or2(
+			qm.Expr(
+				qmhelper.Where(signalTypeCol, qmhelper.EQ, FloatType),
+				qm.Expr(innerFloatFilters...),
+			),
+		))
 	}
 
-	for i, agg := range aggArgs.FloatArgs {
-		// TODO(elffjs): Some duplication here. Also a bit wasteful if
-		// there are no filters at all.
-		fieldFilters := []qm.QueryMod{
-			qmhelper.Where(signalTypeCol, qmhelper.EQ, FloatType),
-			qmhelper.Where(signalIndexCol, qmhelper.EQ, i),
-		}
-		fieldFilters = append(fieldFilters, buildConditionList(agg.Filter, getFloatSelectExpr(agg.Name))...)
+	if len(aggArgs.StringArgs) != 0 {
+		perSignalFilters = append(perSignalFilters, qm.Or2(qmhelper.Where(signalTypeCol, qmhelper.EQ, StringType)))
+	}
 
-		floatFilters = append(floatFilters, qm.Or2(qm.Expr(fieldFilters...)))
+	if len(aggArgs.ApproxLocArgs) != 0 {
+		perSignalFilters = append(perSignalFilters, qm.Or2(qmhelper.Where(signalTypeCol, qmhelper.EQ, AppLocType)))
+	}
+
+	if len(aggArgs.LocationArgs) != 0 {
+		var innerLocationFilters []qm.QueryMod
+
+		for i, agg := range aggArgs.LocationArgs {
+			fieldFilters := []qm.QueryMod{
+				qmhelper.Where(signalIndexCol, qmhelper.EQ, i),
+			}
+			fieldFilters = append(fieldFilters, buildLocationConditionList(agg.Filter)...)
+
+			innerLocationFilters = append(innerLocationFilters, qm.Or2(qm.Expr(fieldFilters...)))
+		}
+
+		perSignalFilters = append(perSignalFilters, qm.Or2(
+			qm.Expr(
+				qmhelper.Where(signalTypeCol, qmhelper.EQ, LocType),
+				qm.Expr(
+					qmhelper.Where(vss.ValueLocationCol+".latitude", qmhelper.NEQ, 0),
+					qm.Or2(qmhelper.Where(vss.ValueLocationCol+".longitude", qmhelper.NEQ, 0)),
+				),
+				qm.Expr(innerLocationFilters...),
+			),
+		))
 	}
 
 	mods := []qm.QueryMod{
@@ -409,6 +506,7 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 		selectInterval(aggArgs.Interval, aggArgs.FromTS),
 		selectNumberAggs(aggArgs.FloatArgs, aggArgs.ApproxLocArgs),
 		selectStringAggs(aggArgs.StringArgs),
+		selectLocationAggs(aggArgs.LocationArgs),
 		qm.Where(tokenIDWhere, aggArgs.TokenID),
 		qm.Where(timestampFrom, aggArgs.FromTS),
 		qm.Where(timestampTo, aggArgs.ToTS),
@@ -420,13 +518,13 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 		qm.OrderBy(groupAsc),
 	}
 	mods = append(mods, getFilterMods(aggArgs.Filter)...)
-	mods = append(mods, qm.Expr(floatFilters...))
+	mods = append(mods, qm.Expr(perSignalFilters...)) // Parenthesization is very important here!
 
 	stmt, args := newQuery(mods...)
 	return stmt, args, nil
 }
 
-func buildConditionList(fil *model.SignalFloatFilter, selectExpr string) []qm.QueryMod {
+func buildFloatConditionList(fil *model.SignalFloatFilter, selectExpr string) []qm.QueryMod {
 	if fil == nil {
 		return nil
 	}
@@ -460,20 +558,70 @@ func buildConditionList(fil *model.SignalFloatFilter, selectExpr string) []qm.Qu
 
 	var orMods []qm.QueryMod
 	for _, cond := range fil.Or {
-		clauseMods := buildConditionList(cond, selectExpr)
+		clauseMods := buildFloatConditionList(cond, selectExpr)
 		if len(clauseMods) != 0 {
-			if len(orMods) == 0 {
-				orMods = append(orMods, qm.Expr(clauseMods...))
-			} else {
-				orMods = append(orMods, qm.Or2(qm.Expr(clauseMods...)))
-			}
+			orMods = append(orMods, qm.Or2(qm.Expr(clauseMods...)))
 		}
 	}
+
 	if len(orMods) != 0 {
 		mods = append(mods, qm.Expr(orMods...))
 	}
 
 	return mods
+}
+
+func buildLocationConditionList(fil *model.SignalLocationFilter) []qm.QueryMod {
+	if fil == nil {
+		return nil
+	}
+
+	var mods []qm.QueryMod
+
+	// This will not work well if points at at the edges of the coordinate system:
+	// for example, around the antimeridian.
+	if len(fil.InPolygon) != 0 {
+		// TODO(elffjs): Can the ClickHouse driver handle this list assembly for us?
+		var interp []any
+		for _, pt := range fil.InPolygon {
+			// Important: ClickHouse thinks of these as (x, y), so longitude goes first.
+			interp = append(interp, pt.Longitude, pt.Latitude)
+		}
+
+		// ClickHouse function:
+		// https://clickhouse.com/docs/sql-reference/functions/geo/coordinates#pointinpolygon
+		mods = append(mods, qm.Where(
+			"pointInPolygon(("+vss.ValueLocationCol+".longitude, "+vss.ValueLocationCol+".latitude), ["+repeatWithSep("(?, ?)", len(fil.InPolygon), ", ")+"])",
+			interp...,
+		))
+	}
+
+	// ClickHouse function, which returns meters:
+	// https://clickhouse.com/docs/sql-reference/functions/geo/coordinates#geodistance
+	if fil.InCircle != nil {
+		mods = append(mods, qm.Where(
+			"geoDistance(?, ?, "+vss.ValueLocationCol+".longitude, "+vss.ValueLocationCol+".latitude) <= ?",
+			fil.InCircle.Center.Longitude, fil.InCircle.Center.Latitude, kilometersToMeters(fil.InCircle.Radius),
+		))
+	}
+
+	return mods
+}
+
+func kilometersToMeters(d float64) float64 {
+	return 1000 * d
+}
+
+func repeatWithSep(s string, count int, sep string) string {
+	if count == 0 {
+		return ""
+	}
+	// Don't actually need to special case this, since strings.Repeat(s, 0) is "".
+	// We do avoid a concatenation, though.
+	if count == 1 {
+		return s
+	}
+	return strings.Repeat(s+sep, count-1) + s
 }
 
 func aggTableEntry(ft FieldType, index int, name string) string {
@@ -485,6 +633,23 @@ func getDistinctQuery(tokenId uint32, filter *model.SignalFilter) (string, []any
 		qm.Distinct(vss.NameCol),
 		qm.From(vss.TableName),
 		qm.Where(tokenIDWhere, tokenId),
+		qm.OrderBy(vss.NameCol),
+	}
+	mods = append(mods, getFilterMods(filter)...)
+	stmt, args := newQuery(mods...)
+	return stmt, args
+}
+
+// select Count(*), max(timestamp), min(timestamp), name, from signal where token_id = '39718' GROUP BY name
+func getSignalSummariesQuery(tokenId uint32, filter *model.SignalFilter) (string, []any) {
+	mods := []qm.QueryMod{
+		qm.Select(vss.NameCol),
+		qm.Select("COUNT(*)"),
+		qm.Select("MIN(" + vss.TimestampCol + ")"),
+		qm.Select("MAX(" + vss.TimestampCol + ")"),
+		qm.From(vss.TableName),
+		qm.Where(tokenIDWhere, tokenId),
+		qm.GroupBy(vss.NameCol),
 		qm.OrderBy(vss.NameCol),
 	}
 	mods = append(mods, getFilterMods(filter)...)
@@ -509,29 +674,79 @@ func appendEventFilterMods(mods []qm.QueryMod, filter *model.EventFilter) []qm.Q
 		return mods
 	}
 	if filter.Name != nil {
-		mods = appendStringFilterMod(mods, vss.EventNameCol, filter.Name)
+		mods = append(mods, stringFilterMod(vss.EventNameCol, filter.Name)...)
 	}
 	if filter.Source != nil {
-		mods = appendStringFilterMod(mods, vss.EventSourceCol, filter.Source)
+		mods = append(mods, stringFilterMod(vss.EventSourceCol, filter.Source)...)
+	}
+	if filter.Tags != nil {
+		mods = append(mods, stringArrayFilterMod(filter.Tags, vss.EventTagsCol)...)
 	}
 	return mods
 }
 
-func appendStringFilterMod(mods []qm.QueryMod, field string, filter *model.StringValueFilter) []qm.QueryMod {
+func stringFilterMod(field string, filter *model.StringValueFilter) []qm.QueryMod {
+	var newMods []qm.QueryMod
 	if filter == nil {
-		return mods
+		return nil
 	}
 	if filter.Eq != nil {
-		mods = append(mods, qm.Where(field+" = ?", *filter.Eq))
+		newMods = append(newMods, qm.Where(field+" = ?", *filter.Eq))
 	}
 	if filter.Neq != nil {
-		mods = append(mods, qm.Where(field+" != ?", *filter.Neq))
+		newMods = append(newMods, qm.Where(field+" != ?", *filter.Neq))
 	}
 	if filter.NotIn != nil {
-		mods = append(mods, qm.WhereNotIn(field+" NOT IN (?)", filter.NotIn))
+		newMods = append(newMods, qm.WhereNotIn(field+" NOT IN (?)", filter.NotIn))
 	}
 	if filter.In != nil {
-		mods = append(mods, qm.WhereIn(field+" IN (?)", filter.In))
+		newMods = append(newMods, qm.WhereIn(field+" IN (?)", filter.In))
 	}
-	return mods
+
+	for _, cond := range filter.Or {
+		clauseMods := stringFilterMod(field, cond)
+		if len(clauseMods) != 0 {
+			newMods = append(newMods, qm.Or2(qm.Expr(clauseMods...)))
+		}
+	}
+
+	if len(filter.Or) != 0 {
+		// if we have an Or wrap the expression so it doesn't get ordered with the parent where clause
+		newMods = []qm.QueryMod{qm.Expr(newMods...)}
+	}
+
+	return newMods
+}
+
+func stringArrayFilterMod(filter *model.StringArrayFilter, field string) []qm.QueryMod {
+	var newMods []qm.QueryMod
+	if filter == nil {
+		return newMods
+	}
+
+	if len(filter.ContainsAny) != 0 {
+		newMods = append(newMods, qm.Where("hasAny("+field+", ?)", filter.ContainsAny))
+	}
+	if len(filter.ContainsAll) != 0 {
+		newMods = append(newMods, qm.Where("hasAll("+field+", ?)", filter.ContainsAll))
+	}
+	if len(filter.NotContainsAny) != 0 {
+		newMods = append(newMods, qm.Where("NOT hasAny("+field+", ?)", filter.NotContainsAny))
+	}
+	if len(filter.NotContainsAll) != 0 {
+		newMods = append(newMods, qm.Where("NOT hasAll("+field+", ?)", filter.NotContainsAll))
+	}
+
+	for _, cond := range filter.Or {
+		clauseMods := stringArrayFilterMod(cond, field)
+		if len(clauseMods) != 0 {
+			newMods = append(newMods, qm.Or2(qm.Expr(clauseMods...)))
+		}
+	}
+
+	if len(filter.Or) != 0 {
+		newMods = []qm.QueryMod{qm.Expr(newMods...)}
+	}
+
+	return newMods
 }

@@ -4,10 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"strconv"
+	"slices"
 
 	"github.com/99designs/gqlgen/graphql"
-	"github.com/DIMO-Network/shared/pkg/privileges"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	"github.com/DIMO-Network/telemetry-api/internal/service/identity"
 	"github.com/ethereum/go-ethereum/common"
@@ -16,22 +15,6 @@ import (
 const (
 	tokenIdArg = "tokenId"
 	byArg      = "by"
-)
-
-var (
-	vehiclePrivToAPI = map[privileges.Privilege]model.Privilege{
-		privileges.VehicleNonLocationData:     model.PrivilegeVehicleNonLocationData,
-		privileges.VehicleCommands:            model.PrivilegeVehicleCommands,
-		privileges.VehicleCurrentLocation:     model.PrivilegeVehicleCurrentLocation,
-		privileges.VehicleAllTimeLocation:     model.PrivilegeVehicleAllTimeLocation,
-		privileges.VehicleVinCredential:       model.PrivilegeVehicleVinCredential,
-		privileges.VehicleApproximateLocation: model.PrivilegeVehicleApproximateLocation,
-		privileges.VehicleRawData:             model.PrivilegeVehicleRawData,
-	}
-
-	manufacturerPrivToAPI = map[privileges.Privilege]model.Privilege{
-		privileges.ManufacturerDeviceLastSeen: model.PrivilegeManufacturerDeviceLastSeen,
-	}
 )
 
 //go:generate go tool mockgen -source=./auth.go -destination=auth_mocks.go -package=auth
@@ -110,26 +93,26 @@ func validateHeader(ctx context.Context, requiredAddr common.Address, tokenID in
 		return err
 	}
 
-	if claim.ContractAddress != requiredAddr {
-		return newError("contract in claim is %s instead of the required %s", claim.ContractAddress, requiredAddr)
+	if claim.AssetDID.ContractAddress != requiredAddr {
+		return newError("contract in claim is %s instead of the required %s", claim.AssetDID.ContractAddress, requiredAddr)
 	}
 
-	if strconv.Itoa(tokenID) != claim.TokenID {
-		return fmt.Errorf("token id does not match")
+	if claim.AssetDID.TokenID.Int64() != int64(tokenID) {
+		return newError("token id does not match")
 	}
 
 	return nil
 }
 
 // AllOfPrivilegeCheck checks if the claim set in the context includes the required privileges.
-func AllOfPrivilegeCheck(ctx context.Context, _ any, next graphql.Resolver, requiredPrivs []model.Privilege) (any, error) {
+func AllOfPrivilegeCheck(ctx context.Context, _ any, next graphql.Resolver, requiredPrivs []string) (any, error) {
 	claim, err := getTelemetryClaim(ctx)
 	if err != nil {
 		return nil, UnauthorizedError{err: err}
 	}
 
 	for _, priv := range requiredPrivs {
-		if !claim.privileges.Contains(priv) {
+		if !slices.Contains(claim.Permissions, priv) {
 			return nil, newError("missing required privilege(s) %s", priv)
 		}
 	}
@@ -138,14 +121,14 @@ func AllOfPrivilegeCheck(ctx context.Context, _ any, next graphql.Resolver, requ
 }
 
 // OneOfPrivilegeCheck checks if the claim set in the context includes at least one of the required privileges.
-func OneOfPrivilegeCheck(ctx context.Context, _ any, next graphql.Resolver, requiredPrivs []model.Privilege) (any, error) {
+func OneOfPrivilegeCheck(ctx context.Context, _ any, next graphql.Resolver, requiredPrivs []string) (any, error) {
 	claim, err := getTelemetryClaim(ctx)
 	if err != nil {
 		return nil, UnauthorizedError{err: err}
 	}
 
 	for _, priv := range requiredPrivs {
-		if claim.privileges.Contains(priv) {
+		if slices.Contains(claim.Permissions, priv) {
 			return next(ctx)
 		}
 	}

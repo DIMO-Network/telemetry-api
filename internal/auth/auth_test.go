@@ -8,7 +8,6 @@ import (
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/DIMO-Network/cloudevent"
-	"github.com/DIMO-Network/shared/pkg/privileges"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	"github.com/DIMO-Network/telemetry-api/internal/service/identity"
 	"github.com/DIMO-Network/token-exchange-api/pkg/tokenclaims"
@@ -41,9 +40,10 @@ func TestRequiresVehicleTokenCheck(t *testing.T) {
 				"tokenId": 123,
 			},
 			telemetryClaim: &TelemetryClaim{
-				CustomClaims: tokenclaims.CustomClaims{
+				AssetDID: cloudevent.ERC721DID{
+					ChainID:         1,
 					ContractAddress: vehicleNFTAddr,
-					TokenID:         "123",
+					TokenID:         big.NewInt(123),
 				},
 			},
 		},
@@ -53,9 +53,10 @@ func TestRequiresVehicleTokenCheck(t *testing.T) {
 				"tokenId": 456,
 			},
 			telemetryClaim: &TelemetryClaim{
-				CustomClaims: tokenclaims.CustomClaims{
+				AssetDID: cloudevent.ERC721DID{
+					ChainID:         1,
 					ContractAddress: vehicleNFTAddr,
-					TokenID:         "123",
+					TokenID:         big.NewInt(123),
 				},
 			},
 			expectedError: true,
@@ -65,9 +66,10 @@ func TestRequiresVehicleTokenCheck(t *testing.T) {
 			args:          map[string]any{},
 			expectedError: true,
 			telemetryClaim: &TelemetryClaim{
-				CustomClaims: tokenclaims.CustomClaims{
+				AssetDID: cloudevent.ERC721DID{
+					ChainID:         1,
 					ContractAddress: vehicleNFTAddr,
-					TokenID:         "123",
+					TokenID:         big.NewInt(123),
 				},
 			},
 		},
@@ -76,9 +78,10 @@ func TestRequiresVehicleTokenCheck(t *testing.T) {
 			args:          map[string]any{},
 			expectedError: true,
 			telemetryClaim: &TelemetryClaim{
-				CustomClaims: tokenclaims.CustomClaims{
+				AssetDID: cloudevent.ERC721DID{
+					ChainID:         1,
 					ContractAddress: common.HexToAddress("0x4"),
-					TokenID:         "123",
+					TokenID:         big.NewInt(123),
 				},
 			},
 		},
@@ -134,9 +137,10 @@ func TestRequiresManufacturerTokenCheck(t *testing.T) {
 				Address: &autopiAddr,
 			},
 			telmetryClaim: &TelemetryClaim{
-				CustomClaims: tokenclaims.CustomClaims{
+				AssetDID: cloudevent.ERC721DID{
+					ChainID:         1,
 					ContractAddress: mtrNFTAddr,
-					TokenID:         "137",
+					TokenID:         big.NewInt(137),
 				},
 			},
 			identityResponse: &identity.DeviceInfos{
@@ -149,9 +153,10 @@ func TestRequiresManufacturerTokenCheck(t *testing.T) {
 				TokenID: &autopiTknID,
 			},
 			telmetryClaim: &TelemetryClaim{
-				CustomClaims: tokenclaims.CustomClaims{
+				AssetDID: cloudevent.ERC721DID{
+					ChainID:         1,
 					ContractAddress: mtrNFTAddr,
-					TokenID:         "137",
+					TokenID:         big.NewInt(137),
 				},
 			},
 			identityResponse: &identity.DeviceInfos{
@@ -164,9 +169,10 @@ func TestRequiresManufacturerTokenCheck(t *testing.T) {
 				Serial: &autopiSerial,
 			},
 			telmetryClaim: &TelemetryClaim{
-				CustomClaims: tokenclaims.CustomClaims{
+				AssetDID: cloudevent.ERC721DID{
+					ChainID:         1,
 					ContractAddress: mtrNFTAddr,
-					TokenID:         "137",
+					TokenID:         big.NewInt(137),
 				},
 			},
 			identityResponse: &identity.DeviceInfos{
@@ -176,9 +182,10 @@ func TestRequiresManufacturerTokenCheck(t *testing.T) {
 		{
 			name: "wrong aftermarket device manufacturer",
 			telmetryClaim: &TelemetryClaim{
-				CustomClaims: tokenclaims.CustomClaims{
+				AssetDID: cloudevent.ERC721DID{
+					ChainID:         1,
 					ContractAddress: mtrNFTAddr,
-					TokenID:         "138",
+					TokenID:         big.NewInt(138),
 				},
 			},
 			args: model.AftermarketDeviceBy{
@@ -190,9 +197,10 @@ func TestRequiresManufacturerTokenCheck(t *testing.T) {
 		{
 			name: "invalid autopi address",
 			telmetryClaim: &TelemetryClaim{
-				CustomClaims: tokenclaims.CustomClaims{
+				AssetDID: cloudevent.ERC721DID{
+					ChainID:         1,
 					ContractAddress: mtrNFTAddr,
-					TokenID:         "137",
+					TokenID:         big.NewInt(137),
 				},
 			},
 			args: model.AftermarketDeviceBy{
@@ -235,89 +243,62 @@ func TestRequiresManufacturerTokenCheck(t *testing.T) {
 
 func TestRequiresPrivilegeCheck(t *testing.T) {
 	t.Parallel()
-	vehicleNFTAddr := common.BigToAddress(big.NewInt(10))
-	manufNFTAddr := common.BigToAddress(big.NewInt(11))
-
-	privMaps := map[common.Address]map[privileges.Privilege]model.Privilege{
-		vehicleNFTAddr: vehiclePrivToAPI,
-		manufNFTAddr:   manufacturerPrivToAPI,
-	}
 
 	testCases := []struct {
 		name           string
-		privs          []model.Privilege
+		privs          []string
 		telemetryClaim *TelemetryClaim
 		expectedError  bool
 	}{
 		{
 			name: "valid_privileges",
-			privs: []model.Privilege{
-				model.PrivilegeVehicleAllTimeLocation,
-				model.PrivilegeVehicleNonLocationData,
+			privs: []string{
+				tokenclaims.PermissionGetLocationHistory,
+				tokenclaims.PermissionGetNonLocationHistory,
 			},
 			telemetryClaim: &TelemetryClaim{
 				CustomClaims: tokenclaims.CustomClaims{
-					PrivilegeIDs: []privileges.Privilege{
-						privileges.VehicleAllTimeLocation,
-						privileges.VehicleNonLocationData,
+					Permissions: []string{
+						tokenclaims.PermissionGetLocationHistory,
+						tokenclaims.PermissionGetNonLocationHistory,
 					},
-					ContractAddress: vehicleNFTAddr,
 				},
 			},
 			expectedError: false,
 		},
 		{
 			name: "missing_all_privilege",
-			privs: []model.Privilege{
-				model.PrivilegeVehicleAllTimeLocation,
-				model.PrivilegeVehicleNonLocationData,
+			privs: []string{
+				tokenclaims.PermissionGetLocationHistory,
+				tokenclaims.PermissionGetNonLocationHistory,
 			},
 			telemetryClaim: &TelemetryClaim{
 				CustomClaims: tokenclaims.CustomClaims{
-					PrivilegeIDs:    nil,
-					ContractAddress: vehicleNFTAddr,
+					Permissions: nil,
 				},
 			},
 			expectedError: true,
 		},
 		{
 			name: "missing_one_privilege",
-			privs: []model.Privilege{
-				model.PrivilegeVehicleAllTimeLocation,
-				model.PrivilegeVehicleNonLocationData,
+			privs: []string{
+				tokenclaims.PermissionGetLocationHistory,
+				tokenclaims.PermissionGetNonLocationHistory,
 			},
 			telemetryClaim: &TelemetryClaim{
 				CustomClaims: tokenclaims.CustomClaims{
-					PrivilegeIDs: []privileges.Privilege{
-						privileges.VehicleAllTimeLocation,
+					Permissions: []string{
+						tokenclaims.PermissionGetLocationHistory,
 					},
-					ContractAddress: vehicleNFTAddr,
 				},
 			},
 			expectedError: true,
 		},
 		{
 			name:           "missing_claim",
-			privs:          []model.Privilege{},
+			privs:          []string{},
 			telemetryClaim: nil,
 			expectedError:  true,
-		},
-		{
-			name: "wrong contract for privilege",
-			// this will be the same as no privilege bc we dont have this priv for the passed contract
-			privs: []model.Privilege{
-				model.PrivilegeVehicleAllTimeLocation,
-			},
-			telemetryClaim: &TelemetryClaim{
-				CustomClaims: tokenclaims.CustomClaims{
-					PrivilegeIDs: []privileges.Privilege{
-						// this is the same number priv but from a different contract
-						privileges.ManufacturerDeviceDefinitionInsert,
-					},
-					ContractAddress: manufNFTAddr,
-				},
-			},
-			expectedError: true,
 		},
 	}
 
@@ -325,9 +306,6 @@ func TestRequiresPrivilegeCheck(t *testing.T) {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
-			if tc.telemetryClaim != nil {
-				tc.telemetryClaim.SetPrivileges(privMaps)
-			}
 			testCtx := context.WithValue(context.Background(), TelemetryClaimContextKey{}, tc.telemetryClaim)
 			next, err := AllOfPrivilegeCheck(testCtx, nil, emptyResolver, tc.privs)
 			if tc.expectedError {
@@ -343,29 +321,28 @@ func TestRequiresPrivilegeCheck(t *testing.T) {
 func TestRequiresOneOfPrivilegeCheck(t *testing.T) {
 	t.Parallel()
 	vehicleNFTAddr := common.BigToAddress(big.NewInt(10))
-	manufNFTAddr := common.BigToAddress(big.NewInt(11))
-
-	privMaps := map[common.Address]map[privileges.Privilege]model.Privilege{
-		vehicleNFTAddr: vehiclePrivToAPI,
-		manufNFTAddr:   manufacturerPrivToAPI,
-	}
 
 	testCases := []struct {
 		name           string
-		privs          []model.Privilege
+		privs          []string
 		telemetryClaim *TelemetryClaim
 		expectedError  bool
 	}{
 		{
 			name: "has_one_of_required_privileges",
-			privs: []model.Privilege{
-				model.PrivilegeVehicleAllTimeLocation,
-				model.PrivilegeVehicleNonLocationData,
+			privs: []string{
+				tokenclaims.PermissionGetLocationHistory,
+				tokenclaims.PermissionGetNonLocationHistory,
 			},
 			telemetryClaim: &TelemetryClaim{
+				AssetDID: cloudevent.ERC721DID{
+					ChainID:         1,
+					ContractAddress: vehicleNFTAddr,
+				},
 				CustomClaims: tokenclaims.CustomClaims{
-					PrivilegeIDs: []privileges.Privilege{
-						privileges.VehicleAllTimeLocation,
+					Permissions: []string{
+						tokenclaims.PermissionGetLocationHistory,
+						tokenclaims.PermissionGetNonLocationHistory,
 					},
 					ContractAddress: vehicleNFTAddr,
 				},
@@ -374,26 +351,29 @@ func TestRequiresOneOfPrivilegeCheck(t *testing.T) {
 		},
 		{
 			name: "has_all_required_privileges",
-			privs: []model.Privilege{
-				model.PrivilegeVehicleAllTimeLocation,
-				model.PrivilegeVehicleNonLocationData,
+			privs: []string{
+				tokenclaims.PermissionGetLocationHistory,
+				tokenclaims.PermissionGetNonLocationHistory,
 			},
 			telemetryClaim: &TelemetryClaim{
-				CustomClaims: tokenclaims.CustomClaims{
-					PrivilegeIDs: []privileges.Privilege{
-						privileges.VehicleAllTimeLocation,
-						privileges.VehicleNonLocationData,
-					},
+				AssetDID: cloudevent.ERC721DID{
+					ChainID:         1,
 					ContractAddress: vehicleNFTAddr,
+				},
+				CustomClaims: tokenclaims.CustomClaims{
+					Permissions: []string{
+						tokenclaims.PermissionGetLocationHistory,
+						tokenclaims.PermissionGetNonLocationHistory,
+					},
 				},
 			},
 			expectedError: false,
 		},
 		{
 			name: "missing_all_privileges",
-			privs: []model.Privilege{
-				model.PrivilegeVehicleAllTimeLocation,
-				model.PrivilegeVehicleNonLocationData,
+			privs: []string{
+				tokenclaims.PermissionGetLocationHistory,
+				tokenclaims.PermissionGetNonLocationHistory,
 			},
 			telemetryClaim: &TelemetryClaim{
 				CustomClaims: tokenclaims.CustomClaims{
@@ -405,24 +385,9 @@ func TestRequiresOneOfPrivilegeCheck(t *testing.T) {
 		},
 		{
 			name:           "missing_claim",
-			privs:          []model.Privilege{},
+			privs:          []string{},
 			telemetryClaim: nil,
 			expectedError:  true,
-		},
-		{
-			name: "wrong_contract_for_privilege",
-			privs: []model.Privilege{
-				model.PrivilegeVehicleAllTimeLocation,
-			},
-			telemetryClaim: &TelemetryClaim{
-				CustomClaims: tokenclaims.CustomClaims{
-					PrivilegeIDs: []privileges.Privilege{
-						privileges.ManufacturerDeviceDefinitionInsert,
-					},
-					ContractAddress: manufNFTAddr,
-				},
-			},
-			expectedError: true,
 		},
 	}
 
@@ -430,9 +395,6 @@ func TestRequiresOneOfPrivilegeCheck(t *testing.T) {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
-			if tc.telemetryClaim != nil {
-				tc.telemetryClaim.SetPrivileges(privMaps)
-			}
 			testCtx := context.WithValue(context.Background(), TelemetryClaimContextKey{}, tc.telemetryClaim)
 			next, err := OneOfPrivilegeCheck(testCtx, nil, emptyResolver, tc.privs)
 			if tc.expectedError {

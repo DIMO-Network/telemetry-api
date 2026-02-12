@@ -11,7 +11,7 @@ import (
 	"github.com/DIMO-Network/model-garage/pkg/vss"
 	"github.com/DIMO-Network/telemetry-api/internal/config"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
-	"github.com/volatiletech/sqlboiler/v4/queries/qm"
+	"github.com/aarondl/sqlboiler/v4/queries/qm"
 )
 
 const (
@@ -116,7 +116,7 @@ func (m *AliasHandleMapper) Alias(handle string) string {
 // The signals are sorted by timestamp in ascending order.
 // The timestamp on each signal is for the start of the interval.
 func (s *Service) GetAggregatedSignals(ctx context.Context, aggArgs *model.AggregatedSignalArgs) ([]*AggSignal, error) {
-	if len(aggArgs.FloatArgs) == 0 && len(aggArgs.StringArgs) == 0 && len(aggArgs.ApproxLocArgs) == 0 {
+	if len(aggArgs.FloatArgs) == 0 && len(aggArgs.StringArgs) == 0 && len(aggArgs.ApproxLocArgs) == 0 && len(aggArgs.LocationArgs) == 0 {
 		return []*AggSignal{}, nil
 	}
 
@@ -183,7 +183,8 @@ type AggSignal struct {
 	ValueNumber float64
 	// ValueNumber is the value for this row if it is of float or
 	// approximate location type.
-	ValueString string
+	ValueString   string
+	ValueLocation vss.Location
 }
 
 func (s *Service) getAggSignals(ctx context.Context, stmt string, args []any) ([]*AggSignal, error) {
@@ -194,7 +195,7 @@ func (s *Service) getAggSignals(ctx context.Context, stmt string, args []any) ([
 	signals := []*AggSignal{}
 	for rows.Next() {
 		var signal AggSignal
-		err := rows.Scan(&signal.SignalType, &signal.SignalIndex, &signal.Timestamp, &signal.ValueNumber, &signal.ValueString)
+		err := rows.Scan(&signal.SignalType, &signal.SignalIndex, &signal.Timestamp, &signal.ValueNumber, &signal.ValueString, &signal.ValueLocation)
 		if err != nil {
 			_ = rows.Close()
 			return nil, fmt.Errorf("failed scanning clickhouse row: %w", err)
@@ -234,9 +235,28 @@ func (s *Service) GetAvailableSignals(ctx context.Context, tokenId uint32, filte
 	return signals, nil
 }
 
+func (s *Service) GetSignalSummaries(ctx context.Context, tokenId uint32, filter *model.SignalFilter) ([]*model.SignalDataSummary, error) {
+	stmt, args := getSignalSummariesQuery(tokenId, filter)
+	rows, err := s.conn.Query(ctx, stmt, args...)
+	if err != nil {
+		return nil, fmt.Errorf("failed querying clickhouse: %w", err)
+	}
+	signalSummaries := []*model.SignalDataSummary{}
+	for rows.Next() {
+		var signalSummary model.SignalDataSummary
+		err := rows.Scan(&signalSummary.Name, &signalSummary.NumberOfSignals, &signalSummary.FirstSeen, &signalSummary.LastSeen)
+		if err != nil {
+			_ = rows.Close()
+			return nil, fmt.Errorf("failed scanning clickhouse row: %w", err)
+		}
+		signalSummaries = append(signalSummaries, &signalSummary)
+	}
+	return signalSummaries, nil
+}
+
 func (s *Service) GetEvents(ctx context.Context, subject string, from, to time.Time, filter *model.EventFilter) ([]*vss.Event, error) {
 	mods := []qm.QueryMod{
-		qm.Select(vss.EventNameCol, vss.EventSourceCol, vss.EventTimestampCol, vss.EventDurationNsCol, vss.EventMetadataCol),
+		qm.Select(vss.EventNameCol, vss.EventSourceCol, vss.EventTimestampCol, vss.EventDurationNsCol, vss.EventMetadataCol, vss.EventTagsCol),
 		qm.From(vss.EventTableName),
 		qm.Where(eventSubjectWhere, subject),
 		qm.Where(timestampFrom, from),
@@ -253,7 +273,7 @@ func (s *Service) GetEvents(ctx context.Context, subject string, from, to time.T
 	events := []*vss.Event{}
 	for rows.Next() {
 		var event vss.Event
-		err := rows.Scan(&event.Name, &event.Source, &event.Timestamp, &event.DurationNs, &event.Metadata)
+		err := rows.Scan(&event.Name, &event.Source, &event.Timestamp, &event.DurationNs, &event.Metadata, &event.Tags)
 		if err != nil {
 			_ = rows.Close()
 			return nil, fmt.Errorf("failed scanning clickhouse event row: %w", err)

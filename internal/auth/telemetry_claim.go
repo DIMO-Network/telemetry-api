@@ -2,15 +2,13 @@ package auth
 
 import (
 	"context"
+	"fmt"
 	"slices"
 
 	"github.com/DIMO-Network/cloudevent"
-	"github.com/DIMO-Network/shared/pkg/privileges"
-	"github.com/DIMO-Network/shared/pkg/set"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	"github.com/DIMO-Network/token-exchange-api/pkg/tokenclaims"
 	jwtmiddleware "github.com/auth0/go-jwt-middleware/v2"
-	"github.com/ethereum/go-ethereum/common"
 )
 
 // TelemetryClaimContextKey is a custom key for the context to store the custom claims.
@@ -18,32 +16,27 @@ type TelemetryClaimContextKey struct{}
 
 // TelemetryClaim is a custom claim for the telemetry API.
 type TelemetryClaim struct {
-	privileges set.Set[model.Privilege]
+	AssetDID cloudevent.ERC721DID
 	tokenclaims.CustomClaims
 }
 
 // Validate function is required to implement the validator.CustomClaims interface.
 func (t *TelemetryClaim) Validate(context.Context) error {
-	return nil
-}
-
-// SetPrivileges populates the set of GraphQL privileges on the claim object. To do this,
-// it combines the address and privilege ids on the token together with the given map.
-func (t *TelemetryClaim) SetPrivileges(contractPrivMaps map[common.Address]map[privileges.Privilege]model.Privilege) {
-	t.privileges = set.New[model.Privilege]()
-
-	contractClaims, ok := contractPrivMaps[t.ContractAddress]
-	if !ok {
-		return
+	var nftErr error
+	t.AssetDID, nftErr = cloudevent.DecodeERC721DID(t.Asset)
+	if nftErr == nil {
+		return nil
 	}
-
-	for _, privID := range t.PrivilegeIDs {
-		modelPriv, ok := contractClaims[privID]
-		if !ok {
-			continue
+	ethrDID, ethrErr := cloudevent.DecodeEthrDID(t.Asset)
+	if ethrErr == nil {
+		t.AssetDID = cloudevent.ERC721DID{
+			ChainID:         ethrDID.ChainID,
+			ContractAddress: ethrDID.ContractAddress,
+			TokenID:         nil,
 		}
-		t.privileges.Add(modelPriv)
+		return nil
 	}
+	return fmt.Errorf("unauthorized: failed to decode Asset as ERC721 DID: %w or Ethr DID: %v", nftErr, ethrErr)
 }
 
 func getTelemetryClaim(ctx context.Context) (*TelemetryClaim, error) {
@@ -54,9 +47,12 @@ func getTelemetryClaim(ctx context.Context) (*TelemetryClaim, error) {
 	return claim, nil
 }
 
-func ValidRequest(ctx context.Context, filter *model.AttestationFilter) bool {
+func ValidRequest(ctx context.Context, subject string, filter *model.AttestationFilter) bool {
 	claim, err := getTelemetryClaim(ctx)
 	if err != nil || claim.CloudEvents == nil {
+		return false
+	}
+	if subject != claim.Asset {
 		return false
 	}
 

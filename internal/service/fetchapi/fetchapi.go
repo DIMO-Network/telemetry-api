@@ -11,7 +11,9 @@ import (
 	"github.com/DIMO-Network/telemetry-api/internal/config"
 	"github.com/ethereum/go-ethereum/common"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/status"
 )
 
 // FetchAPIService implements the FetchAPIService interface using gRPC
@@ -34,13 +36,13 @@ func New(settings *config.Settings) *FetchAPIService {
 }
 
 // GetLatestCloudEvent retrieves the most recent file content matching the provided search criteria
-func (c *FetchAPIService) GetLatestCloudEvent(ctx context.Context, filter *pb.SearchOptions) (cloudevent.CloudEvent[json.RawMessage], error) {
+func (c *FetchAPIService) GetLatestCloudEvent(ctx context.Context, filter *pb.AdvancedSearchOptions) (cloudevent.CloudEvent[json.RawMessage], error) {
 	client, err := c.getClient()
 	if err != nil {
 		return cloudevent.CloudEvent[json.RawMessage]{}, err
 	}
 	resp, err := client.GetLatestCloudEvent(ctx, &pb.GetLatestCloudEventRequest{
-		Options: filter,
+		AdvancedOptions: filter,
 	})
 	if err != nil {
 		return cloudevent.CloudEvent[json.RawMessage]{}, fmt.Errorf("failed to get latest file: %w", err)
@@ -49,17 +51,20 @@ func (c *FetchAPIService) GetLatestCloudEvent(ctx context.Context, filter *pb.Se
 }
 
 // GetAllCloudEvents retrieves the most recent file content matching the provided search criteria
-func (c *FetchAPIService) GetAllCloudEvents(ctx context.Context, filter *pb.SearchOptions, limit int32) ([]cloudevent.CloudEvent[json.RawMessage], error) {
+func (c *FetchAPIService) GetAllCloudEvents(ctx context.Context, filter *pb.AdvancedSearchOptions, limit int32) ([]cloudevent.CloudEvent[json.RawMessage], error) {
 	client, err := c.getClient()
 	if err != nil {
 		return nil, err
 	}
 
 	resp, err := client.ListCloudEvents(ctx, &pb.ListCloudEventsRequest{
-		Options: filter,
-		Limit:   limit,
+		AdvancedOptions: filter,
+		Limit:           limit,
 	})
 	if err != nil {
+		if status.Code(err) == codes.NotFound {
+			return []cloudevent.CloudEvent[json.RawMessage]{}, nil
+		}
 		return nil, fmt.Errorf("failed to get files: %w", err)
 	}
 

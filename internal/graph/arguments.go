@@ -69,6 +69,14 @@ func addSignalAggregation(aggArgs *model.AggregatedSignalArgs, child *graphql.Fi
 			Agg:   typedAgg,
 			Alias: alias,
 		})
+	case model.LocationAggregation:
+		filter, _ := child.Args["filter"].(*model.SignalLocationFilter)
+		aggArgs.LocationArgs = append(aggArgs.LocationArgs, model.LocationSignalArgs{
+			Name:   name,
+			Agg:    typedAgg,
+			Alias:  alias,
+			Filter: filter,
+		})
 	default:
 		return fmt.Errorf("unknown aggregation type: %T", agg)
 	}
@@ -83,7 +91,8 @@ func latestArgsFromContext(ctx context.Context, tokenID int, filter *model.Signa
 			TokenID: uint32(tokenID),
 			Filter:  filter,
 		},
-		SignalNames: make(map[string]struct{}, len(fields)),
+		SignalNames:         make(map[string]struct{}),
+		LocationSignalNames: make(map[string]struct{}),
 	}
 	for _, field := range fields {
 		if !isSignal(field) {
@@ -92,10 +101,12 @@ func latestArgsFromContext(ctx context.Context, tokenID int, filter *model.Signa
 			}
 			continue
 		}
-		switch field.Name {
-		case vss.FieldCurrentLocationLatitude, vss.FieldCurrentLocationLongitude, model.ApproximateLatField, model.ApproximateLongField:
-			latestArgs.SignalNames["currentLocation"] = struct{}{}
-		default:
+
+		if field.Name == model.ApproximateLatField || field.Name == model.ApproximateLongField || field.Name == vss.FieldCurrentLocationLatitude || field.Name == vss.FieldCurrentLocationLongitude {
+			latestArgs.LocationSignalNames["currentLocation"] = struct{}{}
+		} else if field.Definition.Type.Name() == "SignalLocation" {
+			latestArgs.LocationSignalNames[field.Name] = struct{}{}
+		} else {
 			latestArgs.SignalNames[field.Name] = struct{}{}
 		}
 	}

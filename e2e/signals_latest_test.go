@@ -5,7 +5,9 @@ import (
 	"time"
 
 	"github.com/DIMO-Network/model-garage/pkg/vss"
+	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	"github.com/DIMO-Network/telemetry-api/internal/service/ch"
+	"github.com/DIMO-Network/token-exchange-api/pkg/tokenclaims"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -39,6 +41,25 @@ func TestSignalsLatest(t *testing.T) {
 			TokenID:     39718,
 		},
 		{
+			Source:    ch.SourceTranslations["smartcar"][0],
+			Timestamp: smartCarTime,
+			Name:      vss.FieldCurrentLocationCoordinates,
+			ValueLocation: vss.Location{
+				Latitude:  40.73899538333504,
+				Longitude: 73.99386110247163,
+			},
+			TokenID: 39718,
+		},
+		{
+			Source:    ch.SourceTranslations["smartcar"][0],
+			Timestamp: smartCarTime.Add(time.Hour),
+			Name:      vss.FieldCurrentLocationCoordinates,
+			ValueLocation: vss.Location{
+				HDOP: 7,
+			},
+			TokenID: 39718,
+		},
+		{
 			Source:      ch.SourceTranslations["autopi"][0],
 			Timestamp:   autopiTime,
 			Name:        vss.FieldSpeed,
@@ -60,7 +81,7 @@ func TestSignalsLatest(t *testing.T) {
 	telemetryClient := NewGraphQLServer(t, services.Settings)
 
 	// Create auth token for vehicle
-	token := services.Auth.CreateVehicleToken(t, "39718", []int{1})
+	token := services.Auth.CreateVehicleToken(t, 39718, []string{tokenclaims.PermissionGetNonLocationHistory, tokenclaims.PermissionGetLocationHistory})
 
 	// Execute the query
 	query := `
@@ -89,6 +110,16 @@ func TestSignalsLatest(t *testing.T) {
 		tesla: signalsLatest(filter: {source: "tesla"}, tokenId: 39718) {
 			lastSeen
 		}
+		location: signalsLatest(tokenId: 39718) {
+			currentLocationCoordinates {
+				timestamp
+				value {
+					latitude
+					longitude
+					hdop
+				}
+			}
+		}
 	}`
 
 	// Execute request
@@ -97,7 +128,7 @@ func TestSignalsLatest(t *testing.T) {
 	require.NoError(t, err)
 
 	// Assert the results
-	assert.Equal(t, smartCarTime.Format(time.RFC3339), result.Smartcar.LastSeen)
+	assert.Equal(t, smartCarTime.Add(time.Hour).Format(time.RFC3339), result.Smartcar.LastSeen)
 	assert.Equal(t, smartCarTime.Format(time.RFC3339), result.Smartcar.Speed.Timestamp)
 	require.NotNil(t, result.Autopi.Speed)
 
@@ -111,12 +142,22 @@ func TestSignalsLatest(t *testing.T) {
 	assert.Equal(t, macaronTime.Format(time.RFC3339), result.Macaron.Speed.Timestamp)
 	assert.Equal(t, float64(3), result.Macaron.Speed.Value)
 
+	require.NotNil(t, result.Location.CurrentLocationCoordinates)
+	assert.Equal(t, smartCarTime.Format(time.RFC3339), result.Location.CurrentLocationCoordinates.Timestamp)
+	assert.Equal(t, 40.73899538333504, result.Location.CurrentLocationCoordinates.Value.Latitude)
+	assert.Equal(t, 73.99386110247163, result.Location.CurrentLocationCoordinates.Value.Longitude)
+
 	assert.Nil(t, result.Tesla.LastSeen)
 }
 
 type SignalWithTime struct {
 	Timestamp string  `json:"timestamp"`
 	Value     float64 `json:"value"`
+}
+
+type LocationSignalWithTime struct {
+	Timestamp string         `json:"timestamp"`
+	Value     model.Location `json:"value"`
 }
 
 type LatestResult struct {
@@ -135,4 +176,8 @@ type LatestResult struct {
 	Tesla struct {
 		LastSeen *string `json:"lastSeen"`
 	} `json:"tesla"`
+	Location struct {
+		LastSeen                   string                  `json:"lastSeen"`
+		CurrentLocationCoordinates *LocationSignalWithTime `json:"currentLocationCoordinates"`
+	} `json:"location"`
 }

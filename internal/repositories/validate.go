@@ -5,9 +5,23 @@ import (
 	"math"
 	"time"
 
+	"github.com/DIMO-Network/model-garage/pkg/schema"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	"github.com/DIMO-Network/telemetry-api/internal/service/ch"
 )
+
+// we must load these tags before starting the application
+var eventTags = func() map[string]struct{} {
+	filter, err := schema.GetDefaultEventTags()
+	if err != nil {
+		panic(err)
+	}
+	tags := make(map[string]struct{}, len(filter))
+	for _, tag := range filter {
+		tags[tag.Name] = struct{}{}
+	}
+	return tags
+}()
 
 // ValidationError is an error type for validation errors.
 type ValidationError string
@@ -37,10 +51,38 @@ func validateAggSigArgs(args *model.AggregatedSignalArgs) error {
 		return ValidationError("too many float aggregations")
 	}
 	if len(args.StringArgs) > math.MaxUint16 {
-		return ValidationError("too many string aggregations, maximum is ")
+		return ValidationError("too many string aggregations")
+	}
+	if len(args.LocationArgs) > math.MaxUint16 {
+		return ValidationError("too many location aggregations")
+	}
+
+	// TODO(elffjs): Awkward place to put this. Certainly this would get
+	// worse if we allowed ORs.
+	for _, locArg := range args.LocationArgs {
+		if fil := locArg.Filter; fil != nil {
+			// TODO(elffjs): Should we check polygon orientation?
+			// Could apply isFilterLocationValid here, but failure there
+			// doesn't actually break queries.
+			if len(fil.InPolygon) != 0 && len(fil.InPolygon) < 3 {
+				return ValidationError("not enough points in geofence filter")
+			}
+
+			if fil.InCircle != nil {
+				if !isFilterLocationValid(fil.InCircle.Center) {
+					return ValidationError("invalid circle filter location")
+				}
+				// Could think about checking for radius < 0, but nothing
+				// actually breaks.
+			}
+		}
 	}
 
 	return validateSignalArgs(&args.SignalArgs)
+}
+
+func isFilterLocationValid(loc *model.FilterLocation) bool {
+	return -90 <= loc.Latitude && loc.Latitude <= 90 && -180 <= loc.Longitude && loc.Longitude <= 180
 }
 
 func validateLatestSigArgs(args *model.LatestSignalsArgs) error {
@@ -86,6 +128,43 @@ func validateEventArgs(tokenID int, from, to time.Time, filter *model.EventFilte
 	}
 	if from.After(to) {
 		return ValidationError("from timestamp is after to timestamp")
+	}
+	if filter != nil {
+		if err := validateTags(filter.Tags); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func validateTags(stringArrayFilter *model.StringArrayFilter) error {
+	if stringArrayFilter == nil {
+		return nil
+	}
+	for _, tag := range stringArrayFilter.ContainsAll {
+		if _, ok := eventTags[tag]; !ok {
+			return ValidationError(fmt.Sprintf("tag '%s', is not a valid value", tag))
+		}
+	}
+	for _, tag := range stringArrayFilter.ContainsAny {
+		if _, ok := eventTags[tag]; !ok {
+			return ValidationError(fmt.Sprintf("tag '%s', is not a valid value", tag))
+		}
+	}
+	for _, tag := range stringArrayFilter.NotContainsAny {
+		if _, ok := eventTags[tag]; !ok {
+			return ValidationError(fmt.Sprintf("tag '%s', is not a valid value", tag))
+		}
+	}
+	for _, tag := range stringArrayFilter.NotContainsAll {
+		if _, ok := eventTags[tag]; !ok {
+			return ValidationError(fmt.Sprintf("tag '%s', is not a valid value", tag))
+		}
+	}
+	for _, tag := range stringArrayFilter.Or {
+		if err := validateTags(tag); err != nil {
+			return err
+		}
 	}
 	return nil
 }

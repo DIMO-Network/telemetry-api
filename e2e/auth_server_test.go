@@ -6,10 +6,14 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"math/big"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
+	"github.com/DIMO-Network/cloudevent"
+	"github.com/DIMO-Network/telemetry-api/internal/config"
+	"github.com/DIMO-Network/token-exchange-api/pkg/tokenclaims"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/go-jose/go-jose/v4"
 )
@@ -21,9 +25,10 @@ type mockAuthServer struct {
 	defaultClaims               map[string]any
 	VehicleContractAddress      string
 	ManufacturerContractAddress string
+	ChainID                     uint64
 }
 
-func setupAuthServer(t *testing.T, vehicleContractAddress, manufacturerContractAddress common.Address) *mockAuthServer {
+func setupAuthServer(t *testing.T, settings config.Settings) *mockAuthServer {
 	t.Helper()
 
 	// Generate RSA key
@@ -74,8 +79,9 @@ func setupAuthServer(t *testing.T, vehicleContractAddress, manufacturerContractA
 		signer:                      sig,
 		jwks:                        jwk,
 		defaultClaims:               defaultClaims,
-		VehicleContractAddress:      vehicleContractAddress.String(),
-		ManufacturerContractAddress: manufacturerContractAddress.String(),
+		VehicleContractAddress:      settings.VehicleNFTAddress.String(),
+		ManufacturerContractAddress: settings.ManufacturerNFTAddress.String(),
+		ChainID:                     settings.ChainID,
 	}
 
 	// Create test server with only JWKS endpoint
@@ -115,28 +121,28 @@ func (m *mockAuthServer) sign(claims map[string]interface{}) (string, error) {
 	return token, nil
 }
 
-func (m *mockAuthServer) CreateToken(t *testing.T, customClaims map[string]interface{}, privileges []int) string {
+func (m *mockAuthServer) CreateToken(t *testing.T, token tokenclaims.Token) string {
 	t.Helper()
+	tokenJSON, err := json.Marshal(token)
+	if err != nil {
+		t.Fatalf("Failed to marshal token: %v", err)
+	}
 
 	claims := make(map[string]interface{})
+	err = json.Unmarshal(tokenJSON, &claims)
+	if err != nil {
+		t.Fatalf("Failed to unmarshal token: %v", err)
+	}
 	for k, v := range m.defaultClaims {
 		claims[k] = v
 	}
-	for k, v := range customClaims {
-		claims[k] = v
-	}
 
-	// Add privileges if provided
-	if privileges != nil {
-		claims["privilege_ids"] = privileges
-	}
-
-	token, err := m.sign(claims)
+	tokenString, err := m.sign(claims)
 	if err != nil {
 		t.Fatalf("Failed to create token: %v", err)
 	}
 
-	return token
+	return tokenString
 }
 
 func (m *mockAuthServer) URL() string {
@@ -148,22 +154,29 @@ func (m *mockAuthServer) Close() {
 }
 
 // Helper function to create test tokens with specific claims and privileges
-func (m *mockAuthServer) CreateVehicleToken(t *testing.T, tokenID string, privileges []int) string {
-	return m.CreateToken(t, map[string]interface{}{
-		"token_id":         tokenID,
-		"contract_address": m.VehicleContractAddress,
-	}, privileges)
+func (m *mockAuthServer) CreateVehicleToken(t *testing.T, tokenID int, privileges []string, events ...tokenclaims.Event) string {
+	return m.CreateToken(t, tokenclaims.Token{
+		CustomClaims: tokenclaims.CustomClaims{
+			Asset: cloudevent.ERC721DID{
+				ChainID:         m.ChainID,
+				ContractAddress: common.HexToAddress(m.VehicleContractAddress),
+				TokenID:         new(big.Int).SetUint64(uint64(tokenID)),
+			}.String(),
+			Permissions: privileges,
+			CloudEvents: &tokenclaims.CloudEvents{Events: events},
+		},
+	})
 }
 
-func (m *mockAuthServer) CreateManufacturerToken(t *testing.T, tokenID string, privileges []int) string {
-	return m.CreateToken(t, map[string]interface{}{
-		"contract_address": m.ManufacturerContractAddress,
-		"token_id":         tokenID,
-	}, privileges)
-}
-
-func (m *mockAuthServer) CreateUserToken(t *testing.T, userID string, privileges []int) string {
-	return m.CreateToken(t, map[string]interface{}{
-		"sub": userID,
-	}, privileges)
+func (m *mockAuthServer) CreateUserToken(t *testing.T, userAddress common.Address, permissions []string, events ...tokenclaims.Event) string {
+	return m.CreateToken(t, tokenclaims.Token{
+		CustomClaims: tokenclaims.CustomClaims{
+			Asset: cloudevent.EthrDID{
+				ChainID:         m.ChainID,
+				ContractAddress: userAddress,
+			}.String(),
+			Permissions: permissions,
+			CloudEvents: &tokenclaims.CloudEvents{Events: events},
+		},
+	})
 }

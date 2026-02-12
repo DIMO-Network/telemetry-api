@@ -83,3 +83,25 @@ models:
   Address:
     model:
       - github.com/DIMO-Network/telemetry-api/internal/graph/model.Address
+  Uint64:
+    model:
+      - github.com/99designs/gqlgen/graphql.Uint64
+  Privilege:
+    model: github.com/99designs/gqlgen/graphql.String
+    enum_values:
+      VEHICLE_NON_LOCATION_DATA:
+        value: github.com/DIMO-Network/token-exchange-api/pkg/tokenclaims.PermissionGetNonLocationHistory
+      VEHICLE_COMMANDS:
+        value: github.com/DIMO-Network/token-exchange-api/pkg/tokenclaims.PermissionExecuteCommands
+      VEHICLE_CURRENT_LOCATION:
+        value: github.com/DIMO-Network/token-exchange-api/pkg/tokenclaims.PermissionGetCurrentLocation
+      VEHICLE_ALL_TIME_LOCATION:
+        value: github.com/DIMO-Network/token-exchange-api/pkg/tokenclaims.PermissionGetLocationHistory
+      VEHICLE_VIN_CREDENTIAL:
+        value: github.com/DIMO-Network/token-exchange-api/pkg/tokenclaims.PermissionGetVINCredential
+      VEHICLE_APPROXIMATE_LOCATION:
+        value: github.com/DIMO-Network/token-exchange-api/pkg/tokenclaims.PermissionGetApproximateLocation
+      VEHICLE_RAW_DATA:
+        value: github.com/DIMO-Network/token-exchange-api/pkg/tokenclaims.PermissionGetRawData
+      MANUFACTURER_DEVICE_LAST_SEEN:
+        value: github.com/DIMO-Network/token-exchange-api/pkg/tokenclaims.PermissionManufacturerDeviceLastSeen 

@@ -13,6 +13,10 @@ extend type SignalAggregations {
     agg: FloatAggregation!,
     filter: SignalFloatFilter
   ):  Float
+  {{- else if eq .GQLType "Location" }}
+    agg: LocationAggregation!,
+    filter: SignalLocationFilter
+  ):  Location
   {{- else }}
     agg: StringAggregation!
   ):  String
@@ -32,9 +36,19 @@ extend type SignalCollection {
   
   {{- if eq .GQLType "Float" }}
   {{ .JSONName }}: SignalFloat
+  {{- else if eq .GQLType "Location" }}
+  {{ .JSONName }}: SignalLocation
   {{- else }}
   {{ .JSONName }}: SignalString
   {{- end }} @requiresAllOfPrivileges(privileges: {{ .Privileges }}) @goField(name: "{{ .GOName }}") @isSignal
   {{ end }}
+}
+
+extend input EventFilter {
+  """
+  tags is the tags of the event.
+  available tags: {{ range $i, $tag := .EventTags }}{{ if $i }}, {{ end }}{{ $tag.Name }}{{ end }}
+  """
+  tags: StringArrayFilter
 }
 

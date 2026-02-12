@@ -1,0 +1,102 @@
+enum DetectionMechanism {
+  """
+  Ignition-based detection: Segments are identified by isIgnitionOn state transitions.
+  Most reliable for vehicles with proper ignition signal support.
+  """
+  ignitionDetection
+  
+  """
+  Frequency analysis: Segments are detected by analyzing signal update patterns.
+  Uses pre-computed materialized view for optimal performance.
+  Ideal for real-time APIs and bulk queries.
+  """
+  frequencyAnalysis
+  
+  """
+  Change point detection: Uses CUSUM algorithm to detect statistical regime changes.
+  Monitors cumulative deviation in signal frequency via materialized view.
+  Excellent noise resistance with 100% accuracy match to ignition baseline.
+  Best alternative when ignition signal is unavailable - same accuracy, same speed as frequency analysis.
+  """
+  changePointDetection
+}
+
+extend type Query {
+  """
+  Returns vehicle usage segments detected using the specified mechanism.
+  Maximum date range: 30 days.
+  
+  Detection mechanisms:
+  - ignitionDetection: Uses 'isIgnitionOn' signal with configurable debouncing
+  - frequencyAnalysis: Analyzes signal update frequency to detect activity periods
+  - sparseSampling: Samples 5-10% of signals for cost-effective detection
+  
+  Segment IDs are stable and consistent across queries as long as the segment start
+  is captured in the underlying data source.
+  """
+  segments(
+    tokenId: Int!
+    from: Time!
+    to: Time!
+    mechanism: DetectionMechanism!
+    config: SegmentConfig
+  ): [Segment!] @requiresVehicleToken @requiresAllOfPrivileges(privileges: [VEHICLE_ALL_TIME_LOCATION, VEHICLE_NON_LOCATION_DATA])
+}
+
+input SegmentConfig {
+  """
+  Minimum idle time (seconds) before segment is considered ended.
+  For ignitionDetection: filters noise from brief ignition OFF events.
+  For frequencyAnalysis: maximum gap between active windows to merge.
+  Default: 300 (5 minutes), Min: 60, Max: 3600
+  """
+  minIdleSeconds: Int = 300
+  
+  """
+  Minimum segment duration (seconds) to include in results.
+  Filters very short segments (testing, engine cycling).
+  Default: 240 (4 minutes), Min: 60, Max: 3600
+  """
+  minSegmentDurationSeconds: Int = 240
+  
+  """
+  [frequencyAnalysis only] Minimum signal count per window for activity detection.
+  Higher values = more conservative (filters parked telemetry better).
+  Lower values = more sensitive (works for sparse signal vehicles).
+  Default: 10 (tuned to match ignition detection accuracy)
+  Min: 1, Max: 3600
+  """
+  signalCountThreshold: Int = 10
+}
+
+type Segment {
+  """
+  Segment start timestamp (actual activity start transition)
+  """
+  startTime: Time!
+  
+  """
+  Segment end timestamp (activity end after debounce period).
+  Null if segment is ongoing (extends beyond query range).
+  """
+  endTime: Time
+  
+  """
+  Duration in seconds.
+  If ongoing: from start to query 'to' time.
+  If complete: from start to end.
+  """
+  durationSeconds: Int!
+  
+  """
+  True if segment extends beyond query time range (last activity is ongoing).
+  """
+  isOngoing: Boolean!
+  
+  """
+  True if segment started before query time range.
+  Indicates startTime may be approximate.
+  """
+  startedBeforeRange: Boolean!
+}
+

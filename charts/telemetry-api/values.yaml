@@ -2,7 +2,7 @@ replicaCount: 1
 image:
   repository: dimozone/telemetry-api
   pullPolicy: IfNotPresent
-  tag: e6bb2cd
+  tag: df47a59
 imagePullSecrets: []
 nameOverride: ''
 fullnameOverride: ''
@@ -83,8 +83,8 @@ resources:
     cpu: 250m
     memory: 384Mi
   requests:
-    cpu: 100m
-    memory: 192Mi
+    cpu: 5m
+    memory: 32Mi
 autoscaling:
   enabled: false
 nodeSelector: {}

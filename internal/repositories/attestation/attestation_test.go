@@ -21,6 +21,9 @@ import (
 	"go.uber.org/mock/gomock"
 )
 
+var vehicleAddress = common.HexToAddress("0x123")
+var chainID = uint64(1)
+
 // MockRow implements sql.Row and returns a string when scanned.
 type MockRow struct {
 	data string
@@ -61,9 +64,6 @@ func TestGetAttestations(t *testing.T) {
 
 	// Create mock services
 	mockService := NewMockindexRepoService(ctrl)
-	vehicleAddress := common.HexToAddress("0x123")
-	chainID := uint64(3)
-
 	// Initialize the service with mock dependencies
 	att := attestation.New(mockService, chainID, vehicleAddress)
 
@@ -81,6 +81,9 @@ func TestGetAttestations(t *testing.T) {
 	defaultEvent.Source = validSigner.Hex()
 	defaultEvent.Subject = vehicleDID
 	defaultEvent.Signature = "signature"
+	defaultJSONB, err := json.Marshal(defaultEvent)
+	defaultJSON := string(defaultJSONB)
+	require.NoError(t, err)
 	time := time.Now()
 	id := ksuid.New().String()
 	producer := "did:nft:153:0xbA5738a18d83D41847dfFbDC6101d37C69c9B0cF_123"
@@ -102,7 +105,7 @@ func TestGetAttestations(t *testing.T) {
 				mockService.EXPECT().GetAllCloudEvents(gomock.Any(), gomock.Any(), gomock.Any()).Return([]cloudevent.CloudEvent[json.RawMessage]{
 					defaultEvent,
 				}, nil)
-				return populateClaimMap(ctx, []string{tokenclaims.GlobalIdentifier}, []string{tokenclaims.GlobalIdentifier}, [][]string{[]string{tokenclaims.GlobalIdentifier}})
+				return populateClaimMap(ctx, []string{tokenclaims.GlobalIdentifier}, []string{tokenclaims.GlobalIdentifier}, [][]string{[]string{tokenclaims.GlobalIdentifier}}, validVehTknID)
 			},
 			vehTknID: validVehTknID,
 			expectedAtts: []*model.Attestation{
@@ -110,7 +113,7 @@ func TestGetAttestations(t *testing.T) {
 					ID:             id,
 					VehicleTokenID: validVehTknID,
 					Time:           defaultEvent.Time,
-					Attestation:    dataStr,
+					Attestation:    defaultJSON,
 					Type:           cloudevent.TypeAttestation,
 					Source:         validSigner,
 					Producer:       &producer,
@@ -124,7 +127,7 @@ func TestGetAttestations(t *testing.T) {
 				mockService.EXPECT().GetAllCloudEvents(gomock.Any(), gomock.Any(), gomock.Any()).Return([]cloudevent.CloudEvent[json.RawMessage]{
 					defaultEvent,
 				}, nil)
-				return populateClaimMap(ctx, []string{tokenclaims.GlobalIdentifier}, []string{tokenclaims.GlobalIdentifier}, [][]string{[]string{tokenclaims.GlobalIdentifier}})
+				return populateClaimMap(ctx, []string{tokenclaims.GlobalIdentifier}, []string{tokenclaims.GlobalIdentifier}, [][]string{[]string{tokenclaims.GlobalIdentifier}}, validVehTknID)
 			},
 			filters: &model.AttestationFilter{
 				Before:      &time,
@@ -141,7 +144,7 @@ func TestGetAttestations(t *testing.T) {
 					ID:             id,
 					VehicleTokenID: validVehTknID,
 					Time:           defaultEvent.Time,
-					Attestation:    dataStr,
+					Attestation:    defaultJSON,
 					Type:           cloudevent.TypeAttestation,
 					Source:         validSigner,
 					Producer:       &producer,
@@ -153,7 +156,7 @@ func TestGetAttestations(t *testing.T) {
 			name: "success: no attestations for token id",
 			mockSetup: func() context.Context {
 				mockService.EXPECT().GetAllCloudEvents(gomock.Any(), gomock.Any(), gomock.Any()).Return(nil, nil)
-				return populateClaimMap(ctx, []string{tokenclaims.GlobalIdentifier}, []string{tokenclaims.GlobalIdentifier}, [][]string{[]string{tokenclaims.GlobalIdentifier}})
+				return populateClaimMap(ctx, []string{tokenclaims.GlobalIdentifier}, []string{tokenclaims.GlobalIdentifier}, [][]string{[]string{tokenclaims.GlobalIdentifier}}, invalidVehTknID)
 			},
 			vehTknID: invalidVehTknID,
 		},
@@ -169,7 +172,7 @@ func TestGetAttestations(t *testing.T) {
 					},
 					[][]string{
 						[]string{tokenclaims.GlobalIdentifier},
-					})
+					}, validVehTknID)
 			},
 			filters: &model.AttestationFilter{
 				Before:      &time,
@@ -207,7 +210,8 @@ func TestGetAttestations(t *testing.T) {
 			// Set up the mock expectations
 			enrichedCtx := tt.mockSetup()
 			// Call the method
-			attestations, err := att.GetAttestations(enrichedCtx, tt.vehTknID, tt.filters)
+
+			attestations, err := att.GetAttestations(enrichedCtx, att.DefaultDID(tt.vehTknID), tt.filters)
 			if tt.err != nil {
 				require.Error(t, err)
 			} else {
@@ -230,7 +234,7 @@ func TestGetAttestations(t *testing.T) {
 	}
 }
 
-func populateClaimMap(ctx context.Context, ce, source []string, ids [][]string) context.Context {
+func populateClaimMap(ctx context.Context, ce, source []string, ids [][]string, tokenID int) context.Context {
 	var claims auth.TelemetryClaim
 	claims.CloudEvents = &tokenclaims.CloudEvents{}
 
@@ -241,6 +245,11 @@ func populateClaimMap(ctx context.Context, ce, source []string, ids [][]string) 
 			IDs:       ids[idx],
 		})
 	}
+	claims.Asset = cloudevent.ERC721DID{
+		ChainID:         uint64(1),
+		ContractAddress: vehicleAddress,
+		TokenID:         new(big.Int).SetUint64(uint64(tokenID)),
+	}.String()
 
 	return context.WithValue(ctx, auth.TelemetryClaimContextKey{}, &claims)
 }

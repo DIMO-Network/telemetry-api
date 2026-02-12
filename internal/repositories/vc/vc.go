@@ -16,11 +16,10 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
 type indexRepoService interface {
-	GetLatestCloudEvent(ctx context.Context, filter *grpc.SearchOptions) (cloudevent.CloudEvent[json.RawMessage], error)
+	GetLatestCloudEvent(ctx context.Context, filter *grpc.AdvancedSearchOptions) (cloudevent.CloudEvent[json.RawMessage], error)
 }
 type Repository struct {
 	indexService          indexRepoService
@@ -123,10 +122,16 @@ func (r *Repository) GetLatestPOMVC(ctx context.Context, vehicleTokenID uint32) 
 		ContractAddress: r.vehicleAddress,
 		TokenID:         new(big.Int).SetUint64(uint64(vehicleTokenID)),
 	}.String()
-	opts := &grpc.SearchOptions{
-		DataVersion: &wrapperspb.StringValue{Value: r.pomVCDataVersion},
-		Type:        &wrapperspb.StringValue{Value: cloudevent.TypeVerifableCredential},
-		Subject:     &wrapperspb.StringValue{Value: vehicleDID},
+	opts := &grpc.AdvancedSearchOptions{
+		DataVersion: &grpc.StringFilterOption{
+			In: []string{r.pomVCDataVersion},
+		},
+		Type: &grpc.StringFilterOption{
+			In: []string{cloudevent.TypeVerifableCredential},
+		},
+		Subject: &grpc.StringFilterOption{
+			In: []string{vehicleDID},
+		},
 	}
 	dataObj, err := r.indexService.GetLatestCloudEvent(ctx, opts)
 	if err != nil {
@@ -169,27 +174,26 @@ func (r *Repository) GetLatestPOMVC(ctx context.Context, vehicleTokenID uint32) 
 }
 
 func (r *Repository) getVINVC(ctx context.Context, vehicleDID string) (cloudevent.RawEvent, error) {
-	opts := &grpc.SearchOptions{
-		DataVersion: &wrapperspb.StringValue{Value: r.vinDataVersion},
-		Type:        &wrapperspb.StringValue{Value: cloudevent.TypeAttestation},
-		Subject:     &wrapperspb.StringValue{Value: vehicleDID},
-		Source:      &wrapperspb.StringValue{Value: r.storageNodeDevLicense.Hex()},
+	opts := &grpc.AdvancedSearchOptions{
+		DataVersion: &grpc.StringFilterOption{
+			In: []string{r.vinDataVersion},
+		},
+		Type: &grpc.StringFilterOption{
+			In: []string{cloudevent.TypeAttestation},
+		},
+		Subject: &grpc.StringFilterOption{
+			In: []string{vehicleDID},
+		},
+		Source: &grpc.StringFilterOption{
+			In: []string{r.storageNodeDevLicense.Hex()},
+		},
 	}
 	dataObj, err := r.indexService.GetLatestCloudEvent(ctx, opts)
-	if err == nil {
-		return dataObj, nil
-	} else if status.Code(err) != codes.NotFound {
-		return cloudevent.RawEvent{}, fmt.Errorf("failed to get latest VIN attestation data: %w", err)
-	}
-
-	opts = &grpc.SearchOptions{
-		DataVersion: &wrapperspb.StringValue{Value: r.vinVCDataVersion},
-		Type:        &wrapperspb.StringValue{Value: cloudevent.TypeVerifableCredential},
-		Subject:     &wrapperspb.StringValue{Value: vehicleDID},
-	}
-	dataObj, err = r.indexService.GetLatestCloudEvent(ctx, opts)
 	if err != nil {
-		return cloudevent.RawEvent{}, fmt.Errorf("failed to get latest VIN VC data: %w", err)
+		if status.Code(err) != codes.NotFound {
+			return cloudevent.RawEvent{}, fmt.Errorf("failed to get latest VIN attestation data: %w", err)
+		}
+		return cloudevent.RawEvent{}, fmt.Errorf("failed to get latest VIN attestation data: %w", err)
 	}
 	return dataObj, nil
 }

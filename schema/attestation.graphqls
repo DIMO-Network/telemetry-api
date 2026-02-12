@@ -1,26 +1,30 @@
 extend type Query {
   """
-  attestations returns all attestations for a given vehicle token.
+  attestations returns all attestations for a given subject.
   """
   attestations(
     """
     The token ID of the vehicle.
     """
-    tokenId: Int!
+    tokenId: Int
 
     """
-    Filter attestations by metadata fields. 
+    The subject of the attestation.
+    """
+    subject: String
+
+    """
+    Filter attestations by metadata fields.
     """
     filter: AttestationFilter
   ): [Attestation]
-    @requiresVehicleToken
 }
 
 type Attestation {
   """
-  ID is the ID of the attestation.
+  id is the id of the attestation.
   """
-  ID: String!
+  id: String!
 
   """
   vehicleTokenId is the token ID of the vehicle.
@@ -33,7 +37,7 @@ type Attestation {
   time: Time!
 
   """
-  attestation is the data being attested to.
+  attestation is the JSON-encoded attestation.
   """
   attestation: String!
 
@@ -43,7 +47,7 @@ type Attestation {
   type: String!
 
   """
-  source
+  source is the address that created and signed the attestation
   """
   source: Address!
 
@@ -53,15 +57,19 @@ type Attestation {
   dataVersion: String!
 
   """
-  producer
+  producer of the attestation data
   """
   producer: String
 
   """
-  signature
+  signature of the attestation data
   """
   signature: String!
 
+  """
+  tags tags associated with the attestation.
+  """
+  tags: [String!]
 }
 
 """
@@ -74,7 +82,7 @@ input AttestationFilter {
   id: String
 
   """
-  The attesting party. 
+  The attesting party.
   """
   source: Address
 
@@ -99,8 +107,12 @@ input AttestationFilter {
   after: Time
 
   """
-  Limit attestations returned to this value. Defaults to 10. 
+  Limit attestations returned to this value. Defaults to 10.
   """
   limit: Int
-}
 
+  """
+  Filter attestations by tags.
+  """
+  tags: StringArrayFilter
+}

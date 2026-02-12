@@ -44,7 +44,7 @@ func (m *MockindexRepoService) EXPECT() *MockindexRepoServiceMockRecorder {
 }
 
 // GetAllCloudEvents mocks base method.
-func (m *MockindexRepoService) GetAllCloudEvents(ctx context.Context, filter *grpc.SearchOptions, limit int32) ([]cloudevent.CloudEvent[json.RawMessage], error) {
+func (m *MockindexRepoService) GetAllCloudEvents(ctx context.Context, filter *grpc.AdvancedSearchOptions, limit int32) ([]cloudevent.CloudEvent[json.RawMessage], error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetAllCloudEvents", ctx, filter, limit)
 	ret0, _ := ret[0].([]cloudevent.CloudEvent[json.RawMessage])

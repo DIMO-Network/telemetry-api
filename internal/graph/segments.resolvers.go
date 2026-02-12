@@ -11,7 +11,7 @@ import (
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 )
 
-// Events is the resolver for the events field.
-func (r *queryResolver) Events(ctx context.Context, tokenID int, from time.Time, to time.Time, filter *model.EventFilter) ([]*model.Event, error) {
-	return r.BaseRepo.GetEvents(ctx, tokenID, from, to, filter)
+// Segments is the resolver for the segments field.
+func (r *queryResolver) Segments(ctx context.Context, tokenID int, from time.Time, to time.Time, mechanism model.DetectionMechanism, config *model.SegmentConfig) ([]*model.Segment, error) {
+	return r.BaseRepo.GetSegments(ctx, tokenID, from, to, mechanism, config)
 }

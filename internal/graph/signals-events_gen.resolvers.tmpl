@@ -19,6 +19,15 @@ func (r *signalAggregationsResolver) {{ GQLGenResolverName .JSONName }}(ctx cont
 	}
 	return &vn, nil
 }
+{{ else if eq .GQLType "Location" }}
+func (r *signalAggregationsResolver) {{ GQLGenResolverName .JSONName }}(ctx context.Context, obj *model.SignalAggregations, agg model.LocationAggregation) (*model.Location, error) {
+	fieldCtx := graphql.GetFieldContext(ctx)
+	vl, ok := obj.ValueLocations[fieldCtx.Field.Alias]
+	if !ok {
+		return nil, nil
+	}
+	return &model.Location{Latitude: vl.Latitude, Longitude: vl.Longitude, Hdop: vl.HDOP}, nil
+}
 {{ else }}
 func (r *signalAggregationsResolver) {{ GQLGenResolverName .JSONName }}(ctx context.Context, obj *model.SignalAggregations, agg model.StringAggregation) (*string, error) {
 	fieldCtx := graphql.GetFieldContext(ctx)
