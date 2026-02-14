@@ -68,8 +68,18 @@ type ComplexityRoot struct {
 		VehicleTokenID func(childComplexity int) int
 	}
 
+	DailyActivity struct {
+		Duration     func(childComplexity int) int
+		End          func(childComplexity int) int
+		EventCounts  func(childComplexity int) int
+		SegmentCount func(childComplexity int) int
+		Signals      func(childComplexity int) int
+		Start        func(childComplexity int) int
+	}
+
 	DataSummary struct {
 		AvailableSignals  func(childComplexity int) int
+		EventDataSummary  func(childComplexity int) int
 		FirstSeen         func(childComplexity int) int
 		LastSeen          func(childComplexity int) int
 		NumberOfSignals   func(childComplexity int) int
@@ -86,6 +96,11 @@ type ComplexityRoot struct {
 		Name       func(childComplexity int) int
 		Source     func(childComplexity int) int
 		Timestamp  func(childComplexity int) int
+	}
+
+	EventCount struct {
+		Count func(childComplexity int) int
+		Name  func(childComplexity int) int
 	}
 
 	Location struct {
@@ -105,22 +120,31 @@ type ComplexityRoot struct {
 	Query struct {
 		Attestations     func(childComplexity int, tokenID *int, subject *string, filter *model.AttestationFilter) int
 		AvailableSignals func(childComplexity int, tokenID int, filter *model.SignalFilter) int
+		DailyActivity    func(childComplexity int, tokenID int, from time.Time, to time.Time, mechanism model.DetectionMechanism, config *model.SegmentConfig, signalRequests []*model.SegmentSignalRequest, eventRequests []*model.SegmentEventRequest, timezone *string) int
 		DataSummary      func(childComplexity int, tokenID int, filter *model.SignalFilter) int
 		DeviceActivity   func(childComplexity int, by model.AftermarketDeviceBy) int
 		Events           func(childComplexity int, tokenID int, from time.Time, to time.Time, filter *model.EventFilter) int
 		PomVCLatest      func(childComplexity int, tokenID int) int
-		Segments         func(childComplexity int, tokenID int, from time.Time, to time.Time, mechanism model.DetectionMechanism, config *model.SegmentConfig) int
+		Segments         func(childComplexity int, tokenID int, from time.Time, to time.Time, mechanism model.DetectionMechanism, config *model.SegmentConfig, signalRequests []*model.SegmentSignalRequest, eventRequests []*model.SegmentEventRequest, limit *int, after *time.Time) int
 		Signals          func(childComplexity int, tokenID int, interval string, from time.Time, to time.Time, filter *model.SignalFilter) int
 		SignalsLatest    func(childComplexity int, tokenID int, filter *model.SignalFilter) int
 		VinVCLatest      func(childComplexity int, tokenID int) int
 	}
 
 	Segment struct {
-		DurationSeconds    func(childComplexity int) int
-		EndTime            func(childComplexity int) int
+		Duration           func(childComplexity int) int
+		End                func(childComplexity int) int
+		EventCounts        func(childComplexity int) int
 		IsOngoing          func(childComplexity int) int
-		StartTime          func(childComplexity int) int
+		Signals            func(childComplexity int) int
+		Start              func(childComplexity int) int
 		StartedBeforeRange func(childComplexity int) int
+	}
+
+	SignalAggregationValue struct {
+		Agg   func(childComplexity int) int
+		Name  func(childComplexity int) int
+		Value func(childComplexity int) int
 	}
 
 	SignalAggregations struct {
@@ -392,6 +416,13 @@ type ComplexityRoot struct {
 		Vin                    func(childComplexity int) int
 	}
 
+	EventDataSummary struct {
+		FirstSeen      func(childComplexity int) int
+		LastSeen       func(childComplexity int) int
+		Name           func(childComplexity int) int
+		NumberOfEvents func(childComplexity int) int
+	}
+
 	SignalDataSummary struct {
 		FirstSeen       func(childComplexity int) int
 		LastSeen        func(childComplexity int) int
@@ -408,7 +439,8 @@ type QueryResolver interface {
 	Attestations(ctx context.Context, tokenID *int, subject *string, filter *model.AttestationFilter) ([]*model.Attestation, error)
 	DeviceActivity(ctx context.Context, by model.AftermarketDeviceBy) (*model.DeviceActivity, error)
 	Events(ctx context.Context, tokenID int, from time.Time, to time.Time, filter *model.EventFilter) ([]*model.Event, error)
-	Segments(ctx context.Context, tokenID int, from time.Time, to time.Time, mechanism model.DetectionMechanism, config *model.SegmentConfig) ([]*model.Segment, error)
+	Segments(ctx context.Context, tokenID int, from time.Time, to time.Time, mechanism model.DetectionMechanism, config *model.SegmentConfig, signalRequests []*model.SegmentSignalRequest, eventRequests []*model.SegmentEventRequest, limit *int, after *time.Time) ([]*model.Segment, error)
+	DailyActivity(ctx context.Context, tokenID int, from time.Time, to time.Time, mechanism model.DetectionMechanism, config *model.SegmentConfig, signalRequests []*model.SegmentSignalRequest, eventRequests []*model.SegmentEventRequest, timezone *string) ([]*model.DailyActivity, error)
 	VinVCLatest(ctx context.Context, tokenID int) (*model.Vinvc, error)
 	PomVCLatest(ctx context.Context, tokenID int) (*model.Pomvc, error)
 }
@@ -612,12 +644,55 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.Attestation.VehicleTokenID(childComplexity), true
 
+	case "DailyActivity.duration":
+		if e.complexity.DailyActivity.Duration == nil {
+			break
+		}
+
+		return e.complexity.DailyActivity.Duration(childComplexity), true
+	case "DailyActivity.end":
+		if e.complexity.DailyActivity.End == nil {
+			break
+		}
+
+		return e.complexity.DailyActivity.End(childComplexity), true
+	case "DailyActivity.eventCounts":
+		if e.complexity.DailyActivity.EventCounts == nil {
+			break
+		}
+
+		return e.complexity.DailyActivity.EventCounts(childComplexity), true
+	case "DailyActivity.segmentCount":
+		if e.complexity.DailyActivity.SegmentCount == nil {
+			break
+		}
+
+		return e.complexity.DailyActivity.SegmentCount(childComplexity), true
+	case "DailyActivity.signals":
+		if e.complexity.DailyActivity.Signals == nil {
+			break
+		}
+
+		return e.complexity.DailyActivity.Signals(childComplexity), true
+	case "DailyActivity.start":
+		if e.complexity.DailyActivity.Start == nil {
+			break
+		}
+
+		return e.complexity.DailyActivity.Start(childComplexity), true
+
 	case "DataSummary.availableSignals":
 		if e.complexity.DataSummary.AvailableSignals == nil {
 			break
 		}
 
 		return e.complexity.DataSummary.AvailableSignals(childComplexity), true
+	case "DataSummary.eventDataSummary":
+		if e.complexity.DataSummary.EventDataSummary == nil {
+			break
+		}
+
+		return e.complexity.DataSummary.EventDataSummary(childComplexity), true
 	case "DataSummary.firstSeen":
 		if e.complexity.DataSummary.FirstSeen == nil {
 			break
@@ -680,6 +755,19 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Event.Timestamp(childComplexity), true
+
+	case "EventCount.count":
+		if e.complexity.EventCount.Count == nil {
+			break
+		}
+
+		return e.complexity.EventCount.Count(childComplexity), true
+	case "EventCount.name":
+		if e.complexity.EventCount.Name == nil {
+			break
+		}
+
+		return e.complexity.EventCount.Name(childComplexity), true
 
 	case "Location.hdop":
 		if e.complexity.Location.Hdop == nil {
@@ -753,6 +841,17 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Query.AvailableSignals(childComplexity, args["tokenId"].(int), args["filter"].(*model.SignalFilter)), true
+	case "Query.dailyActivity":
+		if e.complexity.Query.DailyActivity == nil {
+			break
+		}
+
+		args, err := ec.field_Query_dailyActivity_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.DailyActivity(childComplexity, args["tokenId"].(int), args["from"].(time.Time), args["to"].(time.Time), args["mechanism"].(model.DetectionMechanism), args["config"].(*model.SegmentConfig), args["signalRequests"].([]*model.SegmentSignalRequest), args["eventRequests"].([]*model.SegmentEventRequest), args["timezone"].(*string)), true
 	case "Query.dataSummary":
 		if e.complexity.Query.DataSummary == nil {
 			break
@@ -807,7 +906,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Query.Segments(childComplexity, args["tokenId"].(int), args["from"].(time.Time), args["to"].(time.Time), args["mechanism"].(model.DetectionMechanism), args["config"].(*model.SegmentConfig)), true
+		return e.complexity.Query.Segments(childComplexity, args["tokenId"].(int), args["from"].(time.Time), args["to"].(time.Time), args["mechanism"].(model.DetectionMechanism), args["config"].(*model.SegmentConfig), args["signalRequests"].([]*model.SegmentSignalRequest), args["eventRequests"].([]*model.SegmentEventRequest), args["limit"].(*int), args["after"].(*time.Time)), true
 	case "Query.signals":
 		if e.complexity.Query.Signals == nil {
 			break
@@ -842,36 +941,67 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.Query.VinVCLatest(childComplexity, args["tokenId"].(int)), true
 
-	case "Segment.durationSeconds":
-		if e.complexity.Segment.DurationSeconds == nil {
+	case "Segment.duration":
+		if e.complexity.Segment.Duration == nil {
 			break
 		}
 
-		return e.complexity.Segment.DurationSeconds(childComplexity), true
-	case "Segment.endTime":
-		if e.complexity.Segment.EndTime == nil {
+		return e.complexity.Segment.Duration(childComplexity), true
+	case "Segment.end":
+		if e.complexity.Segment.End == nil {
 			break
 		}
 
-		return e.complexity.Segment.EndTime(childComplexity), true
+		return e.complexity.Segment.End(childComplexity), true
+	case "Segment.eventCounts":
+		if e.complexity.Segment.EventCounts == nil {
+			break
+		}
+
+		return e.complexity.Segment.EventCounts(childComplexity), true
 	case "Segment.isOngoing":
 		if e.complexity.Segment.IsOngoing == nil {
 			break
 		}
 
 		return e.complexity.Segment.IsOngoing(childComplexity), true
-	case "Segment.startTime":
-		if e.complexity.Segment.StartTime == nil {
+	case "Segment.signals":
+		if e.complexity.Segment.Signals == nil {
 			break
 		}
 
-		return e.complexity.Segment.StartTime(childComplexity), true
+		return e.complexity.Segment.Signals(childComplexity), true
+	case "Segment.start":
+		if e.complexity.Segment.Start == nil {
+			break
+		}
+
+		return e.complexity.Segment.Start(childComplexity), true
 	case "Segment.startedBeforeRange":
 		if e.complexity.Segment.StartedBeforeRange == nil {
 			break
 		}
 
 		return e.complexity.Segment.StartedBeforeRange(childComplexity), true
+
+	case "SignalAggregationValue.agg":
+		if e.complexity.SignalAggregationValue.Agg == nil {
+			break
+		}
+
+		return e.complexity.SignalAggregationValue.Agg(childComplexity), true
+	case "SignalAggregationValue.name":
+		if e.complexity.SignalAggregationValue.Name == nil {
+			break
+		}
+
+		return e.complexity.SignalAggregationValue.Name(childComplexity), true
+	case "SignalAggregationValue.value":
+		if e.complexity.SignalAggregationValue.Value == nil {
+			break
+		}
+
+		return e.complexity.SignalAggregationValue.Value(childComplexity), true
 
 	case "SignalAggregations.angularVelocityYaw":
 		if e.complexity.SignalAggregations.AngularVelocityYaw == nil {
@@ -2970,6 +3100,31 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.VINVC.Vin(childComplexity), true
 
+	case "eventDataSummary.firstSeen":
+		if e.complexity.EventDataSummary.FirstSeen == nil {
+			break
+		}
+
+		return e.complexity.EventDataSummary.FirstSeen(childComplexity), true
+	case "eventDataSummary.lastSeen":
+		if e.complexity.EventDataSummary.LastSeen == nil {
+			break
+		}
+
+		return e.complexity.EventDataSummary.LastSeen(childComplexity), true
+	case "eventDataSummary.name":
+		if e.complexity.EventDataSummary.Name == nil {
+			break
+		}
+
+		return e.complexity.EventDataSummary.Name(childComplexity), true
+	case "eventDataSummary.numberOfEvents":
+		if e.complexity.EventDataSummary.NumberOfEvents == nil {
+			break
+		}
+
+		return e.complexity.EventDataSummary.NumberOfEvents(childComplexity), true
+
 	case "signalDataSummary.firstSeen":
 		if e.complexity.SignalDataSummary.FirstSeen == nil {
 			break
@@ -3009,6 +3164,8 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputFilterLocation,
 		ec.unmarshalInputInCircleFilter,
 		ec.unmarshalInputSegmentConfig,
+		ec.unmarshalInputSegmentEventRequest,
+		ec.unmarshalInputSegmentSignalRequest,
 		ec.unmarshalInputSignalFilter,
 		ec.unmarshalInputSignalFloatFilter,
 		ec.unmarshalInputSignalLocationFilter,
@@ -3210,6 +3367,11 @@ input AttestationFilter {
   limit: Int
 
   """
+  Cursor for pagination (exclusive). 
+  """
+  cursor: Time
+
+  """
   Filter attestations by tags.
   """
   tags: StringArrayFilter
@@ -3386,6 +3548,30 @@ type DataSummary {
   data summary of an individual signal
   """
   signalDataSummary: [signalDataSummary!]!
+
+  """
+  Events known to the vehicle: per-event name, count, and first/last seen.
+  """
+  eventDataSummary: [eventDataSummary!]!
+}
+
+type eventDataSummary {
+  """
+  Event name
+  """
+  name: String!
+  """
+  Number of times this event occurred for the vehicle
+  """
+  numberOfEvents: Uint64!
+  """
+  First seen timestamp
+  """
+  firstSeen: Time!
+  """
+  Last seen timestamp
+  """
+  lastSeen: Time!
 }
 
 type signalDataSummary {
@@ -3448,7 +3634,7 @@ enum StringAggregation {
 }
 type SignalFloat {
   """
-  timestamp of when this data was colllected
+  timestamp of when this data was collected
   """
   timestamp: Time!
 
@@ -3460,7 +3646,7 @@ type SignalFloat {
 
 type SignalString {
   """
-  timestamp of when this data was colllected
+  timestamp of when this data was collected
   """
   timestamp: Time!
 
@@ -3472,12 +3658,12 @@ type SignalString {
 
 type SignalLocation {
   """
-  timestamp of when this data was colllected
+  timestamp of when this data was collected
   """
   timestamp: Time!
 
   """
-  value of the signal
+  location (latitude, longitude, hdop) at this timestamp.
   """
   value: Location!
 }
@@ -3510,6 +3696,24 @@ type Location {
   latitude: Float!
   longitude: Float!
   hdop: Float!
+}
+
+"""
+Result of aggregating a float signal over an interval. Used by segments and daily activity summaries.
+Same shape as one row of aggregated signal data (name, aggregation type, computed value).
+"""
+type SignalAggregationValue {
+  name: String!
+  agg: String!
+  value: Float!
+}
+
+"""
+Event name and count. Used by segments, daily activity, and event summaries.
+"""
+type EventCount {
+  name: String!
+  count: Int!
 }
 
 """
@@ -3718,20 +3922,42 @@ input EventFilter {
   Best alternative when ignition signal is unavailable - same accuracy, same speed as frequency analysis.
   """
   changePointDetection
+
+  """
+  Idling: Segments are contiguous periods where engine RPM remains in idle range.
+  """
+  idling
+
+  """
+  Refuel: Detects where fuel level rises significantly. 
+  """
+  refuel
+
+  """
+  Recharge: Hybrid detection. Uses charging signals and state of charge for detection.
+  """
+  recharge
 }
 
 extend type Query {
   """
   Returns vehicle usage segments detected using the specified mechanism.
-  Maximum date range: 30 days.
+  Maximum date range: 31 days.
   
   Detection mechanisms:
   - ignitionDetection: Uses 'isIgnitionOn' signal with configurable debouncing
   - frequencyAnalysis: Analyzes signal update frequency to detect activity periods
-  - sparseSampling: Samples 5-10% of signals for cost-effective detection
+  - changePointDetection: CUSUM-based regime change detection
+  - idling: Idling segments (engine rpm idle)
+  - refuel: Refueling segments (fuel level increased)
+  - recharge: Charging segments (battery SoC increased)
   
   Segment IDs are stable and consistent across queries as long as the segment start
   is captured in the underlying data source.
+  
+  Each segment includes summary: signals, start/end location, and (when requested) eventCounts.
+  A default set of signal requests is always applied (e.g. speed, odometer; for refuel/recharge also the level signal at start and end).
+  When signalRequests is provided, those requests are added on top of the default set; duplicates (same name and agg) are omitted.
   """
   segments(
     tokenId: Int!
@@ -3739,17 +3965,68 @@ extend type Query {
     to: Time!
     mechanism: DetectionMechanism!
     config: SegmentConfig
-  ): [Segment!] @requiresVehicleToken @requiresAllOfPrivileges(privileges: [VEHICLE_ALL_TIME_LOCATION, VEHICLE_NON_LOCATION_DATA])
+    signalRequests: [SegmentSignalRequest!]
+    eventRequests: [SegmentEventRequest!]
+    """
+    Maximum number of segments to return. Default 100, max 200.
+    """
+    limit: Int = 100
+    """
+    Cursor for pagination: return only segments with startTime > after (exclusive).
+    Pass the startTime of the last segment from the previous page for the next page.
+    """
+    after: Time
+  ): [Segment!]! @requiresVehicleToken @requiresAllOfPrivileges(privileges: [VEHICLE_ALL_TIME_LOCATION, VEHICLE_NON_LOCATION_DATA])
+
+  """
+  Returns one record per calendar day in the date range.
+  Mechanism must be ignitionDetection, frequencyAnalysis, or changePointDetection (idling, refuel, and recharge not allowed).
+  Maximum date range: 31 days.
+  """
+  dailyActivity(
+    tokenId: Int!
+    from: Time!
+    to: Time!
+    mechanism: DetectionMechanism!
+    config: SegmentConfig
+    signalRequests: [SegmentSignalRequest!]
+    eventRequests: [SegmentEventRequest!]
+    timezone: String
+  ): [DailyActivity!]! @requiresVehicleToken @requiresAllOfPrivileges(privileges: [VEHICLE_ALL_TIME_LOCATION, VEHICLE_NON_LOCATION_DATA])
+}
+
+input SegmentSignalRequest {
+  name: String!
+  agg: FloatAggregation!
+}
+
+input SegmentEventRequest {
+  name: String!
+}
+
+type DailyActivity {
+  """Start of day (timestamp = day start, value = location). Same shape as Segment.start. Null if not available."""
+  start: SignalLocation
+  """End of day (timestamp = day end, location). Same shape as Segment.end. Null if not available."""
+  end: SignalLocation
+  """Number of activity segments that started or fell within that day."""
+  segmentCount: Int!
+  """Sum of segment durations (total active time that day) in seconds."""
+  duration: Int!
+  """Per-day signal aggregates (same shape as segment signals)."""
+  signals: [SignalAggregationValue!]!
+  """Per-day event counts."""
+  eventCounts: [EventCount!]!
 }
 
 input SegmentConfig {
   """
-  Minimum idle time (seconds) before segment is considered ended.
+  Maximum gap (seconds) between data points before a segment is split.
   For ignitionDetection: filters noise from brief ignition OFF events.
   For frequencyAnalysis: maximum gap between active windows to merge.
   Default: 300 (5 minutes), Min: 60, Max: 3600
   """
-  minIdleSeconds: Int = 300
+  maxGapSeconds: Int = 300
   
   """
   Minimum segment duration (seconds) to include in results.
@@ -3759,44 +4036,60 @@ input SegmentConfig {
   minSegmentDurationSeconds: Int = 240
   
   """
-  [frequencyAnalysis only] Minimum signal count per window for activity detection.
-  Higher values = more conservative (filters parked telemetry better).
-  Lower values = more sensitive (works for sparse signal vehicles).
-  Default: 10 (tuned to match ignition detection accuracy)
-  Min: 1, Max: 3600
+  [frequencyAnalysis] Minimum signal count per window for activity detection.
+  [idling] Minimum samples per window to consider it idle (same semantics).
+  Higher values = more conservative. Lower values = more sensitive.
+  Default: 10, Min: 1, Max: 3600
   """
   signalCountThreshold: Int = 10
+
+  """
+  [idling only] Upper bound for idle RPM. Windows with max(RPM) <= this are considered idle.
+  Default: 1000, Min: 300, Max: 3000
+  """
+  maxIdleRpm: Int = 1000
+
+  """
+  [refuel and recharge only] Minimum percent increase within a window to consider it a level-increase window.
+  """
+  minIncreasePercent: Int = 15
 }
 
 type Segment {
   """
-  Segment start timestamp (actual activity start transition)
+  Segment start (timestamp and location). Uses SignalLocation; always present.
   """
-  startTime: Time!
+  start: SignalLocation!
   
   """
-  Segment end timestamp (activity end after debounce period).
-  Null if segment is ongoing (extends beyond query range).
+  Segment end (timestamp and location). Uses SignalLocation; omitted when isOngoing is true.
   """
-  endTime: Time
+  end: SignalLocation
   
   """
-  Duration in seconds.
-  If ongoing: from start to query 'to' time.
-  If complete: from start to end.
+  Duration in seconds. If ongoing: from start to query 'to'. If complete: from start to end.
   """
-  durationSeconds: Int!
+  duration: Int!
   
   """
   True if segment extends beyond query time range (last activity is ongoing).
+  When true, end is not included in the response.
   """
   isOngoing: Boolean!
   
   """
   True if segment started before query time range.
-  Indicates startTime may be approximate.
   """
   startedBeforeRange: Boolean!
+  
+  """
+  Per-segment signal aggregates. Same shape as signals elsewhere (name, agg, value).
+  """
+  signals: [SignalAggregationValue!]
+  """
+  Per-segment event counts.
+  """
+  eventCounts: [EventCount!]
 }
 
 `, BuiltIn: false},
@@ -5851,6 +6144,52 @@ func (ec *executionContext) field_Query_availableSignals_args(ctx context.Contex
 	return args, nil
 }
 
+func (ec *executionContext) field_Query_dailyActivity_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "tokenId", ec.unmarshalNInt2int)
+	if err != nil {
+		return nil, err
+	}
+	args["tokenId"] = arg0
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "from", ec.unmarshalNTime2timeᚐTime)
+	if err != nil {
+		return nil, err
+	}
+	args["from"] = arg1
+	arg2, err := graphql.ProcessArgField(ctx, rawArgs, "to", ec.unmarshalNTime2timeᚐTime)
+	if err != nil {
+		return nil, err
+	}
+	args["to"] = arg2
+	arg3, err := graphql.ProcessArgField(ctx, rawArgs, "mechanism", ec.unmarshalNDetectionMechanism2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐDetectionMechanism)
+	if err != nil {
+		return nil, err
+	}
+	args["mechanism"] = arg3
+	arg4, err := graphql.ProcessArgField(ctx, rawArgs, "config", ec.unmarshalOSegmentConfig2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSegmentConfig)
+	if err != nil {
+		return nil, err
+	}
+	args["config"] = arg4
+	arg5, err := graphql.ProcessArgField(ctx, rawArgs, "signalRequests", ec.unmarshalOSegmentSignalRequest2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSegmentSignalRequestᚄ)
+	if err != nil {
+		return nil, err
+	}
+	args["signalRequests"] = arg5
+	arg6, err := graphql.ProcessArgField(ctx, rawArgs, "eventRequests", ec.unmarshalOSegmentEventRequest2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSegmentEventRequestᚄ)
+	if err != nil {
+		return nil, err
+	}
+	args["eventRequests"] = arg6
+	arg7, err := graphql.ProcessArgField(ctx, rawArgs, "timezone", ec.unmarshalOString2ᚖstring)
+	if err != nil {
+		return nil, err
+	}
+	args["timezone"] = arg7
+	return args, nil
+}
+
 func (ec *executionContext) field_Query_dataSummary_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -5943,6 +6282,26 @@ func (ec *executionContext) field_Query_segments_args(ctx context.Context, rawAr
 		return nil, err
 	}
 	args["config"] = arg4
+	arg5, err := graphql.ProcessArgField(ctx, rawArgs, "signalRequests", ec.unmarshalOSegmentSignalRequest2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSegmentSignalRequestᚄ)
+	if err != nil {
+		return nil, err
+	}
+	args["signalRequests"] = arg5
+	arg6, err := graphql.ProcessArgField(ctx, rawArgs, "eventRequests", ec.unmarshalOSegmentEventRequest2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSegmentEventRequestᚄ)
+	if err != nil {
+		return nil, err
+	}
+	args["eventRequests"] = arg6
+	arg7, err := graphql.ProcessArgField(ctx, rawArgs, "limit", ec.unmarshalOInt2ᚖint)
+	if err != nil {
+		return nil, err
+	}
+	args["limit"] = arg7
+	arg8, err := graphql.ProcessArgField(ctx, rawArgs, "after", ec.unmarshalOTime2ᚖtimeᚐTime)
+	if err != nil {
+		return nil, err
+	}
+	args["after"] = arg8
 	return args, nil
 }
 
@@ -8168,6 +8527,206 @@ func (ec *executionContext) fieldContext_Attestation_tags(_ context.Context, fie
 	return fc, nil
 }
 
+func (ec *executionContext) _DailyActivity_start(ctx context.Context, field graphql.CollectedField, obj *model.DailyActivity) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_DailyActivity_start,
+		func(ctx context.Context) (any, error) {
+			return obj.Start, nil
+		},
+		nil,
+		ec.marshalOSignalLocation2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalLocation,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_DailyActivity_start(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DailyActivity",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "timestamp":
+				return ec.fieldContext_SignalLocation_timestamp(ctx, field)
+			case "value":
+				return ec.fieldContext_SignalLocation_value(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SignalLocation", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DailyActivity_end(ctx context.Context, field graphql.CollectedField, obj *model.DailyActivity) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_DailyActivity_end,
+		func(ctx context.Context) (any, error) {
+			return obj.End, nil
+		},
+		nil,
+		ec.marshalOSignalLocation2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalLocation,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_DailyActivity_end(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DailyActivity",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "timestamp":
+				return ec.fieldContext_SignalLocation_timestamp(ctx, field)
+			case "value":
+				return ec.fieldContext_SignalLocation_value(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SignalLocation", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DailyActivity_segmentCount(ctx context.Context, field graphql.CollectedField, obj *model.DailyActivity) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_DailyActivity_segmentCount,
+		func(ctx context.Context) (any, error) {
+			return obj.SegmentCount, nil
+		},
+		nil,
+		ec.marshalNInt2int,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_DailyActivity_segmentCount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DailyActivity",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DailyActivity_duration(ctx context.Context, field graphql.CollectedField, obj *model.DailyActivity) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_DailyActivity_duration,
+		func(ctx context.Context) (any, error) {
+			return obj.Duration, nil
+		},
+		nil,
+		ec.marshalNInt2int,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_DailyActivity_duration(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DailyActivity",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DailyActivity_signals(ctx context.Context, field graphql.CollectedField, obj *model.DailyActivity) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_DailyActivity_signals,
+		func(ctx context.Context) (any, error) {
+			return obj.Signals, nil
+		},
+		nil,
+		ec.marshalNSignalAggregationValue2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalAggregationValueᚄ,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_DailyActivity_signals(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DailyActivity",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "name":
+				return ec.fieldContext_SignalAggregationValue_name(ctx, field)
+			case "agg":
+				return ec.fieldContext_SignalAggregationValue_agg(ctx, field)
+			case "value":
+				return ec.fieldContext_SignalAggregationValue_value(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SignalAggregationValue", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DailyActivity_eventCounts(ctx context.Context, field graphql.CollectedField, obj *model.DailyActivity) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_DailyActivity_eventCounts,
+		func(ctx context.Context) (any, error) {
+			return obj.EventCounts, nil
+		},
+		nil,
+		ec.marshalNEventCount2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐEventCountᚄ,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_DailyActivity_eventCounts(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DailyActivity",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "name":
+				return ec.fieldContext_EventCount_name(ctx, field)
+			case "count":
+				return ec.fieldContext_EventCount_count(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type EventCount", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _DataSummary_numberOfSignals(ctx context.Context, field graphql.CollectedField, obj *model.DataSummary) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -8318,6 +8877,45 @@ func (ec *executionContext) fieldContext_DataSummary_signalDataSummary(_ context
 				return ec.fieldContext_signalDataSummary_lastSeen(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type signalDataSummary", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DataSummary_eventDataSummary(ctx context.Context, field graphql.CollectedField, obj *model.DataSummary) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_DataSummary_eventDataSummary,
+		func(ctx context.Context) (any, error) {
+			return obj.EventDataSummary, nil
+		},
+		nil,
+		ec.marshalNeventDataSummary2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐEventDataSummaryᚄ,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_DataSummary_eventDataSummary(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DataSummary",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "name":
+				return ec.fieldContext_eventDataSummary_name(ctx, field)
+			case "numberOfEvents":
+				return ec.fieldContext_eventDataSummary_numberOfEvents(ctx, field)
+			case "firstSeen":
+				return ec.fieldContext_eventDataSummary_firstSeen(ctx, field)
+			case "lastSeen":
+				return ec.fieldContext_eventDataSummary_lastSeen(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type eventDataSummary", field.Name)
 		},
 	}
 	return fc, nil
@@ -8492,6 +9090,64 @@ func (ec *executionContext) fieldContext_Event_metadata(_ context.Context, field
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _EventCount_name(ctx context.Context, field graphql.CollectedField, obj *model.EventCount) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_EventCount_name,
+		func(ctx context.Context) (any, error) {
+			return obj.Name, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_EventCount_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "EventCount",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _EventCount_count(ctx context.Context, field graphql.CollectedField, obj *model.EventCount) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_EventCount_count,
+		func(ctx context.Context) (any, error) {
+			return obj.Count, nil
+		},
+		nil,
+		ec.marshalNInt2int,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_EventCount_count(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "EventCount",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
 		},
 	}
 	return fc, nil
@@ -9415,6 +10071,8 @@ func (ec *executionContext) fieldContext_Query_dataSummary(ctx context.Context, 
 				return ec.fieldContext_DataSummary_lastSeen(ctx, field)
 			case "signalDataSummary":
 				return ec.fieldContext_DataSummary_signalDataSummary(ctx, field)
+			case "eventDataSummary":
+				return ec.fieldContext_DataSummary_eventDataSummary(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type DataSummary", field.Name)
 		},
@@ -9652,7 +10310,7 @@ func (ec *executionContext) _Query_segments(ctx context.Context, field graphql.C
 		ec.fieldContext_Query_segments,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Query().Segments(ctx, fc.Args["tokenId"].(int), fc.Args["from"].(time.Time), fc.Args["to"].(time.Time), fc.Args["mechanism"].(model.DetectionMechanism), fc.Args["config"].(*model.SegmentConfig))
+			return ec.resolvers.Query().Segments(ctx, fc.Args["tokenId"].(int), fc.Args["from"].(time.Time), fc.Args["to"].(time.Time), fc.Args["mechanism"].(model.DetectionMechanism), fc.Args["config"].(*model.SegmentConfig), fc.Args["signalRequests"].([]*model.SegmentSignalRequest), fc.Args["eventRequests"].([]*model.SegmentEventRequest), fc.Args["limit"].(*int), fc.Args["after"].(*time.Time))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -9680,9 +10338,9 @@ func (ec *executionContext) _Query_segments(ctx context.Context, field graphql.C
 			next = directive2
 			return next
 		},
-		ec.marshalOSegment2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSegmentᚄ,
+		ec.marshalNSegment2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSegmentᚄ,
 		true,
-		false,
+		true,
 	)
 }
 
@@ -9694,16 +10352,20 @@ func (ec *executionContext) fieldContext_Query_segments(ctx context.Context, fie
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "startTime":
-				return ec.fieldContext_Segment_startTime(ctx, field)
-			case "endTime":
-				return ec.fieldContext_Segment_endTime(ctx, field)
-			case "durationSeconds":
-				return ec.fieldContext_Segment_durationSeconds(ctx, field)
+			case "start":
+				return ec.fieldContext_Segment_start(ctx, field)
+			case "end":
+				return ec.fieldContext_Segment_end(ctx, field)
+			case "duration":
+				return ec.fieldContext_Segment_duration(ctx, field)
 			case "isOngoing":
 				return ec.fieldContext_Segment_isOngoing(ctx, field)
 			case "startedBeforeRange":
 				return ec.fieldContext_Segment_startedBeforeRange(ctx, field)
+			case "signals":
+				return ec.fieldContext_Segment_signals(ctx, field)
+			case "eventCounts":
+				return ec.fieldContext_Segment_eventCounts(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Segment", field.Name)
 		},
@@ -9716,6 +10378,86 @@ func (ec *executionContext) fieldContext_Query_segments(ctx context.Context, fie
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Query_segments_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_dailyActivity(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Query_dailyActivity,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Query().DailyActivity(ctx, fc.Args["tokenId"].(int), fc.Args["from"].(time.Time), fc.Args["to"].(time.Time), fc.Args["mechanism"].(model.DetectionMechanism), fc.Args["config"].(*model.SegmentConfig), fc.Args["signalRequests"].([]*model.SegmentSignalRequest), fc.Args["eventRequests"].([]*model.SegmentEventRequest), fc.Args["timezone"].(*string))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
+
+			directive1 := func(ctx context.Context) (any, error) {
+				if ec.directives.RequiresVehicleToken == nil {
+					var zeroVal []*model.DailyActivity
+					return zeroVal, errors.New("directive requiresVehicleToken is not implemented")
+				}
+				return ec.directives.RequiresVehicleToken(ctx, nil, directive0)
+			}
+			directive2 := func(ctx context.Context) (any, error) {
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_ALL_TIME_LOCATION", "VEHICLE_NON_LOCATION_DATA"})
+				if err != nil {
+					var zeroVal []*model.DailyActivity
+					return zeroVal, err
+				}
+				if ec.directives.RequiresAllOfPrivileges == nil {
+					var zeroVal []*model.DailyActivity
+					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
+				}
+				return ec.directives.RequiresAllOfPrivileges(ctx, nil, directive1, privileges)
+			}
+
+			next = directive2
+			return next
+		},
+		ec.marshalNDailyActivity2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐDailyActivityᚄ,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Query_dailyActivity(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "start":
+				return ec.fieldContext_DailyActivity_start(ctx, field)
+			case "end":
+				return ec.fieldContext_DailyActivity_end(ctx, field)
+			case "segmentCount":
+				return ec.fieldContext_DailyActivity_segmentCount(ctx, field)
+			case "duration":
+				return ec.fieldContext_DailyActivity_duration(ctx, field)
+			case "signals":
+				return ec.fieldContext_DailyActivity_signals(ctx, field)
+			case "eventCounts":
+				return ec.fieldContext_DailyActivity_eventCounts(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type DailyActivity", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_dailyActivity_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -9994,72 +10736,84 @@ func (ec *executionContext) fieldContext_Query___schema(_ context.Context, field
 	return fc, nil
 }
 
-func (ec *executionContext) _Segment_startTime(ctx context.Context, field graphql.CollectedField, obj *model.Segment) (ret graphql.Marshaler) {
+func (ec *executionContext) _Segment_start(ctx context.Context, field graphql.CollectedField, obj *model.Segment) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
 		ec.OperationContext,
 		field,
-		ec.fieldContext_Segment_startTime,
+		ec.fieldContext_Segment_start,
 		func(ctx context.Context) (any, error) {
-			return obj.StartTime, nil
+			return obj.Start, nil
 		},
 		nil,
-		ec.marshalNTime2timeᚐTime,
+		ec.marshalNSignalLocation2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalLocation,
 		true,
 		true,
 	)
 }
 
-func (ec *executionContext) fieldContext_Segment_startTime(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Segment_start(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Segment",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Time does not have child fields")
+			switch field.Name {
+			case "timestamp":
+				return ec.fieldContext_SignalLocation_timestamp(ctx, field)
+			case "value":
+				return ec.fieldContext_SignalLocation_value(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SignalLocation", field.Name)
 		},
 	}
 	return fc, nil
 }
 
-func (ec *executionContext) _Segment_endTime(ctx context.Context, field graphql.CollectedField, obj *model.Segment) (ret graphql.Marshaler) {
+func (ec *executionContext) _Segment_end(ctx context.Context, field graphql.CollectedField, obj *model.Segment) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
 		ec.OperationContext,
 		field,
-		ec.fieldContext_Segment_endTime,
+		ec.fieldContext_Segment_end,
 		func(ctx context.Context) (any, error) {
-			return obj.EndTime, nil
+			return obj.End, nil
 		},
 		nil,
-		ec.marshalOTime2ᚖtimeᚐTime,
+		ec.marshalOSignalLocation2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalLocation,
 		true,
 		false,
 	)
 }
 
-func (ec *executionContext) fieldContext_Segment_endTime(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Segment_end(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Segment",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Time does not have child fields")
+			switch field.Name {
+			case "timestamp":
+				return ec.fieldContext_SignalLocation_timestamp(ctx, field)
+			case "value":
+				return ec.fieldContext_SignalLocation_value(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SignalLocation", field.Name)
 		},
 	}
 	return fc, nil
 }
 
-func (ec *executionContext) _Segment_durationSeconds(ctx context.Context, field graphql.CollectedField, obj *model.Segment) (ret graphql.Marshaler) {
+func (ec *executionContext) _Segment_duration(ctx context.Context, field graphql.CollectedField, obj *model.Segment) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
 		ec.OperationContext,
 		field,
-		ec.fieldContext_Segment_durationSeconds,
+		ec.fieldContext_Segment_duration,
 		func(ctx context.Context) (any, error) {
-			return obj.DurationSeconds, nil
+			return obj.Duration, nil
 		},
 		nil,
 		ec.marshalNInt2int,
@@ -10068,7 +10822,7 @@ func (ec *executionContext) _Segment_durationSeconds(ctx context.Context, field 
 	)
 }
 
-func (ec *executionContext) fieldContext_Segment_durationSeconds(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Segment_duration(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Segment",
 		Field:      field,
@@ -10134,6 +10888,165 @@ func (ec *executionContext) fieldContext_Segment_startedBeforeRange(_ context.Co
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Segment_signals(ctx context.Context, field graphql.CollectedField, obj *model.Segment) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Segment_signals,
+		func(ctx context.Context) (any, error) {
+			return obj.Signals, nil
+		},
+		nil,
+		ec.marshalOSignalAggregationValue2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalAggregationValueᚄ,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_Segment_signals(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Segment",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "name":
+				return ec.fieldContext_SignalAggregationValue_name(ctx, field)
+			case "agg":
+				return ec.fieldContext_SignalAggregationValue_agg(ctx, field)
+			case "value":
+				return ec.fieldContext_SignalAggregationValue_value(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SignalAggregationValue", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Segment_eventCounts(ctx context.Context, field graphql.CollectedField, obj *model.Segment) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Segment_eventCounts,
+		func(ctx context.Context) (any, error) {
+			return obj.EventCounts, nil
+		},
+		nil,
+		ec.marshalOEventCount2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐEventCountᚄ,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_Segment_eventCounts(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Segment",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "name":
+				return ec.fieldContext_EventCount_name(ctx, field)
+			case "count":
+				return ec.fieldContext_EventCount_count(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type EventCount", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SignalAggregationValue_name(ctx context.Context, field graphql.CollectedField, obj *model.SignalAggregationValue) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SignalAggregationValue_name,
+		func(ctx context.Context) (any, error) {
+			return obj.Name, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SignalAggregationValue_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignalAggregationValue",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SignalAggregationValue_agg(ctx context.Context, field graphql.CollectedField, obj *model.SignalAggregationValue) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SignalAggregationValue_agg,
+		func(ctx context.Context) (any, error) {
+			return obj.Agg, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SignalAggregationValue_agg(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignalAggregationValue",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SignalAggregationValue_value(ctx context.Context, field graphql.CollectedField, obj *model.SignalAggregationValue) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SignalAggregationValue_value,
+		func(ctx context.Context) (any, error) {
+			return obj.Value, nil
+		},
+		nil,
+		ec.marshalNFloat2float64,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SignalAggregationValue_value(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignalAggregationValue",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
 		},
 	}
 	return fc, nil
@@ -27651,6 +28564,122 @@ func (ec *executionContext) fieldContext___Type_isOneOf(_ context.Context, field
 	return fc, nil
 }
 
+func (ec *executionContext) _eventDataSummary_name(ctx context.Context, field graphql.CollectedField, obj *model.EventDataSummary) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_eventDataSummary_name,
+		func(ctx context.Context) (any, error) {
+			return obj.Name, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_eventDataSummary_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "eventDataSummary",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _eventDataSummary_numberOfEvents(ctx context.Context, field graphql.CollectedField, obj *model.EventDataSummary) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_eventDataSummary_numberOfEvents,
+		func(ctx context.Context) (any, error) {
+			return obj.NumberOfEvents, nil
+		},
+		nil,
+		ec.marshalNUint642uint64,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_eventDataSummary_numberOfEvents(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "eventDataSummary",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Uint64 does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _eventDataSummary_firstSeen(ctx context.Context, field graphql.CollectedField, obj *model.EventDataSummary) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_eventDataSummary_firstSeen,
+		func(ctx context.Context) (any, error) {
+			return obj.FirstSeen, nil
+		},
+		nil,
+		ec.marshalNTime2timeᚐTime,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_eventDataSummary_firstSeen(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "eventDataSummary",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _eventDataSummary_lastSeen(ctx context.Context, field graphql.CollectedField, obj *model.EventDataSummary) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_eventDataSummary_lastSeen,
+		func(ctx context.Context) (any, error) {
+			return obj.LastSeen, nil
+		},
+		nil,
+		ec.marshalNTime2timeᚐTime,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_eventDataSummary_lastSeen(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "eventDataSummary",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _signalDataSummary_name(ctx context.Context, field graphql.CollectedField, obj *model.SignalDataSummary) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -27819,7 +28848,7 @@ func (ec *executionContext) unmarshalInputAttestationFilter(ctx context.Context,
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"id", "source", "dataVersion", "producer", "before", "after", "limit", "tags"}
+	fieldsInOrder := [...]string{"id", "source", "dataVersion", "producer", "before", "after", "limit", "cursor", "tags"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -27875,6 +28904,13 @@ func (ec *executionContext) unmarshalInputAttestationFilter(ctx context.Context,
 				return it, err
 			}
 			it.Limit = data
+		case "cursor":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("cursor"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Cursor = data
 		case "tags":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tags"))
 			data, err := ec.unmarshalOStringArrayFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐStringArrayFilter(ctx, v)
@@ -28004,8 +29040,8 @@ func (ec *executionContext) unmarshalInputSegmentConfig(ctx context.Context, obj
 		asMap[k] = v
 	}
 
-	if _, present := asMap["minIdleSeconds"]; !present {
-		asMap["minIdleSeconds"] = 300
+	if _, present := asMap["maxGapSeconds"]; !present {
+		asMap["maxGapSeconds"] = 300
 	}
 	if _, present := asMap["minSegmentDurationSeconds"]; !present {
 		asMap["minSegmentDurationSeconds"] = 240
@@ -28013,21 +29049,27 @@ func (ec *executionContext) unmarshalInputSegmentConfig(ctx context.Context, obj
 	if _, present := asMap["signalCountThreshold"]; !present {
 		asMap["signalCountThreshold"] = 10
 	}
+	if _, present := asMap["maxIdleRpm"]; !present {
+		asMap["maxIdleRpm"] = 1000
+	}
+	if _, present := asMap["minIncreasePercent"]; !present {
+		asMap["minIncreasePercent"] = 15
+	}
 
-	fieldsInOrder := [...]string{"minIdleSeconds", "minSegmentDurationSeconds", "signalCountThreshold"}
+	fieldsInOrder := [...]string{"maxGapSeconds", "minSegmentDurationSeconds", "signalCountThreshold", "maxIdleRpm", "minIncreasePercent"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
-		case "minIdleSeconds":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("minIdleSeconds"))
+		case "maxGapSeconds":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("maxGapSeconds"))
 			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.MinIdleSeconds = data
+			it.MaxGapSeconds = data
 		case "minSegmentDurationSeconds":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("minSegmentDurationSeconds"))
 			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
@@ -28042,6 +29084,81 @@ func (ec *executionContext) unmarshalInputSegmentConfig(ctx context.Context, obj
 				return it, err
 			}
 			it.SignalCountThreshold = data
+		case "maxIdleRpm":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("maxIdleRpm"))
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.MaxIdleRpm = data
+		case "minIncreasePercent":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("minIncreasePercent"))
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.MinIncreasePercent = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputSegmentEventRequest(ctx context.Context, obj any) (model.SegmentEventRequest, error) {
+	var it model.SegmentEventRequest
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"name"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "name":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Name = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputSegmentSignalRequest(ctx context.Context, obj any) (model.SegmentSignalRequest, error) {
+	var it model.SegmentSignalRequest
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"name", "agg"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "name":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Name = data
+		case "agg":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
+			data, err := ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Agg = data
 		}
 	}
 
@@ -28388,6 +29505,64 @@ func (ec *executionContext) _Attestation(ctx context.Context, sel ast.SelectionS
 	return out
 }
 
+var dailyActivityImplementors = []string{"DailyActivity"}
+
+func (ec *executionContext) _DailyActivity(ctx context.Context, sel ast.SelectionSet, obj *model.DailyActivity) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, dailyActivityImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("DailyActivity")
+		case "start":
+			out.Values[i] = ec._DailyActivity_start(ctx, field, obj)
+		case "end":
+			out.Values[i] = ec._DailyActivity_end(ctx, field, obj)
+		case "segmentCount":
+			out.Values[i] = ec._DailyActivity_segmentCount(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "duration":
+			out.Values[i] = ec._DailyActivity_duration(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "signals":
+			out.Values[i] = ec._DailyActivity_signals(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "eventCounts":
+			out.Values[i] = ec._DailyActivity_eventCounts(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var dataSummaryImplementors = []string{"DataSummary"}
 
 func (ec *executionContext) _DataSummary(ctx context.Context, sel ast.SelectionSet, obj *model.DataSummary) graphql.Marshaler {
@@ -28421,6 +29596,11 @@ func (ec *executionContext) _DataSummary(ctx context.Context, sel ast.SelectionS
 			}
 		case "signalDataSummary":
 			out.Values[i] = ec._DataSummary_signalDataSummary(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "eventDataSummary":
+			out.Values[i] = ec._DataSummary_eventDataSummary(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -28516,6 +29696,50 @@ func (ec *executionContext) _Event(ctx context.Context, sel ast.SelectionSet, ob
 			}
 		case "metadata":
 			out.Values[i] = ec._Event_metadata(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var eventCountImplementors = []string{"EventCount"}
+
+func (ec *executionContext) _EventCount(ctx context.Context, sel ast.SelectionSet, obj *model.EventCount) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, eventCountImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("EventCount")
+		case "name":
+			out.Values[i] = ec._EventCount_name(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "count":
+			out.Values[i] = ec._EventCount_count(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -28790,13 +30014,38 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		case "segments":
 			field := field
 
-			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
 				defer func() {
 					if r := recover(); r != nil {
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
 				res = ec._Query_segments(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "dailyActivity":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_dailyActivity(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
 				return res
 			}
 
@@ -28886,15 +30135,15 @@ func (ec *executionContext) _Segment(ctx context.Context, sel ast.SelectionSet, 
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Segment")
-		case "startTime":
-			out.Values[i] = ec._Segment_startTime(ctx, field, obj)
+		case "start":
+			out.Values[i] = ec._Segment_start(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
-		case "endTime":
-			out.Values[i] = ec._Segment_endTime(ctx, field, obj)
-		case "durationSeconds":
-			out.Values[i] = ec._Segment_durationSeconds(ctx, field, obj)
+		case "end":
+			out.Values[i] = ec._Segment_end(ctx, field, obj)
+		case "duration":
+			out.Values[i] = ec._Segment_duration(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -28905,6 +30154,59 @@ func (ec *executionContext) _Segment(ctx context.Context, sel ast.SelectionSet, 
 			}
 		case "startedBeforeRange":
 			out.Values[i] = ec._Segment_startedBeforeRange(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "signals":
+			out.Values[i] = ec._Segment_signals(ctx, field, obj)
+		case "eventCounts":
+			out.Values[i] = ec._Segment_eventCounts(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var signalAggregationValueImplementors = []string{"SignalAggregationValue"}
+
+func (ec *executionContext) _SignalAggregationValue(ctx context.Context, sel ast.SelectionSet, obj *model.SignalAggregationValue) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, signalAggregationValueImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("SignalAggregationValue")
+		case "name":
+			out.Values[i] = ec._SignalAggregationValue_name(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "agg":
+			out.Values[i] = ec._SignalAggregationValue_agg(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "value":
+			out.Values[i] = ec._SignalAggregationValue_value(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -33619,6 +34921,60 @@ func (ec *executionContext) ___Type(ctx context.Context, sel ast.SelectionSet, o
 	return out
 }
 
+var eventDataSummaryImplementors = []string{"eventDataSummary"}
+
+func (ec *executionContext) _eventDataSummary(ctx context.Context, sel ast.SelectionSet, obj *model.EventDataSummary) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, eventDataSummaryImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("eventDataSummary")
+		case "name":
+			out.Values[i] = ec._eventDataSummary_name(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "numberOfEvents":
+			out.Values[i] = ec._eventDataSummary_numberOfEvents(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "firstSeen":
+			out.Values[i] = ec._eventDataSummary_firstSeen(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "lastSeen":
+			out.Values[i] = ec._eventDataSummary_lastSeen(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var signalDataSummaryImplementors = []string{"signalDataSummary"}
 
 func (ec *executionContext) _signalDataSummary(ctx context.Context, sel ast.SelectionSet, obj *model.SignalDataSummary) graphql.Marshaler {
@@ -33714,6 +35070,60 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
+func (ec *executionContext) marshalNDailyActivity2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐDailyActivityᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.DailyActivity) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNDailyActivity2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐDailyActivity(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNDailyActivity2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐDailyActivity(ctx context.Context, sel ast.SelectionSet, v *model.DailyActivity) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._DailyActivity(ctx, sel, v)
+}
+
 func (ec *executionContext) unmarshalNDetectionMechanism2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐDetectionMechanism(ctx context.Context, v any) (model.DetectionMechanism, error) {
 	var res model.DetectionMechanism
 	err := res.UnmarshalGQL(v)
@@ -33732,6 +35142,60 @@ func (ec *executionContext) marshalNEvent2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtel
 		return graphql.Null
 	}
 	return ec._Event(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNEventCount2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐEventCountᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.EventCount) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNEventCount2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐEventCount(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNEventCount2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐEventCount(ctx context.Context, sel ast.SelectionSet, v *model.EventCount) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._EventCount(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNFilterLocation2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFilterLocation(ctx context.Context, v any) (*model.FilterLocation, error) {
@@ -33900,6 +35364,50 @@ func (ec *executionContext) marshalNPrivilege2ᚕstringᚄ(ctx context.Context, 
 	return ret
 }
 
+func (ec *executionContext) marshalNSegment2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSegmentᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Segment) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNSegment2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSegment(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
 func (ec *executionContext) marshalNSegment2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSegment(ctx context.Context, sel ast.SelectionSet, v *model.Segment) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
@@ -33908,6 +35416,70 @@ func (ec *executionContext) marshalNSegment2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋt
 		return graphql.Null
 	}
 	return ec._Segment(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNSegmentEventRequest2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSegmentEventRequest(ctx context.Context, v any) (*model.SegmentEventRequest, error) {
+	res, err := ec.unmarshalInputSegmentEventRequest(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNSegmentSignalRequest2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSegmentSignalRequest(ctx context.Context, v any) (*model.SegmentSignalRequest, error) {
+	res, err := ec.unmarshalInputSegmentSignalRequest(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNSignalAggregationValue2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalAggregationValueᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.SignalAggregationValue) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNSignalAggregationValue2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalAggregationValue(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNSignalAggregationValue2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalAggregationValue(ctx context.Context, sel ast.SelectionSet, v *model.SignalAggregationValue) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._SignalAggregationValue(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNSignalAggregations2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalAggregations(ctx context.Context, sel ast.SelectionSet, v *model.SignalAggregations) graphql.Marshaler {
@@ -33923,6 +35495,16 @@ func (ec *executionContext) marshalNSignalAggregations2ᚖgithubᚗcomᚋDIMOᚑ
 func (ec *executionContext) unmarshalNSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx context.Context, v any) (*model.SignalFloatFilter, error) {
 	res, err := ec.unmarshalInputSignalFloatFilter(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNSignalLocation2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalLocation(ctx context.Context, sel ast.SelectionSet, v *model.SignalLocation) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._SignalLocation(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNString2string(ctx context.Context, v any) (string, error) {
@@ -34276,6 +35858,60 @@ func (ec *executionContext) marshalN__TypeKind2string(ctx context.Context, sel a
 	return res
 }
 
+func (ec *executionContext) marshalNeventDataSummary2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐEventDataSummaryᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.EventDataSummary) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNeventDataSummary2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐEventDataSummary(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNeventDataSummary2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐEventDataSummary(ctx context.Context, sel ast.SelectionSet, v *model.EventDataSummary) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._eventDataSummary(ctx, sel, v)
+}
+
 func (ec *executionContext) marshalNsignalDataSummary2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalDataSummaryᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.SignalDataSummary) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
@@ -34495,6 +36131,53 @@ func (ec *executionContext) marshalOEvent2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋ
 	return ret
 }
 
+func (ec *executionContext) marshalOEventCount2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐEventCountᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.EventCount) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNEventCount2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐEventCount(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
 func (ec *executionContext) unmarshalOEventFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐEventFilter(ctx context.Context, v any) (*model.EventFilter, error) {
 	if v == nil {
 		return nil, nil
@@ -34614,7 +36297,51 @@ func (ec *executionContext) marshalOPOMVC2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtel
 	return ec._POMVC(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalOSegment2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSegmentᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Segment) graphql.Marshaler {
+func (ec *executionContext) unmarshalOSegmentConfig2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSegmentConfig(ctx context.Context, v any) (*model.SegmentConfig, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputSegmentConfig(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalOSegmentEventRequest2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSegmentEventRequestᚄ(ctx context.Context, v any) ([]*model.SegmentEventRequest, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []any
+	vSlice = graphql.CoerceList(v)
+	var err error
+	res := make([]*model.SegmentEventRequest, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNSegmentEventRequest2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSegmentEventRequest(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) unmarshalOSegmentSignalRequest2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSegmentSignalRequestᚄ(ctx context.Context, v any) ([]*model.SegmentSignalRequest, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []any
+	vSlice = graphql.CoerceList(v)
+	var err error
+	res := make([]*model.SegmentSignalRequest, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNSegmentSignalRequest2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSegmentSignalRequest(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalOSignalAggregationValue2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalAggregationValueᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.SignalAggregationValue) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -34641,7 +36368,7 @@ func (ec *executionContext) marshalOSegment2ᚕᚖgithubᚗcomᚋDIMOᚑNetwork�
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNSegment2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSegment(ctx, sel, v[i])
+			ret[i] = ec.marshalNSignalAggregationValue2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalAggregationValue(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -34659,14 +36386,6 @@ func (ec *executionContext) marshalOSegment2ᚕᚖgithubᚗcomᚋDIMOᚑNetwork�
 	}
 
 	return ret
-}
-
-func (ec *executionContext) unmarshalOSegmentConfig2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSegmentConfig(ctx context.Context, v any) (*model.SegmentConfig, error) {
-	if v == nil {
-		return nil, nil
-	}
-	res, err := ec.unmarshalInputSegmentConfig(ctx, v)
-	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalOSignalAggregations2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalAggregationsᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.SignalAggregations) graphql.Marshaler {

@@ -34,11 +34,15 @@ var ManufacturerSourceTranslations = map[string]string{
 // CHService is the interface for the ClickHouse service.
 type CHService interface {
 	GetAggregatedSignals(ctx context.Context, aggArgs *model.AggregatedSignalArgs) ([]*ch.AggSignal, error)
+	GetAggregatedSignalsForRanges(ctx context.Context, tokenID uint32, ranges []ch.TimeRange, globalFrom, globalTo time.Time, floatArgs []model.FloatSignalArgs, locationArgs []model.LocationSignalArgs) ([]*ch.AggSignalForRange, error)
 	GetLatestSignals(ctx context.Context, latestArgs *model.LatestSignalsArgs) ([]*vss.Signal, error)
 	GetAvailableSignals(ctx context.Context, tokenID uint32, filter *model.SignalFilter) ([]string, error)
 	GetSignalSummaries(ctx context.Context, tokenID uint32, filter *model.SignalFilter) ([]*model.SignalDataSummary, error)
 	GetEvents(ctx context.Context, subject string, from, to time.Time, filter *model.EventFilter) ([]*vss.Event, error)
-	GetSegments(ctx context.Context, tokenID uint32, from, to time.Time, mechanism model.DetectionMechanism, config *model.SegmentConfig) ([]*ch.Segment, error)
+	GetEventCounts(ctx context.Context, subject string, from, to time.Time, eventNames []string) ([]*ch.EventCount, error)
+	GetEventCountsForRanges(ctx context.Context, subject string, ranges []ch.TimeRange, eventNames []string) ([]*ch.EventCountForRange, error)
+	GetEventSummaries(ctx context.Context, subject string) ([]*ch.EventSummary, error)
+	GetSegments(ctx context.Context, tokenID uint32, from, to time.Time, mechanism model.DetectionMechanism, config *model.SegmentConfig) ([]*model.Segment, error)
 }
 
 // Repository is the base repository for all repositories.
@@ -46,8 +50,8 @@ type Repository struct {
 	queryableSignals map[string]struct{}
 	chService        CHService
 	lastSeenBin      time.Duration
-	chainID          uint64
-	vehicleAddress   common.Address
+	chainID        uint64
+	vehicleAddress common.Address
 }
 
 // NewRepository creates a new base repository.
@@ -110,7 +114,7 @@ func (r *Repository) GetSignal(ctx context.Context, aggArgs *model.AggregatedSig
 			currAggs.ValueNumbers[aggArgs.FloatArgs[signal.SignalIndex].Alias] = signal.ValueNumber
 		case ch.StringType:
 			if len(aggArgs.StringArgs) <= int(signal.SignalIndex) {
-				return nil, fmt.Errorf("only %d string signal requests, but the query returned index %d", len(aggArgs.FloatArgs), signal.SignalIndex)
+				return nil, fmt.Errorf("only %d string signal requests, but the query returned index %d", len(aggArgs.StringArgs), signal.SignalIndex)
 			}
 			currAggs.ValueStrings[aggArgs.StringArgs[signal.SignalIndex].Alias] = signal.ValueString
 		case ch.AppLocType:
@@ -206,11 +210,29 @@ func (r *Repository) GetAvailableSignals(ctx context.Context, tokenID uint32, fi
 	return retSignals, nil
 }
 
-// GetDataSummary returns the signal metadata for the given tokenID and filter.
+// GetDataSummary returns the signal and event metadata for the given tokenID and filter.
 func (r *Repository) GetDataSummary(ctx context.Context, tokenID uint32, filter *model.SignalFilter) (*model.DataSummary, error) {
 	signalDataSummary, err := r.chService.GetSignalSummaries(ctx, tokenID, filter)
 	if err != nil {
 		return nil, handleDBError(ctx, err)
+	}
+	subject := cloudevent.ERC721DID{
+		ChainID:         r.chainID,
+		ContractAddress: r.vehicleAddress,
+		TokenID:         big.NewInt(int64(tokenID)),
+	}.String()
+	eventSummaries, err := r.chService.GetEventSummaries(ctx, subject)
+	if err != nil {
+		return nil, handleDBError(ctx, err)
+	}
+	eventDataSummary := make([]*model.EventDataSummary, len(eventSummaries))
+	for i, es := range eventSummaries {
+		eventDataSummary[i] = &model.EventDataSummary{
+			Name:           es.Name,
+			NumberOfEvents: es.Count,
+			FirstSeen:      es.FirstSeen,
+			LastSeen:       es.LastSeen,
+		}
 	}
 	totalCount := uint64(0)
 	minTimestamp := time.Now().UTC()
@@ -226,12 +248,21 @@ func (r *Repository) GetDataSummary(ctx context.Context, tokenID uint32, filter 
 			maxTimestamp = metadata.LastSeen
 		}
 	}
+	for _, es := range eventSummaries {
+		if es.FirstSeen.Before(minTimestamp) {
+			minTimestamp = es.FirstSeen
+		}
+		if es.LastSeen.After(maxTimestamp) {
+			maxTimestamp = es.LastSeen
+		}
+	}
 	return &model.DataSummary{
 		NumberOfSignals:   totalCount,
 		FirstSeen:         minTimestamp,
 		LastSeen:          maxTimestamp,
 		AvailableSignals:  availableSignals,
 		SignalDataSummary: signalDataSummary,
+		EventDataSummary:  eventDataSummary,
 	}, nil
 }
 

@@ -12,6 +12,11 @@ import (
 )
 
 // Segments is the resolver for the segments field.
-func (r *queryResolver) Segments(ctx context.Context, tokenID int, from time.Time, to time.Time, mechanism model.DetectionMechanism, config *model.SegmentConfig) ([]*model.Segment, error) {
-	return r.BaseRepo.GetSegments(ctx, tokenID, from, to, mechanism, config)
+func (r *queryResolver) Segments(ctx context.Context, tokenID int, from time.Time, to time.Time, mechanism model.DetectionMechanism, config *model.SegmentConfig, signalRequests []*model.SegmentSignalRequest, eventRequests []*model.SegmentEventRequest, limit *int, after *time.Time) ([]*model.Segment, error) {
+	return r.BaseRepo.GetSegments(ctx, tokenID, from, to, mechanism, config, signalRequests, eventRequests, limit, after)
+}
+
+// DailyActivity is the resolver for the dailyActivity field.
+func (r *queryResolver) DailyActivity(ctx context.Context, tokenID int, from time.Time, to time.Time, mechanism model.DetectionMechanism, config *model.SegmentConfig, signalRequests []*model.SegmentSignalRequest, eventRequests []*model.SegmentEventRequest, timezone *string) ([]*model.DailyActivity, error) {
+	return r.BaseRepo.GetDailyActivity(ctx, tokenID, from, to, mechanism, config, signalRequests, eventRequests, timezone)
 }

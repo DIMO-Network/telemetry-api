@@ -85,8 +85,72 @@ func TestValidateSegmentArgs(t *testing.T) {
 	})
 
 	t.Run("date range exceeded", func(t *testing.T) {
-		from := validTo.Add(-31 * 24 * time.Hour)
+		from := validTo.Add(-32 * 24 * time.Hour) // max is 31 days
 		err := validateSegmentArgs(1, from, validTo)
 		require.Error(t, err)
 	})
 }
+
+func TestValidateSegmentConfig(t *testing.T) {
+	validConfig := &model.SegmentConfig{}
+	otherMechanism := model.DetectionMechanismIgnitionDetection
+	idlingMechanism := model.DetectionMechanismIdling
+
+	t.Run("nil config", func(t *testing.T) {
+		require.NoError(t, validateSegmentConfig(nil, otherMechanism))
+		require.NoError(t, validateSegmentConfig(nil, idlingMechanism))
+	})
+
+	t.Run("valid config other mechanism", func(t *testing.T) {
+		require.NoError(t, validateSegmentConfig(validConfig, otherMechanism))
+	})
+
+	t.Run("valid config idling with idling fields", func(t *testing.T) {
+		cfg := &model.SegmentConfig{
+			MaxIdleRpm:           ptr(1000),
+			SignalCountThreshold: ptr(5),
+		}
+		require.NoError(t, validateSegmentConfig(cfg, idlingMechanism))
+	})
+
+	t.Run("idling maxIdleRpm out of range", func(t *testing.T) {
+		cfg := &model.SegmentConfig{MaxIdleRpm: ptr(100)}
+		require.Error(t, validateSegmentConfig(cfg, idlingMechanism))
+		cfg.MaxIdleRpm = ptr(4000)
+		require.Error(t, validateSegmentConfig(cfg, idlingMechanism))
+	})
+
+	refuelMechanism := model.DetectionMechanismRefuel
+	rechargeMechanism := model.DetectionMechanismRecharge
+	t.Run("valid config refuel", func(t *testing.T) {
+		cfg := &model.SegmentConfig{MinIncreasePercent: ptr(15)}
+		require.NoError(t, validateSegmentConfig(cfg, refuelMechanism))
+	})
+	t.Run("valid config recharge", func(t *testing.T) {
+		cfg := &model.SegmentConfig{MinIncreasePercent: ptr(20)}
+		require.NoError(t, validateSegmentConfig(cfg, rechargeMechanism))
+	})
+	t.Run("refuel/recharge minIncreasePercent out of range", func(t *testing.T) {
+		require.Error(t, validateSegmentConfig(&model.SegmentConfig{MinIncreasePercent: ptr(0)}, refuelMechanism))
+		require.Error(t, validateSegmentConfig(&model.SegmentConfig{MinIncreasePercent: ptr(101)}, rechargeMechanism))
+	})
+}
+
+func TestValidateSegmentLimit(t *testing.T) {
+	t.Run("nil limit", func(t *testing.T) {
+		require.NoError(t, validateSegmentLimit(nil))
+	})
+	t.Run("valid limit", func(t *testing.T) {
+		require.NoError(t, validateSegmentLimit(ptr(1)))
+		require.NoError(t, validateSegmentLimit(ptr(100)))
+		require.NoError(t, validateSegmentLimit(ptr(200)))
+	})
+	t.Run("limit too low", func(t *testing.T) {
+		require.Error(t, validateSegmentLimit(ptr(0)))
+	})
+	t.Run("limit too high", func(t *testing.T) {
+		require.Error(t, validateSegmentLimit(ptr(201)))
+	})
+}
+
+func ptr(i int) *int { return &i }
