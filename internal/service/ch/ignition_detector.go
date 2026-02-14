@@ -2,6 +2,7 @@ package ch
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -9,10 +10,6 @@ import (
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 )
 
-const (
-	defaultMinIdleSeconds            = 300 // 5 minutes
-	defaultMinSegmentDurationSeconds = 240 // 4 minutes
-)
 
 // IgnitionDetector detects segments using ignition state transitions
 type IgnitionDetector struct {
@@ -37,43 +34,32 @@ func (d *IgnitionDetector) DetectSegments(
 	tokenID uint32,
 	from, to time.Time,
 	config *model.SegmentConfig,
-) ([]*Segment, error) {
-	// Apply defaults
-	minIdle := defaultMinIdleSeconds
-	minDuration := defaultMinSegmentDurationSeconds
+) (_ []*model.Segment, retErr error) {
+	rc := resolveBaseConfig(config)
+	minIdle := rc.maxGapSeconds
+	minDuration := rc.minDuration
 
-	if config != nil {
-		if config.MinIdleSeconds != nil {
-			minIdle = *config.MinIdleSeconds
-		}
-		if config.MinSegmentDurationSeconds != nil {
-			minDuration = *config.MinSegmentDurationSeconds
-		}
-	}
-
-	// Fetch all state changes with a single query that includes:
-	// 1. The most recent state change before 'from' (to detect ongoing trips)
-	// 2. All state changes within the query range [from, to)
+	// Fetch all state changes with a single query
 	stmt, args := d.getStateChangesQueryWithLookback(tokenID, from, to)
 
 	rows, err := d.conn.Query(ctx, stmt, args...)
 	if err != nil {
-		return nil, fmt.Errorf("failed querying clickhouse for state changes: %w", err)
+		return nil, fmt.Errorf("failed to query state changes: %w", err)
 	}
-	defer func() { _ = rows.Close() }()
+	defer func() { retErr = errors.Join(retErr, rows.Close()) }()
 
 	var stateChanges []StateChange
 	for rows.Next() {
 		var sc StateChange
 		err := rows.Scan(&sc.Timestamp, &sc.State, &sc.PrevState)
 		if err != nil {
-			return nil, fmt.Errorf("failed scanning state change row: %w", err)
+			return nil, fmt.Errorf("failed to scan state change row: %w", err)
 		}
 		stateChanges = append(stateChanges, sc)
 	}
 
 	if rows.Err() != nil {
-		return nil, fmt.Errorf("state change row error: %w", rows.Err())
+		return nil, fmt.Errorf("failed to iterate state change rows: %w", rows.Err())
 	}
 
 	// Process state changes in Go to build segments with debouncing
@@ -86,8 +72,6 @@ func (d *IgnitionDetector) DetectSegments(
 const maxLookbackDays = 30
 
 // getStateChangesQueryWithLookback builds a single query that fetches:
-// 1. The most recent state change before 'from' (if ignition was ON, we have an ongoing trip)
-// 2. All state changes within the range [from, to)
 // Results are ordered by timestamp.
 //
 // Performance notes:
@@ -104,7 +88,6 @@ func (d *IgnitionDetector) getStateChangesQueryWithLookback(tokenID uint32, from
 	// PREWHERE on token_id filters before FINAL merge, significantly reducing work
 	query := `
 SELECT timestamp, new_state, prev_state FROM (
-  -- Most recent state change before 'from' (to detect ongoing trips)
   SELECT timestamp, new_state, prev_state
   FROM signal_state_changes FINAL
   PREWHERE token_id = ?
@@ -135,16 +118,16 @@ ORDER BY timestamp`
 
 // buildSegmentsWithDebouncing processes state changes and applies debouncing logic
 // to merge consecutive short segments separated by less than minIdle seconds
-func (d *IgnitionDetector) buildSegmentsWithDebouncing(tokenID uint32, stateChanges []StateChange, from, to time.Time, minIdle, minDuration int) []*Segment {
+func (d *IgnitionDetector) buildSegmentsWithDebouncing(tokenID uint32, stateChanges []StateChange, from, to time.Time, minIdle, minDuration int) []*model.Segment {
 	if len(stateChanges) == 0 {
-		return nil
+		return []*model.Segment{}
 	}
 
 	// First pass: filter out noise (OFF signals followed by ON within minIdle seconds)
 	filtered := d.filterNoise(stateChanges, minIdle)
 
 	// Second pass: build segments from cleaned state changes
-	var segments []*Segment
+	var segments []*model.Segment
 	var currentSegmentStart *time.Time
 	var startedWithPrevMinus1 bool
 
@@ -161,14 +144,7 @@ func (d *IgnitionDetector) buildSegmentsWithDebouncing(tokenID uint32, stateChan
 			duration := int32(segmentEnd.Sub(*currentSegmentStart).Seconds())
 
 			if int(duration) >= minDuration {
-				segments = append(segments, &Segment{
-					TokenID:            tokenID,
-					StartTime:          *currentSegmentStart,
-					EndTime:            &segmentEnd,
-					DurationSeconds:    duration,
-					IsOngoing:          false,
-					StartedBeforeRange: currentSegmentStart.Before(from),
-				})
+				segments = append(segments, newSegment(*currentSegmentStart, &segmentEnd, duration, false, currentSegmentStart.Before(from)))
 			}
 
 			currentSegmentStart = nil
@@ -180,17 +156,13 @@ func (d *IgnitionDetector) buildSegmentsWithDebouncing(tokenID uint32, stateChan
 	if currentSegmentStart != nil && !startedWithPrevMinus1 {
 		duration := int32(to.Sub(*currentSegmentStart).Seconds())
 		if int(duration) >= minDuration {
-			segments = append(segments, &Segment{
-				TokenID:            tokenID,
-				StartTime:          *currentSegmentStart,
-				EndTime:            nil,
-				DurationSeconds:    duration,
-				IsOngoing:          true,
-				StartedBeforeRange: currentSegmentStart.Before(from),
-			})
+			segments = append(segments, newSegment(*currentSegmentStart, nil, duration, true, currentSegmentStart.Before(from)))
 		}
 	}
 
+	if segments == nil {
+		return []*model.Segment{}
+	}
 	return segments
 }
 

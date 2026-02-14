@@ -76,15 +76,17 @@ func TestBuildSegmentsWithDebouncing(t *testing.T) {
 	minIdle := 300    // 5 minutes
 	minDuration := 60 // 1 minute
 
-	t.Run("empty input returns nil", func(t *testing.T) {
+	t.Run("empty input returns empty slice", func(t *testing.T) {
 		from := now.Add(-time.Hour)
 		to := now
 
 		result := detector.buildSegmentsWithDebouncing(tokenID, nil, from, to, minIdle, minDuration)
-		require.Nil(t, result)
+		require.NotNil(t, result)
+		require.Empty(t, result)
 
 		result = detector.buildSegmentsWithDebouncing(tokenID, []StateChange{}, from, to, minIdle, minDuration)
-		require.Nil(t, result)
+		require.NotNil(t, result)
+		require.Empty(t, result)
 	})
 
 	t.Run("simple ON/OFF creates segment", func(t *testing.T) {
@@ -98,9 +100,9 @@ func TestBuildSegmentsWithDebouncing(t *testing.T) {
 
 		result := detector.buildSegmentsWithDebouncing(tokenID, changes, from, to, minIdle, minDuration)
 		require.Len(t, result, 1)
-		require.Equal(t, from.Add(10*time.Minute), result[0].StartTime)
-		require.NotNil(t, result[0].EndTime)
-		require.Equal(t, from.Add(20*time.Minute), *result[0].EndTime)
+		require.Equal(t, from.Add(10*time.Minute), result[0].Start.Timestamp)
+		require.NotNil(t, result[0].End)
+		require.Equal(t, from.Add(20*time.Minute), result[0].End.Timestamp)
 		require.False(t, result[0].IsOngoing)
 	})
 
@@ -133,7 +135,7 @@ func TestBuildSegmentsWithDebouncing(t *testing.T) {
 		result := detector.buildSegmentsWithDebouncing(tokenID, changes, from, to, minIdle, minDuration)
 		require.Len(t, result, 1)
 		require.True(t, result[0].IsOngoing)
-		require.Nil(t, result[0].EndTime)
+		require.Nil(t, result[0].End)
 	})
 
 	t.Run("filters short segments", func(t *testing.T) {
@@ -192,6 +194,6 @@ func TestBuildSegmentsWithDebouncing(t *testing.T) {
 
 		result := detector.buildSegmentsWithDebouncing(tokenID, changes, from, to, minIdle, minDuration)
 		require.Len(t, result, 1)
-		require.Equal(t, int32(600), result[0].DurationSeconds) // 10 minutes = 600 seconds
+		require.Equal(t, 600, result[0].Duration) // 10 minutes = 600 seconds
 	})
 }
