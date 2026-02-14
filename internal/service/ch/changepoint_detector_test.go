@@ -15,13 +15,13 @@ func TestApplyCUSUM(t *testing.T) {
 		result := detector.applyCUSUM(nil)
 		require.Nil(t, result)
 
-		result = detector.applyCUSUM([]CUSUMWindow{})
+		result = detector.applyCUSUM([]ActiveWindow{})
 		require.Nil(t, result)
 	})
 
 	t.Run("low signal count windows not marked active", func(t *testing.T) {
 		// Signal counts below baseline + drift + threshold won't trigger
-		windows := []CUSUMWindow{
+		windows := []ActiveWindow{
 			{WindowStart: now, WindowEnd: now.Add(time.Minute), SignalCount: 1},
 			{WindowStart: now.Add(time.Minute), WindowEnd: now.Add(2 * time.Minute), SignalCount: 2},
 		}
@@ -31,8 +31,7 @@ func TestApplyCUSUM(t *testing.T) {
 	})
 
 	t.Run("high signal count windows marked active", func(t *testing.T) {
-		// High signal counts should accumulate CUSUM and trigger active state
-		windows := []CUSUMWindow{
+		windows := []ActiveWindow{
 			{WindowStart: now, WindowEnd: now.Add(time.Minute), SignalCount: 20},
 			{WindowStart: now.Add(time.Minute), WindowEnd: now.Add(2 * time.Minute), SignalCount: 25},
 			{WindowStart: now.Add(2 * time.Minute), WindowEnd: now.Add(3 * time.Minute), SignalCount: 30},
@@ -40,16 +39,14 @@ func TestApplyCUSUM(t *testing.T) {
 
 		result := detector.applyCUSUM(windows)
 		require.NotEmpty(t, result)
-		// All windows should be active due to high signal counts
 		require.Len(t, result, 3)
 	})
 
 	t.Run("CUSUM resets after idle period", func(t *testing.T) {
-		// High activity followed by low activity should reset CUSUM
-		windows := []CUSUMWindow{
+		windows := []ActiveWindow{
 			{WindowStart: now, WindowEnd: now.Add(time.Minute), SignalCount: 50},
 			{WindowStart: now.Add(time.Minute), WindowEnd: now.Add(2 * time.Minute), SignalCount: 50},
-			// Gap in data (simulated by low counts)
+			// Simulated idle
 			{WindowStart: now.Add(10 * time.Minute), WindowEnd: now.Add(11 * time.Minute), SignalCount: 0},
 			{WindowStart: now.Add(11 * time.Minute), WindowEnd: now.Add(12 * time.Minute), SignalCount: 0},
 			{WindowStart: now.Add(12 * time.Minute), WindowEnd: now.Add(13 * time.Minute), SignalCount: 0},
@@ -58,13 +55,11 @@ func TestApplyCUSUM(t *testing.T) {
 		}
 
 		result := detector.applyCUSUM(windows)
-		// Should have active windows from first burst and second burst
 		require.NotEmpty(t, result)
 	})
 
 	t.Run("gradual increase triggers detection", func(t *testing.T) {
-		// Gradual increase should eventually trigger CUSUM threshold
-		windows := []CUSUMWindow{
+		windows := []ActiveWindow{
 			{WindowStart: now, WindowEnd: now.Add(time.Minute), SignalCount: 5},
 			{WindowStart: now.Add(time.Minute), WindowEnd: now.Add(2 * time.Minute), SignalCount: 8},
 			{WindowStart: now.Add(2 * time.Minute), WindowEnd: now.Add(3 * time.Minute), SignalCount: 12},
@@ -73,14 +68,13 @@ func TestApplyCUSUM(t *testing.T) {
 		}
 
 		result := detector.applyCUSUM(windows)
-		// Later windows should be marked active as CUSUM accumulates
 		require.NotEmpty(t, result)
 	})
 
 	t.Run("preserves window timing information", func(t *testing.T) {
 		start := now
 		end := now.Add(time.Minute)
-		windows := []CUSUMWindow{
+		windows := []ActiveWindow{
 			{WindowStart: start, WindowEnd: end, SignalCount: 100, DistinctSignalCount: 5},
 		}
 
@@ -91,23 +85,16 @@ func TestApplyCUSUM(t *testing.T) {
 		require.Equal(t, uint64(100), result[0].SignalCount)
 		require.Equal(t, uint64(5), result[0].DistinctSignalCount)
 	})
-}
 
-func TestCUSUMWindowIsActiveFlag(t *testing.T) {
-	detector := &ChangePointDetector{}
-	now := time.Now()
-
-	t.Run("IsActive flag set correctly on windows", func(t *testing.T) {
-		windows := []CUSUMWindow{
-			{WindowStart: now, WindowEnd: now.Add(time.Minute), SignalCount: 1},                        // Should be inactive
-			{WindowStart: now.Add(time.Minute), WindowEnd: now.Add(2 * time.Minute), SignalCount: 100}, // Should be active
+	t.Run("inactive windows not returned", func(t *testing.T) {
+		windows := []ActiveWindow{
+			{WindowStart: now, WindowEnd: now.Add(time.Minute), SignalCount: 1},                        // inactive
+			{WindowStart: now.Add(time.Minute), WindowEnd: now.Add(2 * time.Minute), SignalCount: 100}, // active
 		}
 
-		_ = detector.applyCUSUM(windows)
-
-		// First window should be inactive (low count)
-		require.False(t, windows[0].IsActive)
-		// Second window should be active (high count triggers CUSUM)
-		require.True(t, windows[1].IsActive)
+		result := detector.applyCUSUM(windows)
+		// Only the second window should be returned as active
+		require.Len(t, result, 1)
+		require.Equal(t, uint64(100), result[0].SignalCount)
 	})
 }

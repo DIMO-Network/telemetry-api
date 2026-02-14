@@ -112,6 +112,11 @@ input AttestationFilter {
   limit: Int
 
   """
+  Cursor for pagination (exclusive). 
+  """
+  cursor: Time
+
+  """
   Filter attestations by tags.
   """
   tags: StringArrayFilter
