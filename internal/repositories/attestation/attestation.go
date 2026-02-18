@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"math/big"
+	"time"
 
 	"github.com/DIMO-Network/cloudevent"
 	"github.com/DIMO-Network/fetch-api/pkg/grpc"
@@ -73,6 +74,14 @@ func (r *Repository) GetAttestations(ctx context.Context, subject string, filter
 
 		if filter.After != nil {
 			opts.After = timestamppb.New(*filter.After)
+		}
+		// Add 1ns to cursor so "after cursor" is strictly > last item's time).
+		if filter.Cursor != nil {
+			updatedCursor := filter.Cursor.Add(time.Nanosecond)
+			cursorTS := timestamppb.New(updatedCursor)
+			if opts.After == nil || cursorTS.AsTime().After(opts.After.AsTime()) {
+				opts.After = cursorTS
+			}
 		}
 
 		if filter.Before != nil {

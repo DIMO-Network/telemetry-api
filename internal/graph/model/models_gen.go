@@ -58,8 +58,25 @@ type AttestationFilter struct {
 	After *time.Time `json:"after,omitempty"`
 	// Limit attestations returned to this value. Defaults to 10.
 	Limit *int `json:"limit,omitempty"`
+	// Cursor for pagination (exclusive).
+	Cursor *time.Time `json:"cursor,omitempty"`
 	// Filter attestations by tags.
 	Tags *StringArrayFilter `json:"tags,omitempty"`
+}
+
+type DailyActivity struct {
+	// Start of day (timestamp = day start, value = location). Same shape as Segment.start. Null if not available.
+	Start *SignalLocation `json:"start,omitempty"`
+	// End of day (timestamp = day end, location). Same shape as Segment.end. Null if not available.
+	End *SignalLocation `json:"end,omitempty"`
+	// Number of activity segments that started or fell within that day.
+	SegmentCount int `json:"segmentCount"`
+	// Sum of segment durations (total active time that day) in seconds.
+	Duration int `json:"duration"`
+	// Per-day signal aggregates (same shape as segment signals).
+	Signals []*SignalAggregationValue `json:"signals"`
+	// Per-day event counts.
+	EventCounts []*EventCount `json:"eventCounts"`
 }
 
 type DataSummary struct {
@@ -73,6 +90,8 @@ type DataSummary struct {
 	LastSeen time.Time `json:"lastSeen"`
 	// data summary of an individual signal
 	SignalDataSummary []*SignalDataSummary `json:"signalDataSummary"`
+	// Events known to the vehicle: per-event name, count, and first/last seen.
+	EventDataSummary []*EventDataSummary `json:"eventDataSummary"`
 }
 
 type DeviceActivity struct {
@@ -91,6 +110,12 @@ type Event struct {
 	DurationNs int `json:"durationNs"`
 	// metadata is the metadata of the event.
 	Metadata *string `json:"metadata,omitempty"`
+}
+
+// Event name and count. Used by segments, daily activity, and event summaries.
+type EventCount struct {
+	Name  string `json:"name"`
+	Count int    `json:"count"`
 }
 
 type EventFilter struct {
@@ -141,38 +166,60 @@ type Query struct {
 }
 
 type Segment struct {
-	// Segment start timestamp (actual activity start transition)
-	StartTime time.Time `json:"startTime"`
-	// Segment end timestamp (activity end after debounce period).
-	// Null if segment is ongoing (extends beyond query range).
-	EndTime *time.Time `json:"endTime,omitempty"`
-	// Duration in seconds.
-	// If ongoing: from start to query 'to' time.
-	// If complete: from start to end.
-	DurationSeconds int `json:"durationSeconds"`
+	// Segment start (timestamp and location). Uses SignalLocation; always present.
+	Start *SignalLocation `json:"start"`
+	// Segment end (timestamp and location). Uses SignalLocation; omitted when isOngoing is true.
+	End *SignalLocation `json:"end,omitempty"`
+	// Duration in seconds. If ongoing: from start to query 'to'. If complete: from start to end.
+	Duration int `json:"duration"`
 	// True if segment extends beyond query time range (last activity is ongoing).
+	// When true, end is not included in the response.
 	IsOngoing bool `json:"isOngoing"`
 	// True if segment started before query time range.
-	// Indicates startTime may be approximate.
 	StartedBeforeRange bool `json:"startedBeforeRange"`
+	// Per-segment signal aggregates. Same shape as signals elsewhere (name, agg, value).
+	Signals []*SignalAggregationValue `json:"signals,omitempty"`
+	// Per-segment event counts.
+	EventCounts []*EventCount `json:"eventCounts,omitempty"`
 }
 
 type SegmentConfig struct {
-	// Minimum idle time (seconds) before segment is considered ended.
+	// Maximum gap (seconds) between data points before a segment is split.
 	// For ignitionDetection: filters noise from brief ignition OFF events.
 	// For frequencyAnalysis: maximum gap between active windows to merge.
 	// Default: 300 (5 minutes), Min: 60, Max: 3600
-	MinIdleSeconds *int `json:"minIdleSeconds,omitempty"`
+	MaxGapSeconds *int `json:"maxGapSeconds,omitempty"`
 	// Minimum segment duration (seconds) to include in results.
 	// Filters very short segments (testing, engine cycling).
 	// Default: 240 (4 minutes), Min: 60, Max: 3600
 	MinSegmentDurationSeconds *int `json:"minSegmentDurationSeconds,omitempty"`
-	// [frequencyAnalysis only] Minimum signal count per window for activity detection.
-	// Higher values = more conservative (filters parked telemetry better).
-	// Lower values = more sensitive (works for sparse signal vehicles).
-	// Default: 10 (tuned to match ignition detection accuracy)
-	// Min: 1, Max: 3600
+	// [frequencyAnalysis] Minimum signal count per window for activity detection.
+	// [idling] Minimum samples per window to consider it idle (same semantics).
+	// Higher values = more conservative. Lower values = more sensitive.
+	// Default: 10, Min: 1, Max: 3600
 	SignalCountThreshold *int `json:"signalCountThreshold,omitempty"`
+	// [idling only] Upper bound for idle RPM. Windows with max(RPM) <= this are considered idle.
+	// Default: 1000, Min: 300, Max: 3000
+	MaxIdleRpm *int `json:"maxIdleRpm,omitempty"`
+	// [refuel and recharge only] Minimum percent increase within a window to consider it a level-increase window.
+	MinIncreasePercent *int `json:"minIncreasePercent,omitempty"`
+}
+
+type SegmentEventRequest struct {
+	Name string `json:"name"`
+}
+
+type SegmentSignalRequest struct {
+	Name string           `json:"name"`
+	Agg  FloatAggregation `json:"agg"`
+}
+
+// Result of aggregating a float signal over an interval. Used by segments and daily activity summaries.
+// Same shape as one row of aggregated signal data (name, aggregation type, computed value).
+type SignalAggregationValue struct {
+	Name  string  `json:"name"`
+	Agg   string  `json:"agg"`
+	Value float64 `json:"value"`
 }
 
 type SignalCollection struct {
@@ -614,7 +661,7 @@ type SignalFilter struct {
 }
 
 type SignalFloat struct {
-	// timestamp of when this data was colllected
+	// timestamp of when this data was collected
 	Timestamp time.Time `json:"timestamp"`
 	// value of the signal
 	Value float64 `json:"value"`
@@ -633,9 +680,9 @@ type SignalFloatFilter struct {
 }
 
 type SignalLocation struct {
-	// timestamp of when this data was colllected
+	// timestamp of when this data was collected
 	Timestamp time.Time `json:"timestamp"`
-	// value of the signal
+	// location (latitude, longitude, hdop) at this timestamp.
 	Value *Location `json:"value"`
 }
 
@@ -653,7 +700,7 @@ type SignalLocationFilter struct {
 }
 
 type SignalString struct {
-	// timestamp of when this data was colllected
+	// timestamp of when this data was collected
 	Timestamp time.Time `json:"timestamp"`
 	// value of the signal
 	Value string `json:"value"`
@@ -708,6 +755,17 @@ type Vinvc struct {
 	RawVc string `json:"rawVC"`
 }
 
+type EventDataSummary struct {
+	// Event name
+	Name string `json:"name"`
+	// Number of times this event occurred for the vehicle
+	NumberOfEvents uint64 `json:"numberOfEvents"`
+	// First seen timestamp
+	FirstSeen time.Time `json:"firstSeen"`
+	// Last seen timestamp
+	LastSeen time.Time `json:"lastSeen"`
+}
+
 type SignalDataSummary struct {
 	// signal name
 	Name string `json:"name"`
@@ -734,17 +792,26 @@ const (
 	// Excellent noise resistance with 100% accuracy match to ignition baseline.
 	// Best alternative when ignition signal is unavailable - same accuracy, same speed as frequency analysis.
 	DetectionMechanismChangePointDetection DetectionMechanism = "changePointDetection"
+	// Idling: Segments are contiguous periods where engine RPM remains in idle range.
+	DetectionMechanismIdling DetectionMechanism = "idling"
+	// Refuel: Detects where fuel level rises significantly.
+	DetectionMechanismRefuel DetectionMechanism = "refuel"
+	// Recharge: Hybrid detection. Uses charging signals and state of charge for detection.
+	DetectionMechanismRecharge DetectionMechanism = "recharge"
 )
 
 var AllDetectionMechanism = []DetectionMechanism{
 	DetectionMechanismIgnitionDetection,
 	DetectionMechanismFrequencyAnalysis,
 	DetectionMechanismChangePointDetection,
+	DetectionMechanismIdling,
+	DetectionMechanismRefuel,
+	DetectionMechanismRecharge,
 }
 
 func (e DetectionMechanism) IsValid() bool {
 	switch e {
-	case DetectionMechanismIgnitionDetection, DetectionMechanismFrequencyAnalysis, DetectionMechanismChangePointDetection:
+	case DetectionMechanismIgnitionDetection, DetectionMechanismFrequencyAnalysis, DetectionMechanismChangePointDetection, DetectionMechanismIdling, DetectionMechanismRefuel, DetectionMechanismRecharge:
 		return true
 	}
 	return false
