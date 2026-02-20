@@ -371,6 +371,16 @@ func (r *signalAggregationsResolver) ChassisTireSystemIsWarningOn(ctx context.Co
 	return &vn, nil
 }
 
+// ConnectivityCellularIsJammingDetected is the resolver for the connectivityCellularIsJammingDetected
+func (r *signalAggregationsResolver) ConnectivityCellularIsJammingDetected(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error) {
+	fieldCtx := graphql.GetFieldContext(ctx)
+	vn, ok := obj.ValueNumbers[fieldCtx.Field.Alias]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
 // CurrentLocationAltitude is the resolver for the currentLocationAltitude
 func (r *signalAggregationsResolver) CurrentLocationAltitude(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error) {
 	fieldCtx := graphql.GetFieldContext(ctx)

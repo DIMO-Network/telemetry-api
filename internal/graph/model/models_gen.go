@@ -311,6 +311,9 @@ type SignalCollection struct {
 	// Indicates whether the tire system warning telltale is active
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	ChassisTireSystemIsWarningOn *SignalFloat `json:"chassisTireSystemIsWarningOn,omitempty"`
+	// Indicates whether cellular radio signal jamming or interference is detected that prevents normal communication.
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	ConnectivityCellularIsJammingDetected *SignalFloat `json:"connectivityCellularIsJammingDetected,omitempty"`
 	// Current altitude relative to WGS 84 reference ellipsoid, as measured at the position of GNSS receiver antenna.
 	// Unit: 'm'
 	// Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
