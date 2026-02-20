@@ -338,6 +338,15 @@ extend type SignalAggregations {
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisTireSystemIsWarningOn", forceResolver: true) @isSignal @hasAggregation
   
   """
+  Indicates whether cellular radio signal jamming or interference is detected that prevents normal communication.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  connectivityCellularIsJammingDetected(
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ConnectivityCellularIsJammingDetected", forceResolver: true) @isSignal @hasAggregation
+  
+  """
   Current altitude relative to WGS 84 reference ellipsoid, as measured at the position of GNSS receiver antenna.
   Unit: 'm'
   Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
@@ -1327,6 +1336,12 @@ extend type SignalCollection {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   chassisTireSystemIsWarningOn: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisTireSystemIsWarningOn") @isSignal
+  
+  """
+  Indicates whether cellular radio signal jamming or interference is detected that prevents normal communication.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  connectivityCellularIsJammingDetected: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ConnectivityCellularIsJammingDetected") @isSignal
   
   """
   Current altitude relative to WGS 84 reference ellipsoid, as measured at the position of GNSS receiver antenna.

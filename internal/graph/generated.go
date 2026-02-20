@@ -160,6 +160,7 @@ type ComplexityRoot struct {
 		ChassisBrakePedalPosition                                 func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
 		ChassisParkingBrakeIsEngaged                              func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
 		ChassisTireSystemIsWarningOn                              func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
+		ConnectivityCellularIsJammingDetected                     func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
 		CurrentLocationAltitude                                   func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
 		CurrentLocationApproximateLatitude                        func(childComplexity int, agg model.FloatAggregation) int
 		CurrentLocationApproximateLongitude                       func(childComplexity int, agg model.FloatAggregation) int
@@ -281,6 +282,7 @@ type ComplexityRoot struct {
 		ChassisBrakePedalPosition                                 func(childComplexity int) int
 		ChassisParkingBrakeIsEngaged                              func(childComplexity int) int
 		ChassisTireSystemIsWarningOn                              func(childComplexity int) int
+		ConnectivityCellularIsJammingDetected                     func(childComplexity int) int
 		CurrentLocationAltitude                                   func(childComplexity int) int
 		CurrentLocationApproximateLatitude                        func(childComplexity int) int
 		CurrentLocationApproximateLongitude                       func(childComplexity int) int
@@ -451,6 +453,7 @@ type SignalAggregationsResolver interface {
 	ChassisBrakePedalPosition(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
 	ChassisParkingBrakeIsEngaged(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
 	ChassisTireSystemIsWarningOn(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
+	ConnectivityCellularIsJammingDetected(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
 	CurrentLocationAltitude(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
 	CurrentLocationCoordinates(ctx context.Context, obj *model.SignalAggregations, agg model.LocationAggregation, filter *model.SignalLocationFilter) (*model.Location, error)
 	CurrentLocationHeading(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
@@ -1269,6 +1272,17 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.SignalAggregations.ChassisTireSystemIsWarningOn(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+	case "SignalAggregations.connectivityCellularIsJammingDetected":
+		if e.complexity.SignalAggregations.ConnectivityCellularIsJammingDetected == nil {
+			break
+		}
+
+		args, err := ec.field_SignalAggregations_connectivityCellularIsJammingDetected_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.SignalAggregations.ConnectivityCellularIsJammingDetected(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.currentLocationAltitude":
 		if e.complexity.SignalAggregations.CurrentLocationAltitude == nil {
 			break
@@ -2383,6 +2397,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.SignalCollection.ChassisTireSystemIsWarningOn(childComplexity), true
+	case "SignalCollection.connectivityCellularIsJammingDetected":
+		if e.complexity.SignalCollection.ConnectivityCellularIsJammingDetected == nil {
+			break
+		}
+
+		return e.complexity.SignalCollection.ConnectivityCellularIsJammingDetected(childComplexity), true
 	case "SignalCollection.currentLocationAltitude":
 		if e.complexity.SignalCollection.CurrentLocationAltitude == nil {
 			break
@@ -4140,6 +4160,15 @@ extend type SignalAggregations {
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisTireSystemIsWarningOn", forceResolver: true) @isSignal @hasAggregation
   
   """
+  Indicates whether cellular radio signal jamming or interference is detected that prevents normal communication.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  connectivityCellularIsJammingDetected(
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ConnectivityCellularIsJammingDetected", forceResolver: true) @isSignal @hasAggregation
+  
+  """
   Current altitude relative to WGS 84 reference ellipsoid, as measured at the position of GNSS receiver antenna.
   Unit: 'm'
   Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
@@ -5129,6 +5158,12 @@ extend type SignalCollection {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   chassisTireSystemIsWarningOn: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ChassisTireSystemIsWarningOn") @isSignal
+  
+  """
+  Indicates whether cellular radio signal jamming or interference is detected that prevents normal communication.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  connectivityCellularIsJammingDetected: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "ConnectivityCellularIsJammingDetected") @isSignal
   
   """
   Current altitude relative to WGS 84 reference ellipsoid, as measured at the position of GNSS receiver antenna.
@@ -6565,6 +6600,22 @@ func (ec *executionContext) field_SignalAggregations_chassisParkingBrakeIsEngage
 }
 
 func (ec *executionContext) field_SignalAggregations_chassisTireSystemIsWarningOn_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
+	if err != nil {
+		return nil, err
+	}
+	args["agg"] = arg0
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_SignalAggregations_connectivityCellularIsJammingDetected_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
 	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
@@ -8845,6 +8896,8 @@ func (ec *executionContext) fieldContext_Query_signals(ctx context.Context, fiel
 				return ec.fieldContext_SignalAggregations_chassisParkingBrakeIsEngaged(ctx, field)
 			case "chassisTireSystemIsWarningOn":
 				return ec.fieldContext_SignalAggregations_chassisTireSystemIsWarningOn(ctx, field)
+			case "connectivityCellularIsJammingDetected":
+				return ec.fieldContext_SignalAggregations_connectivityCellularIsJammingDetected(ctx, field)
 			case "currentLocationAltitude":
 				return ec.fieldContext_SignalAggregations_currentLocationAltitude(ctx, field)
 			case "currentLocationCoordinates":
@@ -9137,6 +9190,8 @@ func (ec *executionContext) fieldContext_Query_signalsLatest(ctx context.Context
 				return ec.fieldContext_SignalCollection_chassisParkingBrakeIsEngaged(ctx, field)
 			case "chassisTireSystemIsWarningOn":
 				return ec.fieldContext_SignalCollection_chassisTireSystemIsWarningOn(ctx, field)
+			case "connectivityCellularIsJammingDetected":
+				return ec.fieldContext_SignalCollection_connectivityCellularIsJammingDetected(ctx, field)
 			case "currentLocationAltitude":
 				return ec.fieldContext_SignalCollection_currentLocationAltitude(ctx, field)
 			case "currentLocationCoordinates":
@@ -12936,6 +12991,79 @@ func (ec *executionContext) fieldContext_SignalAggregations_chassisTireSystemIsW
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_SignalAggregations_chassisTireSystemIsWarningOn_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SignalAggregations_connectivityCellularIsJammingDetected(ctx context.Context, field graphql.CollectedField, obj *model.SignalAggregations) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SignalAggregations_connectivityCellularIsJammingDetected,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.SignalAggregations().ConnectivityCellularIsJammingDetected(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
+
+			directive1 := func(ctx context.Context) (any, error) {
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				if err != nil {
+					var zeroVal *float64
+					return zeroVal, err
+				}
+				if ec.directives.RequiresAllOfPrivileges == nil {
+					var zeroVal *float64
+					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
+				}
+				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+			}
+			directive2 := func(ctx context.Context) (any, error) {
+				if ec.directives.IsSignal == nil {
+					var zeroVal *float64
+					return zeroVal, errors.New("directive isSignal is not implemented")
+				}
+				return ec.directives.IsSignal(ctx, obj, directive1)
+			}
+			directive3 := func(ctx context.Context) (any, error) {
+				if ec.directives.HasAggregation == nil {
+					var zeroVal *float64
+					return zeroVal, errors.New("directive hasAggregation is not implemented")
+				}
+				return ec.directives.HasAggregation(ctx, obj, directive2)
+			}
+
+			next = directive3
+			return next
+		},
+		ec.marshalOFloat2ᚖfloat64,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_SignalAggregations_connectivityCellularIsJammingDetected(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignalAggregations",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_SignalAggregations_connectivityCellularIsJammingDetected_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -21008,6 +21136,66 @@ func (ec *executionContext) _SignalCollection_chassisTireSystemIsWarningOn(ctx c
 }
 
 func (ec *executionContext) fieldContext_SignalCollection_chassisTireSystemIsWarningOn(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignalCollection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "timestamp":
+				return ec.fieldContext_SignalFloat_timestamp(ctx, field)
+			case "value":
+				return ec.fieldContext_SignalFloat_value(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SignalFloat", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SignalCollection_connectivityCellularIsJammingDetected(ctx context.Context, field graphql.CollectedField, obj *model.SignalCollection) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SignalCollection_connectivityCellularIsJammingDetected,
+		func(ctx context.Context) (any, error) {
+			return obj.ConnectivityCellularIsJammingDetected, nil
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
+
+			directive1 := func(ctx context.Context) (any, error) {
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
+				if err != nil {
+					var zeroVal *model.SignalFloat
+					return zeroVal, err
+				}
+				if ec.directives.RequiresAllOfPrivileges == nil {
+					var zeroVal *model.SignalFloat
+					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
+				}
+				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+			}
+			directive2 := func(ctx context.Context) (any, error) {
+				if ec.directives.IsSignal == nil {
+					var zeroVal *model.SignalFloat
+					return zeroVal, errors.New("directive isSignal is not implemented")
+				}
+				return ec.directives.IsSignal(ctx, obj, directive1)
+			}
+
+			next = directive2
+			return next
+		},
+		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_SignalCollection_connectivityCellularIsJammingDetected(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalCollection",
 		Field:      field,
@@ -30201,6 +30389,39 @@ func (ec *executionContext) _SignalAggregations(ctx context.Context, sel ast.Sel
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "connectivityCellularIsJammingDetected":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._SignalAggregations_connectivityCellularIsJammingDetected(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "currentLocationAltitude":
 			field := field
 
@@ -32920,6 +33141,8 @@ func (ec *executionContext) _SignalCollection(ctx context.Context, sel ast.Selec
 			out.Values[i] = ec._SignalCollection_chassisParkingBrakeIsEngaged(ctx, field, obj)
 		case "chassisTireSystemIsWarningOn":
 			out.Values[i] = ec._SignalCollection_chassisTireSystemIsWarningOn(ctx, field, obj)
+		case "connectivityCellularIsJammingDetected":
+			out.Values[i] = ec._SignalCollection_connectivityCellularIsJammingDetected(ctx, field, obj)
 		case "currentLocationAltitude":
 			out.Values[i] = ec._SignalCollection_currentLocationAltitude(ctx, field, obj)
 		case "currentLocationCoordinates":
