@@ -189,6 +189,11 @@ func SetCollectionField(collection *SignalCollection, signal *vss.Signal) {
 			Timestamp: signal.Timestamp,
 			Value:     signal.ValueNumber,
 		}
+	case "connectivityCellularIsJammingDetected":
+		collection.ConnectivityCellularIsJammingDetected = &SignalFloat{
+			Timestamp: signal.Timestamp,
+			Value:     signal.ValueNumber,
+		}
 	case "currentLocationAltitude":
 		collection.CurrentLocationAltitude = &SignalFloat{
 			Timestamp: signal.Timestamp,
