@@ -90,10 +90,7 @@ var SourceTranslations = map[string][]string{
 	"motorq":   {"0x5879B43D88Fa93CE8072d6612cBc8dE93E98CE5d"},
 }
 
-// FieldType indicates the type of values in the aggregation. Currently
-// there are three types: normal float values, string values, and
-// "approximate location" values that are computed from the precise
-// location values, in Go.
+// FieldType indicates the type of values in the aggregation.
 type FieldType uint8
 
 const (
@@ -102,9 +99,6 @@ const (
 	FloatType FieldType = 1
 	// StringType is the type for rows with string values.
 	StringType FieldType = 2
-	// AppLocType is the type for rows needed to compute approximate
-	// locations.
-	AppLocType FieldType = 3
 	LocType    FieldType = 4
 )
 
@@ -114,7 +108,7 @@ func (t *FieldType) Scan(value any) error {
 		return fmt.Errorf("expected value of type uint8, but got type %T", value)
 	}
 
-	if w == 0 || w > 4 {
+	if w != uint8(FloatType) && w != uint8(StringType) && w != uint8(LocType) {
 		return fmt.Errorf("invalid value %d for field type", w)
 	}
 
@@ -164,21 +158,14 @@ func selectInterval(microSeconds int64, origin time.Time) qm.QueryMod {
 		vss.TimestampCol, microSeconds, origin.UnixMicro(), IntervalGroup))
 }
 
-func selectNumberAggs(numberAggs []model.FloatSignalArgs, appLocAggs map[model.FloatAggregation]struct{}) qm.QueryMod {
-	if len(numberAggs) == 0 && len(appLocAggs) == 0 {
+func selectNumberAggs(numberAggs []model.FloatSignalArgs) qm.QueryMod {
+	if len(numberAggs) == 0 {
 		return qm.Select("NULL AS " + AggNumberCol)
 	}
 	// Add a CASE statement for each name and its corresponding aggregation function
-	caseStmts := make([]string, 0, len(numberAggs)+2*len(appLocAggs))
+	caseStmts := make([]string, 0, len(numberAggs))
 	for i, agg := range numberAggs {
 		caseStmts = append(caseStmts, fmt.Sprintf("WHEN %s = %d AND %s = %d THEN %s", signalTypeCol, FloatType, signalIndexCol, i, getFloatAggFunc(agg.Agg)))
-	}
-	for i, agg := range model.AllFloatAggregation {
-		if _, ok := appLocAggs[agg]; ok {
-			caseStmts = append(caseStmts,
-				fmt.Sprintf("WHEN %s = %d AND %s = %d THEN %s", signalTypeCol, AppLocType, signalIndexCol, 2*i, getFloatAggFunc(agg)),
-				fmt.Sprintf("WHEN %s = %d AND %s = %d THEN %s", signalTypeCol, AppLocType, signalIndexCol, 2*i+1, getFloatAggFunc(agg)))
-		}
 	}
 	caseStmt := fmt.Sprintf("CASE %s ELSE NULL END AS %s", strings.Join(caseStmts, " "), AggNumberCol)
 	return qm.Select(caseStmt)
@@ -410,7 +397,7 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 		return "", nil, nil
 	}
 
-	numAggs := len(aggArgs.FloatArgs) + len(aggArgs.StringArgs) + 2*len(aggArgs.ApproxLocArgs) + len(aggArgs.LocationArgs)
+	numAggs := len(aggArgs.FloatArgs) + len(aggArgs.StringArgs) + len(aggArgs.LocationArgs)
 	if numAggs == 0 {
 		return "", nil, errors.New("no aggregations requested")
 	}
@@ -424,13 +411,6 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 	}
 	for i, agg := range aggArgs.StringArgs {
 		valuesArgs = append(valuesArgs, aggTableEntry(StringType, i, agg.Name))
-	}
-	for i, agg := range model.AllFloatAggregation {
-		if _, ok := aggArgs.ApproxLocArgs[agg]; ok {
-			valuesArgs = append(valuesArgs,
-				aggTableEntry(AppLocType, 2*i, vss.FieldCurrentLocationLatitude),
-				aggTableEntry(AppLocType, 2*i+1, vss.FieldCurrentLocationLongitude))
-		}
 	}
 	for i, agg := range aggArgs.LocationArgs {
 		valuesArgs = append(valuesArgs, aggTableEntry(LocType, i, agg.Name))
@@ -465,10 +445,6 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 		perSignalFilters = append(perSignalFilters, qm.Or2(qmhelper.Where(signalTypeCol, qmhelper.EQ, StringType)))
 	}
 
-	if len(aggArgs.ApproxLocArgs) != 0 {
-		perSignalFilters = append(perSignalFilters, qm.Or2(qmhelper.Where(signalTypeCol, qmhelper.EQ, AppLocType)))
-	}
-
 	if len(aggArgs.LocationArgs) != 0 {
 		var innerLocationFilters []qm.QueryMod
 
@@ -497,7 +473,7 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 		qm.Select(signalTypeCol),
 		qm.Select(signalIndexCol),
 		selectInterval(aggArgs.Interval, aggArgs.FromTS),
-		selectNumberAggs(aggArgs.FloatArgs, aggArgs.ApproxLocArgs),
+		selectNumberAggs(aggArgs.FloatArgs),
 		selectStringAggs(aggArgs.StringArgs),
 		selectLocationAggs(aggArgs.LocationArgs),
 		qm.Where(tokenIDWhere, aggArgs.TokenID),

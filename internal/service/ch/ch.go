@@ -116,7 +116,7 @@ func (m *AliasHandleMapper) Alias(handle string) string {
 // The signals are sorted by timestamp in ascending order.
 // The timestamp on each signal is for the start of the interval.
 func (s *Service) GetAggregatedSignals(ctx context.Context, aggArgs *model.AggregatedSignalArgs) ([]*AggSignal, error) {
-	if len(aggArgs.FloatArgs) == 0 && len(aggArgs.StringArgs) == 0 && len(aggArgs.ApproxLocArgs) == 0 && len(aggArgs.LocationArgs) == 0 {
+	if len(aggArgs.FloatArgs) == 0 && len(aggArgs.StringArgs) == 0 && len(aggArgs.LocationArgs) == 0 {
 		return []*AggSignal{}, nil
 	}
 
@@ -157,20 +157,11 @@ func (s *Service) getSignals(ctx context.Context, stmt string, args []any) ([]*v
 
 type AggSignal struct {
 	// SignalType describes the type of values in the aggregation:
-	// float, string, or approximate location.
+	// float, string, or location.
 	SignalType FieldType
 	// SignalIndex is an identifier for the aggregation within its
-	// SignalType.
-	//
-	// For float and string aggregations this is simply an index
-	// into the corresponding argument array.
-	//
-	// For approximate location (SignalType = AppLocType = 3), we
-	// imagine expanding each element of the slice
-	// model.AllFloatAggregation into two: first the latitude and then
-	// the longitude. So, for example, SignalType = 3 and
-	// SignalIndex = 4 means we want approximate latitude (4 % 2 = 0)
-	// for the index 2 (4 / 2 = 2) float aggregation.
+	// SignalType. For all types this is simply an index into the
+	// corresponding argument array.
 	//
 	// We could get away with a single number, since we know how many
 	// arguments of each type there are, but it appears to us that this

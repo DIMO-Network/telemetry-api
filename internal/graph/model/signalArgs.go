@@ -7,10 +7,8 @@ import (
 const (
 	// LastSeenField is the field name for the last seen timestamp.
 	LastSeenField = "lastSeen"
-	// ApproximateLongField is the field name for the approximate longitude.
-	ApproximateLongField = "currentLocationApproximateLongitude"
-	// ApproximateLatField is the field name for the approximate latitude.
-	ApproximateLatField = "currentLocationApproximateLatitude"
+	// ApproximateCoordinatesField is the field name for the approximate coordinates.
+	ApproximateCoordinatesField = "currentLocationApproximateCoordinates"
 )
 
 // SignalArgs is the base arguments for querying signals.
@@ -45,9 +43,8 @@ type AggregatedSignalArgs struct {
 	FloatArgs []FloatSignalArgs
 	// StringArgs represents arguments for each string signal.
 	StringArgs []StringSignalArgs
-	// ApproxLocArgs
-	ApproxLocArgs map[FloatAggregation]struct{}
-	LocationArgs  []LocationSignalArgs
+	// LocationArgs represents arguments for each location signal.
+	LocationArgs []LocationSignalArgs
 }
 
 type LocationSignalArgs struct {

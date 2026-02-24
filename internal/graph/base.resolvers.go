@@ -8,7 +8,9 @@ import (
 	"context"
 	"time"
 
+	"github.com/99designs/gqlgen/graphql"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
+	"github.com/DIMO-Network/telemetry-api/internal/repositories"
 )
 
 // Signals is the resolver for the Signals field.
@@ -39,22 +41,18 @@ func (r *queryResolver) DataSummary(ctx context.Context, tokenID int, filter *mo
 	return r.BaseRepo.GetDataSummary(ctx, uint32(tokenID), filter)
 }
 
-// CurrentLocationApproximateLatitude is the resolver for the CurrentLocationApproximateLatitude
-func (r *signalAggregationsResolver) CurrentLocationApproximateLatitude(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
-	latLng, ok := approximateLocationSignalAggregations(obj, agg)
+// CurrentLocationApproximateCoordinates is the resolver for the currentLocationApproximateCoordinates field on SignalAggregations.
+func (r *signalAggregationsResolver) CurrentLocationApproximateCoordinates(ctx context.Context, obj *model.SignalAggregations, agg model.LocationAggregation) (*model.Location, error) {
+	fieldCtx := graphql.GetFieldContext(ctx)
+	vl, ok := obj.ValueLocations[fieldCtx.Field.Alias]
 	if !ok {
 		return nil, nil
 	}
-	return &latLng.Lat, nil
-}
-
-// CurrentLocationApproximateLongitude is the resolver for the CurrentLocationApproximateLongitude
-func (r *signalAggregationsResolver) CurrentLocationApproximateLongitude(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error) {
-	latLng, ok := approximateLocationSignalAggregations(obj, agg)
-	if !ok {
+	latLng := repositories.GetApproximateLoc(vl.Latitude, vl.Longitude)
+	if latLng == nil {
 		return nil, nil
 	}
-	return &latLng.Lng, nil
+	return &model.Location{Latitude: latLng.Lat, Longitude: latLng.Lng, Hdop: vl.HDOP}, nil
 }
 
 // Query returns QueryResolver implementation.

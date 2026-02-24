@@ -162,8 +162,7 @@ type ComplexityRoot struct {
 		ChassisTireSystemIsWarningOn                              func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
 		ConnectivityCellularIsJammingDetected                     func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
 		CurrentLocationAltitude                                   func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
-		CurrentLocationApproximateLatitude                        func(childComplexity int, agg model.FloatAggregation) int
-		CurrentLocationApproximateLongitude                       func(childComplexity int, agg model.FloatAggregation) int
+		CurrentLocationApproximateCoordinates                     func(childComplexity int, agg model.LocationAggregation) int
 		CurrentLocationCoordinates                                func(childComplexity int, agg model.LocationAggregation, filter *model.SignalLocationFilter) int
 		CurrentLocationHeading                                    func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
 		CurrentLocationIsRedacted                                 func(childComplexity int, agg model.FloatAggregation, filter *model.SignalFloatFilter) int
@@ -284,8 +283,7 @@ type ComplexityRoot struct {
 		ChassisTireSystemIsWarningOn                              func(childComplexity int) int
 		ConnectivityCellularIsJammingDetected                     func(childComplexity int) int
 		CurrentLocationAltitude                                   func(childComplexity int) int
-		CurrentLocationApproximateLatitude                        func(childComplexity int) int
-		CurrentLocationApproximateLongitude                       func(childComplexity int) int
+		CurrentLocationApproximateCoordinates                     func(childComplexity int) int
 		CurrentLocationCoordinates                                func(childComplexity int) int
 		CurrentLocationHeading                                    func(childComplexity int) int
 		CurrentLocationIsRedacted                                 func(childComplexity int) int
@@ -415,8 +413,7 @@ type QueryResolver interface {
 	PomVCLatest(ctx context.Context, tokenID int) (*model.Pomvc, error)
 }
 type SignalAggregationsResolver interface {
-	CurrentLocationApproximateLatitude(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
-	CurrentLocationApproximateLongitude(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation) (*float64, error)
+	CurrentLocationApproximateCoordinates(ctx context.Context, obj *model.SignalAggregations, agg model.LocationAggregation) (*model.Location, error)
 	AngularVelocityYaw(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
 	BodyLightsIsAirbagWarningOn(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
 	BodyLockIsLocked(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
@@ -1294,28 +1291,17 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.SignalAggregations.CurrentLocationAltitude(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
-	case "SignalAggregations.currentLocationApproximateLatitude":
-		if e.complexity.SignalAggregations.CurrentLocationApproximateLatitude == nil {
+	case "SignalAggregations.currentLocationApproximateCoordinates":
+		if e.complexity.SignalAggregations.CurrentLocationApproximateCoordinates == nil {
 			break
 		}
 
-		args, err := ec.field_SignalAggregations_currentLocationApproximateLatitude_args(ctx, rawArgs)
+		args, err := ec.field_SignalAggregations_currentLocationApproximateCoordinates_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.CurrentLocationApproximateLatitude(childComplexity, args["agg"].(model.FloatAggregation)), true
-	case "SignalAggregations.currentLocationApproximateLongitude":
-		if e.complexity.SignalAggregations.CurrentLocationApproximateLongitude == nil {
-			break
-		}
-
-		args, err := ec.field_SignalAggregations_currentLocationApproximateLongitude_args(ctx, rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.SignalAggregations.CurrentLocationApproximateLongitude(childComplexity, args["agg"].(model.FloatAggregation)), true
+		return e.complexity.SignalAggregations.CurrentLocationApproximateCoordinates(childComplexity, args["agg"].(model.LocationAggregation)), true
 	case "SignalAggregations.currentLocationCoordinates":
 		if e.complexity.SignalAggregations.CurrentLocationCoordinates == nil {
 			break
@@ -2409,18 +2395,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.SignalCollection.CurrentLocationAltitude(childComplexity), true
-	case "SignalCollection.currentLocationApproximateLatitude":
-		if e.complexity.SignalCollection.CurrentLocationApproximateLatitude == nil {
+	case "SignalCollection.currentLocationApproximateCoordinates":
+		if e.complexity.SignalCollection.CurrentLocationApproximateCoordinates == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.CurrentLocationApproximateLatitude(childComplexity), true
-	case "SignalCollection.currentLocationApproximateLongitude":
-		if e.complexity.SignalCollection.CurrentLocationApproximateLongitude == nil {
-			break
-		}
-
-		return e.complexity.SignalCollection.CurrentLocationApproximateLongitude(childComplexity), true
+		return e.complexity.SignalCollection.CurrentLocationApproximateCoordinates(childComplexity), true
 	case "SignalCollection.currentLocationCoordinates":
 		if e.complexity.SignalCollection.CurrentLocationCoordinates == nil {
 			break
@@ -3324,28 +3304,17 @@ type SignalAggregations {
   """
   timestamp: Time!
   """
-  Approximate Latitude of vehicle in WGS 84 geodetic coordinates, as measured at the position of GNSS receiver antenna.
-  Unit: 'degrees' Min: '-90' Max: '90'
+  Approximate location of vehicle in WGS 84 geodetic coordinates.
+  Latitude and longitude are the center of the H3 cell with resolution 6 that the location is in.
+  More Info on H3: https://h3geo.org/
+  HDOP is returned unmasked.
   Required Privileges: [VEHICLE_APPROXIMATE_LOCATION OR VEHICLE_ALL_TIME_LOCATION]
   """
-  currentLocationApproximateLatitude(agg: FloatAggregation!): Float
+  currentLocationApproximateCoordinates(agg: LocationAggregation!): Location
     @requiresOneOfPrivilege(
       privileges: [VEHICLE_APPROXIMATE_LOCATION, VEHICLE_ALL_TIME_LOCATION]
     )
-    @goField(name: "CurrentLocationApproximateLatitude", forceResolver: true)
-    @isSignal
-    @hasAggregation
-
-  """
-  Approximate Longitude of vehicle in WGS 84 geodetic coordinates, as measured at the position of GNSS receiver antenna.
-  Unit: 'degrees' Min: '-180' Max: '180'
-  Required Privileges: [VEHICLE_APPROXIMATE_LOCATION OR VEHICLE_ALL_TIME_LOCATION]
-  """
-  currentLocationApproximateLongitude(agg: FloatAggregation!): Float
-    @requiresOneOfPrivilege(
-      privileges: [VEHICLE_APPROXIMATE_LOCATION, VEHICLE_ALL_TIME_LOCATION]
-    )
-    @goField(name: "CurrentLocationApproximateLongitude", forceResolver: true)
+    @goField(name: "CurrentLocationApproximateCoordinates", forceResolver: true)
     @isSignal
     @hasAggregation
 }
@@ -3356,31 +3325,17 @@ type SignalCollection {
   """
   lastSeen: Time
   """
-  Approximate Latitude of vehicle in WGS 84 geodetic coordinates.
-  This returned location is the center of the h3 cell with resolution 6 that the location is in.
+  Approximate location of vehicle in WGS 84 geodetic coordinates.
+  Latitude and longitude are the center of the H3 cell with resolution 6 that the location is in.
   More Info on H3: https://h3geo.org/
-  Unit: 'degrees' Min: '-90' Max: '90'
+  HDOP is returned unmasked.
   Required Privileges: [VEHICLE_APPROXIMATE_LOCATION OR VEHICLE_ALL_TIME_LOCATION]
   """
-  currentLocationApproximateLatitude: SignalFloat
+  currentLocationApproximateCoordinates: SignalLocation
     @requiresOneOfPrivilege(
       privileges: [VEHICLE_APPROXIMATE_LOCATION, VEHICLE_ALL_TIME_LOCATION]
     )
-    @goField(name: "CurrentLocationApproximateLatitude")
-    @isSignal
-
-  """
-  Approximate Longitude of vehicle in WGS 84 geodetic coordinates.
-  This returned location is the center of the h3 cell with resolution 6 that the location is in.
-  More Info on H3: https://h3geo.org/
-  Unit: 'degrees' Min: '-180' Max: '180'
-  Required Privileges: [VEHICLE_APPROXIMATE_LOCATION OR VEHICLE_ALL_TIME_LOCATION]
-  """
-  currentLocationApproximateLongitude: SignalFloat
-    @requiresOneOfPrivilege(
-      privileges: [VEHICLE_APPROXIMATE_LOCATION, VEHICLE_ALL_TIME_LOCATION]
-    )
-    @goField(name: "CurrentLocationApproximateLongitude")
+    @goField(name: "CurrentLocationApproximateCoordinates")
     @isSignal
 }
 
@@ -6647,21 +6602,10 @@ func (ec *executionContext) field_SignalAggregations_currentLocationAltitude_arg
 	return args, nil
 }
 
-func (ec *executionContext) field_SignalAggregations_currentLocationApproximateLatitude_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+func (ec *executionContext) field_SignalAggregations_currentLocationApproximateCoordinates_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
-	if err != nil {
-		return nil, err
-	}
-	args["agg"] = arg0
-	return args, nil
-}
-
-func (ec *executionContext) field_SignalAggregations_currentLocationApproximateLongitude_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
-	var err error
-	args := map[string]any{}
-	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "agg", ec.unmarshalNLocationAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐLocationAggregation)
 	if err != nil {
 		return nil, err
 	}
@@ -8820,10 +8764,8 @@ func (ec *executionContext) fieldContext_Query_signals(ctx context.Context, fiel
 			switch field.Name {
 			case "timestamp":
 				return ec.fieldContext_SignalAggregations_timestamp(ctx, field)
-			case "currentLocationApproximateLatitude":
-				return ec.fieldContext_SignalAggregations_currentLocationApproximateLatitude(ctx, field)
-			case "currentLocationApproximateLongitude":
-				return ec.fieldContext_SignalAggregations_currentLocationApproximateLongitude(ctx, field)
+			case "currentLocationApproximateCoordinates":
+				return ec.fieldContext_SignalAggregations_currentLocationApproximateCoordinates(ctx, field)
 			case "angularVelocityYaw":
 				return ec.fieldContext_SignalAggregations_angularVelocityYaw(ctx, field)
 			case "bodyLightsIsAirbagWarningOn":
@@ -9114,10 +9056,8 @@ func (ec *executionContext) fieldContext_Query_signalsLatest(ctx context.Context
 			switch field.Name {
 			case "lastSeen":
 				return ec.fieldContext_SignalCollection_lastSeen(ctx, field)
-			case "currentLocationApproximateLatitude":
-				return ec.fieldContext_SignalCollection_currentLocationApproximateLatitude(ctx, field)
-			case "currentLocationApproximateLongitude":
-				return ec.fieldContext_SignalCollection_currentLocationApproximateLongitude(ctx, field)
+			case "currentLocationApproximateCoordinates":
+				return ec.fieldContext_SignalCollection_currentLocationApproximateCoordinates(ctx, field)
 			case "angularVelocityYaw":
 				return ec.fieldContext_SignalCollection_angularVelocityYaw(ctx, field)
 			case "bodyLightsIsAirbagWarningOn":
@@ -10223,15 +10163,15 @@ func (ec *executionContext) fieldContext_SignalAggregations_timestamp(_ context.
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalAggregations_currentLocationApproximateLatitude(ctx context.Context, field graphql.CollectedField, obj *model.SignalAggregations) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalAggregations_currentLocationApproximateCoordinates(ctx context.Context, field graphql.CollectedField, obj *model.SignalAggregations) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
 		ec.OperationContext,
 		field,
-		ec.fieldContext_SignalAggregations_currentLocationApproximateLatitude,
+		ec.fieldContext_SignalAggregations_currentLocationApproximateCoordinates,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().CurrentLocationApproximateLatitude(ctx, obj, fc.Args["agg"].(model.FloatAggregation))
+			return ec.resolvers.SignalAggregations().CurrentLocationApproximateCoordinates(ctx, obj, fc.Args["agg"].(model.LocationAggregation))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -10239,25 +10179,25 @@ func (ec *executionContext) _SignalAggregations_currentLocationApproximateLatitu
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_APPROXIMATE_LOCATION", "VEHICLE_ALL_TIME_LOCATION"})
 				if err != nil {
-					var zeroVal *float64
+					var zeroVal *model.Location
 					return zeroVal, err
 				}
 				if ec.directives.RequiresOneOfPrivilege == nil {
-					var zeroVal *float64
+					var zeroVal *model.Location
 					return zeroVal, errors.New("directive requiresOneOfPrivilege is not implemented")
 				}
 				return ec.directives.RequiresOneOfPrivilege(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
 				if ec.directives.IsSignal == nil {
-					var zeroVal *float64
+					var zeroVal *model.Location
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
 				return ec.directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
 				if ec.directives.HasAggregation == nil {
-					var zeroVal *float64
+					var zeroVal *model.Location
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
 				return ec.directives.HasAggregation(ctx, obj, directive2)
@@ -10266,20 +10206,28 @@ func (ec *executionContext) _SignalAggregations_currentLocationApproximateLatitu
 			next = directive3
 			return next
 		},
-		ec.marshalOFloat2ᚖfloat64,
+		ec.marshalOLocation2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐLocation,
 		true,
 		false,
 	)
 }
 
-func (ec *executionContext) fieldContext_SignalAggregations_currentLocationApproximateLatitude(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SignalAggregations_currentLocationApproximateCoordinates(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalAggregations",
 		Field:      field,
 		IsMethod:   true,
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Float does not have child fields")
+			switch field.Name {
+			case "latitude":
+				return ec.fieldContext_Location_latitude(ctx, field)
+			case "longitude":
+				return ec.fieldContext_Location_longitude(ctx, field)
+			case "hdop":
+				return ec.fieldContext_Location_hdop(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Location", field.Name)
 		},
 	}
 	defer func() {
@@ -10289,80 +10237,7 @@ func (ec *executionContext) fieldContext_SignalAggregations_currentLocationAppro
 		}
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_SignalAggregations_currentLocationApproximateLatitude_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return fc, err
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _SignalAggregations_currentLocationApproximateLongitude(ctx context.Context, field graphql.CollectedField, obj *model.SignalAggregations) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_SignalAggregations_currentLocationApproximateLongitude,
-		func(ctx context.Context) (any, error) {
-			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().CurrentLocationApproximateLongitude(ctx, obj, fc.Args["agg"].(model.FloatAggregation))
-		},
-		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
-			directive0 := next
-
-			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_APPROXIMATE_LOCATION", "VEHICLE_ALL_TIME_LOCATION"})
-				if err != nil {
-					var zeroVal *float64
-					return zeroVal, err
-				}
-				if ec.directives.RequiresOneOfPrivilege == nil {
-					var zeroVal *float64
-					return zeroVal, errors.New("directive requiresOneOfPrivilege is not implemented")
-				}
-				return ec.directives.RequiresOneOfPrivilege(ctx, obj, directive0, privileges)
-			}
-			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
-					var zeroVal *float64
-					return zeroVal, errors.New("directive isSignal is not implemented")
-				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
-			}
-			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
-					var zeroVal *float64
-					return zeroVal, errors.New("directive hasAggregation is not implemented")
-				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
-			}
-
-			next = directive3
-			return next
-		},
-		ec.marshalOFloat2ᚖfloat64,
-		true,
-		false,
-	)
-}
-
-func (ec *executionContext) fieldContext_SignalAggregations_currentLocationApproximateLongitude(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "SignalAggregations",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Float does not have child fields")
-		},
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_SignalAggregations_currentLocationApproximateLongitude_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+	if fc.Args, err = ec.field_SignalAggregations_currentLocationApproximateCoordinates_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -18874,14 +18749,14 @@ func (ec *executionContext) fieldContext_SignalCollection_lastSeen(_ context.Con
 	return fc, nil
 }
 
-func (ec *executionContext) _SignalCollection_currentLocationApproximateLatitude(ctx context.Context, field graphql.CollectedField, obj *model.SignalCollection) (ret graphql.Marshaler) {
+func (ec *executionContext) _SignalCollection_currentLocationApproximateCoordinates(ctx context.Context, field graphql.CollectedField, obj *model.SignalCollection) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
 		ec.OperationContext,
 		field,
-		ec.fieldContext_SignalCollection_currentLocationApproximateLatitude,
+		ec.fieldContext_SignalCollection_currentLocationApproximateCoordinates,
 		func(ctx context.Context) (any, error) {
-			return obj.CurrentLocationApproximateLatitude, nil
+			return obj.CurrentLocationApproximateCoordinates, nil
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -18889,18 +18764,18 @@ func (ec *executionContext) _SignalCollection_currentLocationApproximateLatitude
 			directive1 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_APPROXIMATE_LOCATION", "VEHICLE_ALL_TIME_LOCATION"})
 				if err != nil {
-					var zeroVal *model.SignalFloat
+					var zeroVal *model.SignalLocation
 					return zeroVal, err
 				}
 				if ec.directives.RequiresOneOfPrivilege == nil {
-					var zeroVal *model.SignalFloat
+					var zeroVal *model.SignalLocation
 					return zeroVal, errors.New("directive requiresOneOfPrivilege is not implemented")
 				}
 				return ec.directives.RequiresOneOfPrivilege(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
 				if ec.directives.IsSignal == nil {
-					var zeroVal *model.SignalFloat
+					var zeroVal *model.SignalLocation
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
 				return ec.directives.IsSignal(ctx, obj, directive1)
@@ -18909,13 +18784,13 @@ func (ec *executionContext) _SignalCollection_currentLocationApproximateLatitude
 			next = directive2
 			return next
 		},
-		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
+		ec.marshalOSignalLocation2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalLocation,
 		true,
 		false,
 	)
 }
 
-func (ec *executionContext) fieldContext_SignalCollection_currentLocationApproximateLatitude(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SignalCollection_currentLocationApproximateCoordinates(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignalCollection",
 		Field:      field,
@@ -18924,71 +18799,11 @@ func (ec *executionContext) fieldContext_SignalCollection_currentLocationApproxi
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "timestamp":
-				return ec.fieldContext_SignalFloat_timestamp(ctx, field)
+				return ec.fieldContext_SignalLocation_timestamp(ctx, field)
 			case "value":
-				return ec.fieldContext_SignalFloat_value(ctx, field)
+				return ec.fieldContext_SignalLocation_value(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type SignalFloat", field.Name)
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _SignalCollection_currentLocationApproximateLongitude(ctx context.Context, field graphql.CollectedField, obj *model.SignalCollection) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_SignalCollection_currentLocationApproximateLongitude,
-		func(ctx context.Context) (any, error) {
-			return obj.CurrentLocationApproximateLongitude, nil
-		},
-		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
-			directive0 := next
-
-			directive1 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_APPROXIMATE_LOCATION", "VEHICLE_ALL_TIME_LOCATION"})
-				if err != nil {
-					var zeroVal *model.SignalFloat
-					return zeroVal, err
-				}
-				if ec.directives.RequiresOneOfPrivilege == nil {
-					var zeroVal *model.SignalFloat
-					return zeroVal, errors.New("directive requiresOneOfPrivilege is not implemented")
-				}
-				return ec.directives.RequiresOneOfPrivilege(ctx, obj, directive0, privileges)
-			}
-			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
-					var zeroVal *model.SignalFloat
-					return zeroVal, errors.New("directive isSignal is not implemented")
-				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
-			}
-
-			next = directive2
-			return next
-		},
-		ec.marshalOSignalFloat2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloat,
-		true,
-		false,
-	)
-}
-
-func (ec *executionContext) fieldContext_SignalCollection_currentLocationApproximateLongitude(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "SignalCollection",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "timestamp":
-				return ec.fieldContext_SignalFloat_timestamp(ctx, field)
-			case "value":
-				return ec.fieldContext_SignalFloat_value(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type SignalFloat", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type SignalLocation", field.Name)
 		},
 	}
 	return fc, nil
@@ -29135,7 +28950,7 @@ func (ec *executionContext) _SignalAggregations(ctx context.Context, sel ast.Sel
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&out.Invalids, 1)
 			}
-		case "currentLocationApproximateLatitude":
+		case "currentLocationApproximateCoordinates":
 			field := field
 
 			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
@@ -29144,40 +28959,7 @@ func (ec *executionContext) _SignalAggregations(ctx context.Context, sel ast.Sel
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._SignalAggregations_currentLocationApproximateLatitude(ctx, field, obj)
-				return res
-			}
-
-			if field.Deferrable != nil {
-				dfs, ok := deferred[field.Deferrable.Label]
-				di := 0
-				if ok {
-					dfs.AddField(field)
-					di = len(dfs.Values) - 1
-				} else {
-					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
-					deferred[field.Deferrable.Label] = dfs
-				}
-				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
-					return innerFunc(ctx, dfs)
-				})
-
-				// don't run the out.Concurrently() call below
-				out.Values[i] = graphql.Null
-				continue
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-		case "currentLocationApproximateLongitude":
-			field := field
-
-			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._SignalAggregations_currentLocationApproximateLongitude(ctx, field, obj)
+				res = ec._SignalAggregations_currentLocationApproximateCoordinates(ctx, field, obj)
 				return res
 			}
 
@@ -33065,10 +32847,8 @@ func (ec *executionContext) _SignalCollection(ctx context.Context, sel ast.Selec
 			out.Values[i] = graphql.MarshalString("SignalCollection")
 		case "lastSeen":
 			out.Values[i] = ec._SignalCollection_lastSeen(ctx, field, obj)
-		case "currentLocationApproximateLatitude":
-			out.Values[i] = ec._SignalCollection_currentLocationApproximateLatitude(ctx, field, obj)
-		case "currentLocationApproximateLongitude":
-			out.Values[i] = ec._SignalCollection_currentLocationApproximateLongitude(ctx, field, obj)
+		case "currentLocationApproximateCoordinates":
+			out.Values[i] = ec._SignalCollection_currentLocationApproximateCoordinates(ctx, field, obj)
 		case "angularVelocityYaw":
 			out.Values[i] = ec._SignalCollection_angularVelocityYaw(ctx, field, obj)
 		case "bodyLightsIsAirbagWarningOn":

@@ -96,7 +96,6 @@ func (r *Repository) GetSignal(ctx context.Context, aggArgs *model.AggregatedSig
 				Timestamp:      signal.Timestamp,
 				ValueNumbers:   make(map[string]float64),
 				ValueStrings:   make(map[string]string),
-				AppLocNumbers:  make(map[model.AppLocKey]float64),
 				ValueLocations: make(map[string]vss.Location),
 			}
 			allAggs = append(allAggs, currAggs)
@@ -113,14 +112,6 @@ func (r *Repository) GetSignal(ctx context.Context, aggArgs *model.AggregatedSig
 				return nil, fmt.Errorf("only %d string signal requests, but the query returned index %d", len(aggArgs.FloatArgs), signal.SignalIndex)
 			}
 			currAggs.ValueStrings[aggArgs.StringArgs[signal.SignalIndex].Alias] = signal.ValueString
-		case ch.AppLocType:
-			aggIndex, aggParity := signal.SignalIndex/2, signal.SignalIndex%2
-			if int(aggIndex) >= len(model.AllFloatAggregation) {
-				return nil, fmt.Errorf("scanned an approximate location row with aggregation index %d, but there are only %d types", signal.SignalIndex, len(model.AllFloatAggregation))
-			}
-			name := parityToLocationSignalName[aggParity]
-			agg := model.AllFloatAggregation[aggIndex]
-			currAggs.AppLocNumbers[model.AppLocKey{Aggregation: agg, Name: name}] = signal.ValueNumber
 		case ch.LocType:
 			if len(aggArgs.LocationArgs) <= int(signal.SignalIndex) {
 				return nil, fmt.Errorf("only %d location signal requests, but the query returned index %d", len(aggArgs.LocationArgs), signal.SignalIndex)
@@ -134,7 +125,6 @@ func (r *Repository) GetSignal(ctx context.Context, aggArgs *model.AggregatedSig
 	return allAggs, nil
 }
 
-var parityToLocationSignalName = [2]string{vss.FieldCurrentLocationLatitude, vss.FieldCurrentLocationLongitude}
 
 // GetSignalLatest returns the latest signals for the given tokenID and filter.
 func (r *Repository) GetSignalLatest(ctx context.Context, latestArgs *model.LatestSignalsArgs) (*model.SignalCollection, error) {
@@ -288,16 +278,20 @@ func GetApproximateLoc(lat, long float64) *h3.LatLng {
 }
 
 func setApproximateLocationInCollection(coll *model.SignalCollection) {
-	if coll == nil || coll.CurrentLocationLatitude == nil || coll.CurrentLocationLongitude == nil {
+	if coll == nil || coll.CurrentLocationCoordinates == nil {
 		return
 	}
-	latLong := GetApproximateLoc(coll.CurrentLocationLatitude.Value, coll.CurrentLocationLongitude.Value)
-	coll.CurrentLocationApproximateLatitude = &model.SignalFloat{
-		Timestamp: coll.CurrentLocationLatitude.Timestamp,
-		Value:     latLong.Lat,
+	loc := coll.CurrentLocationCoordinates
+	latLong := GetApproximateLoc(loc.Value.Latitude, loc.Value.Longitude)
+	if latLong == nil {
+		return
 	}
-	coll.CurrentLocationApproximateLongitude = &model.SignalFloat{
-		Timestamp: coll.CurrentLocationLongitude.Timestamp,
-		Value:     latLong.Lng,
+	coll.CurrentLocationApproximateCoordinates = &model.SignalLocation{
+		Timestamp: loc.Timestamp,
+		Value: &model.Location{
+			Latitude:  latLong.Lat,
+			Longitude: latLong.Lng,
+			Hdop:      loc.Value.Hdop,
+		},
 	}
 }
