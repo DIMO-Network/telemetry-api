@@ -213,41 +213,6 @@ func SetCollectionField(collection *SignalCollection, signal *vss.Signal) {
 			Timestamp: signal.Timestamp,
 			Value:     signal.ValueNumber,
 		}
-	case "currentLocationIsRedacted":
-		collection.CurrentLocationIsRedacted = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
-		}
-	case "currentLocationLatitude":
-		collection.CurrentLocationLatitude = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
-		}
-	case "currentLocationLongitude":
-		collection.CurrentLocationLongitude = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
-		}
-	case "dimoAftermarketHDOP":
-		collection.DIMOAftermarketHDOP = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
-		}
-	case "dimoAftermarketNSAT":
-		collection.DIMOAftermarketNSAT = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
-		}
-	case "dimoAftermarketSSID":
-		collection.DIMOAftermarketSSID = &SignalString{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueString,
-		}
-	case "dimoAftermarketWPAState":
-		collection.DIMOAftermarketWPAState = &SignalString{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueString,
-		}
 	case "exteriorAirTemperature":
 		collection.ExteriorAirTemperature = &SignalFloat{
 			Timestamp: signal.Timestamp,

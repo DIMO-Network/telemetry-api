@@ -317,29 +317,6 @@ type SignalCollection struct {
 	// Unit: 'degrees' Min: '0' Max: '360'
 	// Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
 	CurrentLocationHeading *SignalFloat `json:"currentLocationHeading,omitempty"`
-	// Indicates if the latitude and longitude signals at the current timestamp have been redacted using a privacy zone.
-	// Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
-	CurrentLocationIsRedacted *SignalFloat `json:"currentLocationIsRedacted,omitempty"`
-	// Current latitude of vehicle in WGS 84 geodetic coordinates, as measured at the position of GNSS receiver antenna.
-	// Unit: 'degrees' Min: '-90' Max: '90'
-	// Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
-	CurrentLocationLatitude *SignalFloat `json:"currentLocationLatitude,omitempty"`
-	// Current longitude of vehicle in WGS 84 geodetic coordinates, as measured at the position of GNSS receiver antenna.
-	// Unit: 'degrees' Min: '-180' Max: '180'
-	// Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
-	CurrentLocationLongitude *SignalFloat `json:"currentLocationLongitude,omitempty"`
-	// Horizontal dilution of precision of GPS
-	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-	DIMOAftermarketHDOP *SignalFloat `json:"dimoAftermarketHDOP,omitempty"`
-	// Number of sync satellites for GPS
-	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-	DIMOAftermarketNSAT *SignalFloat `json:"dimoAftermarketNSAT,omitempty"`
-	// Service Set Identifier for the wifi.
-	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-	DIMOAftermarketSSID *SignalString `json:"dimoAftermarketSSID,omitempty"`
-	// Indicate the current WPA state for the device's wifi, e.g. "CONNECTED", "SCANNING", "DISCONNECTED"
-	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-	DIMOAftermarketWPAState *SignalString `json:"dimoAftermarketWPAState,omitempty"`
 	// Air temperature outside the vehicle.
 	// Unit: 'celsius'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
