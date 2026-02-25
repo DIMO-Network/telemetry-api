@@ -180,8 +180,13 @@ func mergeTimeRanges(ranges []timeRange, maxGap time.Duration, minDuration int, 
 }
 
 // clipTimeRange clips a timeRange to [from, to] and checks minDuration. Zero from/to disables clipping.
+// Segments that started before from are kept if their original (pre-clip) duration meets minDuration,
+// so "started before range" segments are not dropped when the visible portion is short.
 func clipTimeRange(tr timeRange, from, to time.Time, minDuration int) (timeRange, bool) {
+	originalDuration := int(tr.end.Sub(tr.start).Seconds())
+	clippedStart := false
 	if !from.IsZero() && tr.start.Before(from) {
+		clippedStart = true
 		tr.start = from
 	}
 	if !to.IsZero() && tr.end.After(to) {
@@ -190,8 +195,12 @@ func clipTimeRange(tr timeRange, from, to time.Time, minDuration int) (timeRange
 	if !tr.end.After(tr.start) {
 		return timeRange{}, false
 	}
-	if int(tr.end.Sub(tr.start).Seconds()) < minDuration {
-		return timeRange{}, false
+	clippedDuration := int(tr.end.Sub(tr.start).Seconds())
+	if clippedDuration < minDuration {
+		// Keep segment only if it started before from and original duration was sufficient
+		if !clippedStart || originalDuration < minDuration {
+			return timeRange{}, false
+		}
 	}
 	return tr, true
 }
