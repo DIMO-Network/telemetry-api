@@ -27,20 +27,6 @@ func TestSignalsLatest(t *testing.T) {
 			TokenID:     39718,
 		},
 		{
-			Source:      ch.SourceTranslations["smartcar"][0],
-			Timestamp:   smartCarTime,
-			Name:        vss.FieldCurrentLocationLatitude,
-			ValueNumber: 40.73899538333504,
-			TokenID:     39718,
-		},
-		{
-			Source:      ch.SourceTranslations["smartcar"][0],
-			Timestamp:   smartCarTime,
-			Name:        vss.FieldCurrentLocationLongitude,
-			ValueNumber: 73.99386110247163,
-			TokenID:     39718,
-		},
-		{
 			Source:    ch.SourceTranslations["smartcar"][0],
 			Timestamp: smartCarTime,
 			Name:      vss.FieldCurrentLocationCoordinates,
