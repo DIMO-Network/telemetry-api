@@ -376,69 +376,6 @@ extend type SignalAggregations {
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationHeading", forceResolver: true) @isSignal @hasAggregation
   
   """
-  Indicates if the latitude and longitude signals at the current timestamp have been redacted using a privacy zone.
-  Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
-  """
-  currentLocationIsRedacted(
-    agg: FloatAggregation!,
-    filter: SignalFloatFilter
-  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationIsRedacted", forceResolver: true) @isSignal @hasAggregation
-  
-  """
-  Current latitude of vehicle in WGS 84 geodetic coordinates, as measured at the position of GNSS receiver antenna.
-  Unit: 'degrees' Min: '-90' Max: '90'
-  Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
-  """
-  currentLocationLatitude(
-    agg: FloatAggregation!,
-    filter: SignalFloatFilter
-  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationLatitude", forceResolver: true) @isSignal @hasAggregation
-  
-  """
-  Current longitude of vehicle in WGS 84 geodetic coordinates, as measured at the position of GNSS receiver antenna.
-  Unit: 'degrees' Min: '-180' Max: '180'
-  Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
-  """
-  currentLocationLongitude(
-    agg: FloatAggregation!,
-    filter: SignalFloatFilter
-  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationLongitude", forceResolver: true) @isSignal @hasAggregation
-  
-  """
-  Horizontal dilution of precision of GPS
-  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-  """
-  dimoAftermarketHDOP(
-    agg: FloatAggregation!,
-    filter: SignalFloatFilter
-  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketHDOP", forceResolver: true) @isSignal @hasAggregation
-  
-  """
-  Number of sync satellites for GPS
-  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-  """
-  dimoAftermarketNSAT(
-    agg: FloatAggregation!,
-    filter: SignalFloatFilter
-  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketNSAT", forceResolver: true) @isSignal @hasAggregation
-  
-  """
-  Service Set Identifier for the wifi.
-  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-  """
-  dimoAftermarketSSID(
-    agg: StringAggregation!
-  ):  String @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketSSID", forceResolver: true) @isSignal @hasAggregation
-  
-  """
-  Indicate the current WPA state for the device's wifi, e.g. "CONNECTED", "SCANNING", "DISCONNECTED"
-  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-  """
-  dimoAftermarketWPAState(
-    agg: StringAggregation!
-  ):  String @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketWPAState", forceResolver: true) @isSignal @hasAggregation
-  
-  """
   Air temperature outside the vehicle.
   Unit: 'celsius'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
@@ -1362,50 +1299,6 @@ extend type SignalCollection {
   Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
   """
   currentLocationHeading: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationHeading") @isSignal
-  
-  """
-  Indicates if the latitude and longitude signals at the current timestamp have been redacted using a privacy zone.
-  Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
-  """
-  currentLocationIsRedacted: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationIsRedacted") @isSignal
-  
-  """
-  Current latitude of vehicle in WGS 84 geodetic coordinates, as measured at the position of GNSS receiver antenna.
-  Unit: 'degrees' Min: '-90' Max: '90'
-  Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
-  """
-  currentLocationLatitude: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationLatitude") @isSignal
-  
-  """
-  Current longitude of vehicle in WGS 84 geodetic coordinates, as measured at the position of GNSS receiver antenna.
-  Unit: 'degrees' Min: '-180' Max: '180'
-  Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
-  """
-  currentLocationLongitude: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_ALL_TIME_LOCATION]) @goField(name: "CurrentLocationLongitude") @isSignal
-  
-  """
-  Horizontal dilution of precision of GPS
-  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-  """
-  dimoAftermarketHDOP: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketHDOP") @isSignal
-  
-  """
-  Number of sync satellites for GPS
-  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-  """
-  dimoAftermarketNSAT: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketNSAT") @isSignal
-  
-  """
-  Service Set Identifier for the wifi.
-  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-  """
-  dimoAftermarketSSID: SignalString @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketSSID") @isSignal
-  
-  """
-  Indicate the current WPA state for the device's wifi, e.g. "CONNECTED", "SCANNING", "DISCONNECTED"
-  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
-  """
-  dimoAftermarketWPAState: SignalString @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "DIMOAftermarketWPAState") @isSignal
   
   """
   Air temperature outside the vehicle.

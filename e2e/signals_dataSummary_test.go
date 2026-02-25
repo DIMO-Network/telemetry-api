@@ -42,20 +42,15 @@ func TestSignalsMetadata(t *testing.T) {
 			TokenID:     tokenID,
 		},
 		{
-			Source:      ch.SourceTranslations["smartcar"][0],
-			Timestamp:   smartCarTime1,
-			Name:        vss.FieldCurrentLocationLatitude,
-			ValueNumber: 40.73899538333504,
-			TokenID:     tokenID,
+			Source:    ch.SourceTranslations["smartcar"][0],
+			Timestamp: smartCarTime1,
+			Name:      vss.FieldCurrentLocationCoordinates,
+			ValueLocation: vss.Location{
+				Latitude:  40.73899538333504,
+				Longitude: 73.99386110247163,
+			},
+			TokenID: tokenID,
 		},
-		{
-			Source:      ch.SourceTranslations["smartcar"][0],
-			Timestamp:   smartCarTime1,
-			Name:        vss.FieldCurrentLocationLongitude,
-			ValueNumber: 73.99386110247163,
-			TokenID:     tokenID,
-		},
-
 		// AutoPi signals - speed and battery
 		{
 			Source:      ch.SourceTranslations["autopi"][0],
@@ -137,14 +132,13 @@ func TestSignalsMetadata(t *testing.T) {
 		require.NoError(t, err)
 
 		// Assert the overall metadata results
-		assert.Equal(t, uint64(10), result.DataSummary.NumberOfSignals)
+		assert.Equal(t, uint64(9), result.DataSummary.NumberOfSignals)
 		assert.Equal(t, macaronTime.Format(time.RFC3339), result.DataSummary.FirstSeen)
 		assert.Equal(t, smartCarTime2.Format(time.RFC3339), result.DataSummary.LastSeen)
 
 		// Assert available signals (should be sorted)
 		expectedAvailableSignals := []string{
-			"currentLocationLatitude",
-			"currentLocationLongitude",
+			"currentLocationCoordinates",
 			"powertrainTractionBatteryChargingChargeCurrentAC",
 			"powertrainTractionBatteryStateOfChargeCurrent",
 			"speed",
@@ -152,7 +146,7 @@ func TestSignalsMetadata(t *testing.T) {
 		assert.Equal(t, expectedAvailableSignals, result.DataSummary.AvailableSignals)
 
 		// Assert signal metadata - should have 5 different signal types
-		require.Len(t, result.DataSummary.SignalDataSummary, 5)
+		require.Len(t, result.DataSummary.SignalDataSummary, 4)
 
 		// Find and validate speed signal metadata (most common signal)
 		var speedMetadata *DataSummaryTest
@@ -205,20 +199,19 @@ func TestSignalsMetadata(t *testing.T) {
 		require.NoError(t, err)
 
 		// Assert filtered results - should only include smartcar signals
-		assert.Equal(t, uint64(4), result.DataSummary.NumberOfSignals) // 2 speed + 1 lat + 1 lon
+		assert.Equal(t, uint64(3), result.DataSummary.NumberOfSignals) // 2 speed + 1 lat + 1 lon
 		assert.Equal(t, smartCarTime1.Format(time.RFC3339), result.DataSummary.FirstSeen)
 		assert.Equal(t, smartCarTime2.Format(time.RFC3339), result.DataSummary.LastSeen)
 
 		// Assert available signals for smartcar only
 		expectedSmartcarSignals := []string{
-			"currentLocationLatitude",
-			"currentLocationLongitude",
+			"currentLocationCoordinates",
 			"speed",
 		}
 		assert.Equal(t, expectedSmartcarSignals, result.DataSummary.AvailableSignals)
 
 		// Assert signal metadata - should have 3 different signal types for smartcar
-		require.Len(t, result.DataSummary.SignalDataSummary, 3)
+		require.Len(t, result.DataSummary.SignalDataSummary, 2)
 
 		// Validate speed signal metadata for smartcar only
 		var speedMetadata *DataSummaryTest
