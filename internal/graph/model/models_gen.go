@@ -178,11 +178,9 @@ type SegmentConfig struct {
 type SignalCollection struct {
 	// The last time any signal was seen matching the filter.
 	LastSeen *time.Time `json:"lastSeen,omitempty"`
-	// Approximate location of vehicle in WGS 84 geodetic coordinates.
-	// Latitude and longitude are the center of the H3 cell with resolution 6 that the location is in.
-	// More Info on H3: https://h3geo.org/
-	// HDOP is returned unmasked.
-	// Required Privileges: [VEHICLE_APPROXIMATE_LOCATION OR VEHICLE_ALL_TIME_LOCATION]
+	// Approximate location of the vehicle in WGS 84 coordinates. The raw value is replaced with
+	// the center of the containing H3 cell of resolution 6. HDOP is not obscured at all.
+	// Required Privileges: [VEHICLE_APPROXIMATE_LOCATION VEHICLE_ALL_TIME_LOCATION]
 	CurrentLocationApproximateCoordinates *SignalLocation `json:"currentLocationApproximateCoordinates,omitempty"`
 	// Vehicle rotation rate along Z (vertical).
 	// Unit: 'degrees/s'
