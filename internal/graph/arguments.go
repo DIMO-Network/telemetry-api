@@ -22,10 +22,9 @@ func aggregationArgsFromContext(ctx context.Context, tokenID int, interval strin
 			TokenID: uint32(tokenID),
 			Filter:  filter,
 		},
-		FromTS:        from,
-		ToTS:          to,
-		Interval:      intervalInt,
-		ApproxLocArgs: make(map[model.FloatAggregation]struct{}),
+		FromTS:   from,
+		ToTS:     to,
+		Interval: intervalInt,
 	}
 
 	fields := graphql.CollectFieldsCtx(ctx, nil)
@@ -52,17 +51,14 @@ func addSignalAggregation(aggArgs *model.AggregatedSignalArgs, child *graphql.Fi
 	alias := child.Field.Alias
 	switch typedAgg := agg.(type) {
 	case model.FloatAggregation:
-		if name == model.ApproximateLongField || name == model.ApproximateLatField {
-			aggArgs.ApproxLocArgs[typedAgg] = struct{}{}
-		} else {
-			filter, _ := child.Args["filter"].(*model.SignalFloatFilter)
-			aggArgs.FloatArgs = append(aggArgs.FloatArgs, model.FloatSignalArgs{
-				Name:   name,
-				Agg:    typedAgg,
-				Alias:  alias,
-				Filter: filter,
-			})
-		}
+		// TODO(elffjs): The casts here and in the location case are worrisome. Should we panic?
+		filter, _ := child.Args["filter"].(*model.SignalFloatFilter)
+		aggArgs.FloatArgs = append(aggArgs.FloatArgs, model.FloatSignalArgs{
+			Name:   name,
+			Agg:    typedAgg,
+			Alias:  alias,
+			Filter: filter,
+		})
 	case model.StringAggregation:
 		aggArgs.StringArgs = append(aggArgs.StringArgs, model.StringSignalArgs{
 			Name:  name,
@@ -70,9 +66,15 @@ func addSignalAggregation(aggArgs *model.AggregatedSignalArgs, child *graphql.Fi
 			Alias: alias,
 		})
 	case model.LocationAggregation:
-		filter, _ := child.Args["filter"].(*model.SignalLocationFilter)
+		var filter *model.SignalLocationFilter
+		dbSignalName := name
+		if name == model.ApproximateCoordinatesField {
+			dbSignalName = vss.FieldCurrentLocationCoordinates
+		} else {
+			filter, _ = child.Args["filter"].(*model.SignalLocationFilter)
+		}
 		aggArgs.LocationArgs = append(aggArgs.LocationArgs, model.LocationSignalArgs{
-			Name:   name,
+			Name:   dbSignalName,
 			Agg:    typedAgg,
 			Alias:  alias,
 			Filter: filter,
@@ -102,9 +104,8 @@ func latestArgsFromContext(ctx context.Context, tokenID int, filter *model.Signa
 			continue
 		}
 
-		if field.Name == model.ApproximateLatField || field.Name == model.ApproximateLongField {
-			latestArgs.SignalNames[vss.FieldCurrentLocationLatitude] = struct{}{}
-			latestArgs.SignalNames[vss.FieldCurrentLocationLongitude] = struct{}{}
+		if field.Name == model.ApproximateCoordinatesField {
+			latestArgs.LocationSignalNames[vss.FieldCurrentLocationCoordinates] = struct{}{}
 		} else if field.Definition.Type.Name() == "SignalLocation" {
 			latestArgs.LocationSignalNames[field.Name] = struct{}{}
 		} else {

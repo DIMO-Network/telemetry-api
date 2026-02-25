@@ -7,21 +7,25 @@ import (
 const (
 	// LastSeenField is the field name for the last seen timestamp.
 	LastSeenField = "lastSeen"
-	// ApproximateLongField is the field name for the approximate longitude.
-	ApproximateLongField = "currentLocationApproximateLongitude"
-	// ApproximateLatField is the field name for the approximate latitude.
-	ApproximateLatField = "currentLocationApproximateLatitude"
+	// ApproximateCoordinatesField is the field name for the approximate current location.
+	// This is treated specially because there is no underlying ClickHouse table row carrying
+	// this name.
+	ApproximateCoordinatesField = "currentLocationApproximateCoordinates"
 )
 
 // SignalArgs is the base arguments for querying signals.
 type SignalArgs struct {
-	// Filter  optional filter for the signals.
+	// Filter is an optional filter for the signals.
 	Filter *SignalFilter
-	// TokenID is the vehicles's NFT token ID.
+	// TokenID is the vehicle's NFT token ID.
 	TokenID uint32
 }
 
 // LatestSignalsArgs is the arguments for querying the latest signals.
+//
+// We don't need to store as much information as we do for aggregations, since
+// the lack of aggregation and filtering means that each signal will appear at
+// most once in the resulting database query.
 type LatestSignalsArgs struct {
 	SignalArgs
 	// SignalNames is the list of signal names to query.
@@ -45,15 +49,24 @@ type AggregatedSignalArgs struct {
 	FloatArgs []FloatSignalArgs
 	// StringArgs represents arguments for each string signal.
 	StringArgs []StringSignalArgs
-	// ApproxLocArgs
-	ApproxLocArgs map[FloatAggregation]struct{}
-	LocationArgs  []LocationSignalArgs
+	// LocationArgs represents arguments for each location signal.
+	LocationArgs []LocationSignalArgs
 }
 
 type LocationSignalArgs struct {
-	Name   string
-	Agg    LocationAggregation
-	Alias  string
+	// Name is the VSS name for the location field. This is the signal name in the database.
+	//
+	// This will match the GraphQL field name except in the case of approximate location.
+	Name string
+	Agg  LocationAggregation
+	// Alias is the name used in the GraphQL query.
+	//
+	// Often this will be the same as Name, but these will necessarily differ for
+	// queries in which the same signal is requested with different aggregations
+	// and filters.
+	Alias string
+	// Filter optionally constrains the values fed into the aggregation. This will always
+	// be null for approximate location queries.
 	Filter *SignalLocationFilter
 }
 

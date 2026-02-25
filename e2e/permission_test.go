@@ -87,8 +87,8 @@ func TestPermission(t *testing.T) {
 			query: `query {
 				signalsLatest(tokenId: 39718) {
 					lastSeen
-					currentLocationApproximateLatitude {
-						value
+					currentLocationApproximateCoordinates {
+						value { latitude longitude hdop }
 					}
 				}
 			}`,
@@ -100,8 +100,8 @@ func TestPermission(t *testing.T) {
 			query: `query {
 				signalsLatest(tokenId: 39718) {
 					lastSeen
-					currentLocationApproximateLatitude {
-						value
+					currentLocationApproximateCoordinates {
+						value { latitude longitude hdop }
 					}
 				}
 			}`,
@@ -114,8 +114,8 @@ func TestPermission(t *testing.T) {
 			query: `query {
 				signalsLatest(tokenId: 39718) {
 					lastSeen
-					currentLocationApproximateLatitude {
-						value
+					currentLocationApproximateCoordinates {
+						value { latitude longitude hdop }
 					}
 				}
 			}`,
