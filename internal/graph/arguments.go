@@ -51,6 +51,7 @@ func addSignalAggregation(aggArgs *model.AggregatedSignalArgs, child *graphql.Fi
 	alias := child.Field.Alias
 	switch typedAgg := agg.(type) {
 	case model.FloatAggregation:
+		// TODO(elffjs): The casts here and in the location case are worrisome. Should we panic?
 		filter, _ := child.Args["filter"].(*model.SignalFloatFilter)
 		aggArgs.FloatArgs = append(aggArgs.FloatArgs, model.FloatSignalArgs{
 			Name:   name,
@@ -65,13 +66,15 @@ func addSignalAggregation(aggArgs *model.AggregatedSignalArgs, child *graphql.Fi
 			Alias: alias,
 		})
 	case model.LocationAggregation:
-		filter, _ := child.Args["filter"].(*model.SignalLocationFilter)
-		dbName := name
+		var filter *model.SignalLocationFilter
+		dbSignalName := name
 		if name == model.ApproximateCoordinatesField {
-			dbName = vss.FieldCurrentLocationCoordinates
+			dbSignalName = vss.FieldCurrentLocationCoordinates
+		} else {
+			filter, _ = child.Args["filter"].(*model.SignalLocationFilter)
 		}
 		aggArgs.LocationArgs = append(aggArgs.LocationArgs, model.LocationSignalArgs{
-			Name:   dbName,
+			Name:   dbSignalName,
 			Agg:    typedAgg,
 			Alias:  alias,
 			Filter: filter,

@@ -99,7 +99,8 @@ const (
 	FloatType FieldType = 1
 	// StringType is the type for rows with string values.
 	StringType FieldType = 2
-	LocType    FieldType = 4
+	// LocType is the type for rows with location values.
+	LocType FieldType = 3
 )
 
 func (t *FieldType) Scan(value any) error {
@@ -108,7 +109,7 @@ func (t *FieldType) Scan(value any) error {
 		return fmt.Errorf("expected value of type uint8, but got type %T", value)
 	}
 
-	if w != uint8(FloatType) && w != uint8(StringType) && w != uint8(LocType) {
+	if w < uint8(FloatType) || w > uint8(LocType) {
 		return fmt.Errorf("invalid value %d for field type", w)
 	}
 

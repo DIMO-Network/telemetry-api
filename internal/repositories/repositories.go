@@ -125,7 +125,6 @@ func (r *Repository) GetSignal(ctx context.Context, aggArgs *model.AggregatedSig
 	return allAggs, nil
 }
 
-
 // GetSignalLatest returns the latest signals for the given tokenID and filter.
 func (r *Repository) GetSignalLatest(ctx context.Context, latestArgs *model.LatestSignalsArgs) (*model.SignalCollection, error) {
 	if err := validateLatestSigArgs(latestArgs); err != nil {
@@ -264,6 +263,7 @@ func handleDBError(ctx context.Context, err error) error {
 }
 
 // GetApproximateLoc returns the approximate location for the given latitude and longitude.
+// The result is nil if some H3 library error occurs. We should probably be more concerned about this.
 func GetApproximateLoc(lat, long float64) *h3.LatLng {
 	h3LatLng := h3.NewLatLng(lat, long)
 	cell, err := h3.LatLngToCell(h3LatLng, approximateLocationResolution)
