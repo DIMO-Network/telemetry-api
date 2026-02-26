@@ -12,14 +12,6 @@ const (
 	defaultMinSegmentDurationSeconds = 240 // 4 minutes — minimum segment duration to keep
 )
 
-// segmentEndTime returns the end timestamp of a segment, or zero time if End is nil.
-func segmentEndTime(seg *model.Segment) time.Time {
-	if seg != nil && seg.End != nil {
-		return seg.End.Timestamp
-	}
-	return time.Time{}
-}
-
 // newSegment builds a model.Segment with only time bounds set (Signals/EventCounts/Start.Value/End.Value filled by repo).
 func newSegment(startTime time.Time, endTime *time.Time, durationSec int32, isOngoing, startedBeforeRange bool) *model.Segment {
 	start := &model.SignalLocation{Timestamp: startTime, Value: nil}
