@@ -510,7 +510,7 @@ func (r *Repository) GetDailyActivity(ctx context.Context, tokenID int, from, to
 	toInLoc := to.In(loc)
 	fromDate := time.Date(fromInLoc.Year(), fromInLoc.Month(), fromInLoc.Day(), 0, 0, 0, 0, loc)
 	toDate := time.Date(toInLoc.Year(), toInLoc.Month(), toInLoc.Day(), 0, 0, 0, 0, loc)
-	if !fromDate.Before(toDate) {
+	if fromDate.After(toDate) {
 		return nil, errorhandler.NewBadRequestError(ctx, fmt.Errorf("from date must be before to date"))
 	}
 	if toDate.After(time.Now().In(loc)) {
@@ -543,7 +543,7 @@ func (r *Repository) GetDailyActivity(ctx context.Context, tokenID int, from, to
 	}.String()
 
 	var out []*model.DailyActivity
-	for d := fromDate; d.Before(toDate); d = d.Add(24 * time.Hour) {
+	for d := fromDate; !d.After(toDate); d = d.Add(24 * time.Hour) {
 		dayStart := d
 		dayEnd := d.Add(24 * time.Hour)
 		dayStartUTC := dayStart.UTC()
