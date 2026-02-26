@@ -17,7 +17,9 @@ import (
 
 const (
 	maxDateRangeDays = 31
-	maxSegmentLimit  = 200
+	// maxDateRangeDuration: 31 days + 1 second so exactly-31-day requests don't flake on boundary
+	maxDateRangeDuration = maxDateRangeDays*24*time.Hour + time.Second
+	maxSegmentLimit      = 200
 )
 
 // validateSegmentArgs validates the arguments for segment queries.
@@ -36,8 +38,7 @@ func validateSegmentArgs(tokenID int, from, to time.Time) error {
 
 	// to in future is handled by caller (GetSegments caps to now before calling)
 
-	maxDuration := maxDateRangeDays * 24 * time.Hour
-	if to.Sub(from) > maxDuration {
+	if to.Sub(from) > maxDateRangeDuration {
 		return fmt.Errorf("date range exceeds maximum of %d days", maxDateRangeDays)
 	}
 
@@ -516,7 +517,7 @@ func (r *Repository) GetDailyActivity(ctx context.Context, tokenID int, from, to
 	if toDate.After(time.Now().In(loc)) {
 		return nil, errorhandler.NewBadRequestError(ctx, fmt.Errorf("to date cannot be in the future"))
 	}
-	if toDate.Sub(fromDate) > maxDateRangeDays*24*time.Hour {
+	if toDate.Sub(fromDate) > maxDateRangeDuration {
 		return nil, errorhandler.NewBadRequestError(ctx, fmt.Errorf("date range exceeds maximum of %d days", maxDateRangeDays))
 	}
 	rangeStart := fromDate
