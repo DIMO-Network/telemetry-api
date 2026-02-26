@@ -34,9 +34,7 @@ func validateSegmentArgs(tokenID int, from, to time.Time) error {
 		return fmt.Errorf("from and to times cannot be equal")
 	}
 
-	if to.After(time.Now()) {
-		return fmt.Errorf("to time cannot be in the future")
-	}
+	// to in future is handled by caller (GetSegments caps to now before calling)
 
 	maxDuration := maxDateRangeDays * 24 * time.Hour
 	if to.Sub(from) > maxDuration {
@@ -190,7 +188,11 @@ func sortSegmentSignals(signals []*model.SignalAggregationValue) {
 // GetSegments returns segments detected using the specified mechanism in the time range.
 // Pagination: pass after (exclusive cursor = startTime of last segment from previous page) and limit (default 100, max 200).
 // Segments are ordered by startTime ascending. When after is set, only segments with startTime > after are requested from CH.
+// If to is in the future (e.g. client sent end-of-day in user TZ), it is capped to now so the query succeeds.
 func (r *Repository) GetSegments(ctx context.Context, tokenID int, from, to time.Time, mechanism model.DetectionMechanism, config *model.SegmentConfig, signalRequests []*model.SegmentSignalRequest, eventRequests []*model.SegmentEventRequest, limit *int, after *time.Time) ([]*model.Segment, error) {
+	if now := time.Now(); to.After(now) {
+		to = now
+	}
 	if err := validateSegmentArgs(tokenID, from, to); err != nil {
 		return nil, errorhandler.NewBadRequestError(ctx, err)
 	}

@@ -79,11 +79,6 @@ func TestValidateSegmentArgs(t *testing.T) {
 		require.Error(t, err)
 	})
 
-	t.Run("to in future", func(t *testing.T) {
-		err := validateSegmentArgs(1, validFrom, time.Now().Add(time.Hour))
-		require.ErrorContains(t, err, "to time cannot be in the future")
-	})
-
 	t.Run("date range exceeded", func(t *testing.T) {
 		from := validTo.Add(-32 * 24 * time.Hour) // max is 31 days
 		err := validateSegmentArgs(1, from, validTo)
