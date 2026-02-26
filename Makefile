@@ -55,6 +55,23 @@ docker: dep
 	@docker build -f ./Dockerfile . -t dimozone/$(BIN_NAME):$(VER_CUT)
 	@docker tag dimozone/$(BIN_NAME):$(VER_CUT) dimozone/$(BIN_NAME):latest
 
+# Build multi-arch (amd64 + arm64) and push with a random tag. Does not trigger GitHub workflows.
+# Requires: docker buildx, docker login. Run from repo root.
+docker-push-multiarch:
+	$(eval TAG := dev-$(shell openssl rand -hex 6))
+	@echo "Building and pushing dimozone/$(BIN_NAME):$(TAG) (linux/amd64, linux/arm64)"
+	@docker buildx build --platform linux/amd64,linux/arm64 -f ./Dockerfile --push -t dimozone/$(BIN_NAME):$(TAG) .
+	@echo "Pushed dimozone/$(BIN_NAME):$(TAG)"
+
+# Same as docker-push-multiarch but using podman (manifest list + manifest push --all).
+podman-push-multiarch:
+	$(eval TAG := dev-$(shell openssl rand -hex 6))
+	$(eval IMAGE := dimozone/$(BIN_NAME):$(TAG))
+	@echo "Building and pushing $(IMAGE) (linux/amd64, linux/arm64)"
+	@podman build --platform linux/amd64,linux/arm64 --manifest $(IMAGE) -f ./Dockerfile .
+	@podman manifest push --all $(IMAGE) docker://$(IMAGE)
+	@echo "Pushed $(IMAGE)"
+
 gqlgen: ## Generate gqlgen code.
 	@go tool gqlgen generate
 

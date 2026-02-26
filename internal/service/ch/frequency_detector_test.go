@@ -10,7 +10,6 @@ import (
 func TestMergeWindowsIntoSegments(t *testing.T) {
 	// We can't inject time.Now() anymore, so we rely on relative times from time.Now() for tests that depend on "now"
 	now := time.Now()
-	tokenID := uint32(1)
 	maxGap := 300 // 5 minutes
 	minDuration := 60
 
@@ -26,11 +25,11 @@ func TestMergeWindowsIntoSegments(t *testing.T) {
 			{WindowStart: from.Add(10 * time.Minute), WindowEnd: from.Add(30 * time.Minute)},
 		}
 
-		segments := mergeWindowsIntoSegments(tokenID, windows, from, to, maxGap, minDuration)
+		segments := mergeWindowsIntoSegments(windows, from, to, maxGap, minDuration)
 		require.Len(t, segments, 1)
 		require.False(t, segments[0].IsOngoing)
-		require.NotNil(t, segments[0].EndTime)
-		require.Equal(t, from.Add(30*time.Minute), *segments[0].EndTime)
+		require.NotNil(t, segments[0].End)
+		require.Equal(t, from.Add(30*time.Minute), segments[0].End.Timestamp)
 	})
 
 	t.Run("ongoing segment - hits to time", func(t *testing.T) {
@@ -42,10 +41,10 @@ func TestMergeWindowsIntoSegments(t *testing.T) {
 			{WindowStart: from, WindowEnd: now},
 		}
 
-		segments := mergeWindowsIntoSegments(tokenID, windows, from, to, maxGap, minDuration)
+		segments := mergeWindowsIntoSegments(windows, from, to, maxGap, minDuration)
 		require.Len(t, segments, 1)
 		require.True(t, segments[0].IsOngoing)
-		require.Nil(t, segments[0].EndTime)
+		require.Nil(t, segments[0].End)
 	})
 
 	t.Run("ongoing segment - near real-time logic", func(t *testing.T) {
@@ -57,15 +56,14 @@ func TestMergeWindowsIntoSegments(t *testing.T) {
 		windows := []ActiveWindow{
 			{WindowStart: from, WindowEnd: lastWindowEnd},
 		}
-
-		segments := mergeWindowsIntoSegments(tokenID, windows, from, to, maxGap, minDuration)
+		segments := mergeWindowsIntoSegments(windows, from, to, maxGap, minDuration)
 		require.Len(t, segments, 1)
 		require.True(t, segments[0].IsOngoing)
-		require.Nil(t, segments[0].EndTime)
+		require.Nil(t, segments[0].End)
 		// Duration should be from start to 'to' (now)
 		// Allow small delta for time precision
 		expectedDuration := int32(to.Sub(from).Seconds())
-		require.InDelta(t, expectedDuration, segments[0].DurationSeconds, 1)
+		require.InDelta(t, expectedDuration, segments[0].Duration, 1)
 	})
 
 	t.Run("completed segment - outside real-time gap", func(t *testing.T) {
@@ -77,12 +75,11 @@ func TestMergeWindowsIntoSegments(t *testing.T) {
 		windows := []ActiveWindow{
 			{WindowStart: from, WindowEnd: lastWindowEnd},
 		}
-
-		segments := mergeWindowsIntoSegments(tokenID, windows, from, to, maxGap, minDuration)
+		segments := mergeWindowsIntoSegments(windows, from, to, maxGap, minDuration)
 		require.Len(t, segments, 1)
 		require.False(t, segments[0].IsOngoing)
-		require.NotNil(t, segments[0].EndTime)
-		require.Equal(t, lastWindowEnd, *segments[0].EndTime)
+		require.NotNil(t, segments[0].End)
+		require.Equal(t, lastWindowEnd, segments[0].End.Timestamp)
 	})
 
 	t.Run("historical query - not ongoing even if gap small relative to query time", func(t *testing.T) {
@@ -95,10 +92,9 @@ func TestMergeWindowsIntoSegments(t *testing.T) {
 		windows := []ActiveWindow{
 			{WindowStart: from, WindowEnd: lastWindowEnd},
 		}
-
-		segments := mergeWindowsIntoSegments(tokenID, windows, from, queryTo, maxGap, minDuration)
+		segments := mergeWindowsIntoSegments(windows, from, queryTo, maxGap, minDuration)
 		require.Len(t, segments, 1)
 		require.False(t, segments[0].IsOngoing)
-		require.NotNil(t, segments[0].EndTime)
+		require.NotNil(t, segments[0].End)
 	})
 }

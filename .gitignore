@@ -27,5 +27,6 @@ settings.yaml
 __debug_bin*
 *.code-workspace
 .history/
-.sample-data/
-internal/service/ch/detector_queries_test.go
+sample_data/
+scripts/
+e2e/clickhouse_container_test.go

@@ -45,9 +45,9 @@ const (
 	testTokenID  = uint32(12345)
 	testSource   = "test-source"
 	testProducer = "test-producer"
-	// tripDuration must be > 150 seconds (minSegmentDurationSeconds default)
-	tripDuration = 180 // 3 minutes
-	// tripGap must be > 600 seconds (minIdleSeconds default) to ensure separate trips
+	// tripDuration must be >= 240s (defaultMinSegmentDurationSeconds in detectors)
+	tripDuration = 300 // 5 minutes
+	// tripGap must be > 300s (defaultMaxGapSeconds) to ensure separate trips
 	tripGap = 720 // 12 minutes
 )
 
@@ -94,7 +94,7 @@ func generateTestData() ([]testSignal, []testStateChange) {
 	signals = append(signals, generateTripSignals(trip1Start, tripDuration, "trip1-")...)
 
 	// Trip 2: tripDuration seconds starting tripGap seconds after trip 1 end
-	// This creates a gap > minIdleSeconds (600s) between trips
+	// This creates a gap > maxGapSeconds (300s default) between trips
 	trip2Start := trip1End.Add(time.Duration(tripGap) * time.Second)
 	trip2End := trip2Start.Add(time.Duration(tripDuration) * time.Second)
 	signals = append(signals, generateTripSignals(trip2Start, tripDuration, "trip2-")...)
@@ -207,8 +207,8 @@ func insertTestStateChanges(t *testing.T, conn clickhouse.Conn, stateChanges []t
 	t.Logf("Inserted %d test state changes", len(stateChanges))
 }
 
-// TestSegmentDetectors validates that all 3 segment detection mechanisms
-// correctly identify 2 trips from the test data.
+// TestSegmentDetectors validates that all segment detection mechanisms
+// correctly identify trips from the test data.
 func TestSegmentDetectors(t *testing.T) {
 	if testing.Short() {
 		t.Skip("Skipping integration test in short mode")
@@ -244,8 +244,7 @@ func TestSegmentDetectors(t *testing.T) {
 
 	// Expected trip times
 	trip1Start := baseTime
-	trip1End := trip1Start.Add(time.Duration(tripDuration) * time.Second)
-	trip2Start := trip1End.Add(time.Duration(tripGap) * time.Second)
+	trip2Start := trip1Start.Add(time.Duration(tripDuration)*time.Second + time.Duration(tripGap)*time.Second)
 
 	t.Run("IgnitionDetector", func(t *testing.T) {
 		detector := ch.NewIgnitionDetector(conn)
@@ -254,19 +253,17 @@ func TestSegmentDetectors(t *testing.T) {
 
 		assert.Len(t, segments, 2, "Expected 2 trips from IgnitionDetector")
 		if len(segments) >= 2 {
-			// Trip 1
-			assert.Equal(t, trip1Start, segments[0].StartTime)
-			assert.NotNil(t, segments[0].EndTime)
+			assert.Equal(t, trip1Start, segments[0].Start.Timestamp)
+			assert.NotNil(t, segments[0].End)
 			assert.False(t, segments[0].IsOngoing)
 
-			// Trip 2
-			assert.Equal(t, trip2Start, segments[1].StartTime)
-			assert.NotNil(t, segments[1].EndTime)
+			assert.Equal(t, trip2Start, segments[1].Start.Timestamp)
+			assert.NotNil(t, segments[1].End)
 			assert.False(t, segments[1].IsOngoing)
 		}
 		for i, seg := range segments {
-			t.Logf("  Segment %d: %s - %v (duration: %ds, ongoing: %v)",
-				i+1, seg.StartTime.Format(time.RFC3339), seg.EndTime, seg.DurationSeconds, seg.IsOngoing)
+			t.Logf("  Segment %d: %s (duration: %ds, ongoing: %v)",
+				i+1, seg.Start.Timestamp.Format(time.RFC3339), seg.Duration, seg.IsOngoing)
 		}
 	})
 
@@ -276,10 +273,9 @@ func TestSegmentDetectors(t *testing.T) {
 		require.NoError(t, err)
 
 		assert.Len(t, segments, 2, "Expected 2 trips from FrequencyDetector")
-		t.Logf("FrequencyDetector found %d segments", len(segments))
 		for i, seg := range segments {
-			t.Logf("  Segment %d: %s - %v (duration: %ds, ongoing: %v)",
-				i+1, seg.StartTime.Format(time.RFC3339), seg.EndTime, seg.DurationSeconds, seg.IsOngoing)
+			t.Logf("  Segment %d: %s (duration: %ds, ongoing: %v)",
+				i+1, seg.Start.Timestamp.Format(time.RFC3339), seg.Duration, seg.IsOngoing)
 		}
 	})
 
@@ -289,33 +285,21 @@ func TestSegmentDetectors(t *testing.T) {
 		require.NoError(t, err)
 
 		assert.Len(t, segments, 2, "Expected 2 trips from ChangePointDetector")
-		t.Logf("ChangePointDetector found %d segments", len(segments))
 		for i, seg := range segments {
-			t.Logf("  Segment %d: %s - %v (duration: %ds, ongoing: %v)",
-				i+1, seg.StartTime.Format(time.RFC3339), seg.EndTime, seg.DurationSeconds, seg.IsOngoing)
+			t.Logf("  Segment %d: %s (duration: %ds, ongoing: %v)",
+				i+1, seg.Start.Timestamp.Format(time.RFC3339), seg.Duration, seg.IsOngoing)
 		}
 	})
 
 	// Test StartedBeforeRange flag
-	// Query with 'from' set to middle of trip 1 (90 seconds after start)
-	// Trip 1 should have StartedBeforeRange = true
-	// Trip 2 should have StartedBeforeRange = false
 	fromMidTrip1 := baseTime.Add(90 * time.Second)
 
 	t.Run("IgnitionDetector_StartedBeforeRange", func(t *testing.T) {
 		detector := ch.NewIgnitionDetector(conn)
 		segments, err := detector.DetectSegments(ctx, testTokenID, fromMidTrip1, to, nil)
 		require.NoError(t, err)
-
-		t.Logf("Query from=%s (mid-trip1)", fromMidTrip1.Format(time.RFC3339))
-		for i, seg := range segments {
-			t.Logf("  Segment %d: start=%s, startedBeforeRange=%v",
-				i+1, seg.StartTime.Format(time.RFC3339), seg.StartedBeforeRange)
-		}
-
 		require.Len(t, segments, 2, "Expected 2 trips")
-		assert.True(t, segments[0].StartedBeforeRange, "Trip 1 should have StartedBeforeRange=true (started at %s, query from=%s)",
-			segments[0].StartTime.Format(time.RFC3339), fromMidTrip1.Format(time.RFC3339))
+		assert.True(t, segments[0].StartedBeforeRange, "Trip 1 should have StartedBeforeRange=true")
 		assert.False(t, segments[1].StartedBeforeRange, "Trip 2 should have StartedBeforeRange=false")
 	})
 
@@ -323,16 +307,8 @@ func TestSegmentDetectors(t *testing.T) {
 		detector := ch.NewFrequencyDetector(conn)
 		segments, err := detector.DetectSegments(ctx, testTokenID, fromMidTrip1, to, nil)
 		require.NoError(t, err)
-
-		t.Logf("Query from=%s (mid-trip1)", fromMidTrip1.Format(time.RFC3339))
-		for i, seg := range segments {
-			t.Logf("  Segment %d: start=%s, startedBeforeRange=%v",
-				i+1, seg.StartTime.Format(time.RFC3339), seg.StartedBeforeRange)
-		}
-
 		require.Len(t, segments, 2, "Expected 2 trips")
-		assert.True(t, segments[0].StartedBeforeRange, "Trip 1 should have StartedBeforeRange=true (started at %s, query from=%s)",
-			segments[0].StartTime.Format(time.RFC3339), fromMidTrip1.Format(time.RFC3339))
+		assert.True(t, segments[0].StartedBeforeRange, "Trip 1 should have StartedBeforeRange=true")
 		assert.False(t, segments[1].StartedBeforeRange, "Trip 2 should have StartedBeforeRange=false")
 	})
 
@@ -340,16 +316,209 @@ func TestSegmentDetectors(t *testing.T) {
 		detector := ch.NewChangePointDetector(conn)
 		segments, err := detector.DetectSegments(ctx, testTokenID, fromMidTrip1, to, nil)
 		require.NoError(t, err)
-
-		t.Logf("Query from=%s (mid-trip1)", fromMidTrip1.Format(time.RFC3339))
-		for i, seg := range segments {
-			t.Logf("  Segment %d: start=%s, startedBeforeRange=%v",
-				i+1, seg.StartTime.Format(time.RFC3339), seg.StartedBeforeRange)
-		}
-
 		require.Len(t, segments, 2, "Expected 2 trips")
-		assert.True(t, segments[0].StartedBeforeRange, "Trip 1 should have StartedBeforeRange=true (started at %s, query from=%s)",
-			segments[0].StartTime.Format(time.RFC3339), fromMidTrip1.Format(time.RFC3339))
+		assert.True(t, segments[0].StartedBeforeRange, "Trip 1 should have StartedBeforeRange=true")
 		assert.False(t, segments[1].StartedBeforeRange, "Trip 2 should have StartedBeforeRange=false")
 	})
+
+	// Idling: engine speed (RPM) in idle range for a contiguous period
+	idleStart := baseTime.Add(48 * time.Hour)
+	idleDurationSec := 15 * 60 // 15 minutes
+	t.Run("IdlingDetector", func(t *testing.T) {
+		idleSignals := generateIdleRpmSignals(idleStart, idleDurationSec)
+		insertTestSignals(t, conn, idleSignals)
+
+		fromIdle := idleStart.Add(-1 * time.Hour)
+		toIdle := idleStart.Add(time.Duration(idleDurationSec)*time.Second + 1*time.Hour)
+
+		detector := ch.NewIdlingDetector(conn)
+		segments, err := detector.DetectSegments(ctx, testTokenID, fromIdle, toIdle, nil)
+		require.NoError(t, err)
+
+		require.Len(t, segments, 1, "Expected 1 idling segment")
+		seg := segments[0]
+		assert.False(t, seg.IsOngoing)
+		assert.NotNil(t, seg.End)
+		assert.GreaterOrEqual(t, seg.Duration, 240)
+		t.Logf("Idling segment: %s (duration: %ds)", seg.Start.Timestamp.Format(time.RFC3339), seg.Duration)
+	})
+
+	// Refuel: fuel level rises sharply
+	refuelStart := baseTime.Add(72 * time.Hour)
+	t.Run("RefuelDetector", func(t *testing.T) {
+		refuelSignals := generateRefuelSignals(refuelStart)
+		insertTestSignals(t, conn, refuelSignals)
+
+		fromRefuel := refuelStart.Add(-1 * time.Hour)
+		toRefuel := refuelStart.Add(2 * time.Hour)
+
+		detector := ch.NewRefuelDetector(conn)
+		segments, err := detector.DetectSegments(ctx, testTokenID, fromRefuel, toRefuel, nil)
+		require.NoError(t, err)
+
+		require.GreaterOrEqual(t, len(segments), 1, "Expected at least 1 refuel segment")
+		for i, seg := range segments {
+			assert.False(t, seg.IsOngoing)
+			assert.NotNil(t, seg.End)
+			t.Logf("  Refuel segment %d: %s (duration: %ds)", i+1, seg.Start.Timestamp.Format(time.RFC3339), seg.Duration)
+		}
+	})
+
+	// Recharge: SoC rises over time
+	rechargeStart := baseTime.Add(96 * time.Hour)
+	t.Run("RechargeDetector", func(t *testing.T) {
+		rechargeSignals := generateRechargeSignals(rechargeStart)
+		insertTestSignals(t, conn, rechargeSignals)
+
+		fromRecharge := rechargeStart.Add(-1 * time.Hour)
+		toRecharge := rechargeStart.Add(4 * time.Hour)
+
+		detector := ch.NewRechargeDetector(conn)
+		segments, err := detector.DetectSegments(ctx, testTokenID, fromRecharge, toRecharge, nil)
+		require.NoError(t, err)
+
+		require.GreaterOrEqual(t, len(segments), 1, "Expected at least 1 recharge segment")
+		for i, seg := range segments {
+			assert.False(t, seg.IsOngoing)
+			assert.NotNil(t, seg.End)
+			t.Logf("  Recharge segment %d: %s (duration: %ds)", i+1, seg.Start.Timestamp.Format(time.RFC3339), seg.Duration)
+		}
+	})
+}
+
+// generateIdleRpmSignals creates powertrainCombustionEngineSpeed signals in idle range (e.g. 800 rpm)
+// at 10s intervals for the given duration so 60s windows have enough samples and max(rpm) <= 1000.
+func generateIdleRpmSignals(startTime time.Time, durationSeconds int) []testSignal {
+	const engineSpeedName = "powertrainCombustionEngineSpeed"
+	const idleRpm = 800.0
+	signals := []testSignal{}
+	for offset := 0; offset < durationSeconds; offset += 10 {
+		ts := startTime.Add(time.Duration(offset) * time.Second)
+		signals = append(signals, testSignal{
+			TokenID:      testTokenID,
+			Timestamp:    ts,
+			Name:         engineSpeedName,
+			ValueNumber:  idleRpm,
+			ValueString:  "",
+			Source:       testSource,
+			Producer:     testProducer,
+			CloudEventID: fmt.Sprintf("idle-%s-%d", ts.Format("150405"), offset),
+		})
+	}
+	return signals
+}
+
+// generateRefuelSignals creates fuel level signals that simulate a refuel:
+// - 30 min at ~20% fuel (low, pre-refuel)
+// - sharp jump to ~80% (refuel event)
+// - 30 min at ~80% (post-refuel)
+func generateRefuelSignals(startTime time.Time) []testSignal {
+	const fuelName = "powertrainFuelSystemRelativeLevel"
+	signals := []testSignal{}
+
+	// Pre-refuel: 30 min at low fuel, every 60s
+	for offset := 0; offset < 30*60; offset += 60 {
+		ts := startTime.Add(time.Duration(offset) * time.Second)
+		signals = append(signals, testSignal{
+			TokenID:      testTokenID,
+			Timestamp:    ts,
+			Name:         fuelName,
+			ValueNumber:  20.0,
+			Source:       testSource,
+			Producer:     testProducer,
+			CloudEventID: fmt.Sprintf("refuel-pre-%d", offset),
+		})
+	}
+
+	// Refuel event: jump to 80% (within a 5-minute window, rise is 300% relative)
+	refuelTime := startTime.Add(30 * time.Minute)
+	signals = append(signals, testSignal{
+		TokenID:      testTokenID,
+		Timestamp:    refuelTime,
+		Name:         fuelName,
+		ValueNumber:  80.0,
+		Source:       testSource,
+		Producer:     testProducer,
+		CloudEventID: "refuel-jump",
+	})
+
+	// Post-refuel: 30 min at high fuel, every 60s
+	for offset := 1; offset <= 30; offset++ {
+		ts := refuelTime.Add(time.Duration(offset) * time.Minute)
+		signals = append(signals, testSignal{
+			TokenID:      testTokenID,
+			Timestamp:    ts,
+			Name:         fuelName,
+			ValueNumber:  80.0,
+			Source:       testSource,
+			Producer:     testProducer,
+			CloudEventID: fmt.Sprintf("refuel-post-%d", offset),
+		})
+	}
+
+	return signals
+}
+
+// generateRechargeSignals creates SoC signals that simulate a recharge session:
+// - 30 min declining to 20% (driving, pre-charge)
+// - 2 hours rising from 20% to 90% (charging)
+// - Odometer stays constant during charge period
+func generateRechargeSignals(startTime time.Time) []testSignal {
+	const socName = "powertrainTractionBatteryStateOfChargeCurrent"
+	const odoName = "powertrainTransmissionTravelledDistance"
+	signals := []testSignal{}
+
+	// Pre-charge: declining SoC, every 60s for 30 min
+	for offset := 0; offset < 30; offset++ {
+		ts := startTime.Add(time.Duration(offset) * time.Minute)
+		soc := 35.0 - float64(offset)*0.5 // 35% down to 20%
+		signals = append(signals, testSignal{
+			TokenID:      testTokenID,
+			Timestamp:    ts,
+			Name:         socName,
+			ValueNumber:  soc,
+			Source:       testSource,
+			Producer:     testProducer,
+			CloudEventID: fmt.Sprintf("recharge-pre-%d", offset),
+		})
+		signals = append(signals, testSignal{
+			TokenID:      testTokenID,
+			Timestamp:    ts,
+			Name:         odoName,
+			ValueNumber:  50000.0 + float64(offset)*0.1, // moving
+			Source:       testSource,
+			Producer:     testProducer,
+			CloudEventID: fmt.Sprintf("recharge-odo-pre-%d", offset),
+		})
+	}
+
+	// Charging: rising SoC, every 60s for 2 hours. Odometer constant.
+	chargeStart := startTime.Add(30 * time.Minute)
+	for offset := 0; offset < 120; offset++ {
+		ts := chargeStart.Add(time.Duration(offset) * time.Minute)
+		soc := 20.0 + float64(offset)*0.58 // ~20% to ~90% over 2 hours
+		if soc > 90.0 {
+			soc = 90.0
+		}
+		signals = append(signals, testSignal{
+			TokenID:      testTokenID,
+			Timestamp:    ts,
+			Name:         socName,
+			ValueNumber:  soc,
+			Source:       testSource,
+			Producer:     testProducer,
+			CloudEventID: fmt.Sprintf("recharge-charge-%d", offset),
+		})
+		signals = append(signals, testSignal{
+			TokenID:      testTokenID,
+			Timestamp:    ts,
+			Name:         odoName,
+			ValueNumber:  50003.0, // stationary during charge
+			Source:       testSource,
+			Producer:     testProducer,
+			CloudEventID: fmt.Sprintf("recharge-odo-charge-%d", offset),
+		})
+	}
+
+	return signals
 }

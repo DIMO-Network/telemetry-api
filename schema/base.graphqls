@@ -117,6 +117,30 @@ type DataSummary {
   data summary of an individual signal
   """
   signalDataSummary: [signalDataSummary!]!
+
+  """
+  Events known to the vehicle: per-event name, count, and first/last seen.
+  """
+  eventDataSummary: [eventDataSummary!]!
+}
+
+type eventDataSummary {
+  """
+  Event name
+  """
+  name: String!
+  """
+  Number of times this event occurred for the vehicle
+  """
+  numberOfEvents: Uint64!
+  """
+  First seen timestamp
+  """
+  firstSeen: Time!
+  """
+  Last seen timestamp
+  """
+  lastSeen: Time!
 }
 
 type signalDataSummary {
@@ -179,7 +203,7 @@ enum StringAggregation {
 }
 type SignalFloat {
   """
-  timestamp of when this data was colllected
+  timestamp of when this data was collected
   """
   timestamp: Time!
 
@@ -191,7 +215,7 @@ type SignalFloat {
 
 type SignalString {
   """
-  timestamp of when this data was colllected
+  timestamp of when this data was collected
   """
   timestamp: Time!
 
@@ -203,12 +227,12 @@ type SignalString {
 
 type SignalLocation {
   """
-  timestamp of when this data was colllected
+  timestamp of when this data was collected
   """
   timestamp: Time!
 
   """
-  value of the signal
+  location (latitude, longitude, hdop) at this timestamp.
   """
   value: Location!
 }
@@ -241,6 +265,24 @@ type Location {
   latitude: Float!
   longitude: Float!
   hdop: Float!
+}
+
+"""
+Result of aggregating a float signal over an interval. Used by segments and daily activity summaries.
+Same shape as one row of aggregated signal data (name, aggregation type, computed value).
+"""
+type SignalAggregationValue {
+  name: String!
+  agg: String!
+  value: Float!
+}
+
+"""
+Event name and count. Used by segments, daily activity, and event summaries.
+"""
+type EventCount {
+  name: String!
+  count: Int!
 }
 
 """
