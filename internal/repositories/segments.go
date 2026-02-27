@@ -197,6 +197,10 @@ func (r *Repository) GetSegments(ctx context.Context, tokenID int, from, to time
 	if err := validateSegmentArgs(tokenID, from, to); err != nil {
 		return nil, errorhandler.NewBadRequestError(ctx, err)
 	}
+	return r.getSegments(ctx, tokenID, from, to, mechanism, config, signalRequests, eventRequests, limit, after)
+}
+
+func (r *Repository) getSegments(ctx context.Context, tokenID int, from, to time.Time, mechanism model.DetectionMechanism, config *model.SegmentConfig, signalRequests []*model.SegmentSignalRequest, eventRequests []*model.SegmentEventRequest, limit *int, after *time.Time) ([]*model.Segment, error) {
 	if err := validateSegmentConfig(config, mechanism); err != nil {
 		return nil, errorhandler.NewBadRequestError(ctx, err)
 	}
@@ -332,6 +336,9 @@ func (r *Repository) GetSegments(ctx context.Context, tokenID int, from, to time
 			}
 			seg.Signals = summary.Signals
 			seg.EventCounts = summary.EventCounts
+			if summary.StartLocation != nil {
+				seg.Start.Value = summary.StartLocation
+			}
 			if summary.StartLocation != nil {
 				seg.Start.Value = summary.StartLocation
 			}
@@ -520,6 +527,9 @@ func (r *Repository) GetDailyActivity(ctx context.Context, tokenID int, from, to
 	if toDate.Sub(fromDate) > maxDateRangeDuration {
 		return nil, errorhandler.NewBadRequestError(ctx, fmt.Errorf("date range exceeds maximum of %d days", maxDateRangeDays))
 	}
+	if tokenID <= 0 {
+		return nil, errorhandler.NewBadRequestError(ctx, fmt.Errorf("invalid tokenID: %d", tokenID))
+	}
 	rangeStart := fromDate
 	rangeEnd := toDate.Add(24 * time.Hour)
 
@@ -533,7 +543,7 @@ func (r *Repository) GetDailyActivity(ctx context.Context, tokenID int, from, to
 		}
 	}
 
-	segments, err := r.GetSegments(ctx, tokenID, rangeStart, rangeEnd, mechanism, config, signalReqs, eventRequests, nil, nil)
+	segments, err := r.getSegments(ctx, tokenID, rangeStart, rangeEnd, mechanism, config, signalReqs, eventRequests, nil, nil)
 	if err != nil {
 		return nil, err
 	}
