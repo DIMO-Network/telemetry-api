@@ -39,7 +39,7 @@ func validateSegmentArgs(tokenID int, from, to time.Time) error {
 	// to in future is handled by caller (GetSegments caps to now before calling)
 
 	if to.Sub(from) > maxDateRangeDuration {
-		return fmt.Errorf("date range exceeds maximum of %d days", maxDateRangeDays)
+		return fmt.Errorf("validation date range exceeds maximum of %d days", maxDateRangeDays)
 	}
 
 	return nil
@@ -518,20 +518,31 @@ func (r *Repository) GetDailyActivity(ctx context.Context, tokenID int, from, to
 	toInLoc := to.In(loc)
 	fromDate := time.Date(fromInLoc.Year(), fromInLoc.Month(), fromInLoc.Day(), 0, 0, 0, 0, loc)
 	toDate := time.Date(toInLoc.Year(), toInLoc.Month(), toInLoc.Day(), 0, 0, 0, 0, loc)
-	if fromDate.After(toDate) {
-		return nil, errorhandler.NewBadRequestError(ctx, fmt.Errorf("from date must be before to date"))
-	}
 	if toDate.After(time.Now().In(loc)) {
 		return nil, errorhandler.NewBadRequestError(ctx, fmt.Errorf("to date cannot be in the future"))
 	}
-	if toDate.Sub(fromDate) > maxDateRangeDuration {
+	if err := validateSegmentArgs(tokenID, from, to); err != nil {
+		return nil, errorhandler.NewBadRequestError(ctx, err)
+	}
+
+	endInclusive := toInLoc
+	if toInLoc.Equal(toDate) {
+		endInclusive = endInclusive.Add(-time.Nanosecond)
+	}
+	endDate := time.Date(endInclusive.Year(), endInclusive.Month(), endInclusive.Day(), 0, 0, 0, 0, loc)
+	if fromDate.After(endDate) {
+		return nil, errorhandler.NewBadRequestError(ctx, fmt.Errorf("from date must be before to date"))
+	}
+
+	dayCount := 0
+	for d := fromDate; !d.After(endDate); d = d.AddDate(0, 0, 1) {
+		dayCount++
+	}
+	if dayCount > maxDateRangeDays {
 		return nil, errorhandler.NewBadRequestError(ctx, fmt.Errorf("date range exceeds maximum of %d days", maxDateRangeDays))
 	}
-	if tokenID <= 0 {
-		return nil, errorhandler.NewBadRequestError(ctx, fmt.Errorf("invalid tokenID: %d", tokenID))
-	}
 	rangeStart := fromDate
-	rangeEnd := toDate.Add(24 * time.Hour)
+	rangeEnd := endDate.AddDate(0, 0, 1)
 
 	defaultReqs := defaultSegmentSignalSet(mechanism)
 	signalReqs := mergeSegmentSignalRequests(defaultReqs, signalRequests)
@@ -554,9 +565,9 @@ func (r *Repository) GetDailyActivity(ctx context.Context, tokenID int, from, to
 	}.String()
 
 	var out []*model.DailyActivity
-	for d := fromDate; !d.After(toDate); d = d.Add(24 * time.Hour) {
+	for d := fromDate; !d.After(endDate); d = d.AddDate(0, 0, 1) {
 		dayStart := d
-		dayEnd := d.Add(24 * time.Hour)
+		dayEnd := d.AddDate(0, 0, 1)
 		dayStartUTC := dayStart.UTC()
 		dayEndUTC := dayEnd.UTC()
 
