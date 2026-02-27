@@ -22,6 +22,15 @@ const (
 	maxSegmentLimit      = 200
 )
 
+// validateSegmentDateRange returns an error if the range from-to exceeds the maximum allowed (31 days + 1 second).
+// Used by both segments and dailyActivity.
+func validateSegmentDateRange(from, to time.Time) error {
+	if to.Sub(from) > maxDateRangeDuration {
+		return fmt.Errorf("date range exceeds maximum of %d days", maxDateRangeDays)
+	}
+	return nil
+}
+
 // validateSegmentArgs validates the arguments for segment queries.
 func validateSegmentArgs(tokenID int, from, to time.Time) error {
 	if tokenID <= 0 {
@@ -38,8 +47,8 @@ func validateSegmentArgs(tokenID int, from, to time.Time) error {
 
 	// to in future is handled by caller (GetSegments caps to now before calling)
 
-	if to.Sub(from) > maxDateRangeDuration {
-		return fmt.Errorf("date range exceeds maximum of %d days", maxDateRangeDays)
+	if err := validateSegmentDateRange(from, to); err != nil {
+		return err
 	}
 
 	return nil
@@ -517,8 +526,8 @@ func (r *Repository) GetDailyActivity(ctx context.Context, tokenID int, from, to
 	if toDate.After(time.Now().In(loc)) {
 		return nil, errorhandler.NewBadRequestError(ctx, fmt.Errorf("to date cannot be in the future"))
 	}
-	if toDate.Sub(fromDate) > maxDateRangeDuration {
-		return nil, errorhandler.NewBadRequestError(ctx, fmt.Errorf("date range exceeds maximum of %d days", maxDateRangeDays))
+	if err := validateSegmentDateRange(fromDate, toDate); err != nil {
+		return nil, errorhandler.NewBadRequestError(ctx, err)
 	}
 	rangeStart := fromDate
 	rangeEnd := toDate.Add(24 * time.Hour)

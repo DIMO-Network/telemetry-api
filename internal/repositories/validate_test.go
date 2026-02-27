@@ -64,6 +64,12 @@ func TestValidateSegmentArgs(t *testing.T) {
 		require.NoError(t, err)
 	})
 
+	t.Run("exactly 31 days passes", func(t *testing.T) {
+		from := validTo.Add(-31 * 24 * time.Hour)
+		err := validateSegmentArgs(1, from, validTo)
+		require.NoError(t, err)
+	})
+
 	t.Run("tokenID <= 0", func(t *testing.T) {
 		err := validateSegmentArgs(0, validFrom, validTo)
 		require.Error(t, err)
@@ -83,6 +89,31 @@ func TestValidateSegmentArgs(t *testing.T) {
 		from := validTo.Add(-32 * 24 * time.Hour) // max is 31 days
 		err := validateSegmentArgs(1, from, validTo)
 		require.Error(t, err)
+	})
+}
+
+// TestValidateSegmentDateRange exercises the shared date-range rule used by both segments and dailyActivity.
+func TestValidateSegmentDateRange(t *testing.T) {
+	to := time.Date(2026, 2, 1, 0, 0, 0, 0, time.UTC)
+
+	t.Run("short range passes", func(t *testing.T) {
+		from := to.Add(-time.Hour)
+		require.NoError(t, validateSegmentDateRange(from, to))
+	})
+
+	t.Run("exactly 31 days passes", func(t *testing.T) {
+		from := to.Add(-31 * 24 * time.Hour)
+		require.NoError(t, validateSegmentDateRange(from, to))
+	})
+
+	t.Run("31 days plus 1 second passes", func(t *testing.T) {
+		from := to.Add(-31*24*time.Hour - time.Second)
+		require.NoError(t, validateSegmentDateRange(from, to))
+	})
+
+	t.Run("31 days plus 2 seconds fails", func(t *testing.T) {
+		from := to.Add(-31*24*time.Hour - 2*time.Second)
+		require.Error(t, validateSegmentDateRange(from, to))
 	})
 }
 
