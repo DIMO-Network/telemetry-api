@@ -530,7 +530,7 @@ func (r *Repository) GetDailyActivity(ctx context.Context, tokenID int, from, to
 		return nil, errorhandler.NewBadRequestError(ctx, err)
 	}
 	rangeStart := fromDate
-	rangeEnd := toDate
+	rangeEnd := toDate.Add(24 * time.Hour)
 
 	defaultReqs := defaultSegmentSignalSet(mechanism)
 	signalReqs := mergeSegmentSignalRequests(defaultReqs, signalRequests)
