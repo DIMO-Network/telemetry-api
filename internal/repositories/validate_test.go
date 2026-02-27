@@ -84,6 +84,13 @@ func TestValidateSegmentArgs(t *testing.T) {
 		err := validateSegmentArgs(1, from, validTo)
 		require.Error(t, err)
 	})
+
+	t.Run("date range exactly 31 days should pass", func(t *testing.T) {
+		from, _ := time.Parse(time.RFC3339, "2026-01-01T00:00:00.000Z")
+		to, _ := time.Parse(time.RFC3339, "2026-02-01T00:00:00.000Z")
+		err := validateSegmentArgs(1, from, to)
+		require.NoError(t, err)
+	})
 }
 
 func TestValidateSegmentConfig(t *testing.T) {
