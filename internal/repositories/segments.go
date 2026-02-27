@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	maxDateRangeDays = 31
+	maxDateRangeDays = 32
 	// maxDateRangeDuration: 31 days + 1 second so exactly-31-day requests don't flake on boundary
 	maxDateRangeDuration = maxDateRangeDays*24*time.Hour + time.Second
 	maxSegmentLimit      = 200
@@ -530,7 +530,7 @@ func (r *Repository) GetDailyActivity(ctx context.Context, tokenID int, from, to
 		return nil, errorhandler.NewBadRequestError(ctx, err)
 	}
 	rangeStart := fromDate
-	rangeEnd := toDate.Add(24 * time.Hour)
+	rangeEnd := toDate
 
 	defaultReqs := defaultSegmentSignalSet(mechanism)
 	signalReqs := mergeSegmentSignalRequests(defaultReqs, signalRequests)
