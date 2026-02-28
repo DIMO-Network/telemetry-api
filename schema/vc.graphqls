@@ -13,19 +13,6 @@ extend type Query {
     @requiresVehicleToken
     @requiresAllOfPrivileges(privileges: [VEHICLE_VIN_CREDENTIAL])
 
-  """
-  pomVCLatest returns the latest POMVC data for a given token.
-
-  Required Privileges: [VEHICLE_ALL_TIME_LOCATION]
-  """
-  pomVCLatest(
-    """
-    The token ID of the vehicle.
-    """
-    tokenId: Int!
-  ): POMVC
-    @requiresVehicleToken
-    @requiresAllOfPrivileges(privileges: [VEHICLE_ALL_TIME_LOCATION])
 }
 
 type VINVC {
@@ -75,28 +62,3 @@ type VINVC {
   rawVC: String!
 }
 
-type POMVC {
-  """
-  vehicleTokenId is the token ID of the vehicle.
-  """
-  vehicleTokenId: Int
-
-  """
-  recordedBy is the entity that recorded the VIN.
-  """
-  recordedBy: String
-  """
-  vehicleContractAddress is the address of the vehicle contract.
-  """
-  vehicleContractAddress: String
-
-  """
-  validFrom is the time the VC is valid from.
-  """
-  validFrom: Time
-
-  """
-  rawVC is the raw VC JSON.
-  """
-  rawVC: String!
-}

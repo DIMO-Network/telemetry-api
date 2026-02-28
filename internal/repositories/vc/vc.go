@@ -24,7 +24,6 @@ type indexRepoService interface {
 type Repository struct {
 	indexService          indexRepoService
 	vinDataVersion        string
-	pomVCDataVersion      string
 	chainID               uint64
 	vehicleAddress        common.Address
 	storageNodeDevLicense common.Address
@@ -37,7 +36,6 @@ func New(indexService indexRepoService, settings config.Settings) *Repository {
 	return &Repository{
 		indexService:          indexService,
 		vinDataVersion:        settings.VINDataVersion,
-		pomVCDataVersion:      settings.POMVCDataVersion,
 		chainID:               settings.ChainID,
 		vehicleAddress:        settings.VehicleNFTAddress,
 		storageNodeDevLicense: settings.StorageNodeDevLicense,
@@ -115,63 +113,6 @@ func (r *Repository) GetLatestVINVC(ctx context.Context, vehicleTokenID uint32) 
 	}, nil
 }
 
-// GetLatestPOMVC fetches the latest POM VC for the given vehicle.
-func (r *Repository) GetLatestPOMVC(ctx context.Context, vehicleTokenID uint32) (*model.Pomvc, error) {
-	vehicleDID := cloudevent.ERC721DID{
-		ChainID:         r.chainID,
-		ContractAddress: r.vehicleAddress,
-		TokenID:         new(big.Int).SetUint64(uint64(vehicleTokenID)),
-	}.String()
-	opts := &grpc.AdvancedSearchOptions{
-		DataVersion: &grpc.StringFilterOption{
-			In: []string{r.pomVCDataVersion},
-		},
-		Type: &grpc.StringFilterOption{
-			In: []string{cloudevent.TypeVerifableCredential},
-		},
-		Subject: &grpc.StringFilterOption{
-			In: []string{vehicleDID},
-		},
-	}
-	dataObj, err := r.indexService.GetLatestCloudEvent(ctx, opts)
-	if err != nil {
-		if status.Code(err) == codes.NotFound {
-			return nil, nil //nolint // we nil is a valid response
-		}
-		return nil, errorhandler.NewInternalErrorWithMsg(ctx, fmt.Errorf("failed to get latest POM VC data: %w", err), "internal errors")
-	}
-	cred := types.Credential{}
-	if err := json.Unmarshal(dataObj.Data, &cred); err != nil {
-		return nil, errorhandler.NewInternalErrorWithMsg(ctx, fmt.Errorf("failed to unmarshal POM VC: %w", err), "internal error")
-	}
-
-	var createdAt *time.Time
-	if !cred.ValidFrom.IsZero() {
-		createdAt = &cred.ValidFrom
-	}
-
-	credSubject := types.POMSubject{}
-	if err := json.Unmarshal(cred.CredentialSubject, &credSubject); err != nil {
-		return nil, errorhandler.NewInternalErrorWithMsg(ctx, fmt.Errorf("failed to unmarshal POM credential subject: %w", err), "internal error")
-	}
-	var recordedBy *string
-	if credSubject.RecordedBy != "" {
-		recordedBy = &credSubject.RecordedBy
-	}
-	var vehicleContractAddress *string
-	if credSubject.VehicleContractAddress != "" {
-		vehicleContractAddress = &credSubject.VehicleContractAddress
-	}
-	tokenIDInt := int(credSubject.VehicleTokenID)
-
-	return &model.Pomvc{
-		ValidFrom:              createdAt,
-		RawVc:                  string(dataObj.Data),
-		RecordedBy:             recordedBy,
-		VehicleContractAddress: vehicleContractAddress,
-		VehicleTokenID:         &tokenIDInt,
-	}, nil
-}
 
 func (r *Repository) getVINVC(ctx context.Context, vehicleDID string) (cloudevent.RawEvent, error) {
 	opts := &grpc.AdvancedSearchOptions{

@@ -53,7 +53,6 @@ func GetTestServices(t *testing.T) *TestServices {
 			ManufacturerNFTAddress:       common.HexToAddress("0x3b07e2A2ABdd0A9B8F7878bdE6487c502164B9dd"),
 			MaxRequestDuration:           "1m",
 			VINVCDataVersion:             "VINVCv1.0",
-			POMVCDataVersion:             "POMVCv1.0",
 			ChainID:                      137,
 			DeviceLastSeenBinHrs:         3,
 		}

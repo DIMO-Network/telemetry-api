@@ -64,7 +64,6 @@ func TestGetLatestVC(t *testing.T) {
 	// Initialize the service with mock dependencies
 	settings := config.Settings{
 		VINDataVersion:        "vin_data_version",
-		POMVCDataVersion:      "pomvc_data_version",
 		ChainID:               chainID,
 		VehicleNFTAddress:     vehicleAddress,
 		StorageNodeDevLicense: common.HexToAddress("0x123"),
