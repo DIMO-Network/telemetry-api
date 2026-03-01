@@ -144,7 +144,7 @@ func (r *Repository) GetSignalLatest(ctx context.Context, latestArgs *model.Late
 	if err := validateLatestSigArgs(latestArgs); err != nil {
 		return nil, errorhandler.NewBadRequestError(ctx, err)
 	}
-	subject := r.toSubject(latestArgs.SignalArgs.TokenID)
+	subject := r.toSubject(latestArgs.TokenID)
 	signals, err := r.chService.GetLatestSignals(ctx, subject, latestArgs)
 	if err != nil {
 		return nil, handleDBError(ctx, err)
