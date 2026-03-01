@@ -113,7 +113,6 @@ func (r *Repository) GetLatestVINVC(ctx context.Context, vehicleTokenID uint32) 
 	}, nil
 }
 
-
 func (r *Repository) getVINVC(ctx context.Context, vehicleDID string) (cloudevent.RawEvent, error) {
 	opts := &grpc.AdvancedSearchOptions{
 		DataVersion: &grpc.StringFilterOption{

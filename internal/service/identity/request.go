@@ -52,4 +52,3 @@ type DeviceInfos struct {
 	AftermarketDeviceTokenID int
 	ManufacturerName         string
 }
-

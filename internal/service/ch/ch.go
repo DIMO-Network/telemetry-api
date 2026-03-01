@@ -196,11 +196,11 @@ func (s *Service) getSignals(ctx context.Context, stmt string, args []any) ([]*v
 
 // AggSignalForRange is AggSignal with segment index (from GetAggregatedSignalsForRanges).
 type AggSignalForRange struct {
-	SegIndex int
-	SignalType FieldType
-	SignalIndex uint16
-	ValueNumber float64
-	ValueString string
+	SegIndex      int
+	SignalType    FieldType
+	SignalIndex   uint16
+	ValueNumber   float64
+	ValueString   string
 	ValueLocation vss.Location
 }
 
@@ -309,10 +309,10 @@ type EventCountForRange struct {
 
 // EventSummary is the per-event summary for a vehicle (all time): name, count, first/last seen.
 type EventSummary struct {
-	Name           string
-	Count          uint64
-	FirstSeen      time.Time
-	LastSeen       time.Time
+	Name      string
+	Count     uint64
+	FirstSeen time.Time
+	LastSeen  time.Time
 }
 
 // GetEventSummaries returns per-event summaries (name, count, first/last seen) for a subject (vehicle), all time.

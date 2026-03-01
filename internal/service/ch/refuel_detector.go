@@ -12,12 +12,12 @@ import (
 )
 
 const (
-	refuelWindowMinutes      = 5    // window length for fuel rise detection
-	refuelMinRisePercent     = 30   // fuel must rise more than this % (relative) in the window
-	refuelMinFuelEpsilon     = 1e-6
-	refuelMinAbsoluteRisePct = 20.0 // trough-to-peak must rise at least this much in absolute % to be a real refuel
-	refuelPeakSearchMaxMin      = 30  // max minutes to search forward from rise window for the peak
-	refuelPeakStabilizationDrop = 1.0 // if fuel drops more than this from current sample to next, consider current sample the peak
+	refuelWindowMinutes         = 5  // window length for fuel rise detection
+	refuelMinRisePercent        = 30 // fuel must rise more than this % (relative) in the window
+	refuelMinFuelEpsilon        = 1e-6
+	refuelMinAbsoluteRisePct    = 20.0 // trough-to-peak must rise at least this much in absolute % to be a real refuel
+	refuelPeakSearchMaxMin      = 30   // max minutes to search forward from rise window for the peak
+	refuelPeakStabilizationDrop = 1.0  // if fuel drops more than this from current sample to next, consider current sample the peak
 )
 
 // RefuelDetector detects refuel segments by finding large fuel rises and emitting segments from

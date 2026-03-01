@@ -76,7 +76,7 @@ func TestFindTroughToPeakRanges(t *testing.T) {
 	t.Run("rise below minDuration filtered", func(t *testing.T) {
 		samples := []levelSample{
 			{ts: min(0), value: 20},
-			{ts: min(0) .Add(30 * time.Second), value: 30}, // 30s < 61s
+			{ts: min(0).Add(30 * time.Second), value: 30}, // 30s < 61s
 		}
 		ranges := findTroughToPeakRanges(samples, 1.0, 61)
 		require.Empty(t, ranges)
@@ -85,7 +85,7 @@ func TestFindTroughToPeakRanges(t *testing.T) {
 	t.Run("two rises with dip between", func(t *testing.T) {
 		samples := []levelSample{
 			{ts: min(0), value: 20},
-			{ts: min(5), value: 30}, // peak 1
+			{ts: min(5), value: 30},  // peak 1
 			{ts: min(10), value: 25}, // dip
 			{ts: min(15), value: 40}, // peak 2
 		}

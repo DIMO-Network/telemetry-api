@@ -194,7 +194,7 @@ type approxCoordsValue struct {
 
 type ApproxResult struct {
 	SignalLatest struct {
-		LastSeen    string `json:"lastSeen"`
+		LastSeen     string `json:"lastSeen"`
 		ApproxCoords *struct {
 			Timestamp string             `json:"timestamp"`
 			Value     *approxCoordsValue `json:"value"`
@@ -208,7 +208,7 @@ type ApproxResult struct {
 
 type ApproxAgg struct {
 	Signals []struct {
-		Timestamp   string             `json:"timestamp"`
+		Timestamp    string             `json:"timestamp"`
 		ApproxCoords *approxCoordsValue `json:"currentLocationApproximateCoordinates"`
 		ExactCoords  *approxCoordsValue `json:"currentLocationCoordinates"`
 	} `json:"signals"`

@@ -10,7 +10,6 @@ import (
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 )
 
-
 // IgnitionDetector detects segments using ignition state transitions
 type IgnitionDetector struct {
 	conn clickhouse.Conn

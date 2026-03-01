@@ -15,7 +15,7 @@ func TestFindIdleRpmRanges(t *testing.T) {
 	to := base.Add(time.Hour)
 
 	maxIdleRpm := 1000
-	maxGap := 300   // 5 minutes
+	maxGap := 300      // 5 minutes
 	minDuration := 240 // 4 minutes
 
 	t.Run("empty samples returns nil", func(t *testing.T) {

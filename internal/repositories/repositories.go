@@ -50,8 +50,8 @@ type Repository struct {
 	queryableSignals map[string]struct{}
 	chService        CHService
 	lastSeenBin      time.Duration
-	chainID        uint64
-	vehicleAddress common.Address
+	chainID          uint64
+	vehicleAddress   common.Address
 }
 
 // NewRepository creates a new base repository.
