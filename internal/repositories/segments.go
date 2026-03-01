@@ -220,11 +220,7 @@ func (r *Repository) GetSegments(ctx context.Context, tokenID int, from, to time
 		}
 	}
 
-	subject := cloudevent.ERC721DID{
-		ChainID:         r.chainID,
-		ContractAddress: r.vehicleAddress,
-		TokenID:         big.NewInt(int64(tokenID)),
-	}.String()
+	subject := r.toSubject(uint32(tokenID))
 	chSegments, err := r.chService.GetSegments(ctx, subject, from, to, mechanism, config)
 	if err != nil {
 		return nil, handleDBError(ctx, err)

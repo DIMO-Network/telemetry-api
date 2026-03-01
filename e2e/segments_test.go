@@ -173,7 +173,7 @@ func insertTestSignals(t *testing.T, conn clickhouse.Conn, signals []testSignal)
 			sig.CloudEventID,
 			sig.ValueNumber,
 			sig.ValueString,
-			[]interface{}{float64(0), float64(0), float64(0)}, // Empty location tuple
+			[]interface{}{float64(0), float64(0), float64(0), float64(0)}, // Empty location tuple
 		)
 		require.NoError(t, err, "Failed to append signal")
 	}
