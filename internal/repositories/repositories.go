@@ -76,7 +76,7 @@ func NewRepository(chService CHService, settings config.Settings) (*Repository, 
 
 }
 
-// toSubject converts a tokenID to a W3C DID subject string using the repository's chain ID and vehicle address.
+// toSubject converts a vehicle token id to a DID subject string.
 func (r *Repository) toSubject(tokenID uint32) string {
 	return cloudevent.ERC721DID{
 		ChainID:         r.chainID,
