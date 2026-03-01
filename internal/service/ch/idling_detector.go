@@ -30,7 +30,7 @@ func NewIdlingDetector(conn clickhouse.Conn) *IdlingDetector {
 // DetectSegments fetches RPM samples (1 CH query) and finds contiguous runs of idle RPM in-memory.
 func (d *IdlingDetector) DetectSegments(
 	ctx context.Context,
-	tokenID uint32,
+	subject string,
 	from, to time.Time,
 	config *model.SegmentConfig,
 ) ([]*model.Segment, error) {
@@ -44,7 +44,7 @@ func (d *IdlingDetector) DetectSegments(
 
 	lookbackFrom := from.Add(-time.Duration(maxGap) * time.Second)
 	// Single CH query: RPM samples (returned sorted by CH)
-	samples, err := getLevelSamples(ctx, d.conn, tokenID, vss.FieldPowertrainCombustionEngineSpeed, lookbackFrom, to)
+	samples, err := getLevelSamples(ctx, d.conn, subject, vss.FieldPowertrainCombustionEngineSpeed, lookbackFrom, to)
 	if err != nil {
 		return nil, fmt.Errorf("failed to query RPM samples: %w", err)
 	}

@@ -21,7 +21,7 @@ const (
 	AggStringCol      = "agg_string"
 	AggLocationCol    = "agg_location"
 	aggTableName      = "agg_table"
-	tokenIDWhere      = vss.TokenIDCol + " = ?"
+	subjectWhere      = vss.SubjectCol + " = ?"
 	eventSubjectWhere = vss.EventSubjectCol + " = ?"
 	nameIn            = vss.NameCol + " IN ?"
 	timestampFrom     = vss.TimestampCol + " >= ?"
@@ -40,7 +40,7 @@ const (
 	lastSeenName = "'" + model.LastSeenField + "' AS name"
 	numValAsNull = "NULL AS " + vss.ValueNumberCol
 	strValAsNull = "NULL AS " + vss.ValueStringCol
-	locValAsZero = "CAST(tuple(0, 0, 0), 'Tuple(latitude Float64, longitude Float64, hdop Float64)') AS " + vss.ValueLocationCol
+	locValAsZero = "CAST(tuple(0, 0, 0, 0), 'Tuple(latitude Float64, longitude Float64, hdop Float64, heading Float64)') AS " + vss.ValueLocationCol
 
 	lastSeenTS = "max(" + vss.TimestampCol + ") AS ts"
 )
@@ -63,8 +63,8 @@ const (
 )
 
 const (
-	locationTupleType = "Tuple(latitude Float64, longitude Float64, hdop Float64)"
-	locationZeroTuple = "CAST(tuple(0, 0, 0), '" + locationTupleType + "')"
+	locationTupleType = "Tuple(latitude Float64, longitude Float64, hdop Float64, heading Float64)"
+	locationZeroTuple = "CAST(tuple(0, 0, 0, 0), '" + locationTupleType + "')"
 )
 
 var SourceTranslations = map[string][]string{
@@ -237,7 +237,7 @@ func floatAggExpr(valueNumberExpr, timestampExpr string, aggType model.FloatAggr
 func locationAggExpr(valueLocationExpr, timestampExpr string, aggType model.LocationAggregation) string {
 	switch aggType {
 	case model.LocationAggregationAvg:
-		return "CAST(tuple(avg(" + valueLocationExpr + ".latitude), avg(" + valueLocationExpr + ".longitude), avg(" + valueLocationExpr + ".hdop)), '" + locationTupleType + "')"
+		return "CAST(tuple(avg(" + valueLocationExpr + ".latitude), avg(" + valueLocationExpr + ".longitude), avg(" + valueLocationExpr + ".hdop), avg(" + valueLocationExpr + ".heading)), '" + locationTupleType + "')"
 	case model.LocationAggregationRand:
 		return fmt.Sprintf("groupArraySample(1, %d)("+valueLocationExpr+")[1]", time.Now().UnixMilli())
 	case model.LocationAggregationFirst:
@@ -312,7 +312,7 @@ WHERE
 GROUP BY
   name
 */
-func getLatestQuery(latestArgs *model.LatestSignalsArgs) (string, []any) {
+func getLatestQuery(subject string, latestArgs *model.LatestSignalsArgs) (string, []any) {
 	signalNames := make([]string, 0, len(latestArgs.SignalNames))
 	for name := range latestArgs.SignalNames {
 		signalNames = append(signalNames, name)
@@ -330,7 +330,7 @@ func getLatestQuery(latestArgs *model.LatestSignalsArgs) (string, []any) {
 		qm.Select(latestString),
 		qm.Select(latestLocation),
 		qm.From(vss.TableName),
-		qm.Where(tokenIDWhere, latestArgs.TokenID),
+		qm.Where(subjectWhere, subject),
 		qm.Expr(
 			qm.WhereIn(nameIn, signalNames),
 			qm.Or2(
@@ -362,7 +362,7 @@ FROM
 WHERE
 	token_id = 15
 */
-func getLastSeenQuery(sigArgs *model.SignalArgs) (string, []any) {
+func getLastSeenQuery(subject string, sigArgs *model.SignalArgs) (string, []any) {
 	if sigArgs == nil {
 		return "", nil
 	}
@@ -373,7 +373,7 @@ func getLastSeenQuery(sigArgs *model.SignalArgs) (string, []any) {
 		qm.Select(strValAsNull),
 		qm.Select(locValAsZero),
 		qm.From(vss.TableName),
-		qm.Where(tokenIDWhere, sigArgs.TokenID),
+		qm.Where(subjectWhere, subject),
 	}
 	mods = append(mods, getFilterMods(sigArgs.Filter)...)
 	return newQuery(mods...)
@@ -434,7 +434,7 @@ ORDER BY
 	signal_type ASC,
 	signal_index ASC;
 */
-func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
+func getAggQuery(subject string, aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 	if aggArgs == nil {
 		return "", nil, nil
 	}
@@ -518,7 +518,7 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 		selectNumberAggs(aggArgs.FloatArgs),
 		selectStringAggs(aggArgs.StringArgs),
 		selectLocationAggs(aggArgs.LocationArgs),
-		qm.Where(tokenIDWhere, aggArgs.TokenID),
+		qm.Where(subjectWhere, subject),
 		qm.Where(timestampFrom, aggArgs.FromTS),
 		qm.Where(timestampTo, aggArgs.ToTS),
 		qm.From(vss.TableName),
@@ -538,7 +538,7 @@ func getAggQuery(aggArgs *model.AggregatedSignalArgs) (string, []any, error) {
 // getBatchAggQuery returns a query that computes the same aggregations as getAggQuery for multiple
 // time ranges (segments) in one round-trip. Only FloatArgs and LocationArgs are supported.
 // Result columns: seg_idx (Int32), signal_type, signal_index, value_number, value_string, value_location.
-func getBatchAggQuery(tokenID uint32, ranges []TimeRange, globalFrom, globalTo time.Time, floatArgs []model.FloatSignalArgs, locationArgs []model.LocationSignalArgs) (string, []any, error) {
+func getBatchAggQuery(subject string, ranges []TimeRange, globalFrom, globalTo time.Time, floatArgs []model.FloatSignalArgs, locationArgs []model.LocationSignalArgs) (string, []any, error) {
 	if len(ranges) == 0 {
 		return "", nil, errors.New("no ranges for batch agg")
 	}
@@ -551,7 +551,7 @@ func getBatchAggQuery(tokenID uint32, ranges []TimeRange, globalFrom, globalTo t
 	for _, r := range ranges {
 		args = append(args, r.From, r.To)
 	}
-	args = append(args, tokenID, globalFrom, globalTo)
+	args = append(args, subject, globalFrom, globalTo)
 	inner := buildBatchAggInner(valueTable, multiIf)
 	outer := buildBatchAggOuter(inner, floatArgs, locationArgs)
 	return outer, args, nil
@@ -571,7 +571,7 @@ func buildBatchAggValueTable(floatArgs []model.FloatSignalArgs, locationArgs []m
 func buildBatchAggInner(valueTable, multiIf string) string {
 	selectList := multiIf + ", " + signalTypeCol + ", " + signalIndexCol + ", " + vss.TimestampCol + ", " + vss.ValueNumberCol + ", " + vss.ValueStringCol + ", " + vss.ValueLocationCol
 	return "SELECT " + selectList + " FROM " + vss.TableName + " INNER JOIN " + valueTable +
-		" WHERE " + tokenIDWhere + " AND " + vss.TimestampCol + " >= ? AND " + vss.TimestampCol + " < ?"
+		" WHERE " + subjectWhere + " AND " + vss.TimestampCol + " >= ? AND " + vss.TimestampCol + " < ?"
 }
 
 func buildBatchAggOuter(inner string, floatArgs []model.FloatSignalArgs, locationArgs []model.LocationSignalArgs) string {
@@ -700,11 +700,11 @@ func buildSegmentIndexMultiIf(timestampCol string, nRanges int) string {
 	return "multiIf(" + strings.Join(parts, ", ") + ", -1) AS seg_idx"
 }
 
-func getDistinctQuery(tokenId uint32, filter *model.SignalFilter) (string, []any) {
+func getDistinctQuery(subject string, filter *model.SignalFilter) (string, []any) {
 	mods := []qm.QueryMod{
 		qm.Distinct(vss.NameCol),
 		qm.From(vss.TableName),
-		qm.Where(tokenIDWhere, tokenId),
+		qm.Where(subjectWhere, subject),
 		qm.OrderBy(vss.NameCol),
 	}
 	mods = append(mods, getFilterMods(filter)...)
@@ -712,15 +712,15 @@ func getDistinctQuery(tokenId uint32, filter *model.SignalFilter) (string, []any
 	return stmt, args
 }
 
-// select Count(*), max(timestamp), min(timestamp), name, from signal where token_id = '39718' GROUP BY name
-func getSignalSummariesQuery(tokenId uint32, filter *model.SignalFilter) (string, []any) {
+// select Count(*), max(timestamp), min(timestamp), name, from signal where subject = '...' GROUP BY name
+func getSignalSummariesQuery(subject string, filter *model.SignalFilter) (string, []any) {
 	mods := []qm.QueryMod{
 		qm.Select(vss.NameCol),
 		qm.Select("COUNT(*)"),
 		qm.Select("MIN(" + vss.TimestampCol + ")"),
 		qm.Select("MAX(" + vss.TimestampCol + ")"),
 		qm.From(vss.TableName),
-		qm.Where(tokenIDWhere, tokenId),
+		qm.Where(subjectWhere, subject),
 		qm.GroupBy(vss.NameCol),
 		qm.OrderBy(vss.NameCol),
 	}

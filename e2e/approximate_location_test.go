@@ -32,7 +32,7 @@ func TestApproximateLocation(t *testing.T) {
 				Longitude: startLoc.Lng,
 				HDOP:      startHDOP,
 			},
-			TokenID: 39718,
+			Subject: "did:erc721:137:0xbA5738a18d83D41847dfFbDC6101d37C69c9B0cF:39718",
 		},
 		{
 			Source:    ch.SourceTranslations["smartcar"][0],
@@ -43,7 +43,7 @@ func TestApproximateLocation(t *testing.T) {
 				Longitude: endLoc.Lng,
 				HDOP:      endHDOP,
 			},
-			TokenID: 39718,
+			Subject: "did:erc721:137:0xbA5738a18d83D41847dfFbDC6101d37C69c9B0cF:39718",
 		},
 	}
 

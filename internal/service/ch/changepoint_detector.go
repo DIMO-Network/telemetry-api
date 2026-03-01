@@ -33,7 +33,7 @@ func NewChangePointDetector(conn clickhouse.Conn) *ChangePointDetector {
 // DetectSegments implements CUSUM-based change point detection
 func (d *ChangePointDetector) DetectSegments(
 	ctx context.Context,
-	tokenID uint32,
+	subject string,
 	from, to time.Time,
 	config *model.SegmentConfig,
 ) ([]*model.Segment, error) {
@@ -43,7 +43,7 @@ func (d *ChangePointDetector) DetectSegments(
 
 	// Look back maxGap seconds before 'from' to detect segments that started before the query range.
 	lookbackFrom := from.Add(-time.Duration(maxGap) * time.Second)
-	windows, err := getWindowedSignalCounts(ctx, d.conn, tokenID, lookbackFrom, to, defaultCUSUMWindowSeconds, defaultCUSUMSignalCountThreshold, defaultCUSUMDistinctSignalCountThreshold)
+	windows, err := getWindowedSignalCounts(ctx, d.conn, subject, lookbackFrom, to, defaultCUSUMWindowSeconds, defaultCUSUMSignalCountThreshold, defaultCUSUMDistinctSignalCountThreshold)
 	if err != nil {
 		return nil, fmt.Errorf("failed to query window signal counts: %w", err)
 	}

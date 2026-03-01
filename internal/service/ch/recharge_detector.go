@@ -31,7 +31,7 @@ func NewRechargeDetector(conn clickhouse.Conn) *RechargeDetector {
 // DetectSegments finds periods where state of charge rises (trough to peak), filters by odometer, and merges nearby sessions.
 func (d *RechargeDetector) DetectSegments(
 	ctx context.Context,
-	tokenID uint32,
+	subject string,
 	from, to time.Time,
 	config *model.SegmentConfig,
 ) ([]*model.Segment, error) {
@@ -44,7 +44,7 @@ func (d *RechargeDetector) DetectSegments(
 	if config != nil && config.MinIncreasePercent != nil && *config.MinIncreasePercent > 0 {
 		minRisePct = float64(*config.MinIncreasePercent)
 	}
-	return detectRechargeSegments(ctx, d.conn, tokenID, from, to, rc.minDuration, minRisePct)
+	return detectRechargeSegments(ctx, d.conn, subject, from, to, rc.minDuration, minRisePct)
 }
 
 // GetMechanismName returns the name of this detection mechanism.
@@ -53,9 +53,9 @@ func (d *RechargeDetector) GetMechanismName() string {
 }
 
 // detectRechargeSegments: 2 CH queries (SoC + odometer), then all processing in-memory.
-func detectRechargeSegments(ctx context.Context, conn clickhouse.Conn, tokenID uint32, from, to time.Time, minDuration int, minRisePct float64) ([]*model.Segment, error) {
+func detectRechargeSegments(ctx context.Context, conn clickhouse.Conn, subject string, from, to time.Time, minDuration int, minRisePct float64) ([]*model.Segment, error) {
 	// Query 1: SoC samples (returned sorted by CH)
-	socSamples, err := getLevelSamples(ctx, conn, tokenID, vss.FieldPowertrainTractionBatteryStateOfChargeCurrent, from, to)
+	socSamples, err := getLevelSamples(ctx, conn, subject, vss.FieldPowertrainTractionBatteryStateOfChargeCurrent, from, to)
 	if err != nil {
 		return nil, fmt.Errorf("failed to query SoC samples: %w", err)
 	}
@@ -64,7 +64,7 @@ func detectRechargeSegments(ctx context.Context, conn clickhouse.Conn, tokenID u
 	}
 
 	// Query 2: Odometer samples (returned sorted by CH)
-	odoSamples, err := getLevelSamples(ctx, conn, tokenID, vss.FieldPowertrainTransmissionTravelledDistance, from, to)
+	odoSamples, err := getLevelSamples(ctx, conn, subject, vss.FieldPowertrainTransmissionTravelledDistance, from, to)
 	if err != nil {
 		return nil, fmt.Errorf("failed to query odometer samples: %w", err)
 	}

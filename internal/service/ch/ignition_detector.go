@@ -30,7 +30,7 @@ type StateChange struct {
 // DetectSegments implements ignition-based segment detection
 func (d *IgnitionDetector) DetectSegments(
 	ctx context.Context,
-	tokenID uint32,
+	subject string,
 	from, to time.Time,
 	config *model.SegmentConfig,
 ) (_ []*model.Segment, retErr error) {
@@ -39,7 +39,7 @@ func (d *IgnitionDetector) DetectSegments(
 	minDuration := rc.minDuration
 
 	// Fetch all state changes with a single query
-	stmt, args := d.getStateChangesQueryWithLookback(tokenID, from, to)
+	stmt, args := d.getStateChangesQueryWithLookback(subject, from, to)
 
 	rows, err := d.conn.Query(ctx, stmt, args...)
 	if err != nil {
@@ -62,7 +62,7 @@ func (d *IgnitionDetector) DetectSegments(
 	}
 
 	// Process state changes in Go to build segments with debouncing
-	segments := d.buildSegmentsWithDebouncing(tokenID, stateChanges, from, to, minIdle, minDuration)
+	segments := d.buildSegmentsWithDebouncing(stateChanges, from, to, minIdle, minDuration)
 
 	return segments, nil
 }
@@ -76,7 +76,7 @@ const maxLookbackDays = 30
 // Performance notes:
 // - PREWHERE filters on primary key columns before FINAL merge (much faster)
 // - Lookback is bounded to maxLookbackDays to prevent unbounded scans
-func (d *IgnitionDetector) getStateChangesQueryWithLookback(tokenID uint32, from, to time.Time) (string, []any) {
+func (d *IgnitionDetector) getStateChangesQueryWithLookback(subject string, from, to time.Time) (string, []any) {
 	// Bound the lookback to prevent scanning unlimited history
 	lookbackLimit := from.AddDate(0, 0, -maxLookbackDays)
 
@@ -84,12 +84,12 @@ func (d *IgnitionDetector) getStateChangesQueryWithLookback(tokenID uint32, from
 	// - Last state change before 'from' (LIMIT 1, ordered DESC then re-ordered)
 	// - All state changes in range [from, to)
 	//
-	// PREWHERE on token_id filters before FINAL merge, significantly reducing work
+	// PREWHERE on subject filters before FINAL merge, significantly reducing work
 	query := `
 SELECT timestamp, new_state, prev_state FROM (
   SELECT timestamp, new_state, prev_state
   FROM signal_state_changes FINAL
-  PREWHERE token_id = ?
+  PREWHERE subject = ?
   WHERE signal_name = 'isIgnitionOn'
     AND timestamp >= ?
     AND timestamp < ?
@@ -102,7 +102,7 @@ SELECT timestamp, new_state, prev_state FROM (
   -- All state changes within the query range
   SELECT timestamp, new_state, prev_state
   FROM signal_state_changes FINAL
-  PREWHERE token_id = ?
+  PREWHERE subject = ?
   WHERE signal_name = 'isIgnitionOn'
     AND timestamp >= ?
     AND timestamp < ?
@@ -110,14 +110,14 @@ SELECT timestamp, new_state, prev_state FROM (
 )
 ORDER BY timestamp`
 
-	args := []any{tokenID, lookbackLimit, from, tokenID, from, to}
+	args := []any{subject, lookbackLimit, from, subject, from, to}
 
 	return query, args
 }
 
 // buildSegmentsWithDebouncing processes state changes and applies debouncing logic
 // to merge consecutive short segments separated by less than minIdle seconds
-func (d *IgnitionDetector) buildSegmentsWithDebouncing(tokenID uint32, stateChanges []StateChange, from, to time.Time, minIdle, minDuration int) []*model.Segment {
+func (d *IgnitionDetector) buildSegmentsWithDebouncing(stateChanges []StateChange, from, to time.Time, minIdle, minDuration int) []*model.Segment {
 	if len(stateChanges) == 0 {
 		return []*model.Segment{}
 	}

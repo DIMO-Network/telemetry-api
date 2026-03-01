@@ -17,7 +17,7 @@ import (
 
 // testSignal represents minimal signal data without location fields
 type testSignal struct {
-	TokenID      uint32
+	Subject      string
 	Timestamp    time.Time
 	Name         string
 	ValueNumber  float64
@@ -29,7 +29,7 @@ type testSignal struct {
 
 // testStateChange represents ignition state change data
 type testStateChange struct {
-	TokenID              uint32
+	Subject              string
 	SignalName           string
 	Timestamp            time.Time
 	NewState             float64
@@ -42,7 +42,7 @@ type testStateChange struct {
 }
 
 const (
-	testTokenID  = uint32(12345)
+	testSubject  = "did:erc721:137:0xbA5738a18d83D41847dfFbDC6101d37C69c9B0cF:12345"
 	testSource   = "test-source"
 	testProducer = "test-producer"
 	// tripDuration must be >= 240s (defaultMinSegmentDurationSeconds in detectors)
@@ -66,7 +66,7 @@ func generateTripSignals(startTime time.Time, durationSeconds int, eventIDPrefix
 		ts := startTime.Add(time.Duration(offset) * time.Second)
 		for i, name := range signalNames {
 			signals = append(signals, testSignal{
-				TokenID:      testTokenID,
+				Subject:      testSubject,
 				Timestamp:    ts,
 				Name:         name,
 				ValueNumber:  float64(offset + i), // Varying values
@@ -103,7 +103,7 @@ func generateTestData() ([]testSignal, []testStateChange) {
 	stateChanges = []testStateChange{
 		// Trip 1: Ignition ON
 		{
-			TokenID:              testTokenID,
+			Subject:              testSubject,
 			SignalName:           "isIgnitionOn",
 			Timestamp:            trip1Start,
 			NewState:             1,
@@ -116,7 +116,7 @@ func generateTestData() ([]testSignal, []testStateChange) {
 		},
 		// Trip 1: Ignition OFF
 		{
-			TokenID:              testTokenID,
+			Subject:              testSubject,
 			SignalName:           "isIgnitionOn",
 			Timestamp:            trip1End,
 			NewState:             0,
@@ -129,7 +129,7 @@ func generateTestData() ([]testSignal, []testStateChange) {
 		},
 		// Trip 2: Ignition ON
 		{
-			TokenID:              testTokenID,
+			Subject:              testSubject,
 			SignalName:           "isIgnitionOn",
 			Timestamp:            trip2Start,
 			NewState:             1,
@@ -142,7 +142,7 @@ func generateTestData() ([]testSignal, []testStateChange) {
 		},
 		// Trip 2: Ignition OFF
 		{
-			TokenID:              testTokenID,
+			Subject:              testSubject,
 			SignalName:           "isIgnitionOn",
 			Timestamp:            trip2End,
 			NewState:             0,
@@ -165,7 +165,7 @@ func insertTestSignals(t *testing.T, conn clickhouse.Conn, signals []testSignal)
 
 	for _, sig := range signals {
 		err := batch.Append(
-			sig.TokenID,
+			sig.Subject,
 			sig.Timestamp,
 			sig.Name,
 			sig.Source,
@@ -189,7 +189,7 @@ func insertTestStateChanges(t *testing.T, conn clickhouse.Conn, stateChanges []t
 
 	for _, sc := range stateChanges {
 		err := batch.Append(
-			sc.TokenID,
+			sc.Subject,
 			sc.SignalName,
 			sc.Timestamp,
 			sc.NewState,
@@ -248,7 +248,7 @@ func TestSegmentDetectors(t *testing.T) {
 
 	t.Run("IgnitionDetector", func(t *testing.T) {
 		detector := ch.NewIgnitionDetector(conn)
-		segments, err := detector.DetectSegments(ctx, testTokenID, from, to, nil)
+		segments, err := detector.DetectSegments(ctx, testSubject, from, to, nil)
 		require.NoError(t, err)
 
 		assert.Len(t, segments, 2, "Expected 2 trips from IgnitionDetector")
@@ -269,7 +269,7 @@ func TestSegmentDetectors(t *testing.T) {
 
 	t.Run("FrequencyDetector", func(t *testing.T) {
 		detector := ch.NewFrequencyDetector(conn)
-		segments, err := detector.DetectSegments(ctx, testTokenID, from, to, nil)
+		segments, err := detector.DetectSegments(ctx, testSubject, from, to, nil)
 		require.NoError(t, err)
 
 		assert.Len(t, segments, 2, "Expected 2 trips from FrequencyDetector")
@@ -281,7 +281,7 @@ func TestSegmentDetectors(t *testing.T) {
 
 	t.Run("ChangePointDetector", func(t *testing.T) {
 		detector := ch.NewChangePointDetector(conn)
-		segments, err := detector.DetectSegments(ctx, testTokenID, from, to, nil)
+		segments, err := detector.DetectSegments(ctx, testSubject, from, to, nil)
 		require.NoError(t, err)
 
 		assert.Len(t, segments, 2, "Expected 2 trips from ChangePointDetector")
@@ -296,7 +296,7 @@ func TestSegmentDetectors(t *testing.T) {
 
 	t.Run("IgnitionDetector_StartedBeforeRange", func(t *testing.T) {
 		detector := ch.NewIgnitionDetector(conn)
-		segments, err := detector.DetectSegments(ctx, testTokenID, fromMidTrip1, to, nil)
+		segments, err := detector.DetectSegments(ctx, testSubject, fromMidTrip1, to, nil)
 		require.NoError(t, err)
 		require.Len(t, segments, 2, "Expected 2 trips")
 		assert.True(t, segments[0].StartedBeforeRange, "Trip 1 should have StartedBeforeRange=true")
@@ -305,7 +305,7 @@ func TestSegmentDetectors(t *testing.T) {
 
 	t.Run("FrequencyDetector_StartedBeforeRange", func(t *testing.T) {
 		detector := ch.NewFrequencyDetector(conn)
-		segments, err := detector.DetectSegments(ctx, testTokenID, fromMidTrip1, to, nil)
+		segments, err := detector.DetectSegments(ctx, testSubject, fromMidTrip1, to, nil)
 		require.NoError(t, err)
 		require.Len(t, segments, 2, "Expected 2 trips")
 		assert.True(t, segments[0].StartedBeforeRange, "Trip 1 should have StartedBeforeRange=true")
@@ -314,7 +314,7 @@ func TestSegmentDetectors(t *testing.T) {
 
 	t.Run("ChangePointDetector_StartedBeforeRange", func(t *testing.T) {
 		detector := ch.NewChangePointDetector(conn)
-		segments, err := detector.DetectSegments(ctx, testTokenID, fromMidTrip1, to, nil)
+		segments, err := detector.DetectSegments(ctx, testSubject, fromMidTrip1, to, nil)
 		require.NoError(t, err)
 		require.Len(t, segments, 2, "Expected 2 trips")
 		assert.True(t, segments[0].StartedBeforeRange, "Trip 1 should have StartedBeforeRange=true")
@@ -332,7 +332,7 @@ func TestSegmentDetectors(t *testing.T) {
 		toIdle := idleStart.Add(time.Duration(idleDurationSec)*time.Second + 1*time.Hour)
 
 		detector := ch.NewIdlingDetector(conn)
-		segments, err := detector.DetectSegments(ctx, testTokenID, fromIdle, toIdle, nil)
+		segments, err := detector.DetectSegments(ctx, testSubject, fromIdle, toIdle, nil)
 		require.NoError(t, err)
 
 		require.Len(t, segments, 1, "Expected 1 idling segment")
@@ -353,7 +353,7 @@ func TestSegmentDetectors(t *testing.T) {
 		toRefuel := refuelStart.Add(2 * time.Hour)
 
 		detector := ch.NewRefuelDetector(conn)
-		segments, err := detector.DetectSegments(ctx, testTokenID, fromRefuel, toRefuel, nil)
+		segments, err := detector.DetectSegments(ctx, testSubject, fromRefuel, toRefuel, nil)
 		require.NoError(t, err)
 
 		require.GreaterOrEqual(t, len(segments), 1, "Expected at least 1 refuel segment")
@@ -374,7 +374,7 @@ func TestSegmentDetectors(t *testing.T) {
 		toRecharge := rechargeStart.Add(4 * time.Hour)
 
 		detector := ch.NewRechargeDetector(conn)
-		segments, err := detector.DetectSegments(ctx, testTokenID, fromRecharge, toRecharge, nil)
+		segments, err := detector.DetectSegments(ctx, testSubject, fromRecharge, toRecharge, nil)
 		require.NoError(t, err)
 
 		require.GreaterOrEqual(t, len(segments), 1, "Expected at least 1 recharge segment")
@@ -395,7 +395,7 @@ func generateIdleRpmSignals(startTime time.Time, durationSeconds int) []testSign
 	for offset := 0; offset < durationSeconds; offset += 10 {
 		ts := startTime.Add(time.Duration(offset) * time.Second)
 		signals = append(signals, testSignal{
-			TokenID:      testTokenID,
+			Subject:      testSubject,
 			Timestamp:    ts,
 			Name:         engineSpeedName,
 			ValueNumber:  idleRpm,
@@ -420,7 +420,7 @@ func generateRefuelSignals(startTime time.Time) []testSignal {
 	for offset := 0; offset < 30*60; offset += 60 {
 		ts := startTime.Add(time.Duration(offset) * time.Second)
 		signals = append(signals, testSignal{
-			TokenID:      testTokenID,
+			Subject:      testSubject,
 			Timestamp:    ts,
 			Name:         fuelName,
 			ValueNumber:  20.0,
@@ -433,7 +433,7 @@ func generateRefuelSignals(startTime time.Time) []testSignal {
 	// Refuel event: jump to 80% (within a 5-minute window, rise is 300% relative)
 	refuelTime := startTime.Add(30 * time.Minute)
 	signals = append(signals, testSignal{
-		TokenID:      testTokenID,
+		Subject:      testSubject,
 		Timestamp:    refuelTime,
 		Name:         fuelName,
 		ValueNumber:  80.0,
@@ -446,7 +446,7 @@ func generateRefuelSignals(startTime time.Time) []testSignal {
 	for offset := 1; offset <= 30; offset++ {
 		ts := refuelTime.Add(time.Duration(offset) * time.Minute)
 		signals = append(signals, testSignal{
-			TokenID:      testTokenID,
+			Subject:      testSubject,
 			Timestamp:    ts,
 			Name:         fuelName,
 			ValueNumber:  80.0,
@@ -473,7 +473,7 @@ func generateRechargeSignals(startTime time.Time) []testSignal {
 		ts := startTime.Add(time.Duration(offset) * time.Minute)
 		soc := 35.0 - float64(offset)*0.5 // 35% down to 20%
 		signals = append(signals, testSignal{
-			TokenID:      testTokenID,
+			Subject:      testSubject,
 			Timestamp:    ts,
 			Name:         socName,
 			ValueNumber:  soc,
@@ -482,7 +482,7 @@ func generateRechargeSignals(startTime time.Time) []testSignal {
 			CloudEventID: fmt.Sprintf("recharge-pre-%d", offset),
 		})
 		signals = append(signals, testSignal{
-			TokenID:      testTokenID,
+			Subject:      testSubject,
 			Timestamp:    ts,
 			Name:         odoName,
 			ValueNumber:  50000.0 + float64(offset)*0.1, // moving
@@ -501,7 +501,7 @@ func generateRechargeSignals(startTime time.Time) []testSignal {
 			soc = 90.0
 		}
 		signals = append(signals, testSignal{
-			TokenID:      testTokenID,
+			Subject:      testSubject,
 			Timestamp:    ts,
 			Name:         socName,
 			ValueNumber:  soc,
@@ -510,7 +510,7 @@ func generateRechargeSignals(startTime time.Time) []testSignal {
 			CloudEventID: fmt.Sprintf("recharge-charge-%d", offset),
 		})
 		signals = append(signals, testSignal{
-			TokenID:      testTokenID,
+			Subject:      testSubject,
 			Timestamp:    ts,
 			Name:         odoName,
 			ValueNumber:  50003.0, // stationary during charge

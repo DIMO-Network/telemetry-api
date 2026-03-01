@@ -24,6 +24,12 @@ github.com/DIMO-Network/fetch-api v0.0.16 h1:jOIM9AHOCTN9Omh5QoRrdVsy0UCPHwB+08/
 github.com/DIMO-Network/fetch-api v0.0.16/go.mod h1:pD9+5wPYjz3ORH9FBsXLlomsZJRPTyOzKy19urT6xew=
 github.com/DIMO-Network/model-garage v0.8.17 h1:6F29k0OUMRsKbZU3E73Cg8Dadh/GpgrUtJruaSBgalU=
 github.com/DIMO-Network/model-garage v0.8.17/go.mod h1:goE7y2N58G8CDUym/RqaAEH0E0w6+gzdUSprWItqmyU=
+github.com/DIMO-Network/model-garage v0.8.18-0.20260227195128-b6fe603d5a94 h1:e+Z0wXbIaKVVfNlVRi4KfDn2GrZcY5TUsdjXCOyV4HU=
+github.com/DIMO-Network/model-garage v0.8.18-0.20260227195128-b6fe603d5a94/go.mod h1:goE7y2N58G8CDUym/RqaAEH0E0w6+gzdUSprWItqmyU=
+github.com/DIMO-Network/model-garage v0.8.18-0.20260228213518-5572b215dc07 h1:L2wtmEwMxHhki7U6CNLle5fLX88amMieIZ+eQy+dObU=
+github.com/DIMO-Network/model-garage v0.8.18-0.20260228213518-5572b215dc07/go.mod h1:goE7y2N58G8CDUym/RqaAEH0E0w6+gzdUSprWItqmyU=
+github.com/DIMO-Network/model-garage v0.8.18-0.20260301212110-8cb393aaa1c9 h1:s/FIk7WNp0fyNnOv169zIUKOPP1JurU3JxwRw8i4hGk=
+github.com/DIMO-Network/model-garage v0.8.18-0.20260301212110-8cb393aaa1c9/go.mod h1:goE7y2N58G8CDUym/RqaAEH0E0w6+gzdUSprWItqmyU=
 github.com/DIMO-Network/server-garage v0.0.7 h1:kOBVyOtIbxa1x9pAf1epABTb9l/U3khf0PwUaHeHiKs=
 github.com/DIMO-Network/server-garage v0.0.7/go.mod h1:7DFor8MMJ8fLv9EB16Z5LrN+ftW3qeIk+swpkT7F2cU=
 github.com/DIMO-Network/shared v1.0.7 h1:LfSgsqJ6R7EUyfo2GTfuhrCpoDcweJqe7eVOa4j7Xbo=

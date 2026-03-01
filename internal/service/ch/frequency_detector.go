@@ -29,7 +29,7 @@ func NewFrequencyDetector(conn clickhouse.Conn) *FrequencyDetector {
 // DetectSegments implements frequency-based segment detection
 func (d *FrequencyDetector) DetectSegments(
 	ctx context.Context,
-	tokenID uint32,
+	subject string,
 	from, to time.Time,
 	config *model.SegmentConfig,
 ) ([]*model.Segment, error) {
@@ -43,7 +43,7 @@ func (d *FrequencyDetector) DetectSegments(
 
 	// Look back maxGap seconds before 'from' to detect segments that started before the query range.
 	lookbackFrom := from.Add(-time.Duration(maxGap) * time.Second)
-	windows, err := getWindowedSignalCounts(ctx, d.conn, tokenID, lookbackFrom, to, defaultWindowSizeSeconds, signalThreshold, defaultDistinctSignalCountThreshold)
+	windows, err := getWindowedSignalCounts(ctx, d.conn, subject, lookbackFrom, to, defaultWindowSizeSeconds, signalThreshold, defaultDistinctSignalCountThreshold)
 	if err != nil {
 		return nil, fmt.Errorf("failed to query active windows: %w", err)
 	}

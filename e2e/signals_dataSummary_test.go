@@ -16,6 +16,7 @@ import (
 func TestSignalsMetadata(t *testing.T) {
 	services := GetTestServices(t)
 	tokenID := uint32(rand.Intn(1000000))
+	subject := fmt.Sprintf("did:erc721:137:0xbA5738a18d83D41847dfFbDC6101d37C69c9B0cF:%d", tokenID)
 	// Define test timestamps
 	smartCarTime1 := time.Date(2024, 11, 20, 22, 28, 17, 0, time.UTC)
 	smartCarTime2 := time.Date(2024, 11, 21, 10, 15, 30, 0, time.UTC)
@@ -32,14 +33,14 @@ func TestSignalsMetadata(t *testing.T) {
 			Timestamp:   smartCarTime1,
 			Name:        vss.FieldSpeed,
 			ValueNumber: 65.5,
-			TokenID:     tokenID,
+			Subject:     subject,
 		},
 		{
 			Source:      ch.SourceTranslations["smartcar"][0],
 			Timestamp:   smartCarTime2,
 			Name:        vss.FieldSpeed,
 			ValueNumber: 70.2,
-			TokenID:     tokenID,
+			Subject:     subject,
 		},
 		{
 			Source:    ch.SourceTranslations["smartcar"][0],
@@ -49,7 +50,7 @@ func TestSignalsMetadata(t *testing.T) {
 				Latitude:  40.73899538333504,
 				Longitude: 73.99386110247163,
 			},
-			TokenID: tokenID,
+			Subject: subject,
 		},
 		// AutoPi signals - speed and battery
 		{
@@ -57,21 +58,21 @@ func TestSignalsMetadata(t *testing.T) {
 			Timestamp:   autopiTime1,
 			Name:        vss.FieldSpeed,
 			ValueNumber: 14,
-			TokenID:     tokenID,
+			Subject:     subject,
 		},
 		{
 			Source:      ch.SourceTranslations["autopi"][0],
 			Timestamp:   autopiTime2,
 			Name:        vss.FieldSpeed,
 			ValueNumber: 25.8,
-			TokenID:     tokenID,
+			Subject:     subject,
 		},
 		{
 			Source:      ch.SourceTranslations["autopi"][0],
 			Timestamp:   autopiTime1,
 			Name:        vss.FieldPowertrainTractionBatteryStateOfChargeCurrent,
 			ValueNumber: 75.5,
-			TokenID:     tokenID,
+			Subject:     subject,
 		},
 
 		// Macaron signals - just speed
@@ -80,7 +81,7 @@ func TestSignalsMetadata(t *testing.T) {
 			Timestamp:   macaronTime,
 			Name:        vss.FieldSpeed,
 			ValueNumber: 3,
-			TokenID:     tokenID,
+			Subject:     subject,
 		},
 
 		// Tesla signals - speed and different battery field
@@ -89,14 +90,14 @@ func TestSignalsMetadata(t *testing.T) {
 			Timestamp:   teslaTime,
 			Name:        vss.FieldSpeed,
 			ValueNumber: 88.5,
-			TokenID:     tokenID,
+			Subject:     subject,
 		},
 		{
 			Source:      ch.SourceTranslations["tesla"][0],
 			Timestamp:   teslaTime,
 			Name:        vss.FieldPowertrainTractionBatteryChargingChargeCurrentAC,
 			ValueNumber: 82.3,
-			TokenID:     tokenID,
+			Subject:     subject,
 		},
 	}
 

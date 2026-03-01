@@ -45,48 +45,48 @@ func (m *MockCHService) EXPECT() *MockCHServiceMockRecorder {
 }
 
 // GetAggregatedSignals mocks base method.
-func (m *MockCHService) GetAggregatedSignals(ctx context.Context, aggArgs *model.AggregatedSignalArgs) ([]*ch.AggSignal, error) {
+func (m *MockCHService) GetAggregatedSignals(ctx context.Context, subject string, aggArgs *model.AggregatedSignalArgs) ([]*ch.AggSignal, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetAggregatedSignals", ctx, aggArgs)
+	ret := m.ctrl.Call(m, "GetAggregatedSignals", ctx, subject, aggArgs)
 	ret0, _ := ret[0].([]*ch.AggSignal)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetAggregatedSignals indicates an expected call of GetAggregatedSignals.
-func (mr *MockCHServiceMockRecorder) GetAggregatedSignals(ctx, aggArgs any) *gomock.Call {
+func (mr *MockCHServiceMockRecorder) GetAggregatedSignals(ctx, subject, aggArgs any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAggregatedSignals", reflect.TypeOf((*MockCHService)(nil).GetAggregatedSignals), ctx, aggArgs)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAggregatedSignals", reflect.TypeOf((*MockCHService)(nil).GetAggregatedSignals), ctx, subject, aggArgs)
 }
 
 // GetAggregatedSignalsForRanges mocks base method.
-func (m *MockCHService) GetAggregatedSignalsForRanges(ctx context.Context, tokenID uint32, ranges []ch.TimeRange, globalFrom, globalTo time.Time, floatArgs []model.FloatSignalArgs, locationArgs []model.LocationSignalArgs) ([]*ch.AggSignalForRange, error) {
+func (m *MockCHService) GetAggregatedSignalsForRanges(ctx context.Context, subject string, ranges []ch.TimeRange, globalFrom, globalTo time.Time, floatArgs []model.FloatSignalArgs, locationArgs []model.LocationSignalArgs) ([]*ch.AggSignalForRange, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetAggregatedSignalsForRanges", ctx, tokenID, ranges, globalFrom, globalTo, floatArgs, locationArgs)
+	ret := m.ctrl.Call(m, "GetAggregatedSignalsForRanges", ctx, subject, ranges, globalFrom, globalTo, floatArgs, locationArgs)
 	ret0, _ := ret[0].([]*ch.AggSignalForRange)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetAggregatedSignalsForRanges indicates an expected call of GetAggregatedSignalsForRanges.
-func (mr *MockCHServiceMockRecorder) GetAggregatedSignalsForRanges(ctx, tokenID, ranges, globalFrom, globalTo, floatArgs, locationArgs any) *gomock.Call {
+func (mr *MockCHServiceMockRecorder) GetAggregatedSignalsForRanges(ctx, subject, ranges, globalFrom, globalTo, floatArgs, locationArgs any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAggregatedSignalsForRanges", reflect.TypeOf((*MockCHService)(nil).GetAggregatedSignalsForRanges), ctx, tokenID, ranges, globalFrom, globalTo, floatArgs, locationArgs)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAggregatedSignalsForRanges", reflect.TypeOf((*MockCHService)(nil).GetAggregatedSignalsForRanges), ctx, subject, ranges, globalFrom, globalTo, floatArgs, locationArgs)
 }
 
 // GetAvailableSignals mocks base method.
-func (m *MockCHService) GetAvailableSignals(ctx context.Context, tokenID uint32, filter *model.SignalFilter) ([]string, error) {
+func (m *MockCHService) GetAvailableSignals(ctx context.Context, subject string, filter *model.SignalFilter) ([]string, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetAvailableSignals", ctx, tokenID, filter)
+	ret := m.ctrl.Call(m, "GetAvailableSignals", ctx, subject, filter)
 	ret0, _ := ret[0].([]string)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetAvailableSignals indicates an expected call of GetAvailableSignals.
-func (mr *MockCHServiceMockRecorder) GetAvailableSignals(ctx, tokenID, filter any) *gomock.Call {
+func (mr *MockCHServiceMockRecorder) GetAvailableSignals(ctx, subject, filter any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAvailableSignals", reflect.TypeOf((*MockCHService)(nil).GetAvailableSignals), ctx, tokenID, filter)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAvailableSignals", reflect.TypeOf((*MockCHService)(nil).GetAvailableSignals), ctx, subject, filter)
 }
 
 // GetEventCounts mocks base method.
@@ -150,46 +150,46 @@ func (mr *MockCHServiceMockRecorder) GetEvents(ctx, subject, from, to, filter an
 }
 
 // GetLatestSignals mocks base method.
-func (m *MockCHService) GetLatestSignals(ctx context.Context, latestArgs *model.LatestSignalsArgs) ([]*vss.Signal, error) {
+func (m *MockCHService) GetLatestSignals(ctx context.Context, subject string, latestArgs *model.LatestSignalsArgs) ([]*vss.Signal, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetLatestSignals", ctx, latestArgs)
+	ret := m.ctrl.Call(m, "GetLatestSignals", ctx, subject, latestArgs)
 	ret0, _ := ret[0].([]*vss.Signal)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetLatestSignals indicates an expected call of GetLatestSignals.
-func (mr *MockCHServiceMockRecorder) GetLatestSignals(ctx, latestArgs any) *gomock.Call {
+func (mr *MockCHServiceMockRecorder) GetLatestSignals(ctx, subject, latestArgs any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetLatestSignals", reflect.TypeOf((*MockCHService)(nil).GetLatestSignals), ctx, latestArgs)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetLatestSignals", reflect.TypeOf((*MockCHService)(nil).GetLatestSignals), ctx, subject, latestArgs)
 }
 
 // GetSegments mocks base method.
-func (m *MockCHService) GetSegments(ctx context.Context, tokenID uint32, from, to time.Time, mechanism model.DetectionMechanism, config *model.SegmentConfig) ([]*model.Segment, error) {
+func (m *MockCHService) GetSegments(ctx context.Context, subject string, from, to time.Time, mechanism model.DetectionMechanism, config *model.SegmentConfig) ([]*model.Segment, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetSegments", ctx, tokenID, from, to, mechanism, config)
+	ret := m.ctrl.Call(m, "GetSegments", ctx, subject, from, to, mechanism, config)
 	ret0, _ := ret[0].([]*model.Segment)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetSegments indicates an expected call of GetSegments.
-func (mr *MockCHServiceMockRecorder) GetSegments(ctx, tokenID, from, to, mechanism, config any) *gomock.Call {
+func (mr *MockCHServiceMockRecorder) GetSegments(ctx, subject, from, to, mechanism, config any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSegments", reflect.TypeOf((*MockCHService)(nil).GetSegments), ctx, tokenID, from, to, mechanism, config)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSegments", reflect.TypeOf((*MockCHService)(nil).GetSegments), ctx, subject, from, to, mechanism, config)
 }
 
 // GetSignalSummaries mocks base method.
-func (m *MockCHService) GetSignalSummaries(ctx context.Context, tokenID uint32, filter *model.SignalFilter) ([]*model.SignalDataSummary, error) {
+func (m *MockCHService) GetSignalSummaries(ctx context.Context, subject string, filter *model.SignalFilter) ([]*model.SignalDataSummary, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetSignalSummaries", ctx, tokenID, filter)
+	ret := m.ctrl.Call(m, "GetSignalSummaries", ctx, subject, filter)
 	ret0, _ := ret[0].([]*model.SignalDataSummary)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetSignalSummaries indicates an expected call of GetSignalSummaries.
-func (mr *MockCHServiceMockRecorder) GetSignalSummaries(ctx, tokenID, filter any) *gomock.Call {
+func (mr *MockCHServiceMockRecorder) GetSignalSummaries(ctx, subject, filter any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSignalSummaries", reflect.TypeOf((*MockCHService)(nil).GetSignalSummaries), ctx, tokenID, filter)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSignalSummaries", reflect.TypeOf((*MockCHService)(nil).GetSignalSummaries), ctx, subject, filter)
 }

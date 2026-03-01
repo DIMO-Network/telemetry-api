@@ -72,7 +72,6 @@ func TestFilterNoise(t *testing.T) {
 func TestBuildSegmentsWithDebouncing(t *testing.T) {
 	detector := &IgnitionDetector{}
 	now := time.Now()
-	tokenID := uint32(1)
 	minIdle := 300    // 5 minutes
 	minDuration := 60 // 1 minute
 
@@ -80,11 +79,11 @@ func TestBuildSegmentsWithDebouncing(t *testing.T) {
 		from := now.Add(-time.Hour)
 		to := now
 
-		result := detector.buildSegmentsWithDebouncing(tokenID, nil, from, to, minIdle, minDuration)
+		result := detector.buildSegmentsWithDebouncing(nil, from, to, minIdle, minDuration)
 		require.NotNil(t, result)
 		require.Empty(t, result)
 
-		result = detector.buildSegmentsWithDebouncing(tokenID, []StateChange{}, from, to, minIdle, minDuration)
+		result = detector.buildSegmentsWithDebouncing([]StateChange{}, from, to, minIdle, minDuration)
 		require.NotNil(t, result)
 		require.Empty(t, result)
 	})
@@ -98,7 +97,7 @@ func TestBuildSegmentsWithDebouncing(t *testing.T) {
 			{Timestamp: from.Add(20 * time.Minute), State: 0, PrevState: 1},
 		}
 
-		result := detector.buildSegmentsWithDebouncing(tokenID, changes, from, to, minIdle, minDuration)
+		result := detector.buildSegmentsWithDebouncing(changes, from, to, minIdle, minDuration)
 		require.Len(t, result, 1)
 		require.Equal(t, from.Add(10*time.Minute), result[0].Start.Timestamp)
 		require.NotNil(t, result[0].End)
@@ -119,7 +118,7 @@ func TestBuildSegmentsWithDebouncing(t *testing.T) {
 			{Timestamp: from.Add(50 * time.Minute), State: 0, PrevState: 1},
 		}
 
-		result := detector.buildSegmentsWithDebouncing(tokenID, changes, from, to, minIdle, minDuration)
+		result := detector.buildSegmentsWithDebouncing(changes, from, to, minIdle, minDuration)
 		require.Len(t, result, 2)
 	})
 
@@ -132,7 +131,7 @@ func TestBuildSegmentsWithDebouncing(t *testing.T) {
 			// No OFF signal
 		}
 
-		result := detector.buildSegmentsWithDebouncing(tokenID, changes, from, to, minIdle, minDuration)
+		result := detector.buildSegmentsWithDebouncing(changes, from, to, minIdle, minDuration)
 		require.Len(t, result, 1)
 		require.True(t, result[0].IsOngoing)
 		require.Nil(t, result[0].End)
@@ -148,7 +147,7 @@ func TestBuildSegmentsWithDebouncing(t *testing.T) {
 			{Timestamp: from.Add(10*time.Minute + 30*time.Second), State: 0, PrevState: 1},
 		}
 
-		result := detector.buildSegmentsWithDebouncing(tokenID, changes, from, to, minIdle, minDuration)
+		result := detector.buildSegmentsWithDebouncing(changes, from, to, minIdle, minDuration)
 		require.Empty(t, result)
 	})
 
@@ -162,7 +161,7 @@ func TestBuildSegmentsWithDebouncing(t *testing.T) {
 			// This should not create an ongoing segment
 		}
 
-		result := detector.buildSegmentsWithDebouncing(tokenID, changes, from, to, minIdle, minDuration)
+		result := detector.buildSegmentsWithDebouncing(changes, from, to, minIdle, minDuration)
 		require.Empty(t, result)
 	})
 
@@ -176,7 +175,7 @@ func TestBuildSegmentsWithDebouncing(t *testing.T) {
 			{Timestamp: from.Add(10 * time.Minute), State: 0, PrevState: 1},
 		}
 
-		result := detector.buildSegmentsWithDebouncing(tokenID, changes, from, to, minIdle, minDuration)
+		result := detector.buildSegmentsWithDebouncing(changes, from, to, minIdle, minDuration)
 		require.Len(t, result, 1)
 		require.True(t, result[0].StartedBeforeRange)
 	})
@@ -192,7 +191,7 @@ func TestBuildSegmentsWithDebouncing(t *testing.T) {
 			{Timestamp: end, State: 0, PrevState: 1},
 		}
 
-		result := detector.buildSegmentsWithDebouncing(tokenID, changes, from, to, minIdle, minDuration)
+		result := detector.buildSegmentsWithDebouncing(changes, from, to, minIdle, minDuration)
 		require.Len(t, result, 1)
 		require.Equal(t, 600, result[0].Duration) // 10 minutes = 600 seconds
 	})

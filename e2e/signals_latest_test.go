@@ -24,7 +24,7 @@ func TestSignalsLatest(t *testing.T) {
 			Timestamp:   smartCarTime,
 			Name:        vss.FieldSpeed,
 			ValueNumber: 65.5,
-			TokenID:     39718,
+			Subject:     "did:erc721:137:0xbA5738a18d83D41847dfFbDC6101d37C69c9B0cF:39718",
 		},
 		{
 			Source:    ch.SourceTranslations["smartcar"][0],
@@ -34,7 +34,7 @@ func TestSignalsLatest(t *testing.T) {
 				Latitude:  40.73899538333504,
 				Longitude: 73.99386110247163,
 			},
-			TokenID: 39718,
+			Subject: "did:erc721:137:0xbA5738a18d83D41847dfFbDC6101d37C69c9B0cF:39718",
 		},
 		{
 			Source:    ch.SourceTranslations["smartcar"][0],
@@ -43,21 +43,21 @@ func TestSignalsLatest(t *testing.T) {
 			ValueLocation: vss.Location{
 				HDOP: 7,
 			},
-			TokenID: 39718,
+			Subject: "did:erc721:137:0xbA5738a18d83D41847dfFbDC6101d37C69c9B0cF:39718",
 		},
 		{
 			Source:      ch.SourceTranslations["autopi"][0],
 			Timestamp:   autopiTime,
 			Name:        vss.FieldSpeed,
 			ValueNumber: 14,
-			TokenID:     39718,
+			Subject:     "did:erc721:137:0xbA5738a18d83D41847dfFbDC6101d37C69c9B0cF:39718",
 		},
 		{
 			Source:      ch.SourceTranslations["macaron"][0],
 			Timestamp:   macaronTime,
 			Name:        vss.FieldSpeed,
 			ValueNumber: 3,
-			TokenID:     39718,
+			Subject:     "did:erc721:137:0xbA5738a18d83D41847dfFbDC6101d37C69c9B0cF:39718",
 		},
 	}
 
