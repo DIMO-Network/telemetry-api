@@ -29,26 +29,11 @@ func TestEstimateCost(t *testing.T) {
 				timestamp
 				value
 			}
-			dimoAftermarketWPAState {
-				timestamp
-				value
-			}
 			currentLocationHeading {
 				timestamp
 				value
 			}
-			currentLocationIsRedacted {
-				timestamp
-				value
-			}
-			loc2: currentLocationIsRedacted {
-				timestamp
-				value
-			}
-				
-
 		}
-	
 	}`
 
 	// Execute request
