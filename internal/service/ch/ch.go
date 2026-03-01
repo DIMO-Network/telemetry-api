@@ -89,30 +89,6 @@ func (s *Service) GetLatestSignals(ctx context.Context, latestArgs *model.Latest
 	return signals, nil
 }
 
-type AliasHandleMapper struct {
-	aliasToHandle, handleToAlias map[string]string
-}
-
-func NewAliasHandleMapper() *AliasHandleMapper {
-	return &AliasHandleMapper{
-		aliasToHandle: make(map[string]string),
-		handleToAlias: make(map[string]string),
-	}
-}
-
-func (m *AliasHandleMapper) Add(alias, handle string) {
-	m.aliasToHandle[alias] = handle
-	m.handleToAlias[handle] = alias
-}
-
-func (m *AliasHandleMapper) Handle(alias string) string {
-	return m.aliasToHandle[alias]
-}
-
-func (m *AliasHandleMapper) Alias(handle string) string {
-	return m.handleToAlias[handle]
-}
-
 // GetAggregatedSignals returns a slice of aggregated signals based on the provided arguments from the ClickHouse database.
 // The signals are sorted by timestamp in ascending order.
 // The timestamp on each signal is for the start of the interval.
