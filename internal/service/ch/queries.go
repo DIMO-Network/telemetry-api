@@ -303,11 +303,11 @@ SELECT
   name,
   max(timestamp),
   argMax(value_string, timestamp) as value_string,
-  argMax(value_number, timestamp) as value_float
+  argMax(value_number, timestamp) as value_number
 FROM
   signal
 WHERE
-  token_id = 15 AND
+  subject = '...' AND
   (name = 'speed' OR name = 'currentLocationLatitude' OR name = 'currentLocationLongitude' OR name = 'powertrainFuelSystemSupportedFuelTypes' OR name = 'none')
 GROUP BY
   name
@@ -355,12 +355,13 @@ func getLatestQuery(subject string, latestArgs *model.LatestSignalsArgs) (string
 SELECT
 	'lastSeen' AS name,
 	max(timestamp) AS ts,
+	NULL AS value_number,
 	NULL AS value_string,
-	NULL AS value_float
+	CAST(tuple(0, 0, 0, 0), 'Tuple(latitude Float64, longitude Float64, hdop Float64, heading Float64)') AS value_location
 FROM
 	signal
 WHERE
-	token_id = 15
+	subject = '...'
 */
 func getLastSeenQuery(subject string, sigArgs *model.SignalArgs) (string, []any) {
 	if sigArgs == nil {
@@ -397,7 +398,7 @@ func unionAll(allStatements []string, allArgs [][]any) (string, []any) {
 /*
 SELECT
     signal_type,
-	signal_id,
+	signal_index,
 	toStartOfInterval(timestamp, toIntervalMicrosecond(60000000), fromUnixTimestamp64Micro(1751274600000000)) AS group_timestamp,
     CASE
         WHEN signal_type = 1 AND signal_index = 0 THEN max(value_number)
@@ -413,7 +414,7 @@ FROM
     signal
 JOIN
 	VALUES(
-		'signal_type UInt8, signal_index UInt8, name String',
+		'signal_type UInt8, signal_index UInt16, name String',
 		(1, 0, 'speed'),
 		(1, 1, 'obdRunTime'),
 		(2, 0, 'powertrainType'),
@@ -422,7 +423,7 @@ JOIN
 ON
 	signal.name = agg_table.name
 WHERE
-    token_id = 15
+    subject = '...'
     AND timestamp > toDateTime('2024-04-15 09:21:19')
     AND timestamp < toDateTime('2024-04-27 09:21:19')
 GROUP BY
