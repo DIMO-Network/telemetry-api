@@ -74,8 +74,8 @@ func TestPermission(t *testing.T) {
 			query: `query {
 				signalsLatest(tokenId: 39718) {
 					lastSeen
-					currentLocationLatitude {
-						value
+					currentLocationCoordinates {
+						value { latitude longitude hdop }
 					}
 				}
 			}`,

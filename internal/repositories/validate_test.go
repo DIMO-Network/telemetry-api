@@ -86,7 +86,7 @@ func TestValidateSegmentArgs(t *testing.T) {
 	})
 
 	t.Run("date range exceeded", func(t *testing.T) {
-		from := validTo.Add(-32*24*time.Hour - 2*time.Second) // max is 32 days + 1s
+		from := validTo.Add(-33 * 24 * time.Hour) // max is 32 days
 		err := validateSegmentArgs(1, from, validTo)
 		require.Error(t, err)
 	})
