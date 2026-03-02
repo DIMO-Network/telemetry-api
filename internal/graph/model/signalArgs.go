@@ -31,6 +31,10 @@ type LatestSignalsArgs struct {
 	// SignalNames is the list of signal names to query.
 	SignalNames map[string]struct{}
 	// LocationSignalNames is the list of location signal names to query.
+	//
+	// This is split out separately because we typically want to filter out rows
+	// like (0, 0, hdop). Users typically do not want to see those when they
+	// ask for location.
 	LocationSignalNames map[string]struct{}
 	// IncludeLastSeen is a flag to include a new signal for the last seen signal.
 	IncludeLastSeen bool
