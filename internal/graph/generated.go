@@ -3237,10 +3237,17 @@ The root query type for the GraphQL schema.
 """
 type Query {
   """
-  signals returns a collection of signals for a given token in a given time range.
+  Compute aggregations of signals for a given subject.
   """
   signals(
-    tokenId: Int
+    """
+    A vehicle token id. This is translated into a ERC-721 DID ` + "`" + `subject` + "`" + ` string, and you
+    should use that argument instead.
+    """
+    tokenId: Int @deprecated(reason: "Use ` + "`" + `subject` + "`" + ` instead.")
+    """
+    The subject of the requested signals. Typically a W3C DID.
+    """
     subject: String
     """
     interval is a time span that used for aggregatting the data with.
@@ -3253,20 +3260,53 @@ type Query {
     filter: SignalFilter
   ): [SignalAggregations!] @requiresVehicleToken
   """
-  SignalsLatest returns the latest signals for a given token.
+  Query the latest values of signals for a given subject.
   """
-  signalsLatest(tokenId: Int, subject: String, filter: SignalFilter): SignalCollection
+  signalsLatest(
+    """
+    A vehicle token id. This is translated into a ERC-721 DID ` + "`" + `subject` + "`" + ` string, and you
+    should use that argument instead.
+    """
+    tokenId: Int @deprecated(reason: "Use ` + "`" + `subject` + "`" + ` instead.")
+    """
+    The subject of the requested signals. Typically a W3C DID.
+    """
+    subject: String
+    filter: SignalFilter
+  ): SignalCollection
     @requiresVehicleToken
   """
-  availableSignals returns a list of queryable signal names that have stored data for the given vehicle.
+  List queryable signal names that have stored data for a given subject.
   """
-  availableSignals(tokenId: Int, subject: String, filter: SignalFilter): [String!]
+  availableSignals(
+    """
+    A vehicle token id. This is translated into a ERC-721 DID ` + "`" + `subject` + "`" + ` string, and you
+    should use that argument instead.
+    """
+    tokenId: Int @deprecated(reason: "Use ` + "`" + `subject` + "`" + ` instead.")
+    """
+    The subject of the requested signals. Typically a W3C DID.
+    """
+    subject: String
+    filter: SignalFilter
+  ): [String!]
     @requiresVehicleToken
 
   """
-  data summary of all signals for the given vehicle
+  Data summary of all signals for a given subject.
   """
-  dataSummary(tokenId: Int, subject: String, filter: SignalFilter): DataSummary
+  dataSummary(
+    """
+    A vehicle token id. This is translated into a ERC-721 DID ` + "`" + `subject` + "`" + ` string, and you
+    should use that argument instead.
+    """
+    tokenId: Int @deprecated(reason: "Use ` + "`" + `subject` + "`" + ` instead.")
+    """
+    The subject of the requested signals. Typically a W3C DID.
+    """
+    subject: String
+    filter: SignalFilter
+  ): DataSummary
     @requiresVehicleToken
 }
 type SignalAggregations {
@@ -3622,15 +3662,16 @@ input AftermarketDeviceBy @oneOf {
 `, BuiltIn: false},
 	{Name: "../../schema/events.graphqls", Input: `extend type Query {
   """
-  events returns a list of events for a given token in a given time range.
+  Returns a list of events for a given subject in a given time range.
   """
   events(
     """
-    tokenId is the id of the token to get events for.
+    A vehicle token id. This is translated into a ERC-721 DID ` + "`" + `subject` + "`" + ` string, and you
+    should use that argument instead.
     """
-    tokenId: Int
+    tokenId: Int @deprecated(reason: "Use ` + "`" + `subject` + "`" + ` instead.")
     """
-    subject is the DID subject of the vehicle.
+    The subject of the requested events. Typically a W3C DID.
     """
     subject: String
     """
@@ -3745,7 +3786,14 @@ extend type Query {
   When signalRequests is provided, those requests are added on top of the default set; duplicates (same name and agg) are omitted.
   """
   segments(
-    tokenId: Int
+    """
+    A vehicle token id. This is translated into a ERC-721 DID ` + "`" + `subject` + "`" + ` string, and you
+    should use that argument instead.
+    """
+    tokenId: Int @deprecated(reason: "Use ` + "`" + `subject` + "`" + ` instead.")
+    """
+    The subject of the requested data. Typically a W3C DID.
+    """
     subject: String
     from: Time!
     to: Time!
@@ -3770,7 +3818,14 @@ extend type Query {
   Maximum date range: 31 days.
   """
   dailyActivity(
-    tokenId: Int
+    """
+    A vehicle token id. This is translated into a ERC-721 DID ` + "`" + `subject` + "`" + ` string, and you
+    should use that argument instead.
+    """
+    tokenId: Int @deprecated(reason: "Use ` + "`" + `subject` + "`" + ` instead.")
+    """
+    The subject of the requested data. Typically a W3C DID.
+    """
     subject: String
     from: Time!
     to: Time!
@@ -5661,17 +5716,18 @@ extend input EventFilter {
 `, BuiltIn: false},
 	{Name: "../../schema/vc.graphqls", Input: `extend type Query {
   """
-  vinVCLatest returns the latest VINVC data for a given token.
+  vinVCLatest returns the latest VIN VC data for a given subject.
 
   Required Privileges: [VEHICLE_VIN_CREDENTIAL]
   """
   vinVCLatest(
     """
-    The token ID of the vehicle.
+    A vehicle token id. This is translated into a ERC-721 DID ` + "`" + `subject` + "`" + ` string, and you
+    should use that argument instead.
     """
-    tokenId: Int
+    tokenId: Int @deprecated(reason: "Use ` + "`" + `subject` + "`" + ` instead.")
     """
-    The DID subject of the vehicle.
+    The subject of the requested data. Typically a W3C DID.
     """
     subject: String
   ): VINVC

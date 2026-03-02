@@ -57,7 +57,14 @@ extend type Query {
   When signalRequests is provided, those requests are added on top of the default set; duplicates (same name and agg) are omitted.
   """
   segments(
-    tokenId: Int
+    """
+    A vehicle token id. This is translated into a ERC-721 DID `subject` string, and you
+    should use that argument instead.
+    """
+    tokenId: Int @deprecated(reason: "Use `subject` instead.")
+    """
+    The subject of the requested data. Typically a W3C DID.
+    """
     subject: String
     from: Time!
     to: Time!
@@ -82,7 +89,14 @@ extend type Query {
   Maximum date range: 31 days.
   """
   dailyActivity(
-    tokenId: Int
+    """
+    A vehicle token id. This is translated into a ERC-721 DID `subject` string, and you
+    should use that argument instead.
+    """
+    tokenId: Int @deprecated(reason: "Use `subject` instead.")
+    """
+    The subject of the requested data. Typically a W3C DID.
+    """
     subject: String
     from: Time!
     to: Time!

@@ -1,16 +1,17 @@
 extend type Query {
   """
-  vinVCLatest returns the latest VINVC data for a given token.
+  vinVCLatest returns the latest VIN VC data for a given subject.
 
   Required Privileges: [VEHICLE_VIN_CREDENTIAL]
   """
   vinVCLatest(
     """
-    The token ID of the vehicle.
+    A vehicle token id. This is translated into a ERC-721 DID `subject` string, and you
+    should use that argument instead.
     """
-    tokenId: Int
+    tokenId: Int @deprecated(reason: "Use `subject` instead.")
     """
-    The DID subject of the vehicle.
+    The subject of the requested data. Typically a W3C DID.
     """
     subject: String
   ): VINVC
