@@ -14,6 +14,7 @@ import (
 
 const (
 	tokenIdArg = "tokenId"
+	subjectArg = "subject"
 	byArg      = "by"
 )
 
@@ -54,17 +55,37 @@ func newError(msg string, args ...any) error {
 
 func NewVehicleTokenCheck(requiredAddr common.Address) func(context.Context, any, graphql.Resolver) (any, error) {
 	return func(ctx context.Context, _ any, next graphql.Resolver) (any, error) {
-		vehicleTokenID, err := getArg[int](ctx, tokenIdArg)
-		if err != nil {
-			return nil, UnauthorizedError{err: err}
-		}
+		tokenID, _ := getArg[*int](ctx, tokenIdArg)
+		subject, _ := getArg[*string](ctx, subjectArg)
 
-		if err := validateHeader(ctx, requiredAddr, vehicleTokenID); err != nil {
-			return nil, UnauthorizedError{err: err}
+		switch {
+		case tokenID != nil && subject != nil:
+			return nil, UnauthorizedError{message: "provide either tokenId or subject, not both"}
+		case tokenID != nil:
+			if err := validateHeader(ctx, requiredAddr, *tokenID); err != nil {
+				return nil, UnauthorizedError{err: err}
+			}
+		case subject != nil:
+			if err := validateSubject(ctx, *subject); err != nil {
+				return nil, UnauthorizedError{err: err}
+			}
+		default:
+			return nil, UnauthorizedError{message: "tokenId or subject is required"}
 		}
 
 		return next(ctx)
 	}
+}
+
+func validateSubject(ctx context.Context, subject string) error {
+	claim, err := getTelemetryClaim(ctx)
+	if err != nil {
+		return err
+	}
+	if subject != claim.Asset {
+		return newError("subject does not match token claim")
+	}
+	return nil
 }
 
 func NewManufacturerTokenCheck(requiredAddr common.Address, identitySvc IdentityService) func(context.Context, any, graphql.Resolver) (any, error) {

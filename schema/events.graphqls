@@ -6,7 +6,11 @@ extend type Query {
     """
     tokenId is the id of the token to get events for.
     """
-    tokenId: Int!
+    tokenId: Int
+    """
+    subject is the DID subject of the vehicle.
+    """
+    subject: String
     """
     from is the start time of the event.
     """

@@ -15,41 +15,36 @@ func TestValidateEventArgs(t *testing.T) {
 	validFilter := &model.EventFilter{}
 
 	t.Run("valid args", func(t *testing.T) {
-		err := validateEventArgs(1, validFrom, validTo, validFilter)
+		err := validateEventArgs(validFrom, validTo, validFilter)
 		require.NoError(t, err)
 	})
 
-	t.Run("tokenID < 1", func(t *testing.T) {
-		err := validateEventArgs(0, validFrom, validTo, validFilter)
-		require.Error(t, err)
-	})
-
 	t.Run("from is zero", func(t *testing.T) {
-		err := validateEventArgs(1, time.Time{}, validTo, validFilter)
+		err := validateEventArgs(time.Time{}, validTo, validFilter)
 		require.Error(t, err)
 	})
 
 	t.Run("to is zero", func(t *testing.T) {
-		err := validateEventArgs(1, validFrom, time.Time{}, validFilter)
+		err := validateEventArgs(validFrom, time.Time{}, validFilter)
 		require.Error(t, err)
 	})
 
 	t.Run("from after to", func(t *testing.T) {
 		from := validTo.Add(time.Second)
-		err := validateEventArgs(1, from, validTo, validFilter)
+		err := validateEventArgs(from, validTo, validFilter)
 		require.Error(t, err)
 	})
 
 	t.Run("valid tags", func(t *testing.T) {
-		err := validateEventArgs(1, validFrom, validTo, &model.EventFilter{Tags: &model.StringArrayFilter{ContainsAny: []string{vss.TagBehaviorHarshAcceleration, vss.TagSafetyCollision}}})
+		err := validateEventArgs(validFrom, validTo, &model.EventFilter{Tags: &model.StringArrayFilter{ContainsAny: []string{vss.TagBehaviorHarshAcceleration, vss.TagSafetyCollision}}})
 		require.NoError(t, err)
-		err = validateEventArgs(1, validFrom, validTo, &model.EventFilter{Tags: &model.StringArrayFilter{ContainsAll: []string{vss.TagBehaviorHarshAcceleration}}})
+		err = validateEventArgs(validFrom, validTo, &model.EventFilter{Tags: &model.StringArrayFilter{ContainsAll: []string{vss.TagBehaviorHarshAcceleration}}})
 		require.NoError(t, err)
 	})
 	t.Run("invalid tags", func(t *testing.T) {
-		err := validateEventArgs(1, validFrom, validTo, &model.EventFilter{Tags: &model.StringArrayFilter{ContainsAny: []string{"invalid"}}})
+		err := validateEventArgs(validFrom, validTo, &model.EventFilter{Tags: &model.StringArrayFilter{ContainsAny: []string{"invalid"}}})
 		require.Error(t, err)
-		err = validateEventArgs(1, validFrom, validTo, &model.EventFilter{Tags: &model.StringArrayFilter{ContainsAll: []string{vss.TagBehaviorHarshAcceleration, "invalid"}}})
+		err = validateEventArgs(validFrom, validTo, &model.EventFilter{Tags: &model.StringArrayFilter{ContainsAll: []string{vss.TagBehaviorHarshAcceleration, "invalid"}}})
 		require.Error(t, err)
 	})
 
@@ -60,34 +55,29 @@ func TestValidateSegmentArgs(t *testing.T) {
 	validTo := time.Now()
 
 	t.Run("valid args", func(t *testing.T) {
-		err := validateSegmentArgs(1, validFrom, validTo)
+		err := validateSegmentArgs(validFrom, validTo)
 		require.NoError(t, err)
 	})
 
 	t.Run("exactly 31 days passes", func(t *testing.T) {
 		from := validTo.Add(-31 * 24 * time.Hour)
-		err := validateSegmentArgs(1, from, validTo)
+		err := validateSegmentArgs(from, validTo)
 		require.NoError(t, err)
 	})
 
-	t.Run("tokenID <= 0", func(t *testing.T) {
-		err := validateSegmentArgs(0, validFrom, validTo)
-		require.Error(t, err)
-	})
-
 	t.Run("from after to", func(t *testing.T) {
-		err := validateSegmentArgs(1, validTo.Add(time.Minute), validTo)
+		err := validateSegmentArgs(validTo.Add(time.Minute), validTo)
 		require.Error(t, err)
 	})
 
 	t.Run("from equal to", func(t *testing.T) {
-		err := validateSegmentArgs(1, validFrom, validFrom)
+		err := validateSegmentArgs(validFrom, validFrom)
 		require.Error(t, err)
 	})
 
 	t.Run("date range exceeded", func(t *testing.T) {
 		from := validTo.Add(-33 * 24 * time.Hour) // max is 32 days
-		err := validateSegmentArgs(1, from, validTo)
+		err := validateSegmentArgs(from, validTo)
 		require.Error(t, err)
 	})
 }

@@ -17,8 +17,8 @@ const (
 type SignalArgs struct {
 	// Filter is an optional filter for the signals.
 	Filter *SignalFilter
-	// TokenID is the vehicle's NFT token ID.
-	TokenID uint32
+	// Subject is the DID subject string for the vehicle.
+	Subject string
 }
 
 // LatestSignalsArgs is the arguments for querying the latest signals.

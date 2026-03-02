@@ -111,15 +111,15 @@ type ComplexityRoot struct {
 
 	Query struct {
 		Attestations     func(childComplexity int, tokenID *int, subject *string, filter *model.AttestationFilter) int
-		AvailableSignals func(childComplexity int, tokenID int, filter *model.SignalFilter) int
-		DailyActivity    func(childComplexity int, tokenID int, from time.Time, to time.Time, mechanism model.DetectionMechanism, config *model.SegmentConfig, signalRequests []*model.SegmentSignalRequest, eventRequests []*model.SegmentEventRequest, timezone *string) int
-		DataSummary      func(childComplexity int, tokenID int, filter *model.SignalFilter) int
+		AvailableSignals func(childComplexity int, tokenID *int, subject *string, filter *model.SignalFilter) int
+		DailyActivity    func(childComplexity int, tokenID *int, subject *string, from time.Time, to time.Time, mechanism model.DetectionMechanism, config *model.SegmentConfig, signalRequests []*model.SegmentSignalRequest, eventRequests []*model.SegmentEventRequest, timezone *string) int
+		DataSummary      func(childComplexity int, tokenID *int, subject *string, filter *model.SignalFilter) int
 		DeviceActivity   func(childComplexity int, by model.AftermarketDeviceBy) int
-		Events           func(childComplexity int, tokenID int, from time.Time, to time.Time, filter *model.EventFilter) int
-		Segments         func(childComplexity int, tokenID int, from time.Time, to time.Time, mechanism model.DetectionMechanism, config *model.SegmentConfig, signalRequests []*model.SegmentSignalRequest, eventRequests []*model.SegmentEventRequest, limit *int, after *time.Time) int
-		Signals          func(childComplexity int, tokenID int, interval string, from time.Time, to time.Time, filter *model.SignalFilter) int
-		SignalsLatest    func(childComplexity int, tokenID int, filter *model.SignalFilter) int
-		VinVCLatest      func(childComplexity int, tokenID int) int
+		Events           func(childComplexity int, tokenID *int, subject *string, from time.Time, to time.Time, filter *model.EventFilter) int
+		Segments         func(childComplexity int, tokenID *int, subject *string, from time.Time, to time.Time, mechanism model.DetectionMechanism, config *model.SegmentConfig, signalRequests []*model.SegmentSignalRequest, eventRequests []*model.SegmentEventRequest, limit *int, after *time.Time) int
+		Signals          func(childComplexity int, tokenID *int, subject *string, interval string, from time.Time, to time.Time, filter *model.SignalFilter) int
+		SignalsLatest    func(childComplexity int, tokenID *int, subject *string, filter *model.SignalFilter) int
+		VinVCLatest      func(childComplexity int, tokenID *int, subject *string) int
 	}
 
 	Segment struct {
@@ -409,16 +409,16 @@ type ComplexityRoot struct {
 }
 
 type QueryResolver interface {
-	Signals(ctx context.Context, tokenID int, interval string, from time.Time, to time.Time, filter *model.SignalFilter) ([]*model.SignalAggregations, error)
-	SignalsLatest(ctx context.Context, tokenID int, filter *model.SignalFilter) (*model.SignalCollection, error)
-	AvailableSignals(ctx context.Context, tokenID int, filter *model.SignalFilter) ([]string, error)
-	DataSummary(ctx context.Context, tokenID int, filter *model.SignalFilter) (*model.DataSummary, error)
+	Signals(ctx context.Context, tokenID *int, subject *string, interval string, from time.Time, to time.Time, filter *model.SignalFilter) ([]*model.SignalAggregations, error)
+	SignalsLatest(ctx context.Context, tokenID *int, subject *string, filter *model.SignalFilter) (*model.SignalCollection, error)
+	AvailableSignals(ctx context.Context, tokenID *int, subject *string, filter *model.SignalFilter) ([]string, error)
+	DataSummary(ctx context.Context, tokenID *int, subject *string, filter *model.SignalFilter) (*model.DataSummary, error)
 	Attestations(ctx context.Context, tokenID *int, subject *string, filter *model.AttestationFilter) ([]*model.Attestation, error)
 	DeviceActivity(ctx context.Context, by model.AftermarketDeviceBy) (*model.DeviceActivity, error)
-	Events(ctx context.Context, tokenID int, from time.Time, to time.Time, filter *model.EventFilter) ([]*model.Event, error)
-	Segments(ctx context.Context, tokenID int, from time.Time, to time.Time, mechanism model.DetectionMechanism, config *model.SegmentConfig, signalRequests []*model.SegmentSignalRequest, eventRequests []*model.SegmentEventRequest, limit *int, after *time.Time) ([]*model.Segment, error)
-	DailyActivity(ctx context.Context, tokenID int, from time.Time, to time.Time, mechanism model.DetectionMechanism, config *model.SegmentConfig, signalRequests []*model.SegmentSignalRequest, eventRequests []*model.SegmentEventRequest, timezone *string) ([]*model.DailyActivity, error)
-	VinVCLatest(ctx context.Context, tokenID int) (*model.Vinvc, error)
+	Events(ctx context.Context, tokenID *int, subject *string, from time.Time, to time.Time, filter *model.EventFilter) ([]*model.Event, error)
+	Segments(ctx context.Context, tokenID *int, subject *string, from time.Time, to time.Time, mechanism model.DetectionMechanism, config *model.SegmentConfig, signalRequests []*model.SegmentSignalRequest, eventRequests []*model.SegmentEventRequest, limit *int, after *time.Time) ([]*model.Segment, error)
+	DailyActivity(ctx context.Context, tokenID *int, subject *string, from time.Time, to time.Time, mechanism model.DetectionMechanism, config *model.SegmentConfig, signalRequests []*model.SegmentSignalRequest, eventRequests []*model.SegmentEventRequest, timezone *string) ([]*model.DailyActivity, error)
+	VinVCLatest(ctx context.Context, tokenID *int, subject *string) (*model.Vinvc, error)
 }
 type SignalAggregationsResolver interface {
 	CurrentLocationApproximateCoordinates(ctx context.Context, obj *model.SignalAggregations, agg model.LocationAggregation) (*model.Location, error)
@@ -778,7 +778,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Query.AvailableSignals(childComplexity, args["tokenId"].(int), args["filter"].(*model.SignalFilter)), true
+		return e.complexity.Query.AvailableSignals(childComplexity, args["tokenId"].(*int), args["subject"].(*string), args["filter"].(*model.SignalFilter)), true
 	case "Query.dailyActivity":
 		if e.complexity.Query.DailyActivity == nil {
 			break
@@ -789,7 +789,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Query.DailyActivity(childComplexity, args["tokenId"].(int), args["from"].(time.Time), args["to"].(time.Time), args["mechanism"].(model.DetectionMechanism), args["config"].(*model.SegmentConfig), args["signalRequests"].([]*model.SegmentSignalRequest), args["eventRequests"].([]*model.SegmentEventRequest), args["timezone"].(*string)), true
+		return e.complexity.Query.DailyActivity(childComplexity, args["tokenId"].(*int), args["subject"].(*string), args["from"].(time.Time), args["to"].(time.Time), args["mechanism"].(model.DetectionMechanism), args["config"].(*model.SegmentConfig), args["signalRequests"].([]*model.SegmentSignalRequest), args["eventRequests"].([]*model.SegmentEventRequest), args["timezone"].(*string)), true
 	case "Query.dataSummary":
 		if e.complexity.Query.DataSummary == nil {
 			break
@@ -800,7 +800,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Query.DataSummary(childComplexity, args["tokenId"].(int), args["filter"].(*model.SignalFilter)), true
+		return e.complexity.Query.DataSummary(childComplexity, args["tokenId"].(*int), args["subject"].(*string), args["filter"].(*model.SignalFilter)), true
 	case "Query.deviceActivity":
 		if e.complexity.Query.DeviceActivity == nil {
 			break
@@ -822,7 +822,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Query.Events(childComplexity, args["tokenId"].(int), args["from"].(time.Time), args["to"].(time.Time), args["filter"].(*model.EventFilter)), true
+		return e.complexity.Query.Events(childComplexity, args["tokenId"].(*int), args["subject"].(*string), args["from"].(time.Time), args["to"].(time.Time), args["filter"].(*model.EventFilter)), true
 	case "Query.segments":
 		if e.complexity.Query.Segments == nil {
 			break
@@ -833,7 +833,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Query.Segments(childComplexity, args["tokenId"].(int), args["from"].(time.Time), args["to"].(time.Time), args["mechanism"].(model.DetectionMechanism), args["config"].(*model.SegmentConfig), args["signalRequests"].([]*model.SegmentSignalRequest), args["eventRequests"].([]*model.SegmentEventRequest), args["limit"].(*int), args["after"].(*time.Time)), true
+		return e.complexity.Query.Segments(childComplexity, args["tokenId"].(*int), args["subject"].(*string), args["from"].(time.Time), args["to"].(time.Time), args["mechanism"].(model.DetectionMechanism), args["config"].(*model.SegmentConfig), args["signalRequests"].([]*model.SegmentSignalRequest), args["eventRequests"].([]*model.SegmentEventRequest), args["limit"].(*int), args["after"].(*time.Time)), true
 	case "Query.signals":
 		if e.complexity.Query.Signals == nil {
 			break
@@ -844,7 +844,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Query.Signals(childComplexity, args["tokenId"].(int), args["interval"].(string), args["from"].(time.Time), args["to"].(time.Time), args["filter"].(*model.SignalFilter)), true
+		return e.complexity.Query.Signals(childComplexity, args["tokenId"].(*int), args["subject"].(*string), args["interval"].(string), args["from"].(time.Time), args["to"].(time.Time), args["filter"].(*model.SignalFilter)), true
 	case "Query.signalsLatest":
 		if e.complexity.Query.SignalsLatest == nil {
 			break
@@ -855,7 +855,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Query.SignalsLatest(childComplexity, args["tokenId"].(int), args["filter"].(*model.SignalFilter)), true
+		return e.complexity.Query.SignalsLatest(childComplexity, args["tokenId"].(*int), args["subject"].(*string), args["filter"].(*model.SignalFilter)), true
 	case "Query.vinVCLatest":
 		if e.complexity.Query.VinVCLatest == nil {
 			break
@@ -866,7 +866,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Query.VinVCLatest(childComplexity, args["tokenId"].(int)), true
+		return e.complexity.Query.VinVCLatest(childComplexity, args["tokenId"].(*int), args["subject"].(*string)), true
 
 	case "Segment.duration":
 		if e.complexity.Segment.Duration == nil {
@@ -3240,7 +3240,8 @@ type Query {
   signals returns a collection of signals for a given token in a given time range.
   """
   signals(
-    tokenId: Int!
+    tokenId: Int
+    subject: String
     """
     interval is a time span that used for aggregatting the data with.
     A duration string is a sequence of decimal numbers, each with optional fraction and a unit suffix,
@@ -3254,18 +3255,18 @@ type Query {
   """
   SignalsLatest returns the latest signals for a given token.
   """
-  signalsLatest(tokenId: Int!, filter: SignalFilter): SignalCollection
+  signalsLatest(tokenId: Int, subject: String, filter: SignalFilter): SignalCollection
     @requiresVehicleToken
   """
-  availableSignals returns a list of queryable signal names that have stored data for a given tokenId.
+  availableSignals returns a list of queryable signal names that have stored data for the given vehicle.
   """
-  availableSignals(tokenId: Int!, filter: SignalFilter): [String!]
+  availableSignals(tokenId: Int, subject: String, filter: SignalFilter): [String!]
     @requiresVehicleToken
 
   """
-  data summary of all signals for a given tokenId
+  data summary of all signals for the given vehicle
   """
-  dataSummary(tokenId: Int!, filter: SignalFilter): DataSummary
+  dataSummary(tokenId: Int, subject: String, filter: SignalFilter): DataSummary
     @requiresVehicleToken
 }
 type SignalAggregations {
@@ -3627,7 +3628,11 @@ input AftermarketDeviceBy @oneOf {
     """
     tokenId is the id of the token to get events for.
     """
-    tokenId: Int!
+    tokenId: Int
+    """
+    subject is the DID subject of the vehicle.
+    """
+    subject: String
     """
     from is the start time of the event.
     """
@@ -3740,7 +3745,8 @@ extend type Query {
   When signalRequests is provided, those requests are added on top of the default set; duplicates (same name and agg) are omitted.
   """
   segments(
-    tokenId: Int!
+    tokenId: Int
+    subject: String
     from: Time!
     to: Time!
     mechanism: DetectionMechanism!
@@ -3764,7 +3770,8 @@ extend type Query {
   Maximum date range: 31 days.
   """
   dailyActivity(
-    tokenId: Int!
+    tokenId: Int
+    subject: String
     from: Time!
     to: Time!
     mechanism: DetectionMechanism!
@@ -5662,7 +5669,11 @@ extend input EventFilter {
     """
     The token ID of the vehicle.
     """
-    tokenId: Int!
+    tokenId: Int
+    """
+    The DID subject of the vehicle.
+    """
+    subject: String
   ): VINVC
     @requiresVehicleToken
     @requiresAllOfPrivileges(privileges: [VEHICLE_VIN_CREDENTIAL])
@@ -5781,78 +5792,93 @@ func (ec *executionContext) field_Query_attestations_args(ctx context.Context, r
 func (ec *executionContext) field_Query_availableSignals_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "tokenId", ec.unmarshalNInt2int)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "tokenId", ec.unmarshalOInt2ᚖint)
 	if err != nil {
 		return nil, err
 	}
 	args["tokenId"] = arg0
-	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFilter)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "subject", ec.unmarshalOString2ᚖstring)
 	if err != nil {
 		return nil, err
 	}
-	args["filter"] = arg1
+	args["subject"] = arg1
+	arg2, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFilter)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg2
 	return args, nil
 }
 
 func (ec *executionContext) field_Query_dailyActivity_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "tokenId", ec.unmarshalNInt2int)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "tokenId", ec.unmarshalOInt2ᚖint)
 	if err != nil {
 		return nil, err
 	}
 	args["tokenId"] = arg0
-	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "from", ec.unmarshalNTime2timeᚐTime)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "subject", ec.unmarshalOString2ᚖstring)
 	if err != nil {
 		return nil, err
 	}
-	args["from"] = arg1
-	arg2, err := graphql.ProcessArgField(ctx, rawArgs, "to", ec.unmarshalNTime2timeᚐTime)
+	args["subject"] = arg1
+	arg2, err := graphql.ProcessArgField(ctx, rawArgs, "from", ec.unmarshalNTime2timeᚐTime)
 	if err != nil {
 		return nil, err
 	}
-	args["to"] = arg2
-	arg3, err := graphql.ProcessArgField(ctx, rawArgs, "mechanism", ec.unmarshalNDetectionMechanism2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐDetectionMechanism)
+	args["from"] = arg2
+	arg3, err := graphql.ProcessArgField(ctx, rawArgs, "to", ec.unmarshalNTime2timeᚐTime)
 	if err != nil {
 		return nil, err
 	}
-	args["mechanism"] = arg3
-	arg4, err := graphql.ProcessArgField(ctx, rawArgs, "config", ec.unmarshalOSegmentConfig2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSegmentConfig)
+	args["to"] = arg3
+	arg4, err := graphql.ProcessArgField(ctx, rawArgs, "mechanism", ec.unmarshalNDetectionMechanism2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐDetectionMechanism)
 	if err != nil {
 		return nil, err
 	}
-	args["config"] = arg4
-	arg5, err := graphql.ProcessArgField(ctx, rawArgs, "signalRequests", ec.unmarshalOSegmentSignalRequest2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSegmentSignalRequestᚄ)
+	args["mechanism"] = arg4
+	arg5, err := graphql.ProcessArgField(ctx, rawArgs, "config", ec.unmarshalOSegmentConfig2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSegmentConfig)
 	if err != nil {
 		return nil, err
 	}
-	args["signalRequests"] = arg5
-	arg6, err := graphql.ProcessArgField(ctx, rawArgs, "eventRequests", ec.unmarshalOSegmentEventRequest2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSegmentEventRequestᚄ)
+	args["config"] = arg5
+	arg6, err := graphql.ProcessArgField(ctx, rawArgs, "signalRequests", ec.unmarshalOSegmentSignalRequest2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSegmentSignalRequestᚄ)
 	if err != nil {
 		return nil, err
 	}
-	args["eventRequests"] = arg6
-	arg7, err := graphql.ProcessArgField(ctx, rawArgs, "timezone", ec.unmarshalOString2ᚖstring)
+	args["signalRequests"] = arg6
+	arg7, err := graphql.ProcessArgField(ctx, rawArgs, "eventRequests", ec.unmarshalOSegmentEventRequest2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSegmentEventRequestᚄ)
 	if err != nil {
 		return nil, err
 	}
-	args["timezone"] = arg7
+	args["eventRequests"] = arg7
+	arg8, err := graphql.ProcessArgField(ctx, rawArgs, "timezone", ec.unmarshalOString2ᚖstring)
+	if err != nil {
+		return nil, err
+	}
+	args["timezone"] = arg8
 	return args, nil
 }
 
 func (ec *executionContext) field_Query_dataSummary_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "tokenId", ec.unmarshalNInt2int)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "tokenId", ec.unmarshalOInt2ᚖint)
 	if err != nil {
 		return nil, err
 	}
 	args["tokenId"] = arg0
-	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFilter)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "subject", ec.unmarshalOString2ᚖstring)
 	if err != nil {
 		return nil, err
 	}
-	args["filter"] = arg1
+	args["subject"] = arg1
+	arg2, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFilter)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg2
 	return args, nil
 }
 
@@ -5870,109 +5896,16 @@ func (ec *executionContext) field_Query_deviceActivity_args(ctx context.Context,
 func (ec *executionContext) field_Query_events_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "tokenId", ec.unmarshalNInt2int)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "tokenId", ec.unmarshalOInt2ᚖint)
 	if err != nil {
 		return nil, err
 	}
 	args["tokenId"] = arg0
-	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "from", ec.unmarshalNTime2timeᚐTime)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "subject", ec.unmarshalOString2ᚖstring)
 	if err != nil {
 		return nil, err
 	}
-	args["from"] = arg1
-	arg2, err := graphql.ProcessArgField(ctx, rawArgs, "to", ec.unmarshalNTime2timeᚐTime)
-	if err != nil {
-		return nil, err
-	}
-	args["to"] = arg2
-	arg3, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOEventFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐEventFilter)
-	if err != nil {
-		return nil, err
-	}
-	args["filter"] = arg3
-	return args, nil
-}
-
-func (ec *executionContext) field_Query_segments_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
-	var err error
-	args := map[string]any{}
-	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "tokenId", ec.unmarshalNInt2int)
-	if err != nil {
-		return nil, err
-	}
-	args["tokenId"] = arg0
-	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "from", ec.unmarshalNTime2timeᚐTime)
-	if err != nil {
-		return nil, err
-	}
-	args["from"] = arg1
-	arg2, err := graphql.ProcessArgField(ctx, rawArgs, "to", ec.unmarshalNTime2timeᚐTime)
-	if err != nil {
-		return nil, err
-	}
-	args["to"] = arg2
-	arg3, err := graphql.ProcessArgField(ctx, rawArgs, "mechanism", ec.unmarshalNDetectionMechanism2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐDetectionMechanism)
-	if err != nil {
-		return nil, err
-	}
-	args["mechanism"] = arg3
-	arg4, err := graphql.ProcessArgField(ctx, rawArgs, "config", ec.unmarshalOSegmentConfig2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSegmentConfig)
-	if err != nil {
-		return nil, err
-	}
-	args["config"] = arg4
-	arg5, err := graphql.ProcessArgField(ctx, rawArgs, "signalRequests", ec.unmarshalOSegmentSignalRequest2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSegmentSignalRequestᚄ)
-	if err != nil {
-		return nil, err
-	}
-	args["signalRequests"] = arg5
-	arg6, err := graphql.ProcessArgField(ctx, rawArgs, "eventRequests", ec.unmarshalOSegmentEventRequest2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSegmentEventRequestᚄ)
-	if err != nil {
-		return nil, err
-	}
-	args["eventRequests"] = arg6
-	arg7, err := graphql.ProcessArgField(ctx, rawArgs, "limit", ec.unmarshalOInt2ᚖint)
-	if err != nil {
-		return nil, err
-	}
-	args["limit"] = arg7
-	arg8, err := graphql.ProcessArgField(ctx, rawArgs, "after", ec.unmarshalOTime2ᚖtimeᚐTime)
-	if err != nil {
-		return nil, err
-	}
-	args["after"] = arg8
-	return args, nil
-}
-
-func (ec *executionContext) field_Query_signalsLatest_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
-	var err error
-	args := map[string]any{}
-	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "tokenId", ec.unmarshalNInt2int)
-	if err != nil {
-		return nil, err
-	}
-	args["tokenId"] = arg0
-	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFilter)
-	if err != nil {
-		return nil, err
-	}
-	args["filter"] = arg1
-	return args, nil
-}
-
-func (ec *executionContext) field_Query_signals_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
-	var err error
-	args := map[string]any{}
-	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "tokenId", ec.unmarshalNInt2int)
-	if err != nil {
-		return nil, err
-	}
-	args["tokenId"] = arg0
-	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "interval", ec.unmarshalNString2string)
-	if err != nil {
-		return nil, err
-	}
-	args["interval"] = arg1
+	args["subject"] = arg1
 	arg2, err := graphql.ProcessArgField(ctx, rawArgs, "from", ec.unmarshalNTime2timeᚐTime)
 	if err != nil {
 		return nil, err
@@ -5983,7 +5916,7 @@ func (ec *executionContext) field_Query_signals_args(ctx context.Context, rawArg
 		return nil, err
 	}
 	args["to"] = arg3
-	arg4, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFilter)
+	arg4, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOEventFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐEventFilter)
 	if err != nil {
 		return nil, err
 	}
@@ -5991,14 +5924,132 @@ func (ec *executionContext) field_Query_signals_args(ctx context.Context, rawArg
 	return args, nil
 }
 
-func (ec *executionContext) field_Query_vinVCLatest_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+func (ec *executionContext) field_Query_segments_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "tokenId", ec.unmarshalNInt2int)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "tokenId", ec.unmarshalOInt2ᚖint)
 	if err != nil {
 		return nil, err
 	}
 	args["tokenId"] = arg0
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "subject", ec.unmarshalOString2ᚖstring)
+	if err != nil {
+		return nil, err
+	}
+	args["subject"] = arg1
+	arg2, err := graphql.ProcessArgField(ctx, rawArgs, "from", ec.unmarshalNTime2timeᚐTime)
+	if err != nil {
+		return nil, err
+	}
+	args["from"] = arg2
+	arg3, err := graphql.ProcessArgField(ctx, rawArgs, "to", ec.unmarshalNTime2timeᚐTime)
+	if err != nil {
+		return nil, err
+	}
+	args["to"] = arg3
+	arg4, err := graphql.ProcessArgField(ctx, rawArgs, "mechanism", ec.unmarshalNDetectionMechanism2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐDetectionMechanism)
+	if err != nil {
+		return nil, err
+	}
+	args["mechanism"] = arg4
+	arg5, err := graphql.ProcessArgField(ctx, rawArgs, "config", ec.unmarshalOSegmentConfig2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSegmentConfig)
+	if err != nil {
+		return nil, err
+	}
+	args["config"] = arg5
+	arg6, err := graphql.ProcessArgField(ctx, rawArgs, "signalRequests", ec.unmarshalOSegmentSignalRequest2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSegmentSignalRequestᚄ)
+	if err != nil {
+		return nil, err
+	}
+	args["signalRequests"] = arg6
+	arg7, err := graphql.ProcessArgField(ctx, rawArgs, "eventRequests", ec.unmarshalOSegmentEventRequest2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSegmentEventRequestᚄ)
+	if err != nil {
+		return nil, err
+	}
+	args["eventRequests"] = arg7
+	arg8, err := graphql.ProcessArgField(ctx, rawArgs, "limit", ec.unmarshalOInt2ᚖint)
+	if err != nil {
+		return nil, err
+	}
+	args["limit"] = arg8
+	arg9, err := graphql.ProcessArgField(ctx, rawArgs, "after", ec.unmarshalOTime2ᚖtimeᚐTime)
+	if err != nil {
+		return nil, err
+	}
+	args["after"] = arg9
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_signalsLatest_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "tokenId", ec.unmarshalOInt2ᚖint)
+	if err != nil {
+		return nil, err
+	}
+	args["tokenId"] = arg0
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "subject", ec.unmarshalOString2ᚖstring)
+	if err != nil {
+		return nil, err
+	}
+	args["subject"] = arg1
+	arg2, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFilter)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg2
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_signals_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "tokenId", ec.unmarshalOInt2ᚖint)
+	if err != nil {
+		return nil, err
+	}
+	args["tokenId"] = arg0
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "subject", ec.unmarshalOString2ᚖstring)
+	if err != nil {
+		return nil, err
+	}
+	args["subject"] = arg1
+	arg2, err := graphql.ProcessArgField(ctx, rawArgs, "interval", ec.unmarshalNString2string)
+	if err != nil {
+		return nil, err
+	}
+	args["interval"] = arg2
+	arg3, err := graphql.ProcessArgField(ctx, rawArgs, "from", ec.unmarshalNTime2timeᚐTime)
+	if err != nil {
+		return nil, err
+	}
+	args["from"] = arg3
+	arg4, err := graphql.ProcessArgField(ctx, rawArgs, "to", ec.unmarshalNTime2timeᚐTime)
+	if err != nil {
+		return nil, err
+	}
+	args["to"] = arg4
+	arg5, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFilter)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg5
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_vinVCLatest_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "tokenId", ec.unmarshalOInt2ᚖint)
+	if err != nil {
+		return nil, err
+	}
+	args["tokenId"] = arg0
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "subject", ec.unmarshalOString2ᚖstring)
+	if err != nil {
+		return nil, err
+	}
+	args["subject"] = arg1
 	return args, nil
 }
 
@@ -8790,7 +8841,7 @@ func (ec *executionContext) _Query_signals(ctx context.Context, field graphql.Co
 		ec.fieldContext_Query_signals,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Query().Signals(ctx, fc.Args["tokenId"].(int), fc.Args["interval"].(string), fc.Args["from"].(time.Time), fc.Args["to"].(time.Time), fc.Args["filter"].(*model.SignalFilter))
+			return ec.resolvers.Query().Signals(ctx, fc.Args["tokenId"].(*int), fc.Args["subject"].(*string), fc.Args["interval"].(string), fc.Args["from"].(time.Time), fc.Args["to"].(time.Time), fc.Args["filter"].(*model.SignalFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -9068,7 +9119,7 @@ func (ec *executionContext) _Query_signalsLatest(ctx context.Context, field grap
 		ec.fieldContext_Query_signalsLatest,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Query().SignalsLatest(ctx, fc.Args["tokenId"].(int), fc.Args["filter"].(*model.SignalFilter))
+			return ec.resolvers.Query().SignalsLatest(ctx, fc.Args["tokenId"].(*int), fc.Args["subject"].(*string), fc.Args["filter"].(*model.SignalFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -9346,7 +9397,7 @@ func (ec *executionContext) _Query_availableSignals(ctx context.Context, field g
 		ec.fieldContext_Query_availableSignals,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Query().AvailableSignals(ctx, fc.Args["tokenId"].(int), fc.Args["filter"].(*model.SignalFilter))
+			return ec.resolvers.Query().AvailableSignals(ctx, fc.Args["tokenId"].(*int), fc.Args["subject"].(*string), fc.Args["filter"].(*model.SignalFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -9400,7 +9451,7 @@ func (ec *executionContext) _Query_dataSummary(ctx context.Context, field graphq
 		ec.fieldContext_Query_dataSummary,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Query().DataSummary(ctx, fc.Args["tokenId"].(int), fc.Args["filter"].(*model.SignalFilter))
+			return ec.resolvers.Query().DataSummary(ctx, fc.Args["tokenId"].(*int), fc.Args["subject"].(*string), fc.Args["filter"].(*model.SignalFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -9601,7 +9652,7 @@ func (ec *executionContext) _Query_events(ctx context.Context, field graphql.Col
 		ec.fieldContext_Query_events,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Query().Events(ctx, fc.Args["tokenId"].(int), fc.Args["from"].(time.Time), fc.Args["to"].(time.Time), fc.Args["filter"].(*model.EventFilter))
+			return ec.resolvers.Query().Events(ctx, fc.Args["tokenId"].(*int), fc.Args["subject"].(*string), fc.Args["from"].(time.Time), fc.Args["to"].(time.Time), fc.Args["filter"].(*model.EventFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -9679,7 +9730,7 @@ func (ec *executionContext) _Query_segments(ctx context.Context, field graphql.C
 		ec.fieldContext_Query_segments,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Query().Segments(ctx, fc.Args["tokenId"].(int), fc.Args["from"].(time.Time), fc.Args["to"].(time.Time), fc.Args["mechanism"].(model.DetectionMechanism), fc.Args["config"].(*model.SegmentConfig), fc.Args["signalRequests"].([]*model.SegmentSignalRequest), fc.Args["eventRequests"].([]*model.SegmentEventRequest), fc.Args["limit"].(*int), fc.Args["after"].(*time.Time))
+			return ec.resolvers.Query().Segments(ctx, fc.Args["tokenId"].(*int), fc.Args["subject"].(*string), fc.Args["from"].(time.Time), fc.Args["to"].(time.Time), fc.Args["mechanism"].(model.DetectionMechanism), fc.Args["config"].(*model.SegmentConfig), fc.Args["signalRequests"].([]*model.SegmentSignalRequest), fc.Args["eventRequests"].([]*model.SegmentEventRequest), fc.Args["limit"].(*int), fc.Args["after"].(*time.Time))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -9761,7 +9812,7 @@ func (ec *executionContext) _Query_dailyActivity(ctx context.Context, field grap
 		ec.fieldContext_Query_dailyActivity,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Query().DailyActivity(ctx, fc.Args["tokenId"].(int), fc.Args["from"].(time.Time), fc.Args["to"].(time.Time), fc.Args["mechanism"].(model.DetectionMechanism), fc.Args["config"].(*model.SegmentConfig), fc.Args["signalRequests"].([]*model.SegmentSignalRequest), fc.Args["eventRequests"].([]*model.SegmentEventRequest), fc.Args["timezone"].(*string))
+			return ec.resolvers.Query().DailyActivity(ctx, fc.Args["tokenId"].(*int), fc.Args["subject"].(*string), fc.Args["from"].(time.Time), fc.Args["to"].(time.Time), fc.Args["mechanism"].(model.DetectionMechanism), fc.Args["config"].(*model.SegmentConfig), fc.Args["signalRequests"].([]*model.SegmentSignalRequest), fc.Args["eventRequests"].([]*model.SegmentEventRequest), fc.Args["timezone"].(*string))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -9841,7 +9892,7 @@ func (ec *executionContext) _Query_vinVCLatest(ctx context.Context, field graphq
 		ec.fieldContext_Query_vinVCLatest,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Query().VinVCLatest(ctx, fc.Args["tokenId"].(int))
+			return ec.resolvers.Query().VinVCLatest(ctx, fc.Args["tokenId"].(*int), fc.Args["subject"].(*string))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next

@@ -8,7 +8,11 @@ extend type Query {
     """
     The token ID of the vehicle.
     """
-    tokenId: Int!
+    tokenId: Int
+    """
+    The DID subject of the vehicle.
+    """
+    subject: String
   ): VINVC
     @requiresVehicleToken
     @requiresAllOfPrivileges(privileges: [VEHICLE_VIN_CREDENTIAL])

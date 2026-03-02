@@ -76,8 +76,8 @@ func NewRepository(chService CHService, settings config.Settings) (*Repository, 
 
 }
 
-// toSubject converts a vehicle token id to a DID subject string.
-func (r *Repository) toSubject(tokenID uint32) string {
+// ToSubject converts a vehicle token id to a DID subject string.
+func (r *Repository) ToSubject(tokenID uint32) string {
 	return cloudevent.ERC721DID{
 		ChainID:         r.chainID,
 		ContractAddress: r.vehicleAddress,
@@ -91,8 +91,7 @@ func (r *Repository) GetSignal(ctx context.Context, aggArgs *model.AggregatedSig
 		return nil, errorhandler.NewBadRequestError(ctx, err)
 	}
 
-	subject := r.toSubject(aggArgs.TokenID)
-	signals, err := r.chService.GetAggregatedSignals(ctx, subject, aggArgs)
+	signals, err := r.chService.GetAggregatedSignals(ctx, aggArgs.Subject, aggArgs)
 	if err != nil {
 		return nil, handleDBError(ctx, err)
 	}
@@ -144,8 +143,7 @@ func (r *Repository) GetSignalLatest(ctx context.Context, latestArgs *model.Late
 	if err := validateLatestSigArgs(latestArgs); err != nil {
 		return nil, errorhandler.NewBadRequestError(ctx, err)
 	}
-	subject := r.toSubject(latestArgs.TokenID)
-	signals, err := r.chService.GetLatestSignals(ctx, subject, latestArgs)
+	signals, err := r.chService.GetLatestSignals(ctx, latestArgs.Subject, latestArgs)
 	if err != nil {
 		return nil, handleDBError(ctx, err)
 	}
@@ -172,7 +170,7 @@ func (r *Repository) GetDeviceActivity(ctx context.Context, vehicleTokenID int, 
 	args := &model.LatestSignalsArgs{
 		IncludeLastSeen: true,
 		SignalArgs: model.SignalArgs{
-			TokenID: uint32(vehicleTokenID),
+			Subject: r.ToSubject(uint32(vehicleTokenID)),
 			Filter: &model.SignalFilter{
 				Source: &source,
 			},
@@ -196,8 +194,7 @@ func (r *Repository) GetDeviceActivity(ctx context.Context, vehicleTokenID int, 
 
 // GetAvailableSignals returns the available signals for the given tokenID and filter.
 // If no signals are found, a nil slice is returned.
-func (r *Repository) GetAvailableSignals(ctx context.Context, tokenID uint32, filter *model.SignalFilter) ([]string, error) {
-	subject := r.toSubject(tokenID)
+func (r *Repository) GetAvailableSignals(ctx context.Context, subject string, filter *model.SignalFilter) ([]string, error) {
 	allSignals, err := r.chService.GetAvailableSignals(ctx, subject, filter)
 	if err != nil {
 		return nil, handleDBError(ctx, err)
@@ -212,8 +209,7 @@ func (r *Repository) GetAvailableSignals(ctx context.Context, tokenID uint32, fi
 }
 
 // GetDataSummary returns the signal and event metadata for the given tokenID and filter.
-func (r *Repository) GetDataSummary(ctx context.Context, tokenID uint32, filter *model.SignalFilter) (*model.DataSummary, error) {
-	subject := r.toSubject(tokenID)
+func (r *Repository) GetDataSummary(ctx context.Context, subject string, filter *model.SignalFilter) (*model.DataSummary, error) {
 	signalDataSummary, err := r.chService.GetSignalSummaries(ctx, subject, filter)
 	if err != nil {
 		return nil, handleDBError(ctx, err)
@@ -263,16 +259,11 @@ func (r *Repository) GetDataSummary(ctx context.Context, tokenID uint32, filter 
 	}, nil
 }
 
-// GetEvents returns the events for the given tokenID, from, to and filter.
-func (r *Repository) GetEvents(ctx context.Context, tokenID int, from, to time.Time, filter *model.EventFilter) ([]*model.Event, error) {
-	if err := validateEventArgs(tokenID, from, to, filter); err != nil {
+// GetEvents returns the events for the given subject, from, to and filter.
+func (r *Repository) GetEvents(ctx context.Context, subject string, from, to time.Time, filter *model.EventFilter) ([]*model.Event, error) {
+	if err := validateEventArgs(from, to, filter); err != nil {
 		return nil, errorhandler.NewBadRequestError(ctx, err)
 	}
-	subject := cloudevent.ERC721DID{
-		ChainID:         r.chainID,
-		ContractAddress: r.vehicleAddress,
-		TokenID:         big.NewInt(int64(tokenID)),
-	}.String()
 	allEvents, err := r.chService.GetEvents(ctx, subject, from, to, filter)
 	if err != nil {
 		return nil, handleDBError(ctx, err)

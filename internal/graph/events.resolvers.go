@@ -12,6 +12,10 @@ import (
 )
 
 // Events is the resolver for the events field.
-func (r *queryResolver) Events(ctx context.Context, tokenID int, from time.Time, to time.Time, filter *model.EventFilter) ([]*model.Event, error) {
-	return r.BaseRepo.GetEvents(ctx, tokenID, from, to, filter)
+func (r *queryResolver) Events(ctx context.Context, tokenID *int, subject *string, from time.Time, to time.Time, filter *model.EventFilter) ([]*model.Event, error) {
+	sub, err := r.resolveSubject(ctx, tokenID, subject)
+	if err != nil {
+		return nil, err
+	}
+	return r.BaseRepo.GetEvents(ctx, sub, from, to, filter)
 }

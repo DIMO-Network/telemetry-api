@@ -57,7 +57,8 @@ extend type Query {
   When signalRequests is provided, those requests are added on top of the default set; duplicates (same name and agg) are omitted.
   """
   segments(
-    tokenId: Int!
+    tokenId: Int
+    subject: String
     from: Time!
     to: Time!
     mechanism: DetectionMechanism!
@@ -81,7 +82,8 @@ extend type Query {
   Maximum date range: 31 days.
   """
   dailyActivity(
-    tokenId: Int!
+    tokenId: Int
+    subject: String
     from: Time!
     to: Time!
     mechanism: DetectionMechanism!

@@ -97,8 +97,8 @@ func validateSignalArgs(args *model.SignalArgs) error {
 		return ValidationError("signal args not provided")
 	}
 
-	if args.TokenID < 1 {
-		return ValidationError("tokenID is not a positive integer")
+	if args.Subject == "" {
+		return ValidationError("subject is empty")
 	}
 
 	return validateFilter(args.Filter)
@@ -116,10 +116,7 @@ func validateFilter(filter *model.SignalFilter) error {
 	return nil
 }
 
-func validateEventArgs(tokenID int, from, to time.Time, filter *model.EventFilter) error {
-	if tokenID < 1 {
-		return ValidationError("tokenID is not a positive integer")
-	}
+func validateEventArgs(from, to time.Time, filter *model.EventFilter) error {
 	if from.IsZero() {
 		return ValidationError("from timestamp is zero")
 	}

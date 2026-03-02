@@ -44,7 +44,7 @@ func TestGetSignal(t *testing.T) {
 	}.String()
 	defaultArgs := &model.AggregatedSignalArgs{
 		SignalArgs: model.SignalArgs{
-			TokenID: 1,
+			Subject: testSubject,
 		},
 		FromTS:   time.Now(),
 		ToTS:     time.Now().Add(time.Hour),
@@ -217,7 +217,7 @@ func TestGetSignalLatest(t *testing.T) {
 	}.String()
 	defaultArgs := &model.LatestSignalsArgs{
 		SignalArgs: model.SignalArgs{
-			TokenID: 1,
+			Subject: testSubject,
 		},
 		IncludeLastSeen: true,
 	}
@@ -347,7 +347,7 @@ func TestDeviceActivity(t *testing.T) {
 	latestArgs := &model.LatestSignalsArgs{
 		IncludeLastSeen: true,
 		SignalArgs: model.SignalArgs{
-			TokenID: uint32(vehicleTokenID),
+			Subject: testSubject,
 			Filter: &model.SignalFilter{
 				Source: &source,
 			},
@@ -512,7 +512,7 @@ func TestGetAvailableSignals(t *testing.T) {
 
 			repo, err := repositories.NewRepository(mocks.CHService, baseSettings)
 			require.NoError(t, err)
-			result, err := repo.GetAvailableSignals(context.Background(), 1, nil)
+			result, err := repo.GetAvailableSignals(context.Background(), testSubject, nil)
 			if tt.expectError {
 				require.Error(t, err)
 				require.Nil(t, result)
@@ -564,7 +564,7 @@ func TestGetEvents(t *testing.T) {
 		mocks.CHService.EXPECT().
 			GetEvents(gomock.Any(), subject, from, to, filter).
 			Return(vssEvents, nil)
-		result, err := repo.GetEvents(context.Background(), tokenID, from, to, filter)
+		result, err := repo.GetEvents(context.Background(), subject, from, to, filter)
 		require.NoError(t, err)
 		require.Len(t, result, 2)
 		require.Equal(t, vssEvents[0].Name, result[0].Name)
@@ -583,7 +583,7 @@ func TestGetEvents(t *testing.T) {
 		mocks.CHService.EXPECT().
 			GetEvents(gomock.Any(), subject, from, to, filter).
 			Return(nil, errors.New("service error"))
-		result, err := repo.GetEvents(context.Background(), tokenID, from, to, filter)
+		result, err := repo.GetEvents(context.Background(), subject, from, to, filter)
 		require.Error(t, err)
 		require.Nil(t, result)
 	})

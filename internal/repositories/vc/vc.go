@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"math/big"
 	"time"
 
 	"github.com/DIMO-Network/attestation-api/pkg/types"
@@ -44,13 +43,8 @@ func New(indexService indexRepoService, settings config.Settings) *Repository {
 }
 
 // GetLatestVINVC fetches the latest VIN VC for the given vehicle.
-func (r *Repository) GetLatestVINVC(ctx context.Context, vehicleTokenID uint32) (*model.Vinvc, error) {
-	vehicleDID := cloudevent.ERC721DID{
-		ChainID:         r.chainID,
-		ContractAddress: r.vehicleAddress,
-		TokenID:         new(big.Int).SetUint64(uint64(vehicleTokenID)),
-	}.String()
-	dataObj, err := r.getVINVC(ctx, vehicleDID)
+func (r *Repository) GetLatestVINVC(ctx context.Context, subject string) (*model.Vinvc, error) {
+	dataObj, err := r.getVINVC(ctx, subject)
 	if err != nil {
 		if status.Code(err) == codes.NotFound {
 			return nil, nil //nolint // we nil is a valid response

@@ -3,11 +3,9 @@ package repositories
 import (
 	"context"
 	"fmt"
-	"math/big"
 	"sort"
 	"time"
 
-	"github.com/DIMO-Network/cloudevent"
 	"github.com/DIMO-Network/model-garage/pkg/vss"
 	"github.com/DIMO-Network/server-garage/pkg/gql/errorhandler"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
@@ -32,11 +30,7 @@ func validateSegmentDateRange(from, to time.Time) error {
 }
 
 // validateSegmentArgs validates the arguments for segment queries.
-func validateSegmentArgs(tokenID int, from, to time.Time) error {
-	if tokenID <= 0 {
-		return fmt.Errorf("invalid tokenID: %d", tokenID)
-	}
-
+func validateSegmentArgs(from, to time.Time) error {
 	if from.After(to) {
 		return fmt.Errorf("from time must be before to time")
 	}
@@ -199,11 +193,11 @@ func sortSegmentSignals(signals []*model.SignalAggregationValue) {
 // Pagination: pass after (exclusive cursor = startTime of last segment from previous page) and limit (default 100, max 200).
 // Segments are ordered by startTime ascending. When after is set, only segments with startTime > after are requested from CH.
 // If to is in the future (e.g. client sent end-of-day in user TZ), it is capped to now so the query succeeds.
-func (r *Repository) GetSegments(ctx context.Context, tokenID int, from, to time.Time, mechanism model.DetectionMechanism, config *model.SegmentConfig, signalRequests []*model.SegmentSignalRequest, eventRequests []*model.SegmentEventRequest, limit *int, after *time.Time) ([]*model.Segment, error) {
+func (r *Repository) GetSegments(ctx context.Context, subject string, from, to time.Time, mechanism model.DetectionMechanism, config *model.SegmentConfig, signalRequests []*model.SegmentSignalRequest, eventRequests []*model.SegmentEventRequest, limit *int, after *time.Time) ([]*model.Segment, error) {
 	if now := time.Now(); to.After(now) {
 		to = now
 	}
-	if err := validateSegmentArgs(tokenID, from, to); err != nil {
+	if err := validateSegmentArgs(from, to); err != nil {
 		return nil, errorhandler.NewBadRequestError(ctx, err)
 	}
 	if err := validateSegmentConfig(config, mechanism); err != nil {
@@ -220,7 +214,6 @@ func (r *Repository) GetSegments(ctx context.Context, tokenID int, from, to time
 		}
 	}
 
-	subject := r.toSubject(uint32(tokenID))
 	chSegments, err := r.chService.GetSegments(ctx, subject, from, to, mechanism, config)
 	if err != nil {
 		return nil, handleDBError(ctx, err)
@@ -330,7 +323,7 @@ func (r *Repository) GetSegments(ctx context.Context, tokenID int, from, to time
 					preFetchedAggs = []*ch.AggSignal{}
 				}
 			}
-			summary, err := r.segmentSummary(ctx, uint32(tokenID), subject, seg, to, signalReqs, eventNames, eventCounts, preFetchedAggs)
+			summary, err := r.segmentSummary(ctx, subject, seg, to, signalReqs, eventNames, eventCounts, preFetchedAggs)
 			if err != nil {
 				return nil, err
 			}
@@ -445,7 +438,7 @@ func eventCountsToMap(counts []*ch.EventCount) map[string]int {
 	return m
 }
 
-func (r *Repository) segmentSummary(ctx context.Context, tokenID uint32, subject string, seg *model.Segment, queryTo time.Time, signalReqs []*model.SegmentSignalRequest, eventNames []string, preFetchedEventCounts []*ch.EventCount, preFetchedAggs []*ch.AggSignal) (*segmentSummaryResult, error) {
+func (r *Repository) segmentSummary(ctx context.Context, subject string, seg *model.Segment, queryTo time.Time, signalReqs []*model.SegmentSignalRequest, eventNames []string, preFetchedEventCounts []*ch.EventCount, preFetchedAggs []*ch.AggSignal) (*segmentSummaryResult, error) {
 	segFrom := seg.Start.Timestamp
 	segTo := queryTo
 	if seg.End != nil {
@@ -462,7 +455,7 @@ func (r *Repository) segmentSummary(ctx context.Context, tokenID uint32, subject
 		aggs = preFetchedAggs
 	} else {
 		aggArgs := &model.AggregatedSignalArgs{
-			SignalArgs:   model.SignalArgs{TokenID: tokenID},
+			SignalArgs:   model.SignalArgs{Subject: subject},
 			FromTS:       segFrom,
 			ToTS:         segTo,
 			Interval:     intervalMicro,
@@ -499,7 +492,7 @@ func (r *Repository) segmentSummary(ctx context.Context, tokenID uint32, subject
 
 // GetDailyActivity returns one record per calendar day in the requested date range, including days with zero segments.
 // mechanism must be ignitionDetection, frequencyAnalysis, or changePointDetection; idling, refuel, recharge return 400.
-func (r *Repository) GetDailyActivity(ctx context.Context, tokenID int, from, to time.Time, mechanism model.DetectionMechanism, config *model.SegmentConfig, signalRequests []*model.SegmentSignalRequest, eventRequests []*model.SegmentEventRequest, timezone *string) ([]*model.DailyActivity, error) {
+func (r *Repository) GetDailyActivity(ctx context.Context, subject string, from, to time.Time, mechanism model.DetectionMechanism, config *model.SegmentConfig, signalRequests []*model.SegmentSignalRequest, eventRequests []*model.SegmentEventRequest, timezone *string) ([]*model.DailyActivity, error) {
 	if mechanism == model.DetectionMechanismIdling || mechanism == model.DetectionMechanismRefuel || mechanism == model.DetectionMechanismRecharge {
 		return nil, errorhandler.NewBadRequestError(ctx, fmt.Errorf("dailyActivity does not accept mechanism %s; use ignitionDetection, frequencyAnalysis, or changePointDetection", mechanism))
 	}
@@ -537,15 +530,10 @@ func (r *Repository) GetDailyActivity(ctx context.Context, tokenID int, from, to
 		}
 	}
 
-	segments, err := r.GetSegments(ctx, tokenID, rangeStart, rangeEnd, mechanism, config, signalReqs, eventRequests, nil, nil)
+	segments, err := r.GetSegments(ctx, subject, rangeStart, rangeEnd, mechanism, config, signalReqs, eventRequests, nil, nil)
 	if err != nil {
 		return nil, err
 	}
-	subject := cloudevent.ERC721DID{
-		ChainID:         r.chainID,
-		ContractAddress: r.vehicleAddress,
-		TokenID:         big.NewInt(int64(tokenID)),
-	}.String()
 
 	var out []*model.DailyActivity
 	for d := fromDate; !d.After(toDate); d = d.Add(24 * time.Hour) {
@@ -581,7 +569,7 @@ func (r *Repository) GetDailyActivity(ctx context.Context, tokenID int, from, to
 			lastSeg = seg
 		}
 
-		signalSummary, startLoc, endLoc, eventSummary, err := r.daySummary(ctx, uint32(tokenID), subject, dayStartUTC, dayEndUTC, signalReqs, eventNames)
+		signalSummary, startLoc, endLoc, eventSummary, err := r.daySummary(ctx, subject, dayStartUTC, dayEndUTC, signalReqs, eventNames)
 		if err != nil {
 			return nil, err
 		}
@@ -615,14 +603,14 @@ func (r *Repository) GetDailyActivity(ctx context.Context, tokenID int, from, to
 	return out, nil
 }
 
-func (r *Repository) daySummary(ctx context.Context, tokenID uint32, subject string, dayStart, dayEnd time.Time, signalReqs []*model.SegmentSignalRequest, eventNames []string) ([]*model.SignalAggregationValue, *model.Location, *model.Location, []*model.EventCount, error) {
+func (r *Repository) daySummary(ctx context.Context, subject string, dayStart, dayEnd time.Time, signalReqs []*model.SegmentSignalRequest, eventNames []string) ([]*model.SignalAggregationValue, *model.Location, *model.Location, []*model.EventCount, error) {
 	intervalMicro := dayEnd.Sub(dayStart).Microseconds()
 	if intervalMicro <= 0 {
 		intervalMicro = 1
 	}
 	floatArgs, locationArgs := buildAggArgs(signalReqs)
 	aggArgs := &model.AggregatedSignalArgs{
-		SignalArgs:   model.SignalArgs{TokenID: tokenID},
+		SignalArgs:   model.SignalArgs{Subject: subject},
 		FromTS:       dayStart,
 		ToTS:         dayEnd,
 		Interval:     intervalMicro,

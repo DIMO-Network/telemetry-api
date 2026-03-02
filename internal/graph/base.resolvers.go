@@ -14,8 +14,12 @@ import (
 )
 
 // Signals is the resolver for the Signals field.
-func (r *queryResolver) Signals(ctx context.Context, tokenID int, interval string, from time.Time, to time.Time, filter *model.SignalFilter) ([]*model.SignalAggregations, error) {
-	aggArgs, err := aggregationArgsFromContext(ctx, tokenID, interval, from, to, filter)
+func (r *queryResolver) Signals(ctx context.Context, tokenID *int, subject *string, interval string, from time.Time, to time.Time, filter *model.SignalFilter) ([]*model.SignalAggregations, error) {
+	sub, err := r.resolveSubject(ctx, tokenID, subject)
+	if err != nil {
+		return nil, err
+	}
+	aggArgs, err := aggregationArgsFromContext(ctx, sub, interval, from, to, filter)
 	if err != nil {
 		return nil, err
 	}
@@ -23,8 +27,12 @@ func (r *queryResolver) Signals(ctx context.Context, tokenID int, interval strin
 }
 
 // SignalsLatest is the resolver for the SignalsLatest field.
-func (r *queryResolver) SignalsLatest(ctx context.Context, tokenID int, filter *model.SignalFilter) (*model.SignalCollection, error) {
-	latestArgs, err := latestArgsFromContext(ctx, tokenID, filter)
+func (r *queryResolver) SignalsLatest(ctx context.Context, tokenID *int, subject *string, filter *model.SignalFilter) (*model.SignalCollection, error) {
+	sub, err := r.resolveSubject(ctx, tokenID, subject)
+	if err != nil {
+		return nil, err
+	}
+	latestArgs, err := latestArgsFromContext(ctx, sub, filter)
 	if err != nil {
 		return nil, err
 	}
@@ -32,13 +40,21 @@ func (r *queryResolver) SignalsLatest(ctx context.Context, tokenID int, filter *
 }
 
 // AvailableSignals is the resolver for the AvailableSignals field.
-func (r *queryResolver) AvailableSignals(ctx context.Context, tokenID int, filter *model.SignalFilter) ([]string, error) {
-	return r.BaseRepo.GetAvailableSignals(ctx, uint32(tokenID), filter)
+func (r *queryResolver) AvailableSignals(ctx context.Context, tokenID *int, subject *string, filter *model.SignalFilter) ([]string, error) {
+	sub, err := r.resolveSubject(ctx, tokenID, subject)
+	if err != nil {
+		return nil, err
+	}
+	return r.BaseRepo.GetAvailableSignals(ctx, sub, filter)
 }
 
 // DataSummary is the resolver for the dataSummary field.
-func (r *queryResolver) DataSummary(ctx context.Context, tokenID int, filter *model.SignalFilter) (*model.DataSummary, error) {
-	return r.BaseRepo.GetDataSummary(ctx, uint32(tokenID), filter)
+func (r *queryResolver) DataSummary(ctx context.Context, tokenID *int, subject *string, filter *model.SignalFilter) (*model.DataSummary, error) {
+	sub, err := r.resolveSubject(ctx, tokenID, subject)
+	if err != nil {
+		return nil, err
+	}
+	return r.BaseRepo.GetDataSummary(ctx, sub, filter)
 }
 
 // CurrentLocationApproximateCoordinates is the resolver for the currentLocationApproximateCoordinates field on SignalAggregations.
