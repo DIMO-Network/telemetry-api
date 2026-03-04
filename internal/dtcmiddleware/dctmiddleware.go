@@ -56,6 +56,14 @@ func (d DCT) InterceptResponse(
 	ctx context.Context,
 	next graphql.ResponseHandler,
 ) *graphql.Response {
+	// Skip credit processing when there's no parsed operation (e.g., query
+	// failed parsing, validation, or complexity check). Let the actual error
+	// propagate to the client instead.
+	opCtx := graphql.GetOperationContext(ctx)
+	if opCtx == nil || opCtx.Operation == nil {
+		return next(ctx)
+	}
+
 	if d.isEstimationRequest(ctx) {
 		resp := d.handleCostEstimation(ctx)
 		if errors.Is(resp.Errors, ErrOperationNotSet) {
