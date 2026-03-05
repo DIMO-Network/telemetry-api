@@ -50,6 +50,16 @@ func main() {
 		logger.Fatal().Err(err).Msg("Couldn't load settings.")
 	}
 
+	if cfg.LogLevel != "" {
+		level, err := zerolog.ParseLevel(cfg.LogLevel)
+		if err != nil {
+			logger.Fatal().Err(err).Str("logLevel", cfg.LogLevel).Msg("Invalid log level.")
+		}
+		zerolog.SetGlobalLevel(level)
+	} else {
+		zerolog.SetGlobalLevel(zerolog.InfoLevel)
+	}
+
 	application, err := app.New(cfg)
 	if err != nil {
 		logger.Fatal().Err(err).Msg("Couldn't create application.")

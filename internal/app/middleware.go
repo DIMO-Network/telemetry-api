@@ -1,14 +1,36 @@
 package app
 
 import (
+	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"os"
 	"runtime/debug"
 
+	"github.com/DIMO-Network/server-garage/pkg/gql/errorhandler"
 	"github.com/DIMO-Network/telemetry-api/internal/auth"
 	"github.com/rs/zerolog"
+	"github.com/vektah/gqlparser/v2/gqlerror"
 )
+
+// errorPresenter wraps the server-garage error handler in order to lower the log level
+// for invalid queries to debug. The default behavior is too noisy, given that we've
+// aggressively deprecated fields.
+func errorPresenter(ctx context.Context, err error) *gqlerror.Error {
+	var gqlErr *gqlerror.Error
+	if errors.As(err, &gqlErr) {
+		code := errorhandler.ErrCode(gqlErr)
+		if code == errorhandler.CodeGraphQLValidationFailed || code == errorhandler.CodeGraphQLParseFailed {
+			zerolog.Ctx(ctx).Debug().
+				Str("gqlPath", gqlErr.Path.String()).
+				Fields(gqlErr.Extensions).
+				Msg(gqlErr.Message)
+			return gqlErr
+		}
+	}
+	return errorhandler.ErrorPresenter(ctx, err)
+}
 
 // LoggerMiddleware adds the source IP to the logger.
 func LoggerMiddleware(next http.Handler) http.Handler {

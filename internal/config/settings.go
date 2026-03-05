@@ -7,6 +7,7 @@ import (
 
 // Settings contains the application config.
 type Settings struct {
+	LogLevel                     string          `yaml:"LOG_LEVEL"`
 	Port                         int             `yaml:"PORT"`
 	MonPort                      int             `yaml:"MON_PORT"`
 	EnablePprof                  bool            `yaml:"ENABLE_PPROF"`
