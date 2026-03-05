@@ -10,7 +10,6 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/handler/extension"
 	"github.com/99designs/gqlgen/graphql/handler/transport"
-	"github.com/DIMO-Network/server-garage/pkg/gql/errorhandler"
 	"github.com/DIMO-Network/server-garage/pkg/gql/metrics"
 	"github.com/DIMO-Network/telemetry-api/internal/auth"
 	"github.com/DIMO-Network/telemetry-api/internal/config"
@@ -156,7 +155,7 @@ func newServer(es graphql.ExecutableSchema) *handler.Server {
 	srv.Use(extension.Introspection{})
 	srv.Use(metrics.Tracer{})
 	// srv.SetQueryCache(graphql.NoCache[*ast.QueryDocument]{})
-	srv.SetErrorPresenter(errorhandler.ErrorPresenter)
+	srv.SetErrorPresenter(errorPresenter)
 
 	return srv
 }
