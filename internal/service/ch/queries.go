@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/DIMO-Network/cloudevent"
 	"github.com/DIMO-Network/model-garage/pkg/vss"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	"github.com/aarondl/sqlboiler/v4/drivers"
@@ -27,7 +28,6 @@ const (
 	timestampFrom     = vss.TimestampCol + " >= ?"
 	timestampTo       = vss.TimestampCol + " < ?"
 	sourceWhere       = vss.SourceCol + " = ?"
-	sourceIn          = vss.SourceCol + " IN ?"
 	groupAsc          = IntervalGroup + " ASC"
 	signalTypeCol     = "signal_type"
 	signalIndexCol    = "signal_index"
@@ -67,15 +67,6 @@ const (
 	locationZeroTuple = "CAST(tuple(0, 0, 0, 0), '" + locationTupleType + "')"
 )
 
-var SourceTranslations = map[string][]string{
-	"macaron":  {"dimo/integration/2ULfuC8U9dOqRshZBAi0lMM1Rrx", "0x4c674ddE8189aEF6e3b58F5a36d7438b2b1f6Bc2"},
-	"tesla":    {"dimo/integration/26A5Dk3vvvQutjSyF0Jka2DP5lg", "0xc4035Fecb1cc906130423EF05f9C20977F643722"},
-	"autopi":   {"dimo/integration/27qftVRWQYpVDcO5DltO5Ojbjxk", "0x5e31bBc786D7bEd95216383787deA1ab0f1c1897"},
-	"smartcar": {"dimo/integration/22N2xaPOq2WW2gAHBHd0Ikn4Zob", "0xcd445F4c6bDAD32b68a2939b912150Fe3C88803E"},
-	"ruptela":  {"0xF26421509Efe92861a587482100c6d728aBf1CD0"},
-	"compass":  {"0x55BF1c27d468314Ea119CF74979E2b59F962295c"},
-	"motorq":   {"0x5879B43D88Fa93CE8072d6612cBc8dE93E98CE5d"},
-}
 
 // FieldType indicates the type of values in the aggregation.
 type FieldType uint8
@@ -126,11 +117,10 @@ func newQuery(mods ...qm.QueryMod) (string, []any) {
 	return queries.BuildQuery(q)
 }
 
-// withSource adds a WHERE clause to the query to filter by Source.
-// Example: 'WHERE Source = ?'.
 func withSource(source string) qm.QueryMod {
-	if translateSources, ok := SourceTranslations[source]; ok {
-		return qm.WhereIn(sourceIn, translateSources)
+	did, err := cloudevent.DecodeEthrDID(source)
+	if err == nil {
+		source = did.ContractAddress.Hex()
 	}
 	return qm.Where(sourceWhere, source)
 }

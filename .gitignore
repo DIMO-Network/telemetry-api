@@ -31,3 +31,6 @@ sample_data/
 scripts/
 e2e/clickhouse_container_test.go
 .planning/
+openspec/
+.claude
+.cursor

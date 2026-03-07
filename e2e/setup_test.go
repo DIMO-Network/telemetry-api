@@ -16,7 +16,6 @@ import (
 
 // TestServices holds all singleton service instances.
 type TestServices struct {
-	Identity    *mockIdentityServer
 	Auth        *mockAuthServer
 	FetchServer *mockFetchServer
 	CH          *container.Container
@@ -45,20 +44,17 @@ func GetTestServices(t *testing.T) *TestServices {
 	srvcLock.Lock()
 	once.Do(func() {
 		settings := config.Settings{
-			Port:                         8080,
-			MonPort:                      9090,
-			IdentityAPIReqTimeoutSeconds: 5,
-			TokenExchangeIssuer:          "http://127.0.0.1:3003",
-			VehicleNFTAddress:            common.HexToAddress("0xbA5738a18d83D41847dfFbDC6101d37C69c9B0cF"),
-			ManufacturerNFTAddress:       common.HexToAddress("0x3b07e2A2ABdd0A9B8F7878bdE6487c502164B9dd"),
-			MaxRequestDuration:           "1m",
-			VINVCDataVersion:             "VINVCv1.0",
-			ChainID:                      137,
-			DeviceLastSeenBinHrs:         3,
+			Port:                 8080,
+			MonPort:              9090,
+			TokenExchangeIssuer:  "http://127.0.0.1:3003",
+			VehicleNFTAddress:    common.HexToAddress("0xbA5738a18d83D41847dfFbDC6101d37C69c9B0cF"),
+			MaxRequestDuration:   "1m",
+			VINVCDataVersion:     "VINVCv1.0",
+			ChainID:              137,
+			DeviceLastSeenBinHrs: 3,
 		}
 
 		// Setup services
-		identity := setupIdentityServer()
 		auth := setupAuthServer(t, settings)
 		fetch := NewTestFetchAPI(t)
 		ch := setupClickhouseContainer(t)
@@ -67,12 +63,10 @@ func GetTestServices(t *testing.T) *TestServices {
 		// Create test settings
 		settings.FetchAPIGRPCEndpoint = fetch.URL()
 		settings.Clickhouse = ch.Config()
-		settings.IdentityAPIURL = identity.URL()
 		settings.TokenExchangeJWTKeySetURL = auth.URL() + "/keys"
 		settings.CreditTrackerEndpoint = ct.URL()
 
 		testServices = &TestServices{
-			Identity:    identity,
 			Auth:        auth,
 			FetchServer: fetch,
 			CH:          ch,
@@ -81,7 +75,6 @@ func GetTestServices(t *testing.T) *TestServices {
 		}
 		cleanup = func() {
 			cleanupOnce.Do(func() {
-				identity.Close()
 				auth.Close()
 				fetch.Close()
 				ch.Terminate(context.Background())

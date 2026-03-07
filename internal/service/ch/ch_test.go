@@ -155,7 +155,7 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 				SignalArgs: model.SignalArgs{
 					TokenID: 1,
 					Filter: &model.SignalFilter{
-						Source: ref("smartcar"),
+						Source: ref("did:ethr:137:0xcd445F4c6bDAD32b68a2939b912150Fe3C88803E"),
 					},
 				},
 				FromTS:   c.dataStartTime,
@@ -210,7 +210,7 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 				SignalArgs: model.SignalArgs{
 					TokenID: 1,
 					Filter: &model.SignalFilter{
-						Source: ref("autopi"),
+						Source: ref("did:ethr:137:0x5e31bBc786D7bEd95216383787deA1ab0f1c1897"),
 					},
 				},
 				FromTS:   c.dataStartTime,
@@ -853,7 +853,7 @@ func (c *CHServiceTestSuite) TestGetLatestSignal() {
 				SignalArgs: model.SignalArgs{
 					TokenID: 1,
 					Filter: &model.SignalFilter{
-						Source: ref("smartcar"),
+						Source: ref("did:ethr:137:0xcd445F4c6bDAD32b68a2939b912150Fe3C88803E"),
 					},
 				},
 				SignalNames: map[string]struct{}{
@@ -931,7 +931,7 @@ func (c *CHServiceTestSuite) TestGetAvailableSignals() {
 	})
 
 	c.Run("filter signals", func() {
-		result, err := c.chService.GetAvailableSignals(ctx, testSubject1, &model.SignalFilter{Source: ref("Unknown")})
+		result, err := c.chService.GetAvailableSignals(ctx, testSubject1, &model.SignalFilter{Source: ref("did:ethr:137:0x0000000000000000000000000000000000000000")})
 		c.Require().NoError(err)
 		c.Require().Nil(result)
 	})
@@ -1321,7 +1321,7 @@ func (c *CHServiceTestSuite) insertTestData() {
 	conn, err := c.container.GetClickHouseAsConn()
 	c.Require().NoError(err, "Failed to get clickhouse connection")
 	testSignal := []vss.Signal{}
-	var sources = []string{"dimo/integration/2ULfuC8U9dOqRshZBAi0lMM1Rrx", "dimo/integration/27qftVRWQYpVDcO5DltO5Ojbjxk", "dimo/integration/22N2xaPOq2WW2gAHBHd0Ikn4Zob"}
+	var sources = []string{"0x4c674ddE8189aEF6e3b58F5a36d7438b2b1f6Bc2", "0x5e31bBc786D7bEd95216383787deA1ab0f1c1897", "0xcd445F4c6bDAD32b68a2939b912150Fe3C88803E"}
 	for i := range dataPoints {
 		numSig := vss.Signal{
 			Name:        vss.FieldSpeed,

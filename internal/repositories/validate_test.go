@@ -179,4 +179,35 @@ func TestValidateSegmentLimit(t *testing.T) {
 	})
 }
 
+func TestValidateFilter(t *testing.T) {
+	t.Run("nil filter", func(t *testing.T) {
+		require.NoError(t, validateFilter(nil))
+	})
+
+	t.Run("valid ethr DID", func(t *testing.T) {
+		source := "did:ethr:137:0xcd445F4c6bDAD32b68a2939b912150Fe3C88803E"
+		err := validateFilter(&model.SignalFilter{Source: &source})
+		require.NoError(t, err)
+	})
+
+	t.Run("invalid source string", func(t *testing.T) {
+		source := "smartcar"
+		err := validateFilter(&model.SignalFilter{Source: &source})
+		require.Error(t, err)
+		require.ErrorAs(t, err, new(ValidationError))
+	})
+
+	t.Run("raw address rejected", func(t *testing.T) {
+		source := "0xcd445F4c6bDAD32b68a2939b912150Fe3C88803E"
+		err := validateFilter(&model.SignalFilter{Source: &source})
+		require.Error(t, err)
+		require.ErrorAs(t, err, new(ValidationError))
+	})
+
+	t.Run("nil source", func(t *testing.T) {
+		err := validateFilter(&model.SignalFilter{Source: nil})
+		require.NoError(t, err)
+	})
+}
+
 func ptr(i int) *int { return &i }

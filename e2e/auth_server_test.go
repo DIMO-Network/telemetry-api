@@ -23,9 +23,8 @@ type mockAuthServer struct {
 	signer                      jose.Signer
 	jwks                        jose.JSONWebKey
 	defaultClaims               map[string]any
-	VehicleContractAddress      string
-	ManufacturerContractAddress string
-	ChainID                     uint64
+	VehicleContractAddress string
+	ChainID                uint64
 }
 
 func setupAuthServer(t *testing.T, settings config.Settings) *mockAuthServer {
@@ -76,12 +75,11 @@ func setupAuthServer(t *testing.T, settings config.Settings) *mockAuthServer {
 	}
 
 	auth := &mockAuthServer{
-		signer:                      sig,
-		jwks:                        jwk,
-		defaultClaims:               defaultClaims,
-		VehicleContractAddress:      settings.VehicleNFTAddress.String(),
-		ManufacturerContractAddress: settings.ManufacturerNFTAddress.String(),
-		ChainID:                     settings.ChainID,
+		signer:                 sig,
+		jwks:                   jwk,
+		defaultClaims:          defaultClaims,
+		VehicleContractAddress: settings.VehicleNFTAddress.String(),
+		ChainID:                settings.ChainID,
 	}
 
 	// Create test server with only JWKS endpoint

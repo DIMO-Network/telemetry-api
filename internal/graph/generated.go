@@ -46,12 +46,11 @@ type ResolverRoot interface {
 }
 
 type DirectiveRoot struct {
-	HasAggregation            func(ctx context.Context, obj any, next graphql.Resolver) (res any, err error)
-	IsSignal                  func(ctx context.Context, obj any, next graphql.Resolver) (res any, err error)
-	RequiresAllOfPrivileges   func(ctx context.Context, obj any, next graphql.Resolver, privileges []string) (res any, err error)
-	RequiresManufacturerToken func(ctx context.Context, obj any, next graphql.Resolver) (res any, err error)
-	RequiresOneOfPrivilege    func(ctx context.Context, obj any, next graphql.Resolver, privileges []string) (res any, err error)
-	RequiresVehicleToken      func(ctx context.Context, obj any, next graphql.Resolver) (res any, err error)
+	HasAggregation          func(ctx context.Context, obj any, next graphql.Resolver) (res any, err error)
+	IsSignal                func(ctx context.Context, obj any, next graphql.Resolver) (res any, err error)
+	RequiresAllOfPrivileges func(ctx context.Context, obj any, next graphql.Resolver, privileges []string) (res any, err error)
+	RequiresOneOfPrivilege  func(ctx context.Context, obj any, next graphql.Resolver, privileges []string) (res any, err error)
+	RequiresVehicleToken    func(ctx context.Context, obj any, next graphql.Resolver) (res any, err error)
 }
 
 type ComplexityRoot struct {
@@ -86,10 +85,6 @@ type ComplexityRoot struct {
 		SignalDataSummary func(childComplexity int) int
 	}
 
-	DeviceActivity struct {
-		LastActive func(childComplexity int) int
-	}
-
 	Event struct {
 		DurationNs func(childComplexity int) int
 		Metadata   func(childComplexity int) int
@@ -114,7 +109,6 @@ type ComplexityRoot struct {
 		AvailableSignals func(childComplexity int, tokenID int, filter *model.SignalFilter) int
 		DailyActivity    func(childComplexity int, tokenID int, from time.Time, to time.Time, mechanism model.DetectionMechanism, config *model.SegmentConfig, signalRequests []*model.SegmentSignalRequest, eventRequests []*model.SegmentEventRequest, timezone *string) int
 		DataSummary      func(childComplexity int, tokenID int, filter *model.SignalFilter) int
-		DeviceActivity   func(childComplexity int, by model.AftermarketDeviceBy) int
 		Events           func(childComplexity int, tokenID int, from time.Time, to time.Time, filter *model.EventFilter) int
 		Segments         func(childComplexity int, tokenID int, from time.Time, to time.Time, mechanism model.DetectionMechanism, config *model.SegmentConfig, signalRequests []*model.SegmentSignalRequest, eventRequests []*model.SegmentEventRequest, limit *int, after *time.Time) int
 		Signals          func(childComplexity int, tokenID int, interval string, from time.Time, to time.Time, filter *model.SignalFilter) int
@@ -414,7 +408,6 @@ type QueryResolver interface {
 	AvailableSignals(ctx context.Context, tokenID int, filter *model.SignalFilter) ([]string, error)
 	DataSummary(ctx context.Context, tokenID int, filter *model.SignalFilter) (*model.DataSummary, error)
 	Attestations(ctx context.Context, tokenID *int, subject *string, filter *model.AttestationFilter) ([]*model.Attestation, error)
-	DeviceActivity(ctx context.Context, by model.AftermarketDeviceBy) (*model.DeviceActivity, error)
 	Events(ctx context.Context, tokenID int, from time.Time, to time.Time, filter *model.EventFilter) ([]*model.Event, error)
 	Segments(ctx context.Context, tokenID int, from time.Time, to time.Time, mechanism model.DetectionMechanism, config *model.SegmentConfig, signalRequests []*model.SegmentSignalRequest, eventRequests []*model.SegmentEventRequest, limit *int, after *time.Time) ([]*model.Segment, error)
 	DailyActivity(ctx context.Context, tokenID int, from time.Time, to time.Time, mechanism model.DetectionMechanism, config *model.SegmentConfig, signalRequests []*model.SegmentSignalRequest, eventRequests []*model.SegmentEventRequest, timezone *string) ([]*model.DailyActivity, error)
@@ -687,13 +680,6 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.DataSummary.SignalDataSummary(childComplexity), true
 
-	case "DeviceActivity.lastActive":
-		if e.complexity.DeviceActivity.LastActive == nil {
-			break
-		}
-
-		return e.complexity.DeviceActivity.LastActive(childComplexity), true
-
 	case "Event.durationNs":
 		if e.complexity.Event.DurationNs == nil {
 			break
@@ -801,17 +787,6 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Query.DataSummary(childComplexity, args["tokenId"].(int), args["filter"].(*model.SignalFilter)), true
-	case "Query.deviceActivity":
-		if e.complexity.Query.DeviceActivity == nil {
-			break
-		}
-
-		args, err := ec.field_Query_deviceActivity_args(ctx, rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Query.DeviceActivity(childComplexity, args["by"].(model.AftermarketDeviceBy)), true
 	case "Query.events":
 		if e.complexity.Query.Events == nil {
 			break
@@ -2966,7 +2941,6 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	opCtx := graphql.GetOperationContext(ctx)
 	ec := executionContext{opCtx, e, 0, 0, make(chan graphql.DeferredResult)}
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
-		ec.unmarshalInputAftermarketDeviceBy,
 		ec.unmarshalInputAttestationFilter,
 		ec.unmarshalInputEventFilter,
 		ec.unmarshalInputFilterLocation,
@@ -3202,12 +3176,10 @@ enum Privilege {
   VEHICLE_ALL_TIME_LOCATION
   VEHICLE_VIN_CREDENTIAL
   VEHICLE_APPROXIMATE_LOCATION
-  MANUFACTURER_DEVICE_LAST_SEEN
   VEHICLE_RAW_DATA
 }
 
 directive @requiresVehicleToken on FIELD_DEFINITION
-directive @requiresManufacturerToken on FIELD_DEFINITION
 `, BuiltIn: false},
 	{Name: "../../schema/base.graphqls", Input: `"""
 A point in time, encoded per RFC-3999. Typically these will be in second precision,
@@ -3587,36 +3559,6 @@ input StringArrayFilter {
   or array of string array filters
   """
   or: [StringArrayFilter!]
-}
-`, BuiltIn: false},
-	{Name: "../../schema/device_activity.graphqls", Input: `extend type Query {
-  """
-  DeviceActivity indicates when a given device last transmitted data. For privacy, ranges are used rather than exact timestamps.
-
-  Required Privileges: MANUFACTURER_DEVICE_LAST_SEEN
-  """
-  deviceActivity(
-    """
-    The token ID of the aftermarket device.
-    """
-    by: AftermarketDeviceBy!
-  ): DeviceActivity @requiresManufacturerToken @requiresAllOfPrivileges(privileges: [MANUFACTURER_DEVICE_LAST_SEEN])
-}
-
-type DeviceActivity {
-  """
-  lastActive indicates the start of a 3 hour block during which the device was last active.
-  """
-  lastActive: Time
-}
-
-"""
-The AftermarketDeviceBy input is used to specify a unique aftermarket device to query for last active status.
-"""
-input AftermarketDeviceBy @oneOf {
-  tokenId: Int
-  address: Address
-  serial: String
 }
 `, BuiltIn: false},
 	{Name: "../../schema/events.graphqls", Input: `extend type Query {
@@ -5853,17 +5795,6 @@ func (ec *executionContext) field_Query_dataSummary_args(ctx context.Context, ra
 		return nil, err
 	}
 	args["filter"] = arg1
-	return args, nil
-}
-
-func (ec *executionContext) field_Query_deviceActivity_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
-	var err error
-	args := map[string]any{}
-	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "by", ec.unmarshalNAftermarketDeviceBy2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐAftermarketDeviceBy)
-	if err != nil {
-		return nil, err
-	}
-	args["by"] = arg0
 	return args, nil
 }
 
@@ -8463,35 +8394,6 @@ func (ec *executionContext) fieldContext_DataSummary_eventDataSummary(_ context.
 	return fc, nil
 }
 
-func (ec *executionContext) _DeviceActivity_lastActive(ctx context.Context, field graphql.CollectedField, obj *model.DeviceActivity) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_DeviceActivity_lastActive,
-		func(ctx context.Context) (any, error) {
-			return obj.LastActive, nil
-		},
-		nil,
-		ec.marshalOTime2ᚖtimeᚐTime,
-		true,
-		false,
-	)
-}
-
-func (ec *executionContext) fieldContext_DeviceActivity_lastActive(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "DeviceActivity",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Time does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
 func (ec *executionContext) _Event_timestamp(ctx context.Context, field graphql.CollectedField, obj *model.Event) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -9517,76 +9419,6 @@ func (ec *executionContext) fieldContext_Query_attestations(ctx context.Context,
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Query_attestations_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return fc, err
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Query_deviceActivity(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_Query_deviceActivity,
-		func(ctx context.Context) (any, error) {
-			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Query().DeviceActivity(ctx, fc.Args["by"].(model.AftermarketDeviceBy))
-		},
-		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
-			directive0 := next
-
-			directive1 := func(ctx context.Context) (any, error) {
-				if ec.directives.RequiresManufacturerToken == nil {
-					var zeroVal *model.DeviceActivity
-					return zeroVal, errors.New("directive requiresManufacturerToken is not implemented")
-				}
-				return ec.directives.RequiresManufacturerToken(ctx, nil, directive0)
-			}
-			directive2 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"MANUFACTURER_DEVICE_LAST_SEEN"})
-				if err != nil {
-					var zeroVal *model.DeviceActivity
-					return zeroVal, err
-				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
-					var zeroVal *model.DeviceActivity
-					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
-				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, nil, directive1, privileges)
-			}
-
-			next = directive2
-			return next
-		},
-		ec.marshalODeviceActivity2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐDeviceActivity,
-		true,
-		false,
-	)
-}
-
-func (ec *executionContext) fieldContext_Query_deviceActivity(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Query",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "lastActive":
-				return ec.fieldContext_DeviceActivity_lastActive(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type DeviceActivity", field.Name)
-		},
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Query_deviceActivity_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -27168,47 +27000,6 @@ func (ec *executionContext) fieldContext_signalDataSummary_lastSeen(_ context.Co
 
 // region    **************************** input.gotpl *****************************
 
-func (ec *executionContext) unmarshalInputAftermarketDeviceBy(ctx context.Context, obj any) (model.AftermarketDeviceBy, error) {
-	var it model.AftermarketDeviceBy
-	asMap := map[string]any{}
-	for k, v := range obj.(map[string]any) {
-		asMap[k] = v
-	}
-
-	fieldsInOrder := [...]string{"tokenId", "address", "serial"}
-	for _, k := range fieldsInOrder {
-		v, ok := asMap[k]
-		if !ok {
-			continue
-		}
-		switch k {
-		case "tokenId":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tokenId"))
-			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.TokenID = data
-		case "address":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("address"))
-			data, err := ec.unmarshalOAddress2ᚖgithubᚗcomᚋethereumᚋgoᚑethereumᚋcommonᚐAddress(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.Address = data
-		case "serial":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("serial"))
-			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.Serial = data
-		}
-	}
-
-	return it, nil
-}
-
 func (ec *executionContext) unmarshalInputAttestationFilter(ctx context.Context, obj any) (model.AttestationFilter, error) {
 	var it model.AttestationFilter
 	asMap := map[string]any{}
@@ -27995,42 +27786,6 @@ func (ec *executionContext) _DataSummary(ctx context.Context, sel ast.SelectionS
 	return out
 }
 
-var deviceActivityImplementors = []string{"DeviceActivity"}
-
-func (ec *executionContext) _DeviceActivity(ctx context.Context, sel ast.SelectionSet, obj *model.DeviceActivity) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, deviceActivityImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	deferred := make(map[string]*graphql.FieldSet)
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("DeviceActivity")
-		case "lastActive":
-			out.Values[i] = ec._DeviceActivity_lastActive(ctx, field, obj)
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch(ctx)
-	if out.Invalids > 0 {
-		return graphql.Null
-	}
-
-	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
-
-	for label, dfs := range deferred {
-		ec.processDeferredGroup(graphql.DeferredGroup{
-			Label:    label,
-			Path:     graphql.GetPath(ctx),
-			FieldSet: dfs,
-			Context:  ctx,
-		})
-	}
-
-	return out
-}
-
 var eventImplementors = []string{"Event"}
 
 func (ec *executionContext) _Event(ctx context.Context, sel ast.SelectionSet, obj *model.Event) graphql.Marshaler {
@@ -28285,25 +28040,6 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_attestations(ctx, field)
-				return res
-			}
-
-			rrm := func(ctx context.Context) graphql.Marshaler {
-				return ec.OperationContext.RootResolverMiddleware(ctx,
-					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
-		case "deviceActivity":
-			field := field
-
-			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Query_deviceActivity(ctx, field)
 				return res
 			}
 
@@ -33106,11 +32842,6 @@ func (ec *executionContext) marshalNAddress2githubᚗcomᚋethereumᚋgoᚑether
 	return res
 }
 
-func (ec *executionContext) unmarshalNAftermarketDeviceBy2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐAftermarketDeviceBy(ctx context.Context, v any) (model.AftermarketDeviceBy, error) {
-	res, err := ec.unmarshalInputAftermarketDeviceBy(ctx, v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
 func (ec *executionContext) unmarshalNBoolean2bool(ctx context.Context, v any) (bool, error) {
 	res, err := graphql.UnmarshalBoolean(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -33341,24 +33072,22 @@ func (ec *executionContext) marshalNPrivilege2string(ctx context.Context, sel as
 
 var (
 	unmarshalNPrivilege2string = map[string]string{
-		"VEHICLE_NON_LOCATION_DATA":     tokenclaims.PermissionGetNonLocationHistory,
-		"VEHICLE_COMMANDS":              tokenclaims.PermissionExecuteCommands,
-		"VEHICLE_CURRENT_LOCATION":      tokenclaims.PermissionGetCurrentLocation,
-		"VEHICLE_ALL_TIME_LOCATION":     tokenclaims.PermissionGetLocationHistory,
-		"VEHICLE_VIN_CREDENTIAL":        tokenclaims.PermissionGetVINCredential,
-		"VEHICLE_APPROXIMATE_LOCATION":  tokenclaims.PermissionGetApproximateLocation,
-		"MANUFACTURER_DEVICE_LAST_SEEN": tokenclaims.PermissionManufacturerDeviceLastSeen,
-		"VEHICLE_RAW_DATA":              tokenclaims.PermissionGetRawData,
+		"VEHICLE_NON_LOCATION_DATA":    tokenclaims.PermissionGetNonLocationHistory,
+		"VEHICLE_COMMANDS":             tokenclaims.PermissionExecuteCommands,
+		"VEHICLE_CURRENT_LOCATION":     tokenclaims.PermissionGetCurrentLocation,
+		"VEHICLE_ALL_TIME_LOCATION":    tokenclaims.PermissionGetLocationHistory,
+		"VEHICLE_VIN_CREDENTIAL":       tokenclaims.PermissionGetVINCredential,
+		"VEHICLE_APPROXIMATE_LOCATION": tokenclaims.PermissionGetApproximateLocation,
+		"VEHICLE_RAW_DATA":             tokenclaims.PermissionGetRawData,
 	}
 	marshalNPrivilege2string = map[string]string{
-		tokenclaims.PermissionGetNonLocationHistory:      "VEHICLE_NON_LOCATION_DATA",
-		tokenclaims.PermissionExecuteCommands:            "VEHICLE_COMMANDS",
-		tokenclaims.PermissionGetCurrentLocation:         "VEHICLE_CURRENT_LOCATION",
-		tokenclaims.PermissionGetLocationHistory:         "VEHICLE_ALL_TIME_LOCATION",
-		tokenclaims.PermissionGetVINCredential:           "VEHICLE_VIN_CREDENTIAL",
-		tokenclaims.PermissionGetApproximateLocation:     "VEHICLE_APPROXIMATE_LOCATION",
-		tokenclaims.PermissionManufacturerDeviceLastSeen: "MANUFACTURER_DEVICE_LAST_SEEN",
-		tokenclaims.PermissionGetRawData:                 "VEHICLE_RAW_DATA",
+		tokenclaims.PermissionGetNonLocationHistory:  "VEHICLE_NON_LOCATION_DATA",
+		tokenclaims.PermissionExecuteCommands:        "VEHICLE_COMMANDS",
+		tokenclaims.PermissionGetCurrentLocation:     "VEHICLE_CURRENT_LOCATION",
+		tokenclaims.PermissionGetLocationHistory:     "VEHICLE_ALL_TIME_LOCATION",
+		tokenclaims.PermissionGetVINCredential:       "VEHICLE_VIN_CREDENTIAL",
+		tokenclaims.PermissionGetApproximateLocation: "VEHICLE_APPROXIMATE_LOCATION",
+		tokenclaims.PermissionGetRawData:             "VEHICLE_RAW_DATA",
 	}
 )
 
@@ -34132,13 +33861,6 @@ func (ec *executionContext) marshalODataSummary2ᚖgithubᚗcomᚋDIMOᚑNetwork
 		return graphql.Null
 	}
 	return ec._DataSummary(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalODeviceActivity2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐDeviceActivity(ctx context.Context, sel ast.SelectionSet, v *model.DeviceActivity) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return ec._DeviceActivity(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalOEvent2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐEventᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Event) graphql.Marshaler {

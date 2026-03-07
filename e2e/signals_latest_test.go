@@ -6,7 +6,6 @@ import (
 
 	"github.com/DIMO-Network/model-garage/pkg/vss"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
-	"github.com/DIMO-Network/telemetry-api/internal/service/ch"
 	"github.com/DIMO-Network/token-exchange-api/pkg/tokenclaims"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -20,14 +19,14 @@ func TestSignalsLatest(t *testing.T) {
 	// Set up test data in Clickhouse
 	signals := []vss.Signal{
 		{
-			Source:      ch.SourceTranslations["smartcar"][0],
+			Source:      "0xcd445F4c6bDAD32b68a2939b912150Fe3C88803E",
 			Timestamp:   smartCarTime,
 			Name:        vss.FieldSpeed,
 			ValueNumber: 65.5,
 			Subject:     "did:erc721:137:0xbA5738a18d83D41847dfFbDC6101d37C69c9B0cF:39718",
 		},
 		{
-			Source:    ch.SourceTranslations["smartcar"][0],
+			Source:    "0xcd445F4c6bDAD32b68a2939b912150Fe3C88803E",
 			Timestamp: smartCarTime,
 			Name:      vss.FieldCurrentLocationCoordinates,
 			ValueLocation: vss.Location{
@@ -37,7 +36,7 @@ func TestSignalsLatest(t *testing.T) {
 			Subject: "did:erc721:137:0xbA5738a18d83D41847dfFbDC6101d37C69c9B0cF:39718",
 		},
 		{
-			Source:    ch.SourceTranslations["smartcar"][0],
+			Source:    "0xcd445F4c6bDAD32b68a2939b912150Fe3C88803E",
 			Timestamp: smartCarTime.Add(time.Hour),
 			Name:      vss.FieldCurrentLocationCoordinates,
 			ValueLocation: vss.Location{
@@ -46,14 +45,14 @@ func TestSignalsLatest(t *testing.T) {
 			Subject: "did:erc721:137:0xbA5738a18d83D41847dfFbDC6101d37C69c9B0cF:39718",
 		},
 		{
-			Source:      ch.SourceTranslations["autopi"][0],
+			Source:      "0x5e31bBc786D7bEd95216383787deA1ab0f1c1897",
 			Timestamp:   autopiTime,
 			Name:        vss.FieldSpeed,
 			ValueNumber: 14,
 			Subject:     "did:erc721:137:0xbA5738a18d83D41847dfFbDC6101d37C69c9B0cF:39718",
 		},
 		{
-			Source:      ch.SourceTranslations["macaron"][0],
+			Source:      "0x4c674ddE8189aEF6e3b58F5a36d7438b2b1f6Bc2",
 			Timestamp:   macaronTime,
 			Name:        vss.FieldSpeed,
 			ValueNumber: 3,
@@ -72,28 +71,28 @@ func TestSignalsLatest(t *testing.T) {
 	// Execute the query
 	query := `
 	query Latest_all {
-		smartcar: signalsLatest(filter: {source: "smartcar"}, tokenId: 39718) {
+		smartcar: signalsLatest(filter: {source: "did:ethr:137:0xcd445F4c6bDAD32b68a2939b912150Fe3C88803E"}, tokenId: 39718) {
 			lastSeen
 			speed {
 				timestamp
 				value
 			}
 		}
-		autopi: signalsLatest(filter: {source: "autopi"}, tokenId: 39718) {
+		autopi: signalsLatest(filter: {source: "did:ethr:137:0x5e31bBc786D7bEd95216383787deA1ab0f1c1897"}, tokenId: 39718) {
 			lastSeen
 			speed {
 				timestamp
 				value
 			}
 		}
-		macaron: signalsLatest(filter: {source: "macaron"}, tokenId: 39718) {
+		macaron: signalsLatest(filter: {source: "did:ethr:137:0x4c674ddE8189aEF6e3b58F5a36d7438b2b1f6Bc2"}, tokenId: 39718) {
 			lastSeen
 			speed {
 				timestamp
 				value
 			}
 		}
-		tesla: signalsLatest(filter: {source: "tesla"}, tokenId: 39718) {
+		tesla: signalsLatest(filter: {source: "did:ethr:137:0xc4035Fecb1cc906130423EF05f9C20977F643722"}, tokenId: 39718) {
 			lastSeen
 		}
 		location: signalsLatest(tokenId: 39718) {

@@ -103,5 +103,3 @@ models:
         value: github.com/DIMO-Network/token-exchange-api/pkg/tokenclaims.PermissionGetApproximateLocation
       VEHICLE_RAW_DATA:
         value: github.com/DIMO-Network/token-exchange-api/pkg/tokenclaims.PermissionGetRawData
-      MANUFACTURER_DEVICE_LAST_SEEN:
-        value: github.com/DIMO-Network/token-exchange-api/pkg/tokenclaims.PermissionManufacturerDeviceLastSeen 

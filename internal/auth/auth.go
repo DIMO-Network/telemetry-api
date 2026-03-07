@@ -7,24 +7,12 @@ import (
 	"slices"
 
 	"github.com/99designs/gqlgen/graphql"
-	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
-	"github.com/DIMO-Network/telemetry-api/internal/service/identity"
 	"github.com/ethereum/go-ethereum/common"
 )
 
 const (
 	tokenIdArg = "tokenId"
-	byArg      = "by"
 )
-
-//go:generate go tool mockgen -source=./auth.go -destination=auth_mocks.go -package=auth
-type IdentityService interface {
-	GetAftermarketDevice(ctx context.Context, address *common.Address, tokenID *int, serial *string) (*identity.DeviceInfos, error)
-}
-
-type TokenValidator struct {
-	IdentitySvc IdentityService
-}
 
 type UnauthorizedError struct {
 	message string
@@ -60,26 +48,6 @@ func NewVehicleTokenCheck(requiredAddr common.Address) func(context.Context, any
 		}
 
 		if err := validateHeader(ctx, requiredAddr, vehicleTokenID); err != nil {
-			return nil, UnauthorizedError{err: err}
-		}
-
-		return next(ctx)
-	}
-}
-
-func NewManufacturerTokenCheck(requiredAddr common.Address, identitySvc IdentityService) func(context.Context, any, graphql.Resolver) (any, error) {
-	return func(ctx context.Context, _ any, next graphql.Resolver) (any, error) {
-		adFilter, err := getArg[model.AftermarketDeviceBy](ctx, byArg)
-		if err != nil {
-			return nil, fmt.Errorf("unauthorized: %w", err)
-		}
-
-		adResp, err := identitySvc.GetAftermarketDevice(ctx, adFilter.Address, adFilter.TokenID, adFilter.Serial)
-		if err != nil {
-			return nil, err
-		}
-
-		if err := validateHeader(ctx, requiredAddr, adResp.ManufacturerTokenID); err != nil {
 			return nil, UnauthorizedError{err: err}
 		}
 
