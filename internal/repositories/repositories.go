@@ -33,16 +33,16 @@ var ManufacturerSourceTranslations = map[string]string{
 
 // CHService is the interface for the ClickHouse service.
 type CHService interface {
-	GetAggregatedSignals(ctx context.Context, aggArgs *model.AggregatedSignalArgs) ([]*ch.AggSignal, error)
-	GetAggregatedSignalsForRanges(ctx context.Context, tokenID uint32, ranges []ch.TimeRange, globalFrom, globalTo time.Time, floatArgs []model.FloatSignalArgs, locationArgs []model.LocationSignalArgs) ([]*ch.AggSignalForRange, error)
-	GetLatestSignals(ctx context.Context, latestArgs *model.LatestSignalsArgs) ([]*vss.Signal, error)
-	GetAvailableSignals(ctx context.Context, tokenID uint32, filter *model.SignalFilter) ([]string, error)
-	GetSignalSummaries(ctx context.Context, tokenID uint32, filter *model.SignalFilter) ([]*model.SignalDataSummary, error)
+	GetAggregatedSignals(ctx context.Context, subject string, aggArgs *model.AggregatedSignalArgs) ([]*ch.AggSignal, error)
+	GetAggregatedSignalsForRanges(ctx context.Context, subject string, ranges []ch.TimeRange, globalFrom, globalTo time.Time, floatArgs []model.FloatSignalArgs, locationArgs []model.LocationSignalArgs) ([]*ch.AggSignalForRange, error)
+	GetLatestSignals(ctx context.Context, subject string, latestArgs *model.LatestSignalsArgs) ([]*vss.Signal, error)
+	GetAvailableSignals(ctx context.Context, subject string, filter *model.SignalFilter) ([]string, error)
+	GetSignalSummaries(ctx context.Context, subject string, filter *model.SignalFilter) ([]*model.SignalDataSummary, error)
 	GetEvents(ctx context.Context, subject string, from, to time.Time, filter *model.EventFilter) ([]*vss.Event, error)
 	GetEventCounts(ctx context.Context, subject string, from, to time.Time, eventNames []string) ([]*ch.EventCount, error)
 	GetEventCountsForRanges(ctx context.Context, subject string, ranges []ch.TimeRange, eventNames []string) ([]*ch.EventCountForRange, error)
 	GetEventSummaries(ctx context.Context, subject string) ([]*ch.EventSummary, error)
-	GetSegments(ctx context.Context, tokenID uint32, from, to time.Time, mechanism model.DetectionMechanism, config *model.SegmentConfig) ([]*model.Segment, error)
+	GetSegments(ctx context.Context, subject string, from, to time.Time, mechanism model.DetectionMechanism, config *model.SegmentConfig) ([]*model.Segment, error)
 }
 
 // Repository is the base repository for all repositories.
@@ -76,13 +76,23 @@ func NewRepository(chService CHService, settings config.Settings) (*Repository, 
 
 }
 
+// toSubject converts a vehicle token id to a DID subject string.
+func (r *Repository) toSubject(tokenID uint32) string {
+	return cloudevent.ERC721DID{
+		ChainID:         r.chainID,
+		ContractAddress: r.vehicleAddress,
+		TokenID:         big.NewInt(int64(tokenID)),
+	}.String()
+}
+
 // GetSignal returns the aggregated signals for the given tokenID, interval, from, to and filter.
 func (r *Repository) GetSignal(ctx context.Context, aggArgs *model.AggregatedSignalArgs) ([]*model.SignalAggregations, error) {
 	if err := validateAggSigArgs(aggArgs); err != nil {
 		return nil, errorhandler.NewBadRequestError(ctx, err)
 	}
 
-	signals, err := r.chService.GetAggregatedSignals(ctx, aggArgs)
+	subject := r.toSubject(aggArgs.TokenID)
+	signals, err := r.chService.GetAggregatedSignals(ctx, subject, aggArgs)
 	if err != nil {
 		return nil, handleDBError(ctx, err)
 	}
@@ -134,7 +144,8 @@ func (r *Repository) GetSignalLatest(ctx context.Context, latestArgs *model.Late
 	if err := validateLatestSigArgs(latestArgs); err != nil {
 		return nil, errorhandler.NewBadRequestError(ctx, err)
 	}
-	signals, err := r.chService.GetLatestSignals(ctx, latestArgs)
+	subject := r.toSubject(latestArgs.TokenID)
+	signals, err := r.chService.GetLatestSignals(ctx, subject, latestArgs)
 	if err != nil {
 		return nil, handleDBError(ctx, err)
 	}
@@ -186,7 +197,8 @@ func (r *Repository) GetDeviceActivity(ctx context.Context, vehicleTokenID int, 
 // GetAvailableSignals returns the available signals for the given tokenID and filter.
 // If no signals are found, a nil slice is returned.
 func (r *Repository) GetAvailableSignals(ctx context.Context, tokenID uint32, filter *model.SignalFilter) ([]string, error) {
-	allSignals, err := r.chService.GetAvailableSignals(ctx, tokenID, filter)
+	subject := r.toSubject(tokenID)
+	allSignals, err := r.chService.GetAvailableSignals(ctx, subject, filter)
 	if err != nil {
 		return nil, handleDBError(ctx, err)
 	}
@@ -201,15 +213,11 @@ func (r *Repository) GetAvailableSignals(ctx context.Context, tokenID uint32, fi
 
 // GetDataSummary returns the signal and event metadata for the given tokenID and filter.
 func (r *Repository) GetDataSummary(ctx context.Context, tokenID uint32, filter *model.SignalFilter) (*model.DataSummary, error) {
-	signalDataSummary, err := r.chService.GetSignalSummaries(ctx, tokenID, filter)
+	subject := r.toSubject(tokenID)
+	signalDataSummary, err := r.chService.GetSignalSummaries(ctx, subject, filter)
 	if err != nil {
 		return nil, handleDBError(ctx, err)
 	}
-	subject := cloudevent.ERC721DID{
-		ChainID:         r.chainID,
-		ContractAddress: r.vehicleAddress,
-		TokenID:         big.NewInt(int64(tokenID)),
-	}.String()
 	eventSummaries, err := r.chService.GetEventSummaries(ctx, subject)
 	if err != nil {
 		return nil, handleDBError(ctx, err)

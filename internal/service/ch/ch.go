@@ -75,10 +75,10 @@ func getMaxExecutionTime(maxRequestDuration string) (int, error) {
 }
 
 // GetLatestSignals returns the latest signals based on the provided arguments from the ClickHouse database.
-func (s *Service) GetLatestSignals(ctx context.Context, latestArgs *model.LatestSignalsArgs) ([]*vss.Signal, error) {
-	stmt, args := getLatestQuery(latestArgs)
+func (s *Service) GetLatestSignals(ctx context.Context, subject string, latestArgs *model.LatestSignalsArgs) ([]*vss.Signal, error) {
+	stmt, args := getLatestQuery(subject, latestArgs)
 	if latestArgs.IncludeLastSeen {
-		lastSeenStmt, lastSeenArgs := getLastSeenQuery(&latestArgs.SignalArgs)
+		lastSeenStmt, lastSeenArgs := getLastSeenQuery(subject, &latestArgs.SignalArgs)
 		stmt, args = unionAll([]string{stmt, lastSeenStmt}, [][]any{args, lastSeenArgs})
 	}
 
@@ -92,12 +92,12 @@ func (s *Service) GetLatestSignals(ctx context.Context, latestArgs *model.Latest
 // GetAggregatedSignals returns a slice of aggregated signals based on the provided arguments from the ClickHouse database.
 // The signals are sorted by timestamp in ascending order.
 // The timestamp on each signal is for the start of the interval.
-func (s *Service) GetAggregatedSignals(ctx context.Context, aggArgs *model.AggregatedSignalArgs) ([]*AggSignal, error) {
+func (s *Service) GetAggregatedSignals(ctx context.Context, subject string, aggArgs *model.AggregatedSignalArgs) ([]*AggSignal, error) {
 	if len(aggArgs.FloatArgs) == 0 && len(aggArgs.StringArgs) == 0 && len(aggArgs.LocationArgs) == 0 {
 		return []*AggSignal{}, nil
 	}
 
-	stmt, args, err := getAggQuery(aggArgs)
+	stmt, args, err := getAggQuery(subject, aggArgs)
 	if err != nil {
 		return nil, err
 	}
@@ -112,14 +112,14 @@ func (s *Service) GetAggregatedSignals(ctx context.Context, aggArgs *model.Aggre
 
 // GetAggregatedSignalsForRanges returns aggregated signals for multiple time ranges (one per segment) in one query.
 // Only FloatArgs and LocationArgs are used; StringArgs and ApproxLocArgs are ignored.
-func (s *Service) GetAggregatedSignalsForRanges(ctx context.Context, tokenID uint32, ranges []TimeRange, globalFrom, globalTo time.Time, floatArgs []model.FloatSignalArgs, locationArgs []model.LocationSignalArgs) ([]*AggSignalForRange, error) {
+func (s *Service) GetAggregatedSignalsForRanges(ctx context.Context, subject string, ranges []TimeRange, globalFrom, globalTo time.Time, floatArgs []model.FloatSignalArgs, locationArgs []model.LocationSignalArgs) ([]*AggSignalForRange, error) {
 	if len(ranges) == 0 {
 		return nil, nil
 	}
 	if len(floatArgs) == 0 && len(locationArgs) == 0 {
 		return []*AggSignalForRange{}, nil
 	}
-	stmt, args, err := getBatchAggQuery(tokenID, ranges, globalFrom, globalTo, floatArgs, locationArgs)
+	stmt, args, err := getBatchAggQuery(subject, ranges, globalFrom, globalTo, floatArgs, locationArgs)
 	if err != nil {
 		return nil, err
 	}
@@ -227,8 +227,8 @@ func (s *Service) getAggSignals(ctx context.Context, stmt string, args []any) ([
 
 // GetAvailableSignals returns a slice of available signals from the ClickHouse database.
 // if no signals are available, a nil slice is returned.
-func (s *Service) GetAvailableSignals(ctx context.Context, tokenId uint32, filter *model.SignalFilter) ([]string, error) {
-	stmt, args := getDistinctQuery(tokenId, filter)
+func (s *Service) GetAvailableSignals(ctx context.Context, subject string, filter *model.SignalFilter) ([]string, error) {
+	stmt, args := getDistinctQuery(subject, filter)
 	rows, err := s.conn.Query(ctx, stmt, args...)
 	if err != nil {
 		return nil, fmt.Errorf("failed querying clickhouse: %w", err)
@@ -251,8 +251,8 @@ func (s *Service) GetAvailableSignals(ctx context.Context, tokenId uint32, filte
 	return signals, nil
 }
 
-func (s *Service) GetSignalSummaries(ctx context.Context, tokenId uint32, filter *model.SignalFilter) ([]*model.SignalDataSummary, error) {
-	stmt, args := getSignalSummariesQuery(tokenId, filter)
+func (s *Service) GetSignalSummaries(ctx context.Context, subject string, filter *model.SignalFilter) ([]*model.SignalDataSummary, error) {
+	stmt, args := getSignalSummariesQuery(subject, filter)
 	rows, err := s.conn.Query(ctx, stmt, args...)
 	if err != nil {
 		return nil, fmt.Errorf("failed querying clickhouse: %w", err)

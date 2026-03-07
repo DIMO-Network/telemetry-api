@@ -34,7 +34,7 @@ func newDetector(conn clickhouse.Conn, mechanism model.DetectionMechanism) (Segm
 // GetSegments returns segments detected using the specified mechanism.
 func (s *Service) GetSegments(
 	ctx context.Context,
-	tokenID uint32,
+	subject string,
 	from, to time.Time,
 	mechanism model.DetectionMechanism,
 	config *model.SegmentConfig,
@@ -45,7 +45,7 @@ func (s *Service) GetSegments(
 	}
 
 	timer := prometheus.NewTimer(GetSegmentsLatency.WithLabelValues(mechanism.String()))
-	segments, err := detector.DetectSegments(ctx, tokenID, from, to, config)
+	segments, err := detector.DetectSegments(ctx, subject, from, to, config)
 	timer.ObserveDuration()
 	if err != nil {
 		return nil, err

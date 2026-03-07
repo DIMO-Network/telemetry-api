@@ -220,7 +220,8 @@ func (r *Repository) GetSegments(ctx context.Context, tokenID int, from, to time
 		}
 	}
 
-	chSegments, err := r.chService.GetSegments(ctx, uint32(tokenID), from, to, mechanism, config)
+	subject := r.toSubject(uint32(tokenID))
+	chSegments, err := r.chService.GetSegments(ctx, subject, from, to, mechanism, config)
 	if err != nil {
 		return nil, handleDBError(ctx, err)
 	}
@@ -240,12 +241,6 @@ func (r *Repository) GetSegments(ctx context.Context, tokenID int, from, to time
 			eventNames[i] = e.Name
 		}
 	}
-
-	subject := cloudevent.ERC721DID{
-		ChainID:         r.chainID,
-		ContractAddress: r.vehicleAddress,
-		TokenID:         big.NewInt(int64(tokenID)),
-	}.String()
 
 	// For refuel/recharge, segment end is when the event is "done"; telemetry often has
 	// the first fuel/charge/odometer reading shortly after. Use an extended summary
@@ -292,7 +287,7 @@ func (r *Repository) GetSegments(ctx context.Context, tokenID int, from, to time
 		})
 		g.Go(func() error {
 			var err error
-			batchAggs, err = r.chService.GetAggregatedSignalsForRanges(gctx, uint32(tokenID), aggRanges, globalFrom, globalTo, floatArgs, locationArgs)
+			batchAggs, err = r.chService.GetAggregatedSignalsForRanges(gctx, subject, aggRanges, globalFrom, globalTo, floatArgs, locationArgs)
 			return err
 		})
 		if err := g.Wait(); err != nil {
@@ -475,7 +470,7 @@ func (r *Repository) segmentSummary(ctx context.Context, tokenID uint32, subject
 			LocationArgs: locationArgs,
 		}
 		var err error
-		aggs, err = r.chService.GetAggregatedSignals(ctx, aggArgs)
+		aggs, err = r.chService.GetAggregatedSignals(ctx, subject, aggArgs)
 		if err != nil {
 			return nil, handleDBError(ctx, err)
 		}
@@ -634,7 +629,7 @@ func (r *Repository) daySummary(ctx context.Context, tokenID uint32, subject str
 		FloatArgs:    floatArgs,
 		LocationArgs: locationArgs,
 	}
-	aggs, err := r.chService.GetAggregatedSignals(ctx, aggArgs)
+	aggs, err := r.chService.GetAggregatedSignals(ctx, subject, aggArgs)
 	if err != nil {
 		return nil, nil, nil, nil, handleDBError(ctx, err)
 	}

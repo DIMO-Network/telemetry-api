@@ -20,6 +20,10 @@ import (
 const (
 	day        = time.Hour * 24
 	dataPoints = 10
+
+	testSubject1   = "did:erc721:137:0xbA5738a18d83D41847dfFbDC6101d37C69c9B0cF:1"
+	testSubject2   = "did:erc721:137:0xbA5738a18d83D41847dfFbDC6101d37C69c9B0cF:2"
+	testSubject100 = "did:erc721:137:0xbA5738a18d83D41847dfFbDC6101d37C69c9B0cF:100"
 )
 
 type CHServiceTestSuite struct {
@@ -802,7 +806,7 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 	}
 	for _, tc := range testCases {
 		c.Run(tc.name, func() {
-			result, err := c.chService.GetAggregatedSignals(ctx, &tc.aggArgs)
+			result, err := c.chService.GetAggregatedSignals(ctx, testSubject1, &tc.aggArgs)
 			c.Require().NoError(err)
 
 			c.Require().Len(result, len(tc.expected))
@@ -902,7 +906,7 @@ func (c *CHServiceTestSuite) TestGetLatestSignal() {
 	}
 	for _, tc := range testCases {
 		c.Run(tc.name, func() {
-			result, err := c.chService.GetLatestSignals(ctx, &tc.latestArgs)
+			result, err := c.chService.GetLatestSignals(ctx, testSubject1, &tc.latestArgs)
 			c.Require().NoError(err)
 			for i, sig := range result {
 				c.Require().Equal(tc.expected[i], *sig)
@@ -914,20 +918,20 @@ func (c *CHServiceTestSuite) TestGetLatestSignal() {
 func (c *CHServiceTestSuite) TestGetAvailableSignals() {
 	ctx := context.Background()
 	c.Run("has signals", func() {
-		result, err := c.chService.GetAvailableSignals(ctx, 1, nil)
+		result, err := c.chService.GetAvailableSignals(ctx, testSubject1, nil)
 		c.Require().NoError(err)
 		c.Require().Len(result, 3)
 		c.Require().Equal([]string{vss.FieldCurrentLocationCoordinates, vss.FieldPowertrainType, vss.FieldSpeed}, result)
 	})
 
 	c.Run("no signals", func() {
-		result, err := c.chService.GetAvailableSignals(ctx, 2, nil)
+		result, err := c.chService.GetAvailableSignals(ctx, testSubject2, nil)
 		c.Require().NoError(err)
 		c.Require().Nil(result)
 	})
 
 	c.Run("filter signals", func() {
-		result, err := c.chService.GetAvailableSignals(ctx, 1, &model.SignalFilter{Source: ref("Unknown")})
+		result, err := c.chService.GetAvailableSignals(ctx, testSubject1, &model.SignalFilter{Source: ref("Unknown")})
 		c.Require().NoError(err)
 		c.Require().Nil(result)
 	})
@@ -950,7 +954,7 @@ func (c *CHServiceTestSuite) TestOriginGrouping() {
 			Name:        vss.FieldSpeed,
 			Timestamp:   currentTime,
 			Source:      "test/origin",
-			TokenID:     100,
+			Subject:     testSubject100,
 			ValueNumber: 100.0,
 		}
 		signals = append(signals, signal)
@@ -986,7 +990,7 @@ func (c *CHServiceTestSuite) TestOriginGrouping() {
 	}
 
 	// Query signals
-	result, err := c.chService.GetAggregatedSignals(ctx, aggArgs)
+	result, err := c.chService.GetAggregatedSignals(ctx, testSubject100, aggArgs)
 	c.Require().NoError(err, "Failed to get aggregated signals")
 
 	// We expect exactly one group since we're using a 30-day interval
@@ -1323,7 +1327,7 @@ func (c *CHServiceTestSuite) insertTestData() {
 			Name:        vss.FieldSpeed,
 			Timestamp:   c.dataStartTime.Add(time.Second * time.Duration(30*i)),
 			Source:      sources[i%3],
-			TokenID:     1,
+			Subject:     testSubject1,
 			ValueNumber: float64(i),
 		}
 
@@ -1331,7 +1335,7 @@ func (c *CHServiceTestSuite) insertTestData() {
 			Name:        vss.FieldPowertrainType,
 			Timestamp:   c.dataStartTime.Add(time.Second * time.Duration(30*i)),
 			Source:      sources[i%3],
-			TokenID:     1,
+			Subject:     testSubject1,
 			ValueString: fmt.Sprintf("value%d", i+1),
 		}
 
@@ -1339,7 +1343,7 @@ func (c *CHServiceTestSuite) insertTestData() {
 			Name:          vss.FieldCurrentLocationCoordinates,
 			Timestamp:     c.dataStartTime.Add(time.Second * time.Duration(30*i)),
 			Source:        sources[i%3],
-			TokenID:       1,
+			Subject:       testSubject1,
 			ValueLocation: vss.Location{Latitude: 3 * float64(i+1), Longitude: 5 * float64(i+1), HDOP: 7 * float64(i+1)},
 		}
 		testSignal = append(testSignal, numSig, strSig, locSig)
@@ -1349,7 +1353,7 @@ func (c *CHServiceTestSuite) insertTestData() {
 		Name:          vss.FieldCurrentLocationCoordinates,
 		Timestamp:     c.dataStartTime.Add(time.Second * time.Duration(299)),
 		Source:        sources[0],
-		TokenID:       1,
+		Subject:       testSubject1,
 		ValueLocation: vss.Location{Latitude: 0, Longitude: 0, HDOP: 111},
 	})
 

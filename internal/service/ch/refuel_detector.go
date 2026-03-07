@@ -36,7 +36,7 @@ func NewRefuelDetector(conn clickhouse.Conn) *RefuelDetector {
 // 1 CH query (fuel only).
 func (d *RefuelDetector) DetectSegments(
 	ctx context.Context,
-	tokenID uint32,
+	subject string,
 	from, to time.Time,
 	config *model.SegmentConfig,
 ) ([]*model.Segment, error) {
@@ -51,7 +51,7 @@ func (d *RefuelDetector) DetectSegments(
 	fuelTo := to.Add(windowDur)
 
 	// Single CH query: fuel samples (returned sorted by CH)
-	samples, err := getLevelSamples(ctx, d.conn, tokenID, vss.FieldPowertrainFuelSystemRelativeLevel, fuelFrom, fuelTo)
+	samples, err := getLevelSamples(ctx, d.conn, subject, vss.FieldPowertrainFuelSystemRelativeLevel, fuelFrom, fuelTo)
 	if err != nil {
 		return nil, fmt.Errorf("failed to query fuel samples: %w", err)
 	}

@@ -99,7 +99,6 @@ func LoadSampleDataInto(t *testing.T, ch *container.Container, signalPath, event
 		if len(row) < 9 {
 			continue
 		}
-		tokenID, _ := strconv.ParseUint(row[0], 10, 32)
 		ts, _ := time.Parse("2006-01-02 15:04:05.000000", row[1])
 		var loc vss.Location
 		if len(row[8]) > 0 {
@@ -107,7 +106,7 @@ func LoadSampleDataInto(t *testing.T, ch *container.Container, signalPath, event
 		}
 		valNum, _ := strconv.ParseFloat(row[6], 64)
 		signals = append(signals, vss.Signal{
-			TokenID:       uint32(tokenID),
+			Subject:       row[0],
 			Timestamp:     ts,
 			Name:          row[2],
 			Source:        row[3],

@@ -30,7 +30,7 @@ type ActiveWindow struct {
 func getWindowedSignalCounts(
 	ctx context.Context,
 	conn clickhouse.Conn,
-	tokenID uint32,
+	subject string,
 	from, to time.Time,
 	windowSizeSeconds int,
 	signalThreshold int,
@@ -43,14 +43,14 @@ SELECT
     count() AS signal_count,
     uniq(name) AS distinct_signal_count
 FROM signal FINAL
-PREWHERE token_id = ?
+PREWHERE subject = ?
 WHERE timestamp >= ?
   AND timestamp < ?
 GROUP BY window_start
 HAVING signal_count >= ? AND distinct_signal_count >= ?
 ORDER BY window_start`
 
-	rows, err := conn.Query(ctx, query, windowSizeSeconds, windowSizeSeconds, windowSizeSeconds, tokenID, from, to, signalThreshold, distinctSignalThreshold)
+	rows, err := conn.Query(ctx, query, windowSizeSeconds, windowSizeSeconds, windowSizeSeconds, subject, from, to, signalThreshold, distinctSignalThreshold)
 	if err != nil {
 		return nil, fmt.Errorf("failed to query windowed signal counts: %w", err)
 	}
@@ -122,14 +122,14 @@ func levelFirstLastInRange(samples []levelSample, segStart, segEnd time.Time) (f
 
 // getLevelSamples fetches timestamped level samples for a signal.
 // Results are returned in timestamp order (ORDER BY in the query).
-// Uses PREWHERE on token_id for efficient primary-key filtering before FINAL merge.
-func getLevelSamples(ctx context.Context, conn clickhouse.Conn, tokenID uint32, name string, from, to time.Time) (_ []levelSample, retErr error) {
+// Uses PREWHERE on subject for efficient primary-key filtering before FINAL merge.
+func getLevelSamples(ctx context.Context, conn clickhouse.Conn, subject string, name string, from, to time.Time) (_ []levelSample, retErr error) {
 	query := "SELECT " + vss.TimestampCol + ", " + vss.ValueNumberCol +
 		" FROM " + vss.TableName + " FINAL" +
-		" PREWHERE " + vss.TokenIDCol + " = ?" +
+		" PREWHERE " + vss.SubjectCol + " = ?" +
 		" WHERE " + vss.NameCol + " = ? AND " + vss.TimestampCol + " >= ? AND " + vss.TimestampCol + " < ?" +
 		" ORDER BY " + vss.TimestampCol
-	rows, err := conn.Query(ctx, query, tokenID, name, from, to)
+	rows, err := conn.Query(ctx, query, subject, name, from, to)
 	if err != nil {
 		return nil, err
 	}

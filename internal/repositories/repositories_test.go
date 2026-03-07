@@ -37,6 +37,11 @@ func setupMocks(t *testing.T) *Mocks {
 }
 
 func TestGetSignal(t *testing.T) {
+	testSubject := cloudevent.ERC721DID{
+		ChainID:         baseSettings.ChainID,
+		ContractAddress: baseSettings.VehicleNFTAddress,
+		TokenID:         big.NewInt(1),
+	}.String()
 	defaultArgs := &model.AggregatedSignalArgs{
 		SignalArgs: model.SignalArgs{
 			TokenID: 1,
@@ -65,7 +70,7 @@ func TestGetSignal(t *testing.T) {
 			aggArgs: defaultArgs,
 			mockSetup: func(m *Mocks) {
 				m.CHService.EXPECT().
-					GetAggregatedSignals(gomock.Any(), defaultArgs).
+					GetAggregatedSignals(gomock.Any(), testSubject, defaultArgs).
 					Return([]*ch.AggSignal{}, nil)
 			},
 			expectedResult: []*model.SignalAggregations{},
@@ -79,7 +84,7 @@ func TestGetSignal(t *testing.T) {
 					{SignalType: ch.FloatType, SignalIndex: 0, Timestamp: time.Date(2024, 6, 11, 0, 0, 0, 0, time.UTC), ValueNumber: 1.0},
 				}
 				m.CHService.EXPECT().
-					GetAggregatedSignals(gomock.Any(), defaultArgs).
+					GetAggregatedSignals(gomock.Any(), testSubject, defaultArgs).
 					Return(signals, nil)
 			},
 			expectedResult: []*model.SignalAggregations{
@@ -99,7 +104,7 @@ func TestGetSignal(t *testing.T) {
 					{SignalType: ch.FloatType, SignalIndex: 0, Timestamp: time.Date(2024, 6, 11, 1, 0, 0, 0, time.UTC), ValueNumber: 3.0},
 				}
 				m.CHService.EXPECT().
-					GetAggregatedSignals(gomock.Any(), defaultArgs).
+					GetAggregatedSignals(gomock.Any(), testSubject, defaultArgs).
 					Return(signals, nil)
 			},
 			expectedResult: []*model.SignalAggregations{
@@ -122,7 +127,7 @@ func TestGetSignal(t *testing.T) {
 					{SignalType: ch.FloatType, SignalIndex: 0, Timestamp: time.Date(2024, 6, 11, 0, 0, 0, 0, time.UTC), ValueNumber: 3.0},
 				}
 				m.CHService.EXPECT().
-					GetAggregatedSignals(gomock.Any(), defaultArgs).
+					GetAggregatedSignals(gomock.Any(), testSubject, defaultArgs).
 					Return(signals, nil)
 			},
 			expectedResult: []*model.SignalAggregations{
@@ -142,7 +147,7 @@ func TestGetSignal(t *testing.T) {
 					{SignalType: ch.FloatType, SignalIndex: 0, Timestamp: time.Date(2024, 6, 11, 1, 0, 0, 0, time.UTC), ValueNumber: 3.0},
 				}
 				m.CHService.EXPECT().
-					GetAggregatedSignals(gomock.Any(), defaultArgs).
+					GetAggregatedSignals(gomock.Any(), testSubject, defaultArgs).
 					Return(signals, nil)
 			},
 			expectedResult: []*model.SignalAggregations{
@@ -169,7 +174,7 @@ func TestGetSignal(t *testing.T) {
 			aggArgs: defaultArgs,
 			mockSetup: func(m *Mocks) {
 				m.CHService.EXPECT().
-					GetAggregatedSignals(gomock.Any(), defaultArgs).
+					GetAggregatedSignals(gomock.Any(), testSubject, defaultArgs).
 					Return(nil, errors.New("service error"))
 			},
 			expectedResult: nil,
@@ -205,6 +210,11 @@ func TestGetSignal(t *testing.T) {
 }
 
 func TestGetSignalLatest(t *testing.T) {
+	testSubject := cloudevent.ERC721DID{
+		ChainID:         baseSettings.ChainID,
+		ContractAddress: baseSettings.VehicleNFTAddress,
+		TokenID:         big.NewInt(1),
+	}.String()
 	defaultArgs := &model.LatestSignalsArgs{
 		SignalArgs: model.SignalArgs{
 			TokenID: 1,
@@ -226,7 +236,7 @@ func TestGetSignalLatest(t *testing.T) {
 					{Timestamp: time.Date(1970, 1, 1, 0, 0, 0, 0, time.UTC), Name: model.LastSeenField},
 				}
 				m.CHService.EXPECT().
-					GetLatestSignals(gomock.Any(), defaultArgs).
+					GetLatestSignals(gomock.Any(), testSubject, defaultArgs).
 					Return(signals, nil)
 			},
 			expectedResult: &model.SignalCollection{
@@ -243,7 +253,7 @@ func TestGetSignalLatest(t *testing.T) {
 					{Timestamp: time.Date(2024, 6, 11, 0, 0, 0, 0, time.UTC), Name: model.LastSeenField},
 				}
 				m.CHService.EXPECT().
-					GetLatestSignals(gomock.Any(), defaultArgs).
+					GetLatestSignals(gomock.Any(), testSubject, defaultArgs).
 					Return(signals, nil)
 			},
 			expectedResult: &model.SignalCollection{
@@ -266,7 +276,7 @@ func TestGetSignalLatest(t *testing.T) {
 					{Timestamp: time.Date(2024, 6, 11, 2, 0, 0, 0, time.UTC), Name: model.LastSeenField},
 				}
 				m.CHService.EXPECT().
-					GetLatestSignals(gomock.Any(), defaultArgs).
+					GetLatestSignals(gomock.Any(), testSubject, defaultArgs).
 					Return(signals, nil)
 			},
 			expectedResult: &model.SignalCollection{
@@ -292,7 +302,7 @@ func TestGetSignalLatest(t *testing.T) {
 			latestArgs: defaultArgs,
 			mockSetup: func(m *Mocks) {
 				m.CHService.EXPECT().
-					GetLatestSignals(gomock.Any(), defaultArgs).
+					GetLatestSignals(gomock.Any(), testSubject, defaultArgs).
 					Return(nil, errors.New("service error"))
 			},
 			expectedResult: nil,
@@ -324,6 +334,11 @@ func TestGetSignalLatest(t *testing.T) {
 
 func TestDeviceActivity(t *testing.T) {
 	vehicleTokenID := int64(1)
+	testSubject := cloudevent.ERC721DID{
+		ChainID:         baseSettings.ChainID,
+		ContractAddress: baseSettings.VehicleNFTAddress,
+		TokenID:         big.NewInt(vehicleTokenID),
+	}.String()
 	hashdog := "Hashdog"
 	source := "macaron"
 	lastSeen := time.Date(2024, 6, 11, 1, 2, 3, 3, time.UTC)
@@ -350,7 +365,7 @@ func TestDeviceActivity(t *testing.T) {
 			name: "Success case - valid last seen",
 			mockSetup: func(m *Mocks) {
 				m.CHService.EXPECT().
-					GetLatestSignals(gomock.Any(), latestArgs).
+					GetLatestSignals(gomock.Any(), testSubject, latestArgs).
 					Return([]*vss.Signal{
 						{Timestamp: lastSeen, Name: model.LastSeenField},
 					}, nil)
@@ -365,7 +380,7 @@ func TestDeviceActivity(t *testing.T) {
 			name: "vehicle has not transmitted any signals",
 			mockSetup: func(m *Mocks) {
 				m.CHService.EXPECT().
-					GetLatestSignals(gomock.Any(), latestArgs).
+					GetLatestSignals(gomock.Any(), testSubject, latestArgs).
 					Return([]*vss.Signal{
 						{Timestamp: time.Unix(0, 0).UTC(), Name: model.LastSeenField},
 					}, nil)
@@ -404,7 +419,11 @@ func TestDeviceActivity(t *testing.T) {
 }
 
 func TestGetAvailableSignals(t *testing.T) {
-	testTokenId := uint32(1)
+	testSubject := cloudevent.ERC721DID{
+		ChainID:         baseSettings.ChainID,
+		ContractAddress: baseSettings.VehicleNFTAddress,
+		TokenID:         big.NewInt(1),
+	}.String()
 	tests := []struct {
 		name           string
 		mockSetup      func(m *Mocks)
@@ -415,7 +434,7 @@ func TestGetAvailableSignals(t *testing.T) {
 			name: "No signals",
 			mockSetup: func(m *Mocks) {
 				m.CHService.EXPECT().
-					GetAvailableSignals(gomock.Any(), testTokenId, nil).
+					GetAvailableSignals(gomock.Any(), testSubject, nil).
 					Return(nil, nil)
 			},
 			expectedResult: nil,
@@ -425,7 +444,7 @@ func TestGetAvailableSignals(t *testing.T) {
 			name: "One signal",
 			mockSetup: func(m *Mocks) {
 				m.CHService.EXPECT().
-					GetAvailableSignals(gomock.Any(), testTokenId, nil).
+					GetAvailableSignals(gomock.Any(), testSubject, nil).
 					Return([]string{"speed"}, nil)
 			},
 			expectedResult: []string{"speed"},
@@ -435,7 +454,7 @@ func TestGetAvailableSignals(t *testing.T) {
 			name: "Multiple signals",
 			mockSetup: func(m *Mocks) {
 				m.CHService.EXPECT().
-					GetAvailableSignals(gomock.Any(), testTokenId, nil).
+					GetAvailableSignals(gomock.Any(), testSubject, nil).
 					Return([]string{"speed", "powertrainTractionBatteryStateOfChargeCurrent"}, nil)
 			},
 			expectedResult: []string{"speed", "powertrainTractionBatteryStateOfChargeCurrent"},
@@ -445,7 +464,7 @@ func TestGetAvailableSignals(t *testing.T) {
 			name: "Mix Unknown signals",
 			mockSetup: func(m *Mocks) {
 				m.CHService.EXPECT().
-					GetAvailableSignals(gomock.Any(), testTokenId, nil).
+					GetAvailableSignals(gomock.Any(), testSubject, nil).
 					Return([]string{"speed", "newSignalName"}, nil)
 			},
 			expectedResult: []string{"speed"},
@@ -455,7 +474,7 @@ func TestGetAvailableSignals(t *testing.T) {
 			name: "one unknown signals",
 			mockSetup: func(m *Mocks) {
 				m.CHService.EXPECT().
-					GetAvailableSignals(gomock.Any(), testTokenId, nil).
+					GetAvailableSignals(gomock.Any(), testSubject, nil).
 					Return([]string{"newSignalName"}, nil)
 			},
 			expectedResult: nil,
@@ -465,7 +484,7 @@ func TestGetAvailableSignals(t *testing.T) {
 			name: "multiple unknown signals",
 			mockSetup: func(m *Mocks) {
 				m.CHService.EXPECT().
-					GetAvailableSignals(gomock.Any(), testTokenId, nil).
+					GetAvailableSignals(gomock.Any(), testSubject, nil).
 					Return([]string{"newSignalName", "newSignalName2"}, nil)
 			},
 			expectedResult: nil,
@@ -475,7 +494,7 @@ func TestGetAvailableSignals(t *testing.T) {
 			name: "CHService error",
 			mockSetup: func(m *Mocks) {
 				m.CHService.EXPECT().
-					GetAvailableSignals(gomock.Any(), testTokenId, nil).
+					GetAvailableSignals(gomock.Any(), testSubject, nil).
 					Return(nil, errors.New("service error"))
 			},
 			expectedResult: nil,

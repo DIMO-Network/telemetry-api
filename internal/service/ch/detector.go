@@ -56,7 +56,7 @@ type SegmentDetector interface {
 	// DetectSegments identifies vehicle usage segments using mechanism-specific logic
 	DetectSegments(
 		ctx context.Context,
-		tokenID uint32,
+		subject string,
 		from, to time.Time,
 		config *model.SegmentConfig,
 	) ([]*model.Segment, error)
