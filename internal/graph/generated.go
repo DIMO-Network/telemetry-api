@@ -3425,8 +3425,8 @@ SignalFilter holds the filter parameters for the signal querys.
 """
 input SignalFilter {
   """
-  Filter signals by source type.
-  available sources are: "autopi", "macaron", "ruptela", "smartcar", "tesla","compass"
+  Filter signals by source using an ethr DID.
+  Example: "did:ethr:137:0xcd445F4c6bDAD32b68a2939b912150Fe3C88803E"
   """
   source: String
 }
