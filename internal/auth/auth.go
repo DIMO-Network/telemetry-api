@@ -43,8 +43,14 @@ func newError(msg string, args ...any) error {
 
 func NewVehicleTokenCheck(requiredAddr common.Address) func(context.Context, any, graphql.Resolver) (any, error) {
 	return func(ctx context.Context, _ any, next graphql.Resolver) (any, error) {
-		tokenID, _ := getArg[*int](ctx, tokenIdArg)
-		subject, _ := getArg[*string](ctx, subjectArg)
+		tokenID, err := getArg[*int](ctx, tokenIdArg)
+		if err != nil && !errors.Is(err, errArgNotFound) {
+			return nil, fmt.Errorf("failed to get %s arg: %w", tokenIdArg, err)
+		}
+		subject, err := getArg[*string](ctx, subjectArg)
+		if err != nil && !errors.Is(err, errArgNotFound) {
+			return nil, fmt.Errorf("failed to get %s arg: %w", subjectArg, err)
+		}
 
 		switch {
 		case tokenID != nil && subject != nil:
@@ -125,6 +131,8 @@ func OneOfPrivilegeCheck(ctx context.Context, _ any, next graphql.Resolver, requ
 	return nil, newError("requires at least one of the following privileges %v", requiredPrivs)
 }
 
+var errArgNotFound = errors.New("arg not found")
+
 func getArg[T any](ctx context.Context, name string) (T, error) {
 	var resp T
 	fCtx := graphql.GetFieldContext(ctx)
@@ -134,7 +142,7 @@ func getArg[T any](ctx context.Context, name string) (T, error) {
 
 	val, ok := fCtx.Args[name]
 	if !ok {
-		return resp, fmt.Errorf("no argument named %s", name)
+		return resp, errArgNotFound
 	}
 
 	resp, ok = val.(T)
