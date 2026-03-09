@@ -45,11 +45,11 @@ func NewVehicleTokenCheck(requiredAddr common.Address) func(context.Context, any
 	return func(ctx context.Context, _ any, next graphql.Resolver) (any, error) {
 		tokenID, err := getArg[*int](ctx, tokenIdArg)
 		if err != nil && !errors.Is(err, errArgNotFound) {
-			return nil, fmt.Errorf("failed to get %s arg: %w", tokenIdArg, err)
+			return nil, UnauthorizedError{err: fmt.Errorf("failed to get %s arg: %w", tokenIdArg, err)}
 		}
 		subject, err := getArg[*string](ctx, subjectArg)
 		if err != nil && !errors.Is(err, errArgNotFound) {
-			return nil, fmt.Errorf("failed to get %s arg: %w", subjectArg, err)
+			return nil, UnauthorizedError{err: fmt.Errorf("failed to get %s arg: %w", subjectArg, err)}
 		}
 
 		switch {
