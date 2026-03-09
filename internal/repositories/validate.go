@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/DIMO-Network/model-garage/pkg/schema"
+	"github.com/DIMO-Network/cloudevent"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
-	"github.com/DIMO-Network/telemetry-api/internal/service/ch"
 )
 
 // we must load these tags before starting the application
@@ -109,8 +109,8 @@ func validateFilter(filter *model.SignalFilter) error {
 		return nil
 	}
 	if filter.Source != nil {
-		if _, ok := ch.SourceTranslations[*filter.Source]; !ok {
-			return ValidationError(fmt.Sprintf("source '%s', is not a valid value", *filter.Source))
+		if _, err := cloudevent.DecodeEthrDID(*filter.Source); err != nil {
+			return ValidationError(fmt.Sprintf("source '%s' is not a valid ethr DID", *filter.Source))
 		}
 	}
 	return nil

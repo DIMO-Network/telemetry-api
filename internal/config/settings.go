@@ -7,6 +7,7 @@ import (
 
 // Settings contains the application config.
 type Settings struct {
+	LogLevel                     string          `yaml:"LOG_LEVEL"`
 	Port                         int             `yaml:"PORT"`
 	MonPort                      int             `yaml:"MON_PORT"`
 	EnablePprof                  bool            `yaml:"ENABLE_PPROF"`
@@ -15,9 +16,6 @@ type Settings struct {
 	TokenExchangeIssuer          string          `yaml:"TOKEN_EXCHANGE_ISSUER_URL"`
 	VehicleNFTAddress            common.Address  `yaml:"VEHICLE_NFT_ADDRESS"`
 	MaxRequestDuration           string          `yaml:"MAX_REQUEST_DURATION"`
-	ManufacturerNFTAddress       common.Address  `yaml:"MANUFACTURER_NFT_ADDRESS"`
-	IdentityAPIURL               string          `yaml:"IDENTITY_API_URL"`
-	IdentityAPIReqTimeoutSeconds int             `yaml:"IDENTITY_API_REQUEST_TIMEOUT_SECONDS"`
 	DeviceLastSeenBinHrs         int64           `yaml:"DEVICE_LAST_SEEN_BIN_HOURS"`
 	ChainID                      uint64          `yaml:"DIMO_REGISTRY_CHAIN_ID"`
 	FetchAPIGRPCEndpoint         string          `yaml:"FETCH_API_GRPC_ENDPOINT"`

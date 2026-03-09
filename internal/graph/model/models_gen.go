@@ -12,13 +12,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 )
 
-// The AftermarketDeviceBy input is used to specify a unique aftermarket device to query for last active status.
-type AftermarketDeviceBy struct {
-	TokenID *int            `json:"tokenId,omitempty"`
-	Address *common.Address `json:"address,omitempty"`
-	Serial  *string         `json:"serial,omitempty"`
-}
-
 type Attestation struct {
 	// id is the id of the attestation.
 	ID string `json:"id"`
@@ -92,11 +85,6 @@ type DataSummary struct {
 	SignalDataSummary []*SignalDataSummary `json:"signalDataSummary"`
 	// Events known to the vehicle: per-event name, count, and first/last seen.
 	EventDataSummary []*EventDataSummary `json:"eventDataSummary"`
-}
-
-type DeviceActivity struct {
-	// lastActive indicates the start of a 3 hour block during which the device was last active.
-	LastActive *time.Time `json:"lastActive,omitempty"`
 }
 
 type Event struct {
@@ -614,8 +602,8 @@ type SignalCollection struct {
 
 // SignalFilter holds the filter parameters for the signal querys.
 type SignalFilter struct {
-	// Filter signals by source type.
-	// available sources are: "autopi", "macaron", "ruptela", "smartcar", "tesla","compass"
+	// Filter signals by source using an ethr DID.
+	// Example: "did:ethr:137:0xcd445F4c6bDAD32b68a2939b912150Fe3C88803E"
 	Source *string `json:"source,omitempty"`
 }
 

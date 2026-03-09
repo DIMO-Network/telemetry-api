@@ -24,13 +24,6 @@ const approximateLocationResolution = 6
 
 var unixEpoch = time.Unix(0, 0).UTC()
 
-// TODO(elffjs): Get rid of this when we have device addresses in CH.
-var ManufacturerSourceTranslations = map[string]string{
-	"AutoPi":  "autopi",
-	"Hashdog": "macaron",
-	"Ruptela": "ruptela",
-}
-
 // CHService is the interface for the ClickHouse service.
 type CHService interface {
 	GetAggregatedSignals(ctx context.Context, subject string, aggArgs *model.AggregatedSignalArgs) ([]*ch.AggSignal, error)
@@ -49,7 +42,6 @@ type CHService interface {
 type Repository struct {
 	queryableSignals map[string]struct{}
 	chService        CHService
-	lastSeenBin      time.Duration
 	chainID          uint64
 	vehicleAddress   common.Address
 }
@@ -69,7 +61,6 @@ func NewRepository(chService CHService, settings config.Settings) (*Repository, 
 	return &Repository{
 		chService:        chService,
 		queryableSignals: queryableSignals,
-		lastSeenBin:      time.Duration(settings.DeviceLastSeenBinHrs) * time.Hour,
 		chainID:          settings.ChainID,
 		vehicleAddress:   settings.VehicleNFTAddress,
 	}, nil
@@ -158,38 +149,6 @@ func (r *Repository) GetSignalLatest(ctx context.Context, latestArgs *model.Late
 	}
 	setApproximateLocationInCollection(coll)
 	return coll, nil
-}
-
-// GetDeviceActivity returns device status activity level.
-func (r *Repository) GetDeviceActivity(ctx context.Context, vehicleTokenID int, adMfrName string) (*model.DeviceActivity, error) {
-	source, ok := ManufacturerSourceTranslations[adMfrName]
-	if !ok {
-		return nil, errorhandler.NewBadRequestError(ctx, fmt.Errorf("unrecognized manufacturer name %s", adMfrName))
-	}
-
-	args := &model.LatestSignalsArgs{
-		IncludeLastSeen: true,
-		SignalArgs: model.SignalArgs{
-			Subject: r.ToSubject(uint32(vehicleTokenID)),
-			Filter: &model.SignalFilter{
-				Source: &source,
-			},
-		},
-	}
-
-	latest, err := r.GetSignalLatest(ctx, args)
-	if err != nil {
-		return nil, err
-	}
-
-	var out model.DeviceActivity
-
-	if latest.LastSeen != nil {
-		binned := latest.LastSeen.Truncate(r.lastSeenBin)
-		out.LastActive = &binned
-	}
-
-	return &out, nil
 }
 
 // GetAvailableSignals returns the available signals for the given tokenID and filter.

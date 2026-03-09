@@ -27,7 +27,6 @@ func DefaultPricingConfig() *PricingConfig {
 			"signalsLatest":    1, // Medium - latest value lookups
 			"events":           3, // Medium - event log queries
 			"availableSignals": 1, // Cheap - metadata query
-			"deviceActivity":   1, // Simple - device status lookup
 			"vinVCLatest":      1, // Simple - credential lookup
 		},
 		AggregationCosts: map[string]uint64{

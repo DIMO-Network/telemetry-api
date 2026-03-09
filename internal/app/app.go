@@ -10,7 +10,6 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/handler/extension"
 	"github.com/99designs/gqlgen/graphql/handler/transport"
-	"github.com/DIMO-Network/server-garage/pkg/gql/errorhandler"
 	"github.com/DIMO-Network/server-garage/pkg/gql/metrics"
 	"github.com/DIMO-Network/telemetry-api/internal/auth"
 	"github.com/DIMO-Network/telemetry-api/internal/config"
@@ -25,7 +24,6 @@ import (
 	"github.com/DIMO-Network/telemetry-api/internal/service/ch"
 	"github.com/DIMO-Network/telemetry-api/internal/service/credittracker"
 	"github.com/DIMO-Network/telemetry-api/internal/service/fetchapi"
-	"github.com/DIMO-Network/telemetry-api/internal/service/identity"
 )
 
 // App is the main application for the telemetry API.
@@ -40,7 +38,6 @@ var AppName = "telemetry-api"
 
 // New creates a new application.
 func New(settings config.Settings) (*App, error) {
-	idService := identity.NewService(settings.IdentityAPIURL, settings.IdentityAPIReqTimeoutSeconds)
 	chService, err := ch.NewService(settings)
 	if err != nil {
 		return nil, fmt.Errorf("couldn't create ClickHouse service: %w", err)
@@ -68,14 +65,12 @@ func New(settings config.Settings) (*App, error) {
 
 	resolver := &graph.Resolver{
 		BaseRepo:        baseRepo,
-		IdentityService: idService,
 		VCRepo:          vcRepo,
 		AttestationRepo: attRepo,
 	}
 
 	cfg := graph.Config{Resolvers: resolver}
 	cfg.Directives.RequiresVehicleToken = auth.NewVehicleTokenCheck(settings.VehicleNFTAddress)
-	cfg.Directives.RequiresManufacturerToken = auth.NewManufacturerTokenCheck(settings.ManufacturerNFTAddress, idService)
 	cfg.Directives.RequiresAllOfPrivileges = auth.AllOfPrivilegeCheck
 	cfg.Directives.RequiresOneOfPrivilege = auth.OneOfPrivilegeCheck
 	cfg.Directives.IsSignal = noOp
@@ -105,7 +100,7 @@ func New(settings config.Settings) (*App, error) {
 				authMiddleware.CheckJWT(
 					authLoggerMiddleware(
 						dtcmiddleware.EstimateCostHeaderMiddleware(
-							auth.AddClaimHandler(server, settings.VehicleNFTAddress, settings.ManufacturerNFTAddress),
+							auth.AddClaimHandler(server, settings.VehicleNFTAddress),
 						),
 					),
 				),
@@ -156,7 +151,7 @@ func newServer(es graphql.ExecutableSchema) *handler.Server {
 	srv.Use(extension.Introspection{})
 	srv.Use(metrics.Tracer{})
 	// srv.SetQueryCache(graphql.NoCache[*ast.QueryDocument]{})
-	srv.SetErrorPresenter(errorhandler.ErrorPresenter)
+	srv.SetErrorPresenter(errorPresenter)
 
 	return srv
 }

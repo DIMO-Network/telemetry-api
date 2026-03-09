@@ -55,7 +55,7 @@ func NewJWTMiddleware(issuer, jwksURI string) (*jwtmiddleware.JWTMiddleware, err
 
 // AddClaimHandler is a middleware that fills in GraphQL-friendly privilege information on
 // the *TelemetryClaim object in the context.
-func AddClaimHandler(next http.Handler, vehicleAddr, mfrAddr common.Address) http.Handler {
+func AddClaimHandler(next http.Handler, vehicleAddr common.Address) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		claims, ok := GetValidatedClaims(r.Context())
 		if !ok || claims.CustomClaims == nil {

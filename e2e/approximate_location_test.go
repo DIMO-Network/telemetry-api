@@ -7,7 +7,6 @@ import (
 
 	"github.com/DIMO-Network/model-garage/pkg/vss"
 	"github.com/DIMO-Network/telemetry-api/internal/repositories"
-	"github.com/DIMO-Network/telemetry-api/internal/service/ch"
 	"github.com/DIMO-Network/token-exchange-api/pkg/tokenclaims"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -24,7 +23,7 @@ func TestApproximateLocation(t *testing.T) {
 	const endHDOP = 2.0
 	signals := []vss.Signal{
 		{
-			Source:    ch.SourceTranslations["smartcar"][0],
+			Source:    "0xcd445F4c6bDAD32b68a2939b912150Fe3C88803E",
 			Timestamp: locationTime.Add(-time.Hour * 24),
 			Name:      vss.FieldCurrentLocationCoordinates,
 			ValueLocation: vss.Location{
@@ -35,7 +34,7 @@ func TestApproximateLocation(t *testing.T) {
 			Subject: "did:erc721:137:0xbA5738a18d83D41847dfFbDC6101d37C69c9B0cF:39718",
 		},
 		{
-			Source:    ch.SourceTranslations["smartcar"][0],
+			Source:    "0xcd445F4c6bDAD32b68a2939b912150Fe3C88803E",
 			Timestamp: locationTime,
 			Name:      vss.FieldCurrentLocationCoordinates,
 			ValueLocation: vss.Location{

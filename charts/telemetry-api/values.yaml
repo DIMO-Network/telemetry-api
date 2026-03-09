@@ -2,7 +2,7 @@ replicaCount: 1
 image:
   repository: dimozone/telemetry-api
   pullPolicy: IfNotPresent
-  tag: 1706acd
+  tag: 2f39783
 imagePullSecrets: []
 nameOverride: ''
 fullnameOverride: ''
@@ -34,6 +34,7 @@ env:
   VEHICLE_NFT_ADDRESS: '0x45fbCD3ef7361d156e8b16F5538AE36DEdf61Da8'
   MANUFACTURER_NFT_ADDRESS: '0xA4ad0F9c722588910791A9BAC63ADbB365614Bc7'
   MAX_REQUEST_DURATION: 5s
+  LOG_LEVEL: info
   FETCH_API_GRPC_ENDPOINT: fetch-api-dev:8086
   CREDIT_TRACKER_ENDPOINT: credit-tracker-dev:8086
   IDENTITY_API_URL: http://identity-api-dev:8080/query

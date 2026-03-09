@@ -2,19 +2,16 @@ package auth
 
 import (
 	"context"
-	"fmt"
 	"math/big"
 	"testing"
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/DIMO-Network/cloudevent"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
-	"github.com/DIMO-Network/telemetry-api/internal/service/identity"
 	"github.com/DIMO-Network/token-exchange-api/pkg/tokenclaims"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/segmentio/ksuid"
 	"github.com/stretchr/testify/require"
-	"go.uber.org/mock/gomock"
 )
 
 var expectedReturn = struct{}{}
@@ -172,132 +169,6 @@ func TestRequiresVehicleTokenCheck(t *testing.T) {
 			testCtx = context.WithValue(testCtx, TelemetryClaimContextKey{}, tc.telemetryClaim)
 			result, err := vehicleCheck(testCtx, nil, graphql.Resolver(emptyResolver))
 			if tc.expectedError {
-				require.Error(t, err)
-				return
-			}
-			require.NoError(t, err)
-			require.Equal(t, expectedReturn, result)
-		})
-	}
-}
-
-func TestRequiresManufacturerTokenCheck(t *testing.T) {
-	t.Parallel()
-	mtrNFTAddr := common.HexToAddress("0x1")
-
-	autopiAddr := common.BigToAddress(big.NewInt(123))
-	autopiTknID := 123
-	autopiSerial := "serial"
-
-	testCases := []struct {
-		name             string
-		args             model.AftermarketDeviceBy
-		telmetryClaim    *TelemetryClaim
-		identityResponse *identity.DeviceInfos
-		identityError    error
-		expectedError    error
-	}{
-		{
-			name: "valid_manufacturer_token_by_address",
-			args: model.AftermarketDeviceBy{
-				Address: &autopiAddr,
-			},
-			telmetryClaim: &TelemetryClaim{
-				AssetDID: cloudevent.ERC721DID{
-					ChainID:         1,
-					ContractAddress: mtrNFTAddr,
-					TokenID:         big.NewInt(137),
-				},
-			},
-			identityResponse: &identity.DeviceInfos{
-				ManufacturerTokenID: 137,
-			},
-		},
-		{
-			name: "valid_manufacturer_token_by_token_id",
-			args: model.AftermarketDeviceBy{
-				TokenID: &autopiTknID,
-			},
-			telmetryClaim: &TelemetryClaim{
-				AssetDID: cloudevent.ERC721DID{
-					ChainID:         1,
-					ContractAddress: mtrNFTAddr,
-					TokenID:         big.NewInt(137),
-				},
-			},
-			identityResponse: &identity.DeviceInfos{
-				ManufacturerTokenID: 137,
-			},
-		},
-		{
-			name: "valid_manufacturer_token_by_serial",
-			args: model.AftermarketDeviceBy{
-				Serial: &autopiSerial,
-			},
-			telmetryClaim: &TelemetryClaim{
-				AssetDID: cloudevent.ERC721DID{
-					ChainID:         1,
-					ContractAddress: mtrNFTAddr,
-					TokenID:         big.NewInt(137),
-				},
-			},
-			identityResponse: &identity.DeviceInfos{
-				ManufacturerTokenID: 137,
-			},
-		},
-		{
-			name: "wrong aftermarket device manufacturer",
-			telmetryClaim: &TelemetryClaim{
-				AssetDID: cloudevent.ERC721DID{
-					ChainID:         1,
-					ContractAddress: mtrNFTAddr,
-					TokenID:         big.NewInt(138),
-				},
-			},
-			args: model.AftermarketDeviceBy{
-				Address: &autopiAddr,
-			},
-			identityError: fmt.Errorf("invalid autopi address"),
-			expectedError: fmt.Errorf("unauthorized: token id does not match"),
-		},
-		{
-			name: "invalid autopi address",
-			telmetryClaim: &TelemetryClaim{
-				AssetDID: cloudevent.ERC721DID{
-					ChainID:         1,
-					ContractAddress: mtrNFTAddr,
-					TokenID:         big.NewInt(137),
-				},
-			},
-			args: model.AftermarketDeviceBy{
-				Address: &autopiAddr,
-				TokenID: &autopiTknID,
-				Serial:  &autopiSerial,
-			},
-			identityError: fmt.Errorf("invalid autopi address"),
-			expectedError: fmt.Errorf("unauthorized: token id does not match"),
-		},
-	}
-
-	for _, tc := range testCases {
-		tc := tc
-		t.Run(tc.name, func(t *testing.T) {
-			t.Parallel()
-			testCtx := graphql.WithFieldContext(context.Background(), &graphql.FieldContext{
-				Args: map[string]any{
-					"by": tc.args,
-				},
-			})
-
-			id := NewMockIdentityService(gomock.NewController(t))
-			id.EXPECT().GetAftermarketDevice(context.WithValue(testCtx, TelemetryClaimContextKey{}, tc.telmetryClaim), tc.args.Address, tc.args.TokenID, tc.args.Serial).Return(
-				tc.identityResponse, tc.identityError).AnyTimes()
-
-			mfrValidator := NewManufacturerTokenCheck(mtrNFTAddr, id)
-
-			testCtx = context.WithValue(testCtx, TelemetryClaimContextKey{}, tc.telmetryClaim)
-			result, err := mfrValidator(testCtx, nil, graphql.Resolver(emptyResolver))
-			if tc.expectedError != nil {
 				require.Error(t, err)
 				return
 			}

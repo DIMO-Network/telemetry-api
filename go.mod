@@ -10,11 +10,10 @@ require (
 	github.com/DIMO-Network/cloudevent v0.1.6
 	github.com/DIMO-Network/credit-tracker v0.0.6
 	github.com/DIMO-Network/fetch-api v0.0.16
-	github.com/DIMO-Network/model-garage v0.8.18-0.20260301212110-8cb393aaa1c9
+	github.com/DIMO-Network/model-garage v0.9.0
 	github.com/DIMO-Network/server-garage v0.0.7
 	github.com/DIMO-Network/shared v1.0.7
 	github.com/DIMO-Network/token-exchange-api v0.3.7
-	github.com/Khan/genqlient v0.8.1
 	github.com/aarondl/sqlboiler/v4 v4.19.5
 	github.com/auth0/go-jwt-middleware/v2 v2.3.0
 	github.com/ethereum/go-ethereum v1.17.0

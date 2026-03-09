@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/DIMO-Network/model-garage/pkg/vss"
-	"github.com/DIMO-Network/telemetry-api/internal/service/ch"
 	"github.com/DIMO-Network/token-exchange-api/pkg/tokenclaims"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -29,21 +28,21 @@ func TestSignalsMetadata(t *testing.T) {
 	signals := []vss.Signal{
 		// SmartCar signals - speed and location
 		{
-			Source:      ch.SourceTranslations["smartcar"][0],
+			Source:      "0xcd445F4c6bDAD32b68a2939b912150Fe3C88803E",
 			Timestamp:   smartCarTime1,
 			Name:        vss.FieldSpeed,
 			ValueNumber: 65.5,
 			Subject:     subject,
 		},
 		{
-			Source:      ch.SourceTranslations["smartcar"][0],
+			Source:      "0xcd445F4c6bDAD32b68a2939b912150Fe3C88803E",
 			Timestamp:   smartCarTime2,
 			Name:        vss.FieldSpeed,
 			ValueNumber: 70.2,
 			Subject:     subject,
 		},
 		{
-			Source:    ch.SourceTranslations["smartcar"][0],
+			Source:    "0xcd445F4c6bDAD32b68a2939b912150Fe3C88803E",
 			Timestamp: smartCarTime1,
 			Name:      vss.FieldCurrentLocationCoordinates,
 			ValueLocation: vss.Location{
@@ -54,21 +53,21 @@ func TestSignalsMetadata(t *testing.T) {
 		},
 		// AutoPi signals - speed and battery
 		{
-			Source:      ch.SourceTranslations["autopi"][0],
+			Source:      "0x5e31bBc786D7bEd95216383787deA1ab0f1c1897",
 			Timestamp:   autopiTime1,
 			Name:        vss.FieldSpeed,
 			ValueNumber: 14,
 			Subject:     subject,
 		},
 		{
-			Source:      ch.SourceTranslations["autopi"][0],
+			Source:      "0x5e31bBc786D7bEd95216383787deA1ab0f1c1897",
 			Timestamp:   autopiTime2,
 			Name:        vss.FieldSpeed,
 			ValueNumber: 25.8,
 			Subject:     subject,
 		},
 		{
-			Source:      ch.SourceTranslations["autopi"][0],
+			Source:      "0x5e31bBc786D7bEd95216383787deA1ab0f1c1897",
 			Timestamp:   autopiTime1,
 			Name:        vss.FieldPowertrainTractionBatteryStateOfChargeCurrent,
 			ValueNumber: 75.5,
@@ -77,7 +76,7 @@ func TestSignalsMetadata(t *testing.T) {
 
 		// Macaron signals - just speed
 		{
-			Source:      ch.SourceTranslations["macaron"][0],
+			Source:      "0x4c674ddE8189aEF6e3b58F5a36d7438b2b1f6Bc2",
 			Timestamp:   macaronTime,
 			Name:        vss.FieldSpeed,
 			ValueNumber: 3,
@@ -86,14 +85,14 @@ func TestSignalsMetadata(t *testing.T) {
 
 		// Tesla signals - speed and different battery field
 		{
-			Source:      ch.SourceTranslations["tesla"][0],
+			Source:      "0xc4035Fecb1cc906130423EF05f9C20977F643722",
 			Timestamp:   teslaTime,
 			Name:        vss.FieldSpeed,
 			ValueNumber: 88.5,
 			Subject:     subject,
 		},
 		{
-			Source:      ch.SourceTranslations["tesla"][0],
+			Source:      "0xc4035Fecb1cc906130423EF05f9C20977F643722",
 			Timestamp:   teslaTime,
 			Name:        vss.FieldPowertrainTractionBatteryChargingChargeCurrentAC,
 			ValueNumber: 82.3,
@@ -180,7 +179,7 @@ func TestSignalsMetadata(t *testing.T) {
 		// Execute the query filtered by smartcar source
 		query := `
 		query SignalsMetadataFiltered {
-			dataSummary(tokenId: %d, filter: {source: "smartcar"}) {
+			dataSummary(tokenId: %d, filter: {source: "did:ethr:137:0xcd445F4c6bDAD32b68a2939b912150Fe3C88803E"}) {
 				numberOfSignals
 				availableSignals
 				firstSeen
@@ -232,7 +231,7 @@ func TestSignalsMetadata(t *testing.T) {
 		// Execute the query filtered by non-existent source
 		query := `
 		query SignalsMetadataEmpty {
-			dataSummary(tokenId: %d, filter: {source: "nonexistent"}) {
+			dataSummary(tokenId: %d, filter: {source: "did:ethr:137:0x0000000000000000000000000000000000000000"}) {
 				numberOfSignals
 				availableSignals
 				firstSeen
