@@ -1,12 +1,17 @@
 extend type Query {
   """
-  events returns a list of events for a given token in a given time range.
+  Returns a list of events for a given subject in a given time range.
   """
   events(
     """
-    tokenId is the id of the token to get events for.
+    A vehicle token id. This is translated into a ERC-721 DID `subject` string, and you
+    should use that argument instead.
     """
-    tokenId: Int!
+    tokenId: Int @deprecated(reason: "Use `subject` instead.")
+    """
+    The subject of the requested events. Typically a W3C DID.
+    """
+    subject: String
     """
     from is the start time of the event.
     """

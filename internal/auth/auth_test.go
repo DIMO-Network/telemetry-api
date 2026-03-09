@@ -25,6 +25,11 @@ func TestRequiresVehicleTokenCheck(t *testing.T) {
 
 	vehicleNFTAddr := common.HexToAddress("0x1")
 
+	tokenID123 := 123
+	tokenID456 := 456
+	validSubject := "did:erc721:1:0x0000000000000000000000000000000000000001:123"
+	wrongSubject := "did:erc721:1:0x0000000000000000000000000000000000000001:456"
+
 	testCases := []struct {
 		name           string
 		args           map[string]any
@@ -34,7 +39,7 @@ func TestRequiresVehicleTokenCheck(t *testing.T) {
 		{
 			name: "valid_token",
 			args: map[string]any{
-				"tokenId": 123,
+				"tokenId": &tokenID123,
 			},
 			telemetryClaim: &TelemetryClaim{
 				AssetDID: cloudevent.ERC721DID{
@@ -47,7 +52,7 @@ func TestRequiresVehicleTokenCheck(t *testing.T) {
 		{
 			name: "invalid_token",
 			args: map[string]any{
-				"tokenId": 456,
+				"tokenId": &tokenID456,
 			},
 			telemetryClaim: &TelemetryClaim{
 				AssetDID: cloudevent.ERC721DID{
@@ -59,7 +64,7 @@ func TestRequiresVehicleTokenCheck(t *testing.T) {
 			expectedError: true,
 		},
 		{
-			name:          "missing_tokenId",
+			name:          "missing_both",
 			args:          map[string]any{},
 			expectedError: true,
 			telemetryClaim: &TelemetryClaim{
@@ -71,8 +76,10 @@ func TestRequiresVehicleTokenCheck(t *testing.T) {
 			},
 		},
 		{
-			name:          "wrong_contract",
-			args:          map[string]any{},
+			name: "wrong_contract",
+			args: map[string]any{
+				"tokenId": &tokenID123,
+			},
 			expectedError: true,
 			telemetryClaim: &TelemetryClaim{
 				AssetDID: cloudevent.ERC721DID{
@@ -85,7 +92,66 @@ func TestRequiresVehicleTokenCheck(t *testing.T) {
 		{
 			name: "missing claim",
 			args: map[string]any{
-				"tokenId": 123,
+				"tokenId": &tokenID123,
+			},
+			expectedError:  true,
+			telemetryClaim: nil,
+		},
+		{
+			name: "valid_subject",
+			args: map[string]any{
+				"subject": &validSubject,
+			},
+			telemetryClaim: &TelemetryClaim{
+				CustomClaims: tokenclaims.CustomClaims{
+					Asset: validSubject,
+				},
+				AssetDID: cloudevent.ERC721DID{
+					ChainID:         1,
+					ContractAddress: vehicleNFTAddr,
+					TokenID:         big.NewInt(123),
+				},
+			},
+		},
+		{
+			name: "wrong_subject",
+			args: map[string]any{
+				"subject": &wrongSubject,
+			},
+			telemetryClaim: &TelemetryClaim{
+				CustomClaims: tokenclaims.CustomClaims{
+					Asset: validSubject,
+				},
+				AssetDID: cloudevent.ERC721DID{
+					ChainID:         1,
+					ContractAddress: vehicleNFTAddr,
+					TokenID:         big.NewInt(123),
+				},
+			},
+			expectedError: true,
+		},
+		{
+			name: "both_tokenId_and_subject",
+			args: map[string]any{
+				"tokenId": &tokenID123,
+				"subject": &validSubject,
+			},
+			telemetryClaim: &TelemetryClaim{
+				CustomClaims: tokenclaims.CustomClaims{
+					Asset: validSubject,
+				},
+				AssetDID: cloudevent.ERC721DID{
+					ChainID:         1,
+					ContractAddress: vehicleNFTAddr,
+					TokenID:         big.NewInt(123),
+				},
+			},
+			expectedError: true,
+		},
+		{
+			name: "subject_missing_claim",
+			args: map[string]any{
+				"subject": &validSubject,
 			},
 			expectedError:  true,
 			telemetryClaim: nil,

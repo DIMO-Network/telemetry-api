@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"math/big"
 	"slices"
 	"testing"
 	"time"
@@ -52,6 +53,11 @@ func TestGetLatestVC(t *testing.T) {
 	// Initialize variables
 	ctx := context.Background()
 	vehicleTokenID := uint32(123)
+	vehicleSubject := cloudevent.ERC721DID{
+		ChainID:         3,
+		ContractAddress: common.HexToAddress("0xfEDCBA0987654321FeDcbA0987654321fedCBA09"),
+		TokenID:         new(big.Int).SetUint64(uint64(vehicleTokenID)),
+	}.String()
 
 	// Create mock controller
 	ctrl := gomock.NewController(t)
@@ -148,7 +154,7 @@ func TestGetLatestVC(t *testing.T) {
 			tt.mockSetup()
 
 			// Call the method
-			vc, err := svc.GetLatestVINVC(ctx, vehicleTokenID)
+			vc, err := svc.GetLatestVINVC(ctx, vehicleSubject)
 
 			// Assert the results
 			if tt.expectedErr {

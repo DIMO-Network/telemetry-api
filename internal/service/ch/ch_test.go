@@ -78,7 +78,7 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 			name: "no aggs",
 			aggArgs: model.AggregatedSignalArgs{
 				SignalArgs: model.SignalArgs{
-					TokenID: 1,
+					Subject: testSubject1,
 				},
 				FromTS:   c.dataStartTime,
 				ToTS:     endTs,
@@ -90,7 +90,7 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 			name: "average",
 			aggArgs: model.AggregatedSignalArgs{
 				SignalArgs: model.SignalArgs{
-					TokenID: 1,
+					Subject: testSubject1,
 				},
 				FromTS:   c.dataStartTime,
 				ToTS:     endTs,
@@ -116,7 +116,7 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 			name: "max and min",
 			aggArgs: model.AggregatedSignalArgs{
 				SignalArgs: model.SignalArgs{
-					TokenID: 1,
+					Subject: testSubject1,
 				},
 				FromTS:   c.dataStartTime,
 				ToTS:     endTs,
@@ -153,7 +153,7 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 			name: "max smartcar",
 			aggArgs: model.AggregatedSignalArgs{
 				SignalArgs: model.SignalArgs{
-					TokenID: 1,
+					Subject: testSubject1,
 					Filter: &model.SignalFilter{
 						Source: ref("did:ethr:137:0xcd445F4c6bDAD32b68a2939b912150Fe3C88803E"),
 					},
@@ -182,7 +182,7 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 			name: "unique",
 			aggArgs: model.AggregatedSignalArgs{
 				SignalArgs: model.SignalArgs{
-					TokenID: 1,
+					Subject: testSubject1,
 				},
 				FromTS:   c.dataStartTime,
 				ToTS:     endTs,
@@ -208,7 +208,7 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 			name: "Top autopi",
 			aggArgs: model.AggregatedSignalArgs{
 				SignalArgs: model.SignalArgs{
-					TokenID: 1,
+					Subject: testSubject1,
 					Filter: &model.SignalFilter{
 						Source: ref("did:ethr:137:0x5e31bBc786D7bEd95216383787deA1ab0f1c1897"),
 					},
@@ -237,7 +237,7 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 			name: "first float",
 			aggArgs: model.AggregatedSignalArgs{
 				SignalArgs: model.SignalArgs{
-					TokenID: 1,
+					Subject: testSubject1,
 				},
 				FromTS:   c.dataStartTime,
 				ToTS:     endTs,
@@ -263,7 +263,7 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 			name: "last float",
 			aggArgs: model.AggregatedSignalArgs{
 				SignalArgs: model.SignalArgs{
-					TokenID: 1,
+					Subject: testSubject1,
 				},
 				FromTS:   c.dataStartTime,
 				ToTS:     endTs,
@@ -289,7 +289,7 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 			name: "lt filter",
 			aggArgs: model.AggregatedSignalArgs{
 				SignalArgs: model.SignalArgs{
-					TokenID: 1,
+					Subject: testSubject1,
 				},
 				FromTS:   c.dataStartTime,
 				ToTS:     endTs,
@@ -318,7 +318,7 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 			name: "gt filter",
 			aggArgs: model.AggregatedSignalArgs{
 				SignalArgs: model.SignalArgs{
-					TokenID: 1,
+					Subject: testSubject1,
 				},
 				FromTS:   c.dataStartTime,
 				ToTS:     endTs,
@@ -347,7 +347,7 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 			name: "gte filter",
 			aggArgs: model.AggregatedSignalArgs{
 				SignalArgs: model.SignalArgs{
-					TokenID: 1,
+					Subject: testSubject1,
 				},
 				FromTS:   c.dataStartTime,
 				ToTS:     endTs,
@@ -376,7 +376,7 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 			name: "lte filter",
 			aggArgs: model.AggregatedSignalArgs{
 				SignalArgs: model.SignalArgs{
-					TokenID: 1,
+					Subject: testSubject1,
 				},
 				FromTS:   c.dataStartTime,
 				ToTS:     endTs,
@@ -405,7 +405,7 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 			name: "filter for numeric values in set",
 			aggArgs: model.AggregatedSignalArgs{
 				SignalArgs: model.SignalArgs{
-					TokenID: 1,
+					Subject: testSubject1,
 				},
 				FromTS:   c.dataStartTime,
 				ToTS:     endTs,
@@ -434,7 +434,7 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 			name: "float neq filter",
 			aggArgs: model.AggregatedSignalArgs{
 				SignalArgs: model.SignalArgs{
-					TokenID: 1,
+					Subject: testSubject1,
 				},
 				FromTS:   c.dataStartTime,
 				ToTS:     endTs,
@@ -463,7 +463,7 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 			name: "float neq filter",
 			aggArgs: model.AggregatedSignalArgs{
 				SignalArgs: model.SignalArgs{
-					TokenID: 1,
+					Subject: testSubject1,
 				},
 				FromTS:   c.dataStartTime,
 				ToTS:     endTs,
@@ -492,7 +492,7 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 			name: "float not in filter",
 			aggArgs: model.AggregatedSignalArgs{
 				SignalArgs: model.SignalArgs{
-					TokenID: 1,
+					Subject: testSubject1,
 				},
 				FromTS:   c.dataStartTime,
 				ToTS:     endTs,
@@ -521,7 +521,7 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 			name: "float filters and-ed",
 			aggArgs: model.AggregatedSignalArgs{
 				SignalArgs: model.SignalArgs{
-					TokenID: 1,
+					Subject: testSubject1,
 				},
 				FromTS:   c.dataStartTime,
 				ToTS:     endTs,
@@ -551,7 +551,7 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 			name: "float filters or-ed",
 			aggArgs: model.AggregatedSignalArgs{
 				SignalArgs: model.SignalArgs{
-					TokenID: 1,
+					Subject: testSubject1,
 				},
 				FromTS:   c.dataStartTime,
 				ToTS:     endTs,
@@ -583,7 +583,7 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 			name: "first string",
 			aggArgs: model.AggregatedSignalArgs{
 				SignalArgs: model.SignalArgs{
-					TokenID: 1,
+					Subject: testSubject1,
 				},
 				FromTS:   c.dataStartTime,
 				ToTS:     endTs,
@@ -609,7 +609,7 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 			name: "last string",
 			aggArgs: model.AggregatedSignalArgs{
 				SignalArgs: model.SignalArgs{
-					TokenID: 1,
+					Subject: testSubject1,
 				},
 				FromTS:   c.dataStartTime,
 				ToTS:     endTs,
@@ -635,7 +635,7 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 			name: "multiple",
 			aggArgs: model.AggregatedSignalArgs{
 				SignalArgs: model.SignalArgs{
-					TokenID: 1,
+					Subject: testSubject1,
 				},
 				FromTS:   c.dataStartTime,
 				ToTS:     endTs,
@@ -695,7 +695,7 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 			name: "first location",
 			aggArgs: model.AggregatedSignalArgs{
 				SignalArgs: model.SignalArgs{
-					TokenID: 1,
+					Subject: testSubject1,
 				},
 				FromTS:   c.dataStartTime,
 				ToTS:     endTs,
@@ -721,7 +721,7 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 			name: "last location",
 			aggArgs: model.AggregatedSignalArgs{
 				SignalArgs: model.SignalArgs{
-					TokenID: 1,
+					Subject: testSubject1,
 				},
 				FromTS:   c.dataStartTime,
 				ToTS:     endTs,
@@ -747,7 +747,7 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 			name: "average location",
 			aggArgs: model.AggregatedSignalArgs{
 				SignalArgs: model.SignalArgs{
-					TokenID: 1,
+					Subject: testSubject1,
 				},
 				FromTS:   c.dataStartTime,
 				ToTS:     endTs,
@@ -773,7 +773,7 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 			name: "first location in fence",
 			aggArgs: model.AggregatedSignalArgs{
 				SignalArgs: model.SignalArgs{
-					TokenID: 1,
+					Subject: testSubject1,
 				},
 				FromTS:   c.dataStartTime,
 				ToTS:     endTs,
@@ -833,7 +833,7 @@ func (c *CHServiceTestSuite) TestGetLatestSignal() {
 			name: "latest",
 			latestArgs: model.LatestSignalsArgs{
 				SignalArgs: model.SignalArgs{
-					TokenID: 1,
+					Subject: testSubject1,
 				},
 				SignalNames: map[string]struct{}{
 					vss.FieldSpeed: {},
@@ -851,7 +851,7 @@ func (c *CHServiceTestSuite) TestGetLatestSignal() {
 			name: "latest smartcar",
 			latestArgs: model.LatestSignalsArgs{
 				SignalArgs: model.SignalArgs{
-					TokenID: 1,
+					Subject: testSubject1,
 					Filter: &model.SignalFilter{
 						Source: ref("did:ethr:137:0xcd445F4c6bDAD32b68a2939b912150Fe3C88803E"),
 					},
@@ -872,7 +872,7 @@ func (c *CHServiceTestSuite) TestGetLatestSignal() {
 			name: "lastSeen",
 			latestArgs: model.LatestSignalsArgs{
 				SignalArgs: model.SignalArgs{
-					TokenID: 1,
+					Subject: testSubject1,
 				},
 				IncludeLastSeen: true,
 				SignalNames:     map[string]struct{}{},
@@ -888,7 +888,7 @@ func (c *CHServiceTestSuite) TestGetLatestSignal() {
 			name: "latest location",
 			latestArgs: model.LatestSignalsArgs{
 				SignalArgs: model.SignalArgs{
-					TokenID: 1,
+					Subject: testSubject1,
 				},
 				SignalNames: map[string]struct{}{},
 				LocationSignalNames: map[string]struct{}{
@@ -975,7 +975,7 @@ func (c *CHServiceTestSuite) TestOriginGrouping() {
 	// Create aggregation query args
 	aggArgs := &model.AggregatedSignalArgs{
 		SignalArgs: model.SignalArgs{
-			TokenID: 100,
+			Subject: testSubject100,
 		},
 		FromTS:   startTime,
 		ToTS:     endTime,

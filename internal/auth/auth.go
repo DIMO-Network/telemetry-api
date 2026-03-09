@@ -12,6 +12,7 @@ import (
 
 const (
 	tokenIdArg = "tokenId"
+	subjectArg = "subject"
 )
 
 type UnauthorizedError struct {
@@ -42,17 +43,43 @@ func newError(msg string, args ...any) error {
 
 func NewVehicleTokenCheck(requiredAddr common.Address) func(context.Context, any, graphql.Resolver) (any, error) {
 	return func(ctx context.Context, _ any, next graphql.Resolver) (any, error) {
-		vehicleTokenID, err := getArg[int](ctx, tokenIdArg)
-		if err != nil {
-			return nil, UnauthorizedError{err: err}
+		tokenID, err := getArg[*int](ctx, tokenIdArg)
+		if err != nil && !errors.Is(err, errArgNotFound) {
+			return nil, UnauthorizedError{err: fmt.Errorf("failed to get %s arg: %w", tokenIdArg, err)}
+		}
+		subject, err := getArg[*string](ctx, subjectArg)
+		if err != nil && !errors.Is(err, errArgNotFound) {
+			return nil, UnauthorizedError{err: fmt.Errorf("failed to get %s arg: %w", subjectArg, err)}
 		}
 
-		if err := validateHeader(ctx, requiredAddr, vehicleTokenID); err != nil {
-			return nil, UnauthorizedError{err: err}
+		switch {
+		case tokenID != nil && subject != nil:
+			return nil, UnauthorizedError{message: "provide either tokenId or subject, not both"}
+		case tokenID != nil:
+			if err := validateHeader(ctx, requiredAddr, *tokenID); err != nil {
+				return nil, UnauthorizedError{err: err}
+			}
+		case subject != nil:
+			if err := validateSubject(ctx, *subject); err != nil {
+				return nil, UnauthorizedError{err: err}
+			}
+		default:
+			return nil, UnauthorizedError{message: "tokenId or subject is required"}
 		}
 
 		return next(ctx)
 	}
+}
+
+func validateSubject(ctx context.Context, subject string) error {
+	claim, err := getTelemetryClaim(ctx)
+	if err != nil {
+		return err
+	}
+	if subject != claim.Asset {
+		return newError("subject does not match token claim")
+	}
+	return nil
 }
 
 func validateHeader(ctx context.Context, requiredAddr common.Address, tokenID int) error {
@@ -104,6 +131,8 @@ func OneOfPrivilegeCheck(ctx context.Context, _ any, next graphql.Resolver, requ
 	return nil, newError("requires at least one of the following privileges %v", requiredPrivs)
 }
 
+var errArgNotFound = errors.New("arg not found")
+
 func getArg[T any](ctx context.Context, name string) (T, error) {
 	var resp T
 	fCtx := graphql.GetFieldContext(ctx)
@@ -113,7 +142,7 @@ func getArg[T any](ctx context.Context, name string) (T, error) {
 
 	val, ok := fCtx.Args[name]
 	if !ok {
-		return resp, fmt.Errorf("no argument named %s", name)
+		return resp, errArgNotFound
 	}
 
 	resp, ok = val.(T)

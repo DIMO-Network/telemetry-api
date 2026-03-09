@@ -2,24 +2,40 @@ package graph
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/DIMO-Network/model-garage/pkg/vss"
+	"github.com/DIMO-Network/server-garage/pkg/gql/errorhandler"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 )
 
+// resolveSubject resolves the subject from the provided tokenID or subject arguments.
+// Exactly one of tokenID or subject must be provided.
+func (r *queryResolver) resolveSubject(ctx context.Context, tokenID *int, subject *string) (string, error) {
+	if subject != nil && tokenID != nil {
+		return "", errorhandler.NewBadRequestError(ctx, errors.New("provide either tokenId or subject, not both"))
+	}
+	if subject != nil {
+		return *subject, nil
+	}
+	if tokenID != nil {
+		return r.BaseRepo.ToSubject(uint32(*tokenID)), nil
+	}
+	return "", errorhandler.NewBadRequestError(ctx, errors.New("tokenId or subject is required"))
+}
+
 // aggregationArgsFromContext creates an aggregated signals arguments from the context and the provided arguments.
-func aggregationArgsFromContext(ctx context.Context, tokenID int, interval string, from time.Time, to time.Time, filter *model.SignalFilter) (*model.AggregatedSignalArgs, error) {
-	// 1h 1s
+func aggregationArgsFromContext(ctx context.Context, subject string, interval string, from time.Time, to time.Time, filter *model.SignalFilter) (*model.AggregatedSignalArgs, error) {
 	intervalInt, err := getIntervalMicroseconds(interval)
 	if err != nil {
 		return nil, err
 	}
 	aggArgs := model.AggregatedSignalArgs{
 		SignalArgs: model.SignalArgs{
-			TokenID: uint32(tokenID),
+			Subject: subject,
 			Filter:  filter,
 		},
 		FromTS:   from,
@@ -86,11 +102,11 @@ func addSignalAggregation(aggArgs *model.AggregatedSignalArgs, child *graphql.Fi
 }
 
 // latestArgsFromContext creates a latest signals arguments from the context and the provided arguments.
-func latestArgsFromContext(ctx context.Context, tokenID int, filter *model.SignalFilter) (*model.LatestSignalsArgs, error) {
+func latestArgsFromContext(ctx context.Context, subject string, filter *model.SignalFilter) (*model.LatestSignalsArgs, error) {
 	fields := graphql.CollectFieldsCtx(ctx, nil)
 	latestArgs := model.LatestSignalsArgs{
 		SignalArgs: model.SignalArgs{
-			TokenID: uint32(tokenID),
+			Subject: subject,
 			Filter:  filter,
 		},
 		SignalNames:         make(map[string]struct{}),

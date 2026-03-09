@@ -11,6 +11,10 @@ import (
 )
 
 // VinVCLatest is the resolver for the vinVCLatest field.
-func (r *queryResolver) VinVCLatest(ctx context.Context, tokenID int) (*model.Vinvc, error) {
-	return r.VCRepo.GetLatestVINVC(ctx, uint32(tokenID))
+func (r *queryResolver) VinVCLatest(ctx context.Context, tokenID *int, subject *string) (*model.Vinvc, error) {
+	sub, err := r.resolveSubject(ctx, tokenID, subject)
+	if err != nil {
+		return nil, err
+	}
+	return r.VCRepo.GetLatestVINVC(ctx, sub)
 }
