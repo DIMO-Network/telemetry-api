@@ -1,16 +1,16 @@
 module github.com/DIMO-Network/telemetry-api
 
-go 1.25.0
+go 1.25.3
 
 require (
 	github.com/99designs/gqlgen v0.17.87
-	github.com/ClickHouse/clickhouse-go/v2 v2.43.0
+	github.com/ClickHouse/clickhouse-go/v2 v2.40.1
 	github.com/DIMO-Network/attestation-api v0.1.2
 	github.com/DIMO-Network/clickhouse-infra v0.0.7
-	github.com/DIMO-Network/cloudevent v0.2.5
+	github.com/DIMO-Network/cloudevent v0.2.6
 	github.com/DIMO-Network/credit-tracker v0.0.6
 	github.com/DIMO-Network/fetch-api v0.0.16
-	github.com/DIMO-Network/model-garage v1.0.2
+	github.com/DIMO-Network/model-garage v1.0.4
 	github.com/DIMO-Network/server-garage v0.0.7
 	github.com/DIMO-Network/shared v1.0.7
 	github.com/DIMO-Network/token-exchange-api v0.3.7
@@ -98,7 +98,7 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/power-devops/perfstat v0.0.0-20240221224432-82ca36839d55 // indirect
-	github.com/pressly/goose/v3 v3.27.0 // indirect
+	github.com/pressly/goose/v3 v3.26.0 // indirect
 	github.com/prometheus/client_model v0.6.2 // indirect
 	github.com/prometheus/common v0.65.0 // indirect
 	github.com/prometheus/procfs v0.19.2 // indirect
@@ -124,7 +124,6 @@ require (
 	go.opentelemetry.io/otel/metric v1.42.0 // indirect
 	go.opentelemetry.io/otel/trace v1.42.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
-	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/crypto v0.48.0 // indirect
 	golang.org/x/mod v0.33.0 // indirect
 	golang.org/x/net v0.50.0 // indirect

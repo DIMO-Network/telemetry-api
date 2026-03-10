@@ -45,10 +45,6 @@ func NewService(settings config.Settings) (*Service, error) {
 		TLS: &tls.Config{
 			RootCAs: settings.Clickhouse.RootCAs,
 		},
-		// ReadTimeout must cover the entire duration of reading query results.
-		// clickhouse-go v2.41+ applies this timeout per conn.Read call (not just
-		// the first block), so it must be at least as large as the max execution time.
-		ReadTimeout: time.Duration(maxExecutionTime) * time.Second * 2,
 		Settings: map[string]any{
 			// ClickHouse will interrupt a query if the projected execution time exceeds the specified max_execution_time.
 			// The estimated execution time is calculated after `timeout_before_checking_execution_speed`
