@@ -5555,7 +5555,6 @@ extend type SignalCollection {
 extend input EventFilter {
   """
   tags is the tags of the event.
-  available tags: behavior.harshAcceleration, behavior.harshBraking, behavior.harshCornering, safety.collision
   """
   tags: StringArrayFilter
 }

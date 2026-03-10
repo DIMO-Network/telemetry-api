@@ -233,7 +233,7 @@ func TestGetSignalLatest(t *testing.T) {
 			latestArgs: defaultArgs,
 			mockSetup: func(m *Mocks) {
 				signals := []*vss.Signal{
-					{Timestamp: time.Date(1970, 1, 1, 0, 0, 0, 0, time.UTC), Name: model.LastSeenField},
+					{Data: vss.SignalData{Timestamp: time.Date(1970, 1, 1, 0, 0, 0, 0, time.UTC), Name: model.LastSeenField}},
 				}
 				m.CHService.EXPECT().
 					GetLatestSignals(gomock.Any(), testSubject, defaultArgs).
@@ -249,8 +249,8 @@ func TestGetSignalLatest(t *testing.T) {
 			latestArgs: defaultArgs,
 			mockSetup: func(m *Mocks) {
 				signals := []*vss.Signal{
-					{Timestamp: time.Date(2024, 6, 11, 0, 0, 0, 0, time.UTC), Name: vss.FieldSpeed, ValueNumber: 1.0},
-					{Timestamp: time.Date(2024, 6, 11, 0, 0, 0, 0, time.UTC), Name: model.LastSeenField},
+					{Data: vss.SignalData{Timestamp: time.Date(2024, 6, 11, 0, 0, 0, 0, time.UTC), Name: vss.FieldSpeed, ValueNumber: 1.0}},
+					{Data: vss.SignalData{Timestamp: time.Date(2024, 6, 11, 0, 0, 0, 0, time.UTC), Name: model.LastSeenField}},
 				}
 				m.CHService.EXPECT().
 					GetLatestSignals(gomock.Any(), testSubject, defaultArgs).
@@ -270,10 +270,10 @@ func TestGetSignalLatest(t *testing.T) {
 			latestArgs: defaultArgs,
 			mockSetup: func(m *Mocks) {
 				signals := []*vss.Signal{
-					{Timestamp: time.Date(2024, 6, 11, 0, 0, 0, 0, time.UTC), Name: "speed", ValueNumber: 1.0},
-					{Timestamp: time.Date(2024, 6, 11, 0, 0, 0, 0, time.UTC), Name: "speed", ValueNumber: 2.0},
-					{Timestamp: time.Date(2024, 6, 11, 0, 0, 0, 0, time.UTC), Name: "speed", ValueNumber: 3.0},
-					{Timestamp: time.Date(2024, 6, 11, 2, 0, 0, 0, time.UTC), Name: model.LastSeenField},
+					{Data: vss.SignalData{Timestamp: time.Date(2024, 6, 11, 0, 0, 0, 0, time.UTC), Name: "speed", ValueNumber: 1.0}},
+					{Data: vss.SignalData{Timestamp: time.Date(2024, 6, 11, 0, 0, 0, 0, time.UTC), Name: "speed", ValueNumber: 2.0}},
+					{Data: vss.SignalData{Timestamp: time.Date(2024, 6, 11, 0, 0, 0, 0, time.UTC), Name: "speed", ValueNumber: 3.0}},
+					{Data: vss.SignalData{Timestamp: time.Date(2024, 6, 11, 2, 0, 0, 0, time.UTC), Name: model.LastSeenField}},
 				}
 				m.CHService.EXPECT().
 					GetLatestSignals(gomock.Any(), testSubject, defaultArgs).

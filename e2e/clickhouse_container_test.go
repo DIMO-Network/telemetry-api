@@ -50,11 +50,12 @@ func insertSignal(t *testing.T, ch *container.Container, signals []vss.Signal) {
 
 	conn, err := ch.GetClickHouseAsConn()
 	require.NoError(t, err)
-	batch, err := conn.PrepareBatch(context.Background(), fmt.Sprintf("INSERT INTO %s", vss.TableName))
+	cols := strings.Join(vss.SignalColNames(), ", ")
+	batch, err := conn.PrepareBatch(context.Background(), fmt.Sprintf("INSERT INTO %s (%s)", vss.TableName, cols))
 	require.NoError(t, err)
 
 	for _, sig := range signals {
-		err := batch.AppendStruct(&sig)
+		err := batch.Append(vss.SignalToSlice(sig)...)
 		require.NoError(t, err, "Failed to append signal to batch")
 	}
 	err = batch.Send()
@@ -109,15 +110,19 @@ func LoadSampleDataInto(t *testing.T, ch *container.Container, signalPath, event
 		}
 		valNum, _ := strconv.ParseFloat(row[6], 64)
 		signals = append(signals, vss.Signal{
-			Subject:       row[0],
-			Timestamp:     ts,
-			Name:          row[2],
-			Source:        row[3],
-			Producer:      row[4],
-			CloudEventID:  row[5],
-			ValueNumber:   valNum,
-			ValueString:   row[7],
-			ValueLocation: loc,
+			CloudEventHeader: cloudevent.CloudEventHeader{
+				Subject:  row[0],
+				Source:   row[3],
+				Producer: row[4],
+			},
+			Data: vss.SignalData{
+				Timestamp:     ts,
+				Name:          row[2],
+				CloudEventID:  row[5],
+				ValueNumber:   valNum,
+				ValueString:   row[7],
+				ValueLocation: loc,
+			},
 		})
 	}
 	for i := 0; i < len(signals); i += loadBatchSize {
@@ -159,13 +164,13 @@ func LoadSampleDataInto(t *testing.T, ch *container.Container, signalPath, event
 				Source:    row[1],
 				Producer: row[2],
 				ID:       row[3],
-				Tags:     tags,
 			},
 			Data: vss.EventData{
 				Name:       row[4],
 				Timestamp:  ts,
 				DurationNs: durNs,
 				Metadata:   row[7],
+				Tags:       tags,
 			},
 		})
 	}

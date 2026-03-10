@@ -8,555 +8,555 @@ func SetCollectionField(collection *SignalCollection, signal *vss.Signal) {
 	if collection == nil || signal == nil {
 		return
 	}
-	switch signal.Name {
+	switch signal.Data.Name {
 	case "angularVelocityYaw":
 		collection.AngularVelocityYaw = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "bodyLightsIsAirbagWarningOn":
 		collection.BodyLightsIsAirbagWarningOn = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "bodyLockIsLocked":
 		collection.BodyLockIsLocked = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "bodyTrunkFrontIsOpen":
 		collection.BodyTrunkFrontIsOpen = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "bodyTrunkRearIsOpen":
 		collection.BodyTrunkRearIsOpen = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "cabinDoorRow1DriverSideIsOpen":
 		collection.CabinDoorRow1DriverSideIsOpen = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "cabinDoorRow1DriverSideWindowIsOpen":
 		collection.CabinDoorRow1DriverSideWindowIsOpen = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "cabinDoorRow1PassengerSideIsOpen":
 		collection.CabinDoorRow1PassengerSideIsOpen = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "cabinDoorRow1PassengerSideWindowIsOpen":
 		collection.CabinDoorRow1PassengerSideWindowIsOpen = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "cabinDoorRow2DriverSideIsOpen":
 		collection.CabinDoorRow2DriverSideIsOpen = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "cabinDoorRow2DriverSideWindowIsOpen":
 		collection.CabinDoorRow2DriverSideWindowIsOpen = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "cabinDoorRow2PassengerSideIsOpen":
 		collection.CabinDoorRow2PassengerSideIsOpen = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "cabinDoorRow2PassengerSideWindowIsOpen":
 		collection.CabinDoorRow2PassengerSideWindowIsOpen = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "cabinSeatRow1DriverSideIsBelted":
 		collection.CabinSeatRow1DriverSideIsBelted = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "cabinSeatRow1PassengerSideIsBelted":
 		collection.CabinSeatRow1PassengerSideIsBelted = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "cabinSeatRow2DriverSideIsBelted":
 		collection.CabinSeatRow2DriverSideIsBelted = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "cabinSeatRow2MiddleIsBelted":
 		collection.CabinSeatRow2MiddleIsBelted = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "cabinSeatRow2PassengerSideIsBelted":
 		collection.CabinSeatRow2PassengerSideIsBelted = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "cabinSeatRow3DriverSideIsBelted":
 		collection.CabinSeatRow3DriverSideIsBelted = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "cabinSeatRow3PassengerSideIsBelted":
 		collection.CabinSeatRow3PassengerSideIsBelted = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "chassisAxleRow1WheelLeftSpeed":
 		collection.ChassisAxleRow1WheelLeftSpeed = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "chassisAxleRow1WheelLeftTirePressure":
 		collection.ChassisAxleRow1WheelLeftTirePressure = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "chassisAxleRow1WheelRightSpeed":
 		collection.ChassisAxleRow1WheelRightSpeed = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "chassisAxleRow1WheelRightTirePressure":
 		collection.ChassisAxleRow1WheelRightTirePressure = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "chassisAxleRow2WheelLeftTirePressure":
 		collection.ChassisAxleRow2WheelLeftTirePressure = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "chassisAxleRow2WheelRightTirePressure":
 		collection.ChassisAxleRow2WheelRightTirePressure = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "chassisAxleRow3Weight":
 		collection.ChassisAxleRow3Weight = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "chassisAxleRow4Weight":
 		collection.ChassisAxleRow4Weight = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "chassisAxleRow5Weight":
 		collection.ChassisAxleRow5Weight = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "chassisBrakeABSIsWarningOn":
 		collection.ChassisBrakeABSIsWarningOn = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "chassisBrakeCircuit1PressurePrimary":
 		collection.ChassisBrakeCircuit1PressurePrimary = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "chassisBrakeCircuit2PressurePrimary":
 		collection.ChassisBrakeCircuit2PressurePrimary = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "chassisBrakeIsPedalPressed":
 		collection.ChassisBrakeIsPedalPressed = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "chassisBrakePedalPosition":
 		collection.ChassisBrakePedalPosition = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "chassisParkingBrakeIsEngaged":
 		collection.ChassisParkingBrakeIsEngaged = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "chassisTireSystemIsWarningOn":
 		collection.ChassisTireSystemIsWarningOn = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "connectivityCellularIsJammingDetected":
 		collection.ConnectivityCellularIsJammingDetected = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "currentLocationAltitude":
 		collection.CurrentLocationAltitude = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "currentLocationCoordinates":
 		collection.CurrentLocationCoordinates = &SignalLocation{
-			Timestamp: signal.Timestamp,
+			Timestamp: signal.Data.Timestamp,
 			Value: &Location{
-				Latitude:  signal.ValueLocation.Latitude,
-				Longitude: signal.ValueLocation.Longitude,
-				Hdop:      signal.ValueLocation.HDOP,
+				Latitude:  signal.Data.ValueLocation.Latitude,
+				Longitude: signal.Data.ValueLocation.Longitude,
+				Hdop:      signal.Data.ValueLocation.HDOP,
 			},
 		}
 	case "currentLocationHeading":
 		collection.CurrentLocationHeading = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "exteriorAirTemperature":
 		collection.ExteriorAirTemperature = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "isIgnitionOn":
 		collection.IsIgnitionOn = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "lowVoltageBatteryCurrentVoltage":
 		collection.LowVoltageBatteryCurrentVoltage = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "obdBarometricPressure":
 		collection.OBDBarometricPressure = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "obdCommandedEGR":
 		collection.OBDCommandedEGR = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "obdCommandedEVAP":
 		collection.OBDCommandedEVAP = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "obdDTCList":
 		collection.OBDDTCList = &SignalString{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueString,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueString,
 		}
 	case "obdDistanceSinceDTCClear":
 		collection.OBDDistanceSinceDTCClear = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "obdDistanceWithMIL":
 		collection.OBDDistanceWithMIL = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "obdEngineLoad":
 		collection.OBDEngineLoad = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "obdFuelPressure":
 		collection.OBDFuelPressure = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "obdFuelRate":
 		collection.OBDFuelRate = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "obdFuelTypeName":
 		collection.OBDFuelTypeName = &SignalString{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueString,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueString,
 		}
 	case "obdIntakeTemp":
 		collection.OBDIntakeTemp = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "obdIsEngineBlocked":
 		collection.OBDIsEngineBlocked = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "obdIsPTOActive":
 		collection.OBDIsPTOActive = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "obdIsPluggedIn":
 		collection.OBDIsPluggedIn = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "obdLongTermFuelTrim1":
 		collection.OBDLongTermFuelTrim1 = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "obdMAP":
 		collection.OBDMAP = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "obdO2WRSensor1Voltage":
 		collection.OBDO2WRSensor1Voltage = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "obdO2WRSensor2Voltage":
 		collection.OBDO2WRSensor2Voltage = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "obdOilTemperature":
 		collection.OBDOilTemperature = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "obdRunTime":
 		collection.OBDRunTime = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "obdShortTermFuelTrim1":
 		collection.OBDShortTermFuelTrim1 = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "obdStatusDTCCount":
 		collection.OBDStatusDTCCount = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "obdWarmupsSinceDTCClear":
 		collection.OBDWarmupsSinceDTCClear = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "powertrainCombustionEngineDieselExhaustFluidCapacity":
 		collection.PowertrainCombustionEngineDieselExhaustFluidCapacity = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "powertrainCombustionEngineDieselExhaustFluidLevel":
 		collection.PowertrainCombustionEngineDieselExhaustFluidLevel = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "powertrainCombustionEngineECT":
 		collection.PowertrainCombustionEngineECT = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "powertrainCombustionEngineEOP":
 		collection.PowertrainCombustionEngineEOP = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "powertrainCombustionEngineEOT":
 		collection.PowertrainCombustionEngineEOT = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "powertrainCombustionEngineEngineOilLevel":
 		collection.PowertrainCombustionEngineEngineOilLevel = &SignalString{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueString,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueString,
 		}
 	case "powertrainCombustionEngineEngineOilRelativeLevel":
 		collection.PowertrainCombustionEngineEngineOilRelativeLevel = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "powertrainCombustionEngineMAF":
 		collection.PowertrainCombustionEngineMAF = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "powertrainCombustionEngineSpeed":
 		collection.PowertrainCombustionEngineSpeed = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "powertrainCombustionEngineTPS":
 		collection.PowertrainCombustionEngineTPS = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "powertrainCombustionEngineTorque":
 		collection.PowertrainCombustionEngineTorque = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "powertrainCombustionEngineTorquePercent":
 		collection.PowertrainCombustionEngineTorquePercent = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "powertrainFuelSystemAbsoluteLevel":
 		collection.PowertrainFuelSystemAbsoluteLevel = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "powertrainFuelSystemAccumulatedConsumption":
 		collection.PowertrainFuelSystemAccumulatedConsumption = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "powertrainFuelSystemRelativeLevel":
 		collection.PowertrainFuelSystemRelativeLevel = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "powertrainFuelSystemSupportedFuelTypes":
 		collection.PowertrainFuelSystemSupportedFuelTypes = &SignalString{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueString,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueString,
 		}
 	case "powertrainRange":
 		collection.PowertrainRange = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "powertrainTractionBatteryChargingAddedEnergy":
 		collection.PowertrainTractionBatteryChargingAddedEnergy = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "powertrainTractionBatteryChargingChargeCurrentAC":
 		collection.PowertrainTractionBatteryChargingChargeCurrentAC = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "powertrainTractionBatteryChargingChargeLimit":
 		collection.PowertrainTractionBatteryChargingChargeLimit = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "powertrainTractionBatteryChargingChargeVoltageUnknownType":
 		collection.PowertrainTractionBatteryChargingChargeVoltageUnknownType = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "powertrainTractionBatteryChargingIsCharging":
 		collection.PowertrainTractionBatteryChargingIsCharging = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "powertrainTractionBatteryChargingIsChargingCableConnected":
 		collection.PowertrainTractionBatteryChargingIsChargingCableConnected = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "powertrainTractionBatteryChargingPower":
 		collection.PowertrainTractionBatteryChargingPower = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "powertrainTractionBatteryCurrentPower":
 		collection.PowertrainTractionBatteryCurrentPower = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "powertrainTractionBatteryCurrentVoltage":
 		collection.PowertrainTractionBatteryCurrentVoltage = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "powertrainTractionBatteryGrossCapacity":
 		collection.PowertrainTractionBatteryGrossCapacity = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "powertrainTractionBatteryRange":
 		collection.PowertrainTractionBatteryRange = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "powertrainTractionBatteryStateOfChargeCurrent":
 		collection.PowertrainTractionBatteryStateOfChargeCurrent = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "powertrainTractionBatteryStateOfChargeCurrentEnergy":
 		collection.PowertrainTractionBatteryStateOfChargeCurrentEnergy = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "powertrainTractionBatteryStateOfHealth":
 		collection.PowertrainTractionBatteryStateOfHealth = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "powertrainTractionBatteryTemperatureAverage":
 		collection.PowertrainTractionBatteryTemperatureAverage = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "powertrainTransmissionCurrentGear":
 		collection.PowertrainTransmissionCurrentGear = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "powertrainTransmissionIsClutchSwitchOperated":
 		collection.PowertrainTransmissionIsClutchSwitchOperated = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "powertrainTransmissionRetarderActualTorque":
 		collection.PowertrainTransmissionRetarderActualTorque = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "powertrainTransmissionRetarderTorqueMode":
 		collection.PowertrainTransmissionRetarderTorqueMode = &SignalString{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueString,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueString,
 		}
 	case "powertrainTransmissionSelectedGear":
 		collection.PowertrainTransmissionSelectedGear = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "powertrainTransmissionTemperature":
 		collection.PowertrainTransmissionTemperature = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "powertrainTransmissionTravelledDistance":
 		collection.PowertrainTransmissionTravelledDistance = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "powertrainType":
 		collection.PowertrainType = &SignalString{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueString,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueString,
 		}
 	case "serviceDistanceToService":
 		collection.ServiceDistanceToService = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "serviceTimeToService":
 		collection.ServiceTimeToService = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	case "speed":
 		collection.Speed = &SignalFloat{
-			Timestamp: signal.Timestamp,
-			Value:     signal.ValueNumber,
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
 		}
 	}
 }

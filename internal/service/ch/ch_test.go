@@ -843,9 +843,11 @@ func (c *CHServiceTestSuite) TestGetLatestSignal() {
 			},
 			expected: []vss.Signal{
 				{
-					Name:        vss.FieldSpeed,
-					Timestamp:   c.dataStartTime.Add(time.Second * time.Duration(30*(dataPoints-1))),
-					ValueNumber: 9.0,
+					Data: vss.SignalData{
+						Name:        vss.FieldSpeed,
+						Timestamp:   c.dataStartTime.Add(time.Second * time.Duration(30*(dataPoints-1))),
+						ValueNumber: 9.0,
+					},
 				},
 			},
 		},
@@ -864,9 +866,11 @@ func (c *CHServiceTestSuite) TestGetLatestSignal() {
 			},
 			expected: []vss.Signal{
 				{
-					Name:        vss.FieldSpeed,
-					Timestamp:   c.dataStartTime.Add(time.Second * time.Duration(30*(dataPoints-2))),
-					ValueNumber: 8.0,
+					Data: vss.SignalData{
+						Name:        vss.FieldSpeed,
+						Timestamp:   c.dataStartTime.Add(time.Second * time.Duration(30*(dataPoints-2))),
+						ValueNumber: 8.0,
+					},
 				},
 			},
 		},
@@ -881,8 +885,10 @@ func (c *CHServiceTestSuite) TestGetLatestSignal() {
 			},
 			expected: []vss.Signal{
 				{
-					Name:      model.LastSeenField,
-					Timestamp: c.dataStartTime.Add(time.Second * time.Duration(299)), // This is picking up the (0, 0, hdop) point.
+					Data: vss.SignalData{
+						Name:      model.LastSeenField,
+						Timestamp: c.dataStartTime.Add(time.Second * time.Duration(299)), // This is picking up the (0, 0, hdop) point.
+					},
 				},
 			},
 		},
@@ -899,9 +905,11 @@ func (c *CHServiceTestSuite) TestGetLatestSignal() {
 			},
 			expected: []vss.Signal{
 				{
-					Name:          vss.FieldCurrentLocationCoordinates,
-					Timestamp:     c.dataStartTime.Add(time.Second * time.Duration(30*(dataPoints-1))),
-					ValueLocation: vss.Location{Latitude: 30, Longitude: 50, HDOP: 70},
+					Data: vss.SignalData{
+						Name:          vss.FieldCurrentLocationCoordinates,
+						Timestamp:     c.dataStartTime.Add(time.Second * time.Duration(30*(dataPoints-1))),
+						ValueLocation: vss.Location{Latitude: 30, Longitude: 50, HDOP: 70},
+					},
 				},
 			},
 		},
@@ -953,22 +961,27 @@ func (c *CHServiceTestSuite) TestOriginGrouping() {
 	currentTime := startTime
 	for currentTime.Before(endTime) {
 		signal := vss.Signal{
-			Name:        vss.FieldSpeed,
-			Timestamp:   currentTime,
-			Source:      "test/origin",
-			Subject:     testSubject100,
-			ValueNumber: 100.0,
+			CloudEventHeader: cloudevent.CloudEventHeader{
+				Source:  "test/origin",
+				Subject: testSubject100,
+			},
+			Data: vss.SignalData{
+				Name:        vss.FieldSpeed,
+				Timestamp:   currentTime,
+				ValueNumber: 100.0,
+			},
 		}
 		signals = append(signals, signal)
 		currentTime = currentTime.Add(24 * time.Hour)
 	}
 
 	// Insert signals
-	batch, err := conn.PrepareBatch(ctx, fmt.Sprintf("INSERT INTO %s", vss.TableName))
+	sigCols := strings.Join(vss.SignalColNames(), ", ")
+	batch, err := conn.PrepareBatch(ctx, fmt.Sprintf("INSERT INTO %s (%s)", vss.TableName, sigCols))
 	c.Require().NoError(err, "Failed to prepare batch")
 
 	for _, sig := range signals {
-		err := batch.AppendStruct(&sig)
+		err := batch.Append(vss.SignalToSlice(sig)...)
 		c.Require().NoError(err, "Failed to append struct")
 	}
 	err = batch.Send()
@@ -1017,39 +1030,39 @@ func (c *CHServiceTestSuite) TestGetEvents() {
 			CloudEventHeader: cloudevent.CloudEventHeader{
 				Source:  "source1",
 				Subject: subject,
-				Tags:    []string{"behavior.harshAcceleration", "behavior.harshBraking"},
 			},
 			Data: vss.EventData{
 				Name:       "event.a",
 				Timestamp:  baseTime,
 				DurationNs: 1000,
 				Metadata:   `{"foo":"bar"}`,
+				Tags:       []string{"behavior.harshAcceleration", "behavior.harshBraking"},
 			},
 		},
 		{
 			CloudEventHeader: cloudevent.CloudEventHeader{
 				Source:  "source2",
 				Subject: subject,
-				Tags:    []string{"behavior.harshBraking", "behavior.harshCornering"},
 			},
 			Data: vss.EventData{
 				Name:       "event.b",
 				Timestamp:  baseTime.Add(5 * time.Minute),
 				DurationNs: 2000,
 				Metadata:   "",
+				Tags:       []string{"behavior.harshBraking", "behavior.harshCornering"},
 			},
 		},
 		{
 			CloudEventHeader: cloudevent.CloudEventHeader{
 				Source:  "source2",
 				Subject: subject,
-				Tags:    []string{"behavior.harshAcceleration", "behavior.harshCornering", "safety.collision"},
 			},
 			Data: vss.EventData{
 				Name:       "event.a",
 				Timestamp:  baseTime.Add(10 * time.Minute),
 				DurationNs: 3000,
 				Metadata:   `{"baz":123}`,
+				Tags:       []string{"behavior.harshAcceleration", "behavior.harshCornering", "safety.collision"},
 			},
 		},
 		// Event for a different subject (should not be returned)
@@ -1057,13 +1070,13 @@ func (c *CHServiceTestSuite) TestGetEvents() {
 			CloudEventHeader: cloudevent.CloudEventHeader{
 				Source:  "source1",
 				Subject: "did:erc721:1:0x0000000000000000000000000000000000000001:99",
-				Tags:    []string{"behavior.harshAcceleration", "behavior.harshBraking"},
 			},
 			Data: vss.EventData{
 				Name:       "event.a",
 				Timestamp:  baseTime.Add(5 * time.Minute),
 				DurationNs: 999,
 				Metadata:   `{"should":"not_appear"}`,
+				Tags:       []string{"behavior.harshAcceleration", "behavior.harshBraking"},
 			},
 		},
 	}
@@ -1379,45 +1392,62 @@ func (c *CHServiceTestSuite) insertTestData() {
 	var sources = []string{"0x4c674ddE8189aEF6e3b58F5a36d7438b2b1f6Bc2", "0x5e31bBc786D7bEd95216383787deA1ab0f1c1897", "0xcd445F4c6bDAD32b68a2939b912150Fe3C88803E"}
 	for i := range dataPoints {
 		numSig := vss.Signal{
-			Name:        vss.FieldSpeed,
-			Timestamp:   c.dataStartTime.Add(time.Second * time.Duration(30*i)),
-			Source:      sources[i%3],
-			Subject:     testSubject1,
-			ValueNumber: float64(i),
+			CloudEventHeader: cloudevent.CloudEventHeader{
+				Source:  sources[i%3],
+				Subject: testSubject1,
+			},
+			Data: vss.SignalData{
+				Name:        vss.FieldSpeed,
+				Timestamp:   c.dataStartTime.Add(time.Second * time.Duration(30*i)),
+				ValueNumber: float64(i),
+			},
 		}
 
 		strSig := vss.Signal{
-			Name:        vss.FieldPowertrainType,
-			Timestamp:   c.dataStartTime.Add(time.Second * time.Duration(30*i)),
-			Source:      sources[i%3],
-			Subject:     testSubject1,
-			ValueString: fmt.Sprintf("value%d", i+1),
+			CloudEventHeader: cloudevent.CloudEventHeader{
+				Source:  sources[i%3],
+				Subject: testSubject1,
+			},
+			Data: vss.SignalData{
+				Name:        vss.FieldPowertrainType,
+				Timestamp:   c.dataStartTime.Add(time.Second * time.Duration(30*i)),
+				ValueString: fmt.Sprintf("value%d", i+1),
+			},
 		}
 
 		locSig := vss.Signal{
-			Name:          vss.FieldCurrentLocationCoordinates,
-			Timestamp:     c.dataStartTime.Add(time.Second * time.Duration(30*i)),
-			Source:        sources[i%3],
-			Subject:       testSubject1,
-			ValueLocation: vss.Location{Latitude: 3 * float64(i+1), Longitude: 5 * float64(i+1), HDOP: 7 * float64(i+1)},
+			CloudEventHeader: cloudevent.CloudEventHeader{
+				Source:  sources[i%3],
+				Subject: testSubject1,
+			},
+			Data: vss.SignalData{
+				Name:          vss.FieldCurrentLocationCoordinates,
+				Timestamp:     c.dataStartTime.Add(time.Second * time.Duration(30*i)),
+				ValueLocation: vss.Location{Latitude: 3 * float64(i+1), Longitude: 5 * float64(i+1), HDOP: 7 * float64(i+1)},
+			},
 		}
 		testSignal = append(testSignal, numSig, strSig, locSig)
 	}
 
 	testSignal = append(testSignal, vss.Signal{
-		Name:          vss.FieldCurrentLocationCoordinates,
-		Timestamp:     c.dataStartTime.Add(time.Second * time.Duration(299)),
-		Source:        sources[0],
-		Subject:       testSubject1,
-		ValueLocation: vss.Location{Latitude: 0, Longitude: 0, HDOP: 111},
+		CloudEventHeader: cloudevent.CloudEventHeader{
+			Source:  sources[0],
+			Subject: testSubject1,
+		},
+		Data: vss.SignalData{
+			Name:          vss.FieldCurrentLocationCoordinates,
+			Timestamp:     c.dataStartTime.Add(time.Second * time.Duration(299)),
+			ValueLocation: vss.Location{Latitude: 0, Longitude: 0, HDOP: 111},
+		},
 	})
 
 	// insert the test data into the clickhouse database
-	batch, err := conn.PrepareBatch(ctx, fmt.Sprintf("INSERT INTO %s", vss.TableName))
+	cols := strings.Join(vss.SignalColNames(), ", ")
+	batch, err := conn.PrepareBatch(ctx, fmt.Sprintf("INSERT INTO %s (%s)", vss.TableName, cols))
 	c.Require().NoError(err, "Failed to prepare batch")
 
 	for _, sig := range testSignal {
-		err := batch.AppendStruct(&sig)
+		err := batch.Append(vss.SignalToSlice(sig)...)
 		c.Require().NoError(err, "Failed to append struct")
 	}
 	err = batch.Send()

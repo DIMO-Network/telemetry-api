@@ -288,36 +288,36 @@ func TestEventTags(t *testing.T) {
 			CloudEventHeader: cloudevent.CloudEventHeader{
 				Source:  "0x1111111111111111111111111111111111111111",
 				Subject: subject,
-				Tags:    []string{"behavior.harshAcceleration", "behavior.harshBraking"},
 			},
 			Data: vss.EventData{
 				Name:       "behavior.harshBraking",
 				Timestamp:  baseTime,
 				DurationNs: 1000,
+				Tags:       []string{"behavior.harshAcceleration", "behavior.harshBraking"},
 			},
 		},
 		{
 			CloudEventHeader: cloudevent.CloudEventHeader{
 				Source:  "0x2222222222222222222222222222222222222222",
 				Subject: subject,
-				Tags:    []string{"safety.collision"},
 			},
 			Data: vss.EventData{
 				Name:       "safety.collision",
 				Timestamp:  baseTime.Add(5 * time.Minute),
 				DurationNs: 2000,
+				Tags:       []string{"safety.collision"},
 			},
 		},
 		{
 			CloudEventHeader: cloudevent.CloudEventHeader{
 				Source:  "0x3333333333333333333333333333333333333333",
 				Subject: subject,
-				Tags:    []string{"behavior.harshAcceleration"},
 			},
 			Data: vss.EventData{
 				Name:       "behavior.harshAcceleration",
 				Timestamp:  baseTime.Add(10 * time.Minute),
 				DurationNs: 3000,
+				Tags:       []string{"behavior.harshAcceleration"},
 			},
 		},
 	}

@@ -4,6 +4,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/DIMO-Network/cloudevent"
 	"github.com/DIMO-Network/model-garage/pkg/vss"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	"github.com/DIMO-Network/token-exchange-api/pkg/tokenclaims"
@@ -19,44 +20,64 @@ func TestSignalsLatest(t *testing.T) {
 	// Set up test data in Clickhouse
 	signals := []vss.Signal{
 		{
-			Source:      "0xcd445F4c6bDAD32b68a2939b912150Fe3C88803E",
-			Timestamp:   smartCarTime,
-			Name:        vss.FieldSpeed,
-			ValueNumber: 65.5,
-			Subject:     "did:erc721:137:0xbA5738a18d83D41847dfFbDC6101d37C69c9B0cF:39718",
-		},
-		{
-			Source:    "0xcd445F4c6bDAD32b68a2939b912150Fe3C88803E",
-			Timestamp: smartCarTime,
-			Name:      vss.FieldCurrentLocationCoordinates,
-			ValueLocation: vss.Location{
-				Latitude:  40.73899538333504,
-				Longitude: 73.99386110247163,
+			CloudEventHeader: cloudevent.CloudEventHeader{
+				Source:  "0xcd445F4c6bDAD32b68a2939b912150Fe3C88803E",
+				Subject: "did:erc721:137:0xbA5738a18d83D41847dfFbDC6101d37C69c9B0cF:39718",
 			},
-			Subject: "did:erc721:137:0xbA5738a18d83D41847dfFbDC6101d37C69c9B0cF:39718",
-		},
-		{
-			Source:    "0xcd445F4c6bDAD32b68a2939b912150Fe3C88803E",
-			Timestamp: smartCarTime.Add(time.Hour),
-			Name:      vss.FieldCurrentLocationCoordinates,
-			ValueLocation: vss.Location{
-				HDOP: 7,
+			Data: vss.SignalData{
+				Timestamp:   smartCarTime,
+				Name:        vss.FieldSpeed,
+				ValueNumber: 65.5,
 			},
-			Subject: "did:erc721:137:0xbA5738a18d83D41847dfFbDC6101d37C69c9B0cF:39718",
 		},
 		{
-			Source:      "0x5e31bBc786D7bEd95216383787deA1ab0f1c1897",
-			Timestamp:   autopiTime,
-			Name:        vss.FieldSpeed,
-			ValueNumber: 14,
-			Subject:     "did:erc721:137:0xbA5738a18d83D41847dfFbDC6101d37C69c9B0cF:39718",
+			CloudEventHeader: cloudevent.CloudEventHeader{
+				Source:  "0xcd445F4c6bDAD32b68a2939b912150Fe3C88803E",
+				Subject: "did:erc721:137:0xbA5738a18d83D41847dfFbDC6101d37C69c9B0cF:39718",
+			},
+			Data: vss.SignalData{
+				Timestamp: smartCarTime,
+				Name:      vss.FieldCurrentLocationCoordinates,
+				ValueLocation: vss.Location{
+					Latitude:  40.73899538333504,
+					Longitude: 73.99386110247163,
+				},
+			},
 		},
 		{
-			Source:      "0x4c674ddE8189aEF6e3b58F5a36d7438b2b1f6Bc2",
-			Timestamp:   macaronTime,
-			Name:        vss.FieldSpeed,
-			ValueNumber: 3,
-			Subject:     "did:erc721:137:0xbA5738a18d83D41847dfFbDC6101d37C69c9B0cF:39718",
+			CloudEventHeader: cloudevent.CloudEventHeader{
+				Source:  "0xcd445F4c6bDAD32b68a2939b912150Fe3C88803E",
+				Subject: "did:erc721:137:0xbA5738a18d83D41847dfFbDC6101d37C69c9B0cF:39718",
+			},
+			Data: vss.SignalData{
+				Timestamp: smartCarTime.Add(time.Hour),
+				Name:      vss.FieldCurrentLocationCoordinates,
+				ValueLocation: vss.Location{
+					HDOP: 7,
+				},
+			},
+		},
+		{
+			CloudEventHeader: cloudevent.CloudEventHeader{
+				Source:  "0x5e31bBc786D7bEd95216383787deA1ab0f1c1897",
+				Subject: "did:erc721:137:0xbA5738a18d83D41847dfFbDC6101d37C69c9B0cF:39718",
+			},
+			Data: vss.SignalData{
+				Timestamp:   autopiTime,
+				Name:        vss.FieldSpeed,
+				ValueNumber: 14,
+			},
+		},
+		{
+			CloudEventHeader: cloudevent.CloudEventHeader{
+				Source:  "0x4c674ddE8189aEF6e3b58F5a36d7438b2b1f6Bc2",
+				Subject: "did:erc721:137:0xbA5738a18d83D41847dfFbDC6101d37C69c9B0cF:39718",
+			},
+			Data: vss.SignalData{
+				Timestamp:   macaronTime,
+				Name:        vss.FieldSpeed,
+				ValueNumber: 3,
+			},
 		},
 	}
 

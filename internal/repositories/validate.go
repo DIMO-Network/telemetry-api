@@ -7,22 +7,8 @@ import (
 	"time"
 
 	"github.com/DIMO-Network/cloudevent"
-	"github.com/DIMO-Network/model-garage/pkg/schema"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 )
-
-// we must load these tags before starting the application
-var eventTags = func() map[string]struct{} {
-	filter, err := schema.GetDefaultEventNames()
-	if err != nil {
-		panic(err)
-	}
-	tags := make(map[string]struct{}, len(filter))
-	for _, tag := range filter {
-		tags[tag.Name] = struct{}{}
-	}
-	return tags
-}()
 
 // eventNamePattern matches exactly 2 dotted segments, e.g. "behavior.harshBraking".
 var eventNamePattern = regexp.MustCompile(`^[a-zA-Z][a-zA-Z0-9]*\.[a-zA-Z][a-zA-Z0-9]*$`)
@@ -140,9 +126,6 @@ func validateEventArgs(tokenID int, from, to time.Time, filter *model.EventFilte
 		if err := validateEventNameFilter(filter.Name); err != nil {
 			return err
 		}
-		if err := validateTags(filter.Tags); err != nil {
-			return err
-		}
 	}
 	return nil
 }
@@ -174,34 +157,3 @@ func validateEventNameFilter(filter *model.StringValueFilter) error {
 	return nil
 }
 
-func validateTags(stringArrayFilter *model.StringArrayFilter) error {
-	if stringArrayFilter == nil {
-		return nil
-	}
-	for _, tag := range stringArrayFilter.ContainsAll {
-		if _, ok := eventTags[tag]; !ok {
-			return ValidationError(fmt.Sprintf("tag '%s', is not a valid value", tag))
-		}
-	}
-	for _, tag := range stringArrayFilter.ContainsAny {
-		if _, ok := eventTags[tag]; !ok {
-			return ValidationError(fmt.Sprintf("tag '%s', is not a valid value", tag))
-		}
-	}
-	for _, tag := range stringArrayFilter.NotContainsAny {
-		if _, ok := eventTags[tag]; !ok {
-			return ValidationError(fmt.Sprintf("tag '%s', is not a valid value", tag))
-		}
-	}
-	for _, tag := range stringArrayFilter.NotContainsAll {
-		if _, ok := eventTags[tag]; !ok {
-			return ValidationError(fmt.Sprintf("tag '%s', is not a valid value", tag))
-		}
-	}
-	for _, tag := range stringArrayFilter.Or {
-		if err := validateTags(tag); err != nil {
-			return err
-		}
-	}
-	return nil
-}

@@ -112,7 +112,6 @@ type EventFilter struct {
 	// source is the name of the source connection that created the event.
 	Source *StringValueFilter `json:"source,omitempty"`
 	// tags is the tags of the event.
-	// available tags: behavior.harshAcceleration, behavior.harshBraking, behavior.harshCornering, safety.collision
 	Tags *StringArrayFilter `json:"tags,omitempty"`
 }
 
