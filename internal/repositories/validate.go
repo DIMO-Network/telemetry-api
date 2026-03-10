@@ -3,16 +3,17 @@ package repositories
 import (
 	"fmt"
 	"math"
+	"regexp"
 	"time"
 
-	"github.com/DIMO-Network/model-garage/pkg/schema"
 	"github.com/DIMO-Network/cloudevent"
+	"github.com/DIMO-Network/model-garage/pkg/schema"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 )
 
 // we must load these tags before starting the application
 var eventTags = func() map[string]struct{} {
-	filter, err := schema.GetDefaultEventTags()
+	filter, err := schema.GetDefaultEventNames()
 	if err != nil {
 		panic(err)
 	}
@@ -22,6 +23,12 @@ var eventTags = func() map[string]struct{} {
 	}
 	return tags
 }()
+
+// eventNamePattern matches exactly 2 dotted segments, e.g. "behavior.harshBraking".
+var eventNamePattern = regexp.MustCompile(`^[a-zA-Z][a-zA-Z0-9]*\.[a-zA-Z][a-zA-Z0-9]*$`)
+
+// eventNamePrefixPattern matches a category with optional name segment, e.g. "behavior." or "behavior.harsh".
+var eventNamePrefixPattern = regexp.MustCompile(`^[a-zA-Z][a-zA-Z0-9]*\.([a-zA-Z][a-zA-Z0-9]*)?$`)
 
 // ValidationError is an error type for validation errors.
 type ValidationError string
@@ -130,7 +137,37 @@ func validateEventArgs(tokenID int, from, to time.Time, filter *model.EventFilte
 		return ValidationError("from timestamp is after to timestamp")
 	}
 	if filter != nil {
+		if err := validateEventNameFilter(filter.Name); err != nil {
+			return err
+		}
 		if err := validateTags(filter.Tags); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func validateEventNameFilter(filter *model.StringValueFilter) error {
+	if filter == nil {
+		return nil
+	}
+	if filter.Eq != nil {
+		if !eventNamePattern.MatchString(*filter.Eq) {
+			return ValidationError(fmt.Sprintf("event name '%s' does not match namespace pattern (e.g. 'behavior.harshBraking')", *filter.Eq))
+		}
+	}
+	for _, name := range filter.In {
+		if !eventNamePattern.MatchString(name) {
+			return ValidationError(fmt.Sprintf("event name '%s' does not match namespace pattern (e.g. 'behavior.harshBraking')", name))
+		}
+	}
+	if filter.StartsWith != nil {
+		if !eventNamePrefixPattern.MatchString(*filter.StartsWith) {
+			return ValidationError(fmt.Sprintf("event name prefix '%s' does not match namespace pattern (e.g. 'behavior.' or 'behavior.harsh')", *filter.StartsWith))
+		}
+	}
+	for _, orFilter := range filter.Or {
+		if err := validateEventNameFilter(orFilter); err != nil {
 			return err
 		}
 	}

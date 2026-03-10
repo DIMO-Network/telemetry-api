@@ -333,7 +333,7 @@ func (s *Service) GetEvents(ctx context.Context, subject string, from, to time.T
 	events := []*vss.Event{}
 	for rows.Next() {
 		var event vss.Event
-		err := rows.Scan(&event.Name, &event.Source, &event.Timestamp, &event.DurationNs, &event.Metadata, &event.Tags)
+		err := rows.Scan(&event.Data.Name, &event.Source, &event.Data.Timestamp, &event.Data.DurationNs, &event.Data.Metadata, &event.Tags)
 		if err != nil {
 			_ = rows.Close()
 			return nil, fmt.Errorf("failed scanning clickhouse event row: %w", err)

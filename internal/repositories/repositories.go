@@ -239,13 +239,13 @@ func (r *Repository) GetEvents(ctx context.Context, tokenID int, from, to time.T
 	retEvents := make([]*model.Event, len(allEvents))
 	for i, event := range allEvents {
 		retEvents[i] = &model.Event{
-			Timestamp:  event.Timestamp,
-			Name:       event.Name,
+			Timestamp:  event.Data.Timestamp,
+			Name:       event.Data.Name,
 			Source:     event.Source,
-			DurationNs: int(event.DurationNs),
+			DurationNs: int(event.Data.DurationNs),
 		}
-		if event.Metadata != "" {
-			retEvents[i].Metadata = &event.Metadata
+		if event.Data.Metadata != "" {
+			retEvents[i].Metadata = &event.Data.Metadata
 		}
 	}
 	return retEvents, nil

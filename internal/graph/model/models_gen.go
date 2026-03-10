@@ -677,6 +677,8 @@ type StringValueFilter struct {
 	NotIn []string `json:"notIn,omitempty"`
 	// in array of strings in the array
 	In []string `json:"in,omitempty"`
+	// startsWith matches strings that begin with the given prefix.
+	StartsWith *string `json:"startsWith,omitempty"`
 	// or array of string value filters
 	Or []*StringValueFilter `json:"or,omitempty"`
 }
