@@ -15,14 +15,23 @@ import (
 )
 
 // errorPresenter wraps the server-garage error handler in order to lower the log level
-// for invalid queries to debug. The default behavior is too noisy, given that we've
-// aggressively deprecated fields.
+// for client errors. The default behavior logs everything at error level, which is too
+// noisy for invalid queries and bad request inputs.
 func errorPresenter(ctx context.Context, err error) *gqlerror.Error {
 	var gqlErr *gqlerror.Error
 	if errors.As(err, &gqlErr) {
 		code := errorhandler.ErrCode(gqlErr)
-		if code == errorhandler.CodeGraphQLValidationFailed || code == errorhandler.CodeGraphQLParseFailed {
+		switch code {
+		case errorhandler.CodeGraphQLValidationFailed, errorhandler.CodeGraphQLParseFailed:
 			zerolog.Ctx(ctx).Debug().
+				Err(gqlErr.Err).
+				Str("gqlPath", gqlErr.Path.String()).
+				Fields(gqlErr.Extensions).
+				Msg(gqlErr.Message)
+			return gqlErr
+		case errorhandler.CodeBadRequest, errorhandler.CodeBadUserInput:
+			zerolog.Ctx(ctx).Warn().
+				Err(gqlErr.Err).
 				Str("gqlPath", gqlErr.Path.String()).
 				Fields(gqlErr.Extensions).
 				Msg(gqlErr.Message)
