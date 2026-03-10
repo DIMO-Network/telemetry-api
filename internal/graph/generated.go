@@ -8,7 +8,6 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
-	"sync"
 	"sync/atomic"
 	"time"
 
@@ -25,20 +24,10 @@ import (
 
 // NewExecutableSchema creates an ExecutableSchema from the ResolverRoot interface.
 func NewExecutableSchema(cfg Config) graphql.ExecutableSchema {
-	return &executableSchema{
-		schema:     cfg.Schema,
-		resolvers:  cfg.Resolvers,
-		directives: cfg.Directives,
-		complexity: cfg.Complexity,
-	}
+	return &executableSchema{SchemaData: cfg.Schema, Resolvers: cfg.Resolvers, Directives: cfg.Directives, ComplexityRoot: cfg.Complexity}
 }
 
-type Config struct {
-	Schema     *ast.Schema
-	Resolvers  ResolverRoot
-	Directives DirectiveRoot
-	Complexity ComplexityRoot
-}
+type Config = graphql.Config[ResolverRoot, DirectiveRoot, ComplexityRoot]
 
 type ResolverRoot interface {
 	Query() QueryResolver
@@ -526,225 +515,220 @@ type SignalAggregationsResolver interface {
 	Speed(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error)
 }
 
-type executableSchema struct {
-	schema     *ast.Schema
-	resolvers  ResolverRoot
-	directives DirectiveRoot
-	complexity ComplexityRoot
-}
+type executableSchema graphql.ExecutableSchemaState[ResolverRoot, DirectiveRoot, ComplexityRoot]
 
 func (e *executableSchema) Schema() *ast.Schema {
-	if e.schema != nil {
-		return e.schema
+	if e.SchemaData != nil {
+		return e.SchemaData
 	}
 	return parsedSchema
 }
 
 func (e *executableSchema) Complexity(ctx context.Context, typeName, field string, childComplexity int, rawArgs map[string]any) (int, bool) {
-	ec := executionContext{nil, e, 0, 0, nil}
+	ec := newExecutionContext(nil, e, nil)
 	_ = ec
 	switch typeName + "." + field {
 
 	case "Attestation.attestation":
-		if e.complexity.Attestation.Attestation == nil {
+		if e.ComplexityRoot.Attestation.Attestation == nil {
 			break
 		}
 
-		return e.complexity.Attestation.Attestation(childComplexity), true
+		return e.ComplexityRoot.Attestation.Attestation(childComplexity), true
 	case "Attestation.dataVersion":
-		if e.complexity.Attestation.DataVersion == nil {
+		if e.ComplexityRoot.Attestation.DataVersion == nil {
 			break
 		}
 
-		return e.complexity.Attestation.DataVersion(childComplexity), true
+		return e.ComplexityRoot.Attestation.DataVersion(childComplexity), true
 	case "Attestation.id":
-		if e.complexity.Attestation.ID == nil {
+		if e.ComplexityRoot.Attestation.ID == nil {
 			break
 		}
 
-		return e.complexity.Attestation.ID(childComplexity), true
+		return e.ComplexityRoot.Attestation.ID(childComplexity), true
 	case "Attestation.producer":
-		if e.complexity.Attestation.Producer == nil {
+		if e.ComplexityRoot.Attestation.Producer == nil {
 			break
 		}
 
-		return e.complexity.Attestation.Producer(childComplexity), true
+		return e.ComplexityRoot.Attestation.Producer(childComplexity), true
 	case "Attestation.signature":
-		if e.complexity.Attestation.Signature == nil {
+		if e.ComplexityRoot.Attestation.Signature == nil {
 			break
 		}
 
-		return e.complexity.Attestation.Signature(childComplexity), true
+		return e.ComplexityRoot.Attestation.Signature(childComplexity), true
 	case "Attestation.source":
-		if e.complexity.Attestation.Source == nil {
+		if e.ComplexityRoot.Attestation.Source == nil {
 			break
 		}
 
-		return e.complexity.Attestation.Source(childComplexity), true
+		return e.ComplexityRoot.Attestation.Source(childComplexity), true
 	case "Attestation.tags":
-		if e.complexity.Attestation.Tags == nil {
+		if e.ComplexityRoot.Attestation.Tags == nil {
 			break
 		}
 
-		return e.complexity.Attestation.Tags(childComplexity), true
+		return e.ComplexityRoot.Attestation.Tags(childComplexity), true
 	case "Attestation.time":
-		if e.complexity.Attestation.Time == nil {
+		if e.ComplexityRoot.Attestation.Time == nil {
 			break
 		}
 
-		return e.complexity.Attestation.Time(childComplexity), true
+		return e.ComplexityRoot.Attestation.Time(childComplexity), true
 	case "Attestation.type":
-		if e.complexity.Attestation.Type == nil {
+		if e.ComplexityRoot.Attestation.Type == nil {
 			break
 		}
 
-		return e.complexity.Attestation.Type(childComplexity), true
+		return e.ComplexityRoot.Attestation.Type(childComplexity), true
 	case "Attestation.vehicleTokenId":
-		if e.complexity.Attestation.VehicleTokenID == nil {
+		if e.ComplexityRoot.Attestation.VehicleTokenID == nil {
 			break
 		}
 
-		return e.complexity.Attestation.VehicleTokenID(childComplexity), true
+		return e.ComplexityRoot.Attestation.VehicleTokenID(childComplexity), true
 
 	case "DailyActivity.duration":
-		if e.complexity.DailyActivity.Duration == nil {
+		if e.ComplexityRoot.DailyActivity.Duration == nil {
 			break
 		}
 
-		return e.complexity.DailyActivity.Duration(childComplexity), true
+		return e.ComplexityRoot.DailyActivity.Duration(childComplexity), true
 	case "DailyActivity.end":
-		if e.complexity.DailyActivity.End == nil {
+		if e.ComplexityRoot.DailyActivity.End == nil {
 			break
 		}
 
-		return e.complexity.DailyActivity.End(childComplexity), true
+		return e.ComplexityRoot.DailyActivity.End(childComplexity), true
 	case "DailyActivity.eventCounts":
-		if e.complexity.DailyActivity.EventCounts == nil {
+		if e.ComplexityRoot.DailyActivity.EventCounts == nil {
 			break
 		}
 
-		return e.complexity.DailyActivity.EventCounts(childComplexity), true
+		return e.ComplexityRoot.DailyActivity.EventCounts(childComplexity), true
 	case "DailyActivity.segmentCount":
-		if e.complexity.DailyActivity.SegmentCount == nil {
+		if e.ComplexityRoot.DailyActivity.SegmentCount == nil {
 			break
 		}
 
-		return e.complexity.DailyActivity.SegmentCount(childComplexity), true
+		return e.ComplexityRoot.DailyActivity.SegmentCount(childComplexity), true
 	case "DailyActivity.signals":
-		if e.complexity.DailyActivity.Signals == nil {
+		if e.ComplexityRoot.DailyActivity.Signals == nil {
 			break
 		}
 
-		return e.complexity.DailyActivity.Signals(childComplexity), true
+		return e.ComplexityRoot.DailyActivity.Signals(childComplexity), true
 	case "DailyActivity.start":
-		if e.complexity.DailyActivity.Start == nil {
+		if e.ComplexityRoot.DailyActivity.Start == nil {
 			break
 		}
 
-		return e.complexity.DailyActivity.Start(childComplexity), true
+		return e.ComplexityRoot.DailyActivity.Start(childComplexity), true
 
 	case "DataSummary.availableSignals":
-		if e.complexity.DataSummary.AvailableSignals == nil {
+		if e.ComplexityRoot.DataSummary.AvailableSignals == nil {
 			break
 		}
 
-		return e.complexity.DataSummary.AvailableSignals(childComplexity), true
+		return e.ComplexityRoot.DataSummary.AvailableSignals(childComplexity), true
 	case "DataSummary.eventDataSummary":
-		if e.complexity.DataSummary.EventDataSummary == nil {
+		if e.ComplexityRoot.DataSummary.EventDataSummary == nil {
 			break
 		}
 
-		return e.complexity.DataSummary.EventDataSummary(childComplexity), true
+		return e.ComplexityRoot.DataSummary.EventDataSummary(childComplexity), true
 	case "DataSummary.firstSeen":
-		if e.complexity.DataSummary.FirstSeen == nil {
+		if e.ComplexityRoot.DataSummary.FirstSeen == nil {
 			break
 		}
 
-		return e.complexity.DataSummary.FirstSeen(childComplexity), true
+		return e.ComplexityRoot.DataSummary.FirstSeen(childComplexity), true
 	case "DataSummary.lastSeen":
-		if e.complexity.DataSummary.LastSeen == nil {
+		if e.ComplexityRoot.DataSummary.LastSeen == nil {
 			break
 		}
 
-		return e.complexity.DataSummary.LastSeen(childComplexity), true
+		return e.ComplexityRoot.DataSummary.LastSeen(childComplexity), true
 	case "DataSummary.numberOfSignals":
-		if e.complexity.DataSummary.NumberOfSignals == nil {
+		if e.ComplexityRoot.DataSummary.NumberOfSignals == nil {
 			break
 		}
 
-		return e.complexity.DataSummary.NumberOfSignals(childComplexity), true
+		return e.ComplexityRoot.DataSummary.NumberOfSignals(childComplexity), true
 	case "DataSummary.signalDataSummary":
-		if e.complexity.DataSummary.SignalDataSummary == nil {
+		if e.ComplexityRoot.DataSummary.SignalDataSummary == nil {
 			break
 		}
 
-		return e.complexity.DataSummary.SignalDataSummary(childComplexity), true
+		return e.ComplexityRoot.DataSummary.SignalDataSummary(childComplexity), true
 
 	case "Event.durationNs":
-		if e.complexity.Event.DurationNs == nil {
+		if e.ComplexityRoot.Event.DurationNs == nil {
 			break
 		}
 
-		return e.complexity.Event.DurationNs(childComplexity), true
+		return e.ComplexityRoot.Event.DurationNs(childComplexity), true
 	case "Event.metadata":
-		if e.complexity.Event.Metadata == nil {
+		if e.ComplexityRoot.Event.Metadata == nil {
 			break
 		}
 
-		return e.complexity.Event.Metadata(childComplexity), true
+		return e.ComplexityRoot.Event.Metadata(childComplexity), true
 	case "Event.name":
-		if e.complexity.Event.Name == nil {
+		if e.ComplexityRoot.Event.Name == nil {
 			break
 		}
 
-		return e.complexity.Event.Name(childComplexity), true
+		return e.ComplexityRoot.Event.Name(childComplexity), true
 	case "Event.source":
-		if e.complexity.Event.Source == nil {
+		if e.ComplexityRoot.Event.Source == nil {
 			break
 		}
 
-		return e.complexity.Event.Source(childComplexity), true
+		return e.ComplexityRoot.Event.Source(childComplexity), true
 	case "Event.timestamp":
-		if e.complexity.Event.Timestamp == nil {
+		if e.ComplexityRoot.Event.Timestamp == nil {
 			break
 		}
 
-		return e.complexity.Event.Timestamp(childComplexity), true
+		return e.ComplexityRoot.Event.Timestamp(childComplexity), true
 
 	case "EventCount.count":
-		if e.complexity.EventCount.Count == nil {
+		if e.ComplexityRoot.EventCount.Count == nil {
 			break
 		}
 
-		return e.complexity.EventCount.Count(childComplexity), true
+		return e.ComplexityRoot.EventCount.Count(childComplexity), true
 	case "EventCount.name":
-		if e.complexity.EventCount.Name == nil {
+		if e.ComplexityRoot.EventCount.Name == nil {
 			break
 		}
 
-		return e.complexity.EventCount.Name(childComplexity), true
+		return e.ComplexityRoot.EventCount.Name(childComplexity), true
 
 	case "Location.hdop":
-		if e.complexity.Location.Hdop == nil {
+		if e.ComplexityRoot.Location.Hdop == nil {
 			break
 		}
 
-		return e.complexity.Location.Hdop(childComplexity), true
+		return e.ComplexityRoot.Location.Hdop(childComplexity), true
 	case "Location.latitude":
-		if e.complexity.Location.Latitude == nil {
+		if e.ComplexityRoot.Location.Latitude == nil {
 			break
 		}
 
-		return e.complexity.Location.Latitude(childComplexity), true
+		return e.ComplexityRoot.Location.Latitude(childComplexity), true
 	case "Location.longitude":
-		if e.complexity.Location.Longitude == nil {
+		if e.ComplexityRoot.Location.Longitude == nil {
 			break
 		}
 
-		return e.complexity.Location.Longitude(childComplexity), true
+		return e.ComplexityRoot.Location.Longitude(childComplexity), true
 
 	case "Query.attestations":
-		if e.complexity.Query.Attestations == nil {
+		if e.ComplexityRoot.Query.Attestations == nil {
 			break
 		}
 
@@ -753,9 +737,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Query.Attestations(childComplexity, args["tokenId"].(*int), args["subject"].(*string), args["filter"].(*model.AttestationFilter)), true
+		return e.ComplexityRoot.Query.Attestations(childComplexity, args["tokenId"].(*int), args["subject"].(*string), args["filter"].(*model.AttestationFilter)), true
 	case "Query.availableSignals":
-		if e.complexity.Query.AvailableSignals == nil {
+		if e.ComplexityRoot.Query.AvailableSignals == nil {
 			break
 		}
 
@@ -764,9 +748,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Query.AvailableSignals(childComplexity, args["tokenId"].(int), args["filter"].(*model.SignalFilter)), true
+		return e.ComplexityRoot.Query.AvailableSignals(childComplexity, args["tokenId"].(int), args["filter"].(*model.SignalFilter)), true
 	case "Query.dailyActivity":
-		if e.complexity.Query.DailyActivity == nil {
+		if e.ComplexityRoot.Query.DailyActivity == nil {
 			break
 		}
 
@@ -775,9 +759,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Query.DailyActivity(childComplexity, args["tokenId"].(int), args["from"].(time.Time), args["to"].(time.Time), args["mechanism"].(model.DetectionMechanism), args["config"].(*model.SegmentConfig), args["signalRequests"].([]*model.SegmentSignalRequest), args["eventRequests"].([]*model.SegmentEventRequest), args["timezone"].(*string)), true
+		return e.ComplexityRoot.Query.DailyActivity(childComplexity, args["tokenId"].(int), args["from"].(time.Time), args["to"].(time.Time), args["mechanism"].(model.DetectionMechanism), args["config"].(*model.SegmentConfig), args["signalRequests"].([]*model.SegmentSignalRequest), args["eventRequests"].([]*model.SegmentEventRequest), args["timezone"].(*string)), true
 	case "Query.dataSummary":
-		if e.complexity.Query.DataSummary == nil {
+		if e.ComplexityRoot.Query.DataSummary == nil {
 			break
 		}
 
@@ -786,9 +770,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Query.DataSummary(childComplexity, args["tokenId"].(int), args["filter"].(*model.SignalFilter)), true
+		return e.ComplexityRoot.Query.DataSummary(childComplexity, args["tokenId"].(int), args["filter"].(*model.SignalFilter)), true
 	case "Query.events":
-		if e.complexity.Query.Events == nil {
+		if e.ComplexityRoot.Query.Events == nil {
 			break
 		}
 
@@ -797,9 +781,10 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Query.Events(childComplexity, args["tokenId"].(int), args["from"].(time.Time), args["to"].(time.Time), args["filter"].(*model.EventFilter)), true
+		return e.ComplexityRoot.Query.Events(childComplexity, args["tokenId"].(int), args["from"].(time.Time), args["to"].(time.Time), args["filter"].(*model.EventFilter)), true
+
 	case "Query.segments":
-		if e.complexity.Query.Segments == nil {
+		if e.ComplexityRoot.Query.Segments == nil {
 			break
 		}
 
@@ -808,9 +793,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Query.Segments(childComplexity, args["tokenId"].(int), args["from"].(time.Time), args["to"].(time.Time), args["mechanism"].(model.DetectionMechanism), args["config"].(*model.SegmentConfig), args["signalRequests"].([]*model.SegmentSignalRequest), args["eventRequests"].([]*model.SegmentEventRequest), args["limit"].(*int), args["after"].(*time.Time)), true
+		return e.ComplexityRoot.Query.Segments(childComplexity, args["tokenId"].(int), args["from"].(time.Time), args["to"].(time.Time), args["mechanism"].(model.DetectionMechanism), args["config"].(*model.SegmentConfig), args["signalRequests"].([]*model.SegmentSignalRequest), args["eventRequests"].([]*model.SegmentEventRequest), args["limit"].(*int), args["after"].(*time.Time)), true
 	case "Query.signals":
-		if e.complexity.Query.Signals == nil {
+		if e.ComplexityRoot.Query.Signals == nil {
 			break
 		}
 
@@ -819,9 +804,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Query.Signals(childComplexity, args["tokenId"].(int), args["interval"].(string), args["from"].(time.Time), args["to"].(time.Time), args["filter"].(*model.SignalFilter)), true
+		return e.ComplexityRoot.Query.Signals(childComplexity, args["tokenId"].(int), args["interval"].(string), args["from"].(time.Time), args["to"].(time.Time), args["filter"].(*model.SignalFilter)), true
 	case "Query.signalsLatest":
-		if e.complexity.Query.SignalsLatest == nil {
+		if e.ComplexityRoot.Query.SignalsLatest == nil {
 			break
 		}
 
@@ -830,9 +815,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Query.SignalsLatest(childComplexity, args["tokenId"].(int), args["filter"].(*model.SignalFilter)), true
+		return e.ComplexityRoot.Query.SignalsLatest(childComplexity, args["tokenId"].(int), args["filter"].(*model.SignalFilter)), true
 	case "Query.vinVCLatest":
-		if e.complexity.Query.VinVCLatest == nil {
+		if e.ComplexityRoot.Query.VinVCLatest == nil {
 			break
 		}
 
@@ -841,72 +826,72 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Query.VinVCLatest(childComplexity, args["tokenId"].(int)), true
+		return e.ComplexityRoot.Query.VinVCLatest(childComplexity, args["tokenId"].(int)), true
 
 	case "Segment.duration":
-		if e.complexity.Segment.Duration == nil {
+		if e.ComplexityRoot.Segment.Duration == nil {
 			break
 		}
 
-		return e.complexity.Segment.Duration(childComplexity), true
+		return e.ComplexityRoot.Segment.Duration(childComplexity), true
 	case "Segment.end":
-		if e.complexity.Segment.End == nil {
+		if e.ComplexityRoot.Segment.End == nil {
 			break
 		}
 
-		return e.complexity.Segment.End(childComplexity), true
+		return e.ComplexityRoot.Segment.End(childComplexity), true
 	case "Segment.eventCounts":
-		if e.complexity.Segment.EventCounts == nil {
+		if e.ComplexityRoot.Segment.EventCounts == nil {
 			break
 		}
 
-		return e.complexity.Segment.EventCounts(childComplexity), true
+		return e.ComplexityRoot.Segment.EventCounts(childComplexity), true
 	case "Segment.isOngoing":
-		if e.complexity.Segment.IsOngoing == nil {
+		if e.ComplexityRoot.Segment.IsOngoing == nil {
 			break
 		}
 
-		return e.complexity.Segment.IsOngoing(childComplexity), true
+		return e.ComplexityRoot.Segment.IsOngoing(childComplexity), true
 	case "Segment.signals":
-		if e.complexity.Segment.Signals == nil {
+		if e.ComplexityRoot.Segment.Signals == nil {
 			break
 		}
 
-		return e.complexity.Segment.Signals(childComplexity), true
+		return e.ComplexityRoot.Segment.Signals(childComplexity), true
 	case "Segment.start":
-		if e.complexity.Segment.Start == nil {
+		if e.ComplexityRoot.Segment.Start == nil {
 			break
 		}
 
-		return e.complexity.Segment.Start(childComplexity), true
+		return e.ComplexityRoot.Segment.Start(childComplexity), true
 	case "Segment.startedBeforeRange":
-		if e.complexity.Segment.StartedBeforeRange == nil {
+		if e.ComplexityRoot.Segment.StartedBeforeRange == nil {
 			break
 		}
 
-		return e.complexity.Segment.StartedBeforeRange(childComplexity), true
+		return e.ComplexityRoot.Segment.StartedBeforeRange(childComplexity), true
 
 	case "SignalAggregationValue.agg":
-		if e.complexity.SignalAggregationValue.Agg == nil {
+		if e.ComplexityRoot.SignalAggregationValue.Agg == nil {
 			break
 		}
 
-		return e.complexity.SignalAggregationValue.Agg(childComplexity), true
+		return e.ComplexityRoot.SignalAggregationValue.Agg(childComplexity), true
 	case "SignalAggregationValue.name":
-		if e.complexity.SignalAggregationValue.Name == nil {
+		if e.ComplexityRoot.SignalAggregationValue.Name == nil {
 			break
 		}
 
-		return e.complexity.SignalAggregationValue.Name(childComplexity), true
+		return e.ComplexityRoot.SignalAggregationValue.Name(childComplexity), true
 	case "SignalAggregationValue.value":
-		if e.complexity.SignalAggregationValue.Value == nil {
+		if e.ComplexityRoot.SignalAggregationValue.Value == nil {
 			break
 		}
 
-		return e.complexity.SignalAggregationValue.Value(childComplexity), true
+		return e.ComplexityRoot.SignalAggregationValue.Value(childComplexity), true
 
 	case "SignalAggregations.angularVelocityYaw":
-		if e.complexity.SignalAggregations.AngularVelocityYaw == nil {
+		if e.ComplexityRoot.SignalAggregations.AngularVelocityYaw == nil {
 			break
 		}
 
@@ -915,9 +900,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.AngularVelocityYaw(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.AngularVelocityYaw(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.bodyLightsIsAirbagWarningOn":
-		if e.complexity.SignalAggregations.BodyLightsIsAirbagWarningOn == nil {
+		if e.ComplexityRoot.SignalAggregations.BodyLightsIsAirbagWarningOn == nil {
 			break
 		}
 
@@ -926,9 +911,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.BodyLightsIsAirbagWarningOn(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.BodyLightsIsAirbagWarningOn(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.bodyLockIsLocked":
-		if e.complexity.SignalAggregations.BodyLockIsLocked == nil {
+		if e.ComplexityRoot.SignalAggregations.BodyLockIsLocked == nil {
 			break
 		}
 
@@ -937,9 +922,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.BodyLockIsLocked(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.BodyLockIsLocked(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.bodyTrunkFrontIsOpen":
-		if e.complexity.SignalAggregations.BodyTrunkFrontIsOpen == nil {
+		if e.ComplexityRoot.SignalAggregations.BodyTrunkFrontIsOpen == nil {
 			break
 		}
 
@@ -948,9 +933,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.BodyTrunkFrontIsOpen(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.BodyTrunkFrontIsOpen(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.bodyTrunkRearIsOpen":
-		if e.complexity.SignalAggregations.BodyTrunkRearIsOpen == nil {
+		if e.ComplexityRoot.SignalAggregations.BodyTrunkRearIsOpen == nil {
 			break
 		}
 
@@ -959,9 +944,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.BodyTrunkRearIsOpen(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.BodyTrunkRearIsOpen(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.cabinDoorRow1DriverSideIsOpen":
-		if e.complexity.SignalAggregations.CabinDoorRow1DriverSideIsOpen == nil {
+		if e.ComplexityRoot.SignalAggregations.CabinDoorRow1DriverSideIsOpen == nil {
 			break
 		}
 
@@ -970,9 +955,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.CabinDoorRow1DriverSideIsOpen(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.CabinDoorRow1DriverSideIsOpen(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.cabinDoorRow1DriverSideWindowIsOpen":
-		if e.complexity.SignalAggregations.CabinDoorRow1DriverSideWindowIsOpen == nil {
+		if e.ComplexityRoot.SignalAggregations.CabinDoorRow1DriverSideWindowIsOpen == nil {
 			break
 		}
 
@@ -981,9 +966,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.CabinDoorRow1DriverSideWindowIsOpen(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.CabinDoorRow1DriverSideWindowIsOpen(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.cabinDoorRow1PassengerSideIsOpen":
-		if e.complexity.SignalAggregations.CabinDoorRow1PassengerSideIsOpen == nil {
+		if e.ComplexityRoot.SignalAggregations.CabinDoorRow1PassengerSideIsOpen == nil {
 			break
 		}
 
@@ -992,9 +977,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.CabinDoorRow1PassengerSideIsOpen(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.CabinDoorRow1PassengerSideIsOpen(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.cabinDoorRow1PassengerSideWindowIsOpen":
-		if e.complexity.SignalAggregations.CabinDoorRow1PassengerSideWindowIsOpen == nil {
+		if e.ComplexityRoot.SignalAggregations.CabinDoorRow1PassengerSideWindowIsOpen == nil {
 			break
 		}
 
@@ -1003,9 +988,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.CabinDoorRow1PassengerSideWindowIsOpen(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.CabinDoorRow1PassengerSideWindowIsOpen(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.cabinDoorRow2DriverSideIsOpen":
-		if e.complexity.SignalAggregations.CabinDoorRow2DriverSideIsOpen == nil {
+		if e.ComplexityRoot.SignalAggregations.CabinDoorRow2DriverSideIsOpen == nil {
 			break
 		}
 
@@ -1014,9 +999,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.CabinDoorRow2DriverSideIsOpen(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.CabinDoorRow2DriverSideIsOpen(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.cabinDoorRow2DriverSideWindowIsOpen":
-		if e.complexity.SignalAggregations.CabinDoorRow2DriverSideWindowIsOpen == nil {
+		if e.ComplexityRoot.SignalAggregations.CabinDoorRow2DriverSideWindowIsOpen == nil {
 			break
 		}
 
@@ -1025,9 +1010,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.CabinDoorRow2DriverSideWindowIsOpen(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.CabinDoorRow2DriverSideWindowIsOpen(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.cabinDoorRow2PassengerSideIsOpen":
-		if e.complexity.SignalAggregations.CabinDoorRow2PassengerSideIsOpen == nil {
+		if e.ComplexityRoot.SignalAggregations.CabinDoorRow2PassengerSideIsOpen == nil {
 			break
 		}
 
@@ -1036,9 +1021,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.CabinDoorRow2PassengerSideIsOpen(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.CabinDoorRow2PassengerSideIsOpen(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.cabinDoorRow2PassengerSideWindowIsOpen":
-		if e.complexity.SignalAggregations.CabinDoorRow2PassengerSideWindowIsOpen == nil {
+		if e.ComplexityRoot.SignalAggregations.CabinDoorRow2PassengerSideWindowIsOpen == nil {
 			break
 		}
 
@@ -1047,9 +1032,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.CabinDoorRow2PassengerSideWindowIsOpen(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.CabinDoorRow2PassengerSideWindowIsOpen(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.cabinSeatRow1DriverSideIsBelted":
-		if e.complexity.SignalAggregations.CabinSeatRow1DriverSideIsBelted == nil {
+		if e.ComplexityRoot.SignalAggregations.CabinSeatRow1DriverSideIsBelted == nil {
 			break
 		}
 
@@ -1058,9 +1043,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.CabinSeatRow1DriverSideIsBelted(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.CabinSeatRow1DriverSideIsBelted(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.cabinSeatRow1PassengerSideIsBelted":
-		if e.complexity.SignalAggregations.CabinSeatRow1PassengerSideIsBelted == nil {
+		if e.ComplexityRoot.SignalAggregations.CabinSeatRow1PassengerSideIsBelted == nil {
 			break
 		}
 
@@ -1069,9 +1054,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.CabinSeatRow1PassengerSideIsBelted(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.CabinSeatRow1PassengerSideIsBelted(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.cabinSeatRow2DriverSideIsBelted":
-		if e.complexity.SignalAggregations.CabinSeatRow2DriverSideIsBelted == nil {
+		if e.ComplexityRoot.SignalAggregations.CabinSeatRow2DriverSideIsBelted == nil {
 			break
 		}
 
@@ -1080,9 +1065,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.CabinSeatRow2DriverSideIsBelted(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.CabinSeatRow2DriverSideIsBelted(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.cabinSeatRow2MiddleIsBelted":
-		if e.complexity.SignalAggregations.CabinSeatRow2MiddleIsBelted == nil {
+		if e.ComplexityRoot.SignalAggregations.CabinSeatRow2MiddleIsBelted == nil {
 			break
 		}
 
@@ -1091,9 +1076,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.CabinSeatRow2MiddleIsBelted(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.CabinSeatRow2MiddleIsBelted(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.cabinSeatRow2PassengerSideIsBelted":
-		if e.complexity.SignalAggregations.CabinSeatRow2PassengerSideIsBelted == nil {
+		if e.ComplexityRoot.SignalAggregations.CabinSeatRow2PassengerSideIsBelted == nil {
 			break
 		}
 
@@ -1102,9 +1087,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.CabinSeatRow2PassengerSideIsBelted(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.CabinSeatRow2PassengerSideIsBelted(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.cabinSeatRow3DriverSideIsBelted":
-		if e.complexity.SignalAggregations.CabinSeatRow3DriverSideIsBelted == nil {
+		if e.ComplexityRoot.SignalAggregations.CabinSeatRow3DriverSideIsBelted == nil {
 			break
 		}
 
@@ -1113,9 +1098,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.CabinSeatRow3DriverSideIsBelted(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.CabinSeatRow3DriverSideIsBelted(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.cabinSeatRow3PassengerSideIsBelted":
-		if e.complexity.SignalAggregations.CabinSeatRow3PassengerSideIsBelted == nil {
+		if e.ComplexityRoot.SignalAggregations.CabinSeatRow3PassengerSideIsBelted == nil {
 			break
 		}
 
@@ -1124,9 +1109,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.CabinSeatRow3PassengerSideIsBelted(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.CabinSeatRow3PassengerSideIsBelted(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.chassisAxleRow1WheelLeftSpeed":
-		if e.complexity.SignalAggregations.ChassisAxleRow1WheelLeftSpeed == nil {
+		if e.ComplexityRoot.SignalAggregations.ChassisAxleRow1WheelLeftSpeed == nil {
 			break
 		}
 
@@ -1135,9 +1120,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.ChassisAxleRow1WheelLeftSpeed(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.ChassisAxleRow1WheelLeftSpeed(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.chassisAxleRow1WheelLeftTirePressure":
-		if e.complexity.SignalAggregations.ChassisAxleRow1WheelLeftTirePressure == nil {
+		if e.ComplexityRoot.SignalAggregations.ChassisAxleRow1WheelLeftTirePressure == nil {
 			break
 		}
 
@@ -1146,9 +1131,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.ChassisAxleRow1WheelLeftTirePressure(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.ChassisAxleRow1WheelLeftTirePressure(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.chassisAxleRow1WheelRightSpeed":
-		if e.complexity.SignalAggregations.ChassisAxleRow1WheelRightSpeed == nil {
+		if e.ComplexityRoot.SignalAggregations.ChassisAxleRow1WheelRightSpeed == nil {
 			break
 		}
 
@@ -1157,9 +1142,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.ChassisAxleRow1WheelRightSpeed(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.ChassisAxleRow1WheelRightSpeed(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.chassisAxleRow1WheelRightTirePressure":
-		if e.complexity.SignalAggregations.ChassisAxleRow1WheelRightTirePressure == nil {
+		if e.ComplexityRoot.SignalAggregations.ChassisAxleRow1WheelRightTirePressure == nil {
 			break
 		}
 
@@ -1168,9 +1153,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.ChassisAxleRow1WheelRightTirePressure(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.ChassisAxleRow1WheelRightTirePressure(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.chassisAxleRow2WheelLeftTirePressure":
-		if e.complexity.SignalAggregations.ChassisAxleRow2WheelLeftTirePressure == nil {
+		if e.ComplexityRoot.SignalAggregations.ChassisAxleRow2WheelLeftTirePressure == nil {
 			break
 		}
 
@@ -1179,9 +1164,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.ChassisAxleRow2WheelLeftTirePressure(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.ChassisAxleRow2WheelLeftTirePressure(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.chassisAxleRow2WheelRightTirePressure":
-		if e.complexity.SignalAggregations.ChassisAxleRow2WheelRightTirePressure == nil {
+		if e.ComplexityRoot.SignalAggregations.ChassisAxleRow2WheelRightTirePressure == nil {
 			break
 		}
 
@@ -1190,9 +1175,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.ChassisAxleRow2WheelRightTirePressure(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.ChassisAxleRow2WheelRightTirePressure(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.chassisAxleRow3Weight":
-		if e.complexity.SignalAggregations.ChassisAxleRow3Weight == nil {
+		if e.ComplexityRoot.SignalAggregations.ChassisAxleRow3Weight == nil {
 			break
 		}
 
@@ -1201,9 +1186,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.ChassisAxleRow3Weight(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.ChassisAxleRow3Weight(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.chassisAxleRow4Weight":
-		if e.complexity.SignalAggregations.ChassisAxleRow4Weight == nil {
+		if e.ComplexityRoot.SignalAggregations.ChassisAxleRow4Weight == nil {
 			break
 		}
 
@@ -1212,9 +1197,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.ChassisAxleRow4Weight(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.ChassisAxleRow4Weight(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.chassisAxleRow5Weight":
-		if e.complexity.SignalAggregations.ChassisAxleRow5Weight == nil {
+		if e.ComplexityRoot.SignalAggregations.ChassisAxleRow5Weight == nil {
 			break
 		}
 
@@ -1223,9 +1208,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.ChassisAxleRow5Weight(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.ChassisAxleRow5Weight(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.chassisBrakeABSIsWarningOn":
-		if e.complexity.SignalAggregations.ChassisBrakeABSIsWarningOn == nil {
+		if e.ComplexityRoot.SignalAggregations.ChassisBrakeABSIsWarningOn == nil {
 			break
 		}
 
@@ -1234,9 +1219,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.ChassisBrakeABSIsWarningOn(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.ChassisBrakeABSIsWarningOn(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.chassisBrakeCircuit1PressurePrimary":
-		if e.complexity.SignalAggregations.ChassisBrakeCircuit1PressurePrimary == nil {
+		if e.ComplexityRoot.SignalAggregations.ChassisBrakeCircuit1PressurePrimary == nil {
 			break
 		}
 
@@ -1245,9 +1230,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.ChassisBrakeCircuit1PressurePrimary(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.ChassisBrakeCircuit1PressurePrimary(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.chassisBrakeCircuit2PressurePrimary":
-		if e.complexity.SignalAggregations.ChassisBrakeCircuit2PressurePrimary == nil {
+		if e.ComplexityRoot.SignalAggregations.ChassisBrakeCircuit2PressurePrimary == nil {
 			break
 		}
 
@@ -1256,9 +1241,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.ChassisBrakeCircuit2PressurePrimary(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.ChassisBrakeCircuit2PressurePrimary(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.chassisBrakeIsPedalPressed":
-		if e.complexity.SignalAggregations.ChassisBrakeIsPedalPressed == nil {
+		if e.ComplexityRoot.SignalAggregations.ChassisBrakeIsPedalPressed == nil {
 			break
 		}
 
@@ -1267,9 +1252,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.ChassisBrakeIsPedalPressed(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.ChassisBrakeIsPedalPressed(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.chassisBrakePedalPosition":
-		if e.complexity.SignalAggregations.ChassisBrakePedalPosition == nil {
+		if e.ComplexityRoot.SignalAggregations.ChassisBrakePedalPosition == nil {
 			break
 		}
 
@@ -1278,9 +1263,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.ChassisBrakePedalPosition(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.ChassisBrakePedalPosition(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.chassisParkingBrakeIsEngaged":
-		if e.complexity.SignalAggregations.ChassisParkingBrakeIsEngaged == nil {
+		if e.ComplexityRoot.SignalAggregations.ChassisParkingBrakeIsEngaged == nil {
 			break
 		}
 
@@ -1289,9 +1274,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.ChassisParkingBrakeIsEngaged(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.ChassisParkingBrakeIsEngaged(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.chassisTireSystemIsWarningOn":
-		if e.complexity.SignalAggregations.ChassisTireSystemIsWarningOn == nil {
+		if e.ComplexityRoot.SignalAggregations.ChassisTireSystemIsWarningOn == nil {
 			break
 		}
 
@@ -1300,9 +1285,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.ChassisTireSystemIsWarningOn(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.ChassisTireSystemIsWarningOn(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.connectivityCellularIsJammingDetected":
-		if e.complexity.SignalAggregations.ConnectivityCellularIsJammingDetected == nil {
+		if e.ComplexityRoot.SignalAggregations.ConnectivityCellularIsJammingDetected == nil {
 			break
 		}
 
@@ -1311,9 +1296,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.ConnectivityCellularIsJammingDetected(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.ConnectivityCellularIsJammingDetected(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.currentLocationAltitude":
-		if e.complexity.SignalAggregations.CurrentLocationAltitude == nil {
+		if e.ComplexityRoot.SignalAggregations.CurrentLocationAltitude == nil {
 			break
 		}
 
@@ -1322,9 +1307,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.CurrentLocationAltitude(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.CurrentLocationAltitude(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.currentLocationApproximateCoordinates":
-		if e.complexity.SignalAggregations.CurrentLocationApproximateCoordinates == nil {
+		if e.ComplexityRoot.SignalAggregations.CurrentLocationApproximateCoordinates == nil {
 			break
 		}
 
@@ -1333,9 +1318,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.CurrentLocationApproximateCoordinates(childComplexity, args["agg"].(model.LocationAggregation)), true
+		return e.ComplexityRoot.SignalAggregations.CurrentLocationApproximateCoordinates(childComplexity, args["agg"].(model.LocationAggregation)), true
 	case "SignalAggregations.currentLocationCoordinates":
-		if e.complexity.SignalAggregations.CurrentLocationCoordinates == nil {
+		if e.ComplexityRoot.SignalAggregations.CurrentLocationCoordinates == nil {
 			break
 		}
 
@@ -1344,9 +1329,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.CurrentLocationCoordinates(childComplexity, args["agg"].(model.LocationAggregation), args["filter"].(*model.SignalLocationFilter)), true
+		return e.ComplexityRoot.SignalAggregations.CurrentLocationCoordinates(childComplexity, args["agg"].(model.LocationAggregation), args["filter"].(*model.SignalLocationFilter)), true
 	case "SignalAggregations.currentLocationHeading":
-		if e.complexity.SignalAggregations.CurrentLocationHeading == nil {
+		if e.ComplexityRoot.SignalAggregations.CurrentLocationHeading == nil {
 			break
 		}
 
@@ -1355,9 +1340,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.CurrentLocationHeading(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.CurrentLocationHeading(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.exteriorAirTemperature":
-		if e.complexity.SignalAggregations.ExteriorAirTemperature == nil {
+		if e.ComplexityRoot.SignalAggregations.ExteriorAirTemperature == nil {
 			break
 		}
 
@@ -1366,9 +1351,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.ExteriorAirTemperature(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.ExteriorAirTemperature(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.isIgnitionOn":
-		if e.complexity.SignalAggregations.IsIgnitionOn == nil {
+		if e.ComplexityRoot.SignalAggregations.IsIgnitionOn == nil {
 			break
 		}
 
@@ -1377,9 +1362,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.IsIgnitionOn(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.IsIgnitionOn(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.lowVoltageBatteryCurrentVoltage":
-		if e.complexity.SignalAggregations.LowVoltageBatteryCurrentVoltage == nil {
+		if e.ComplexityRoot.SignalAggregations.LowVoltageBatteryCurrentVoltage == nil {
 			break
 		}
 
@@ -1388,9 +1373,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.LowVoltageBatteryCurrentVoltage(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.LowVoltageBatteryCurrentVoltage(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.obdBarometricPressure":
-		if e.complexity.SignalAggregations.ObdBarometricPressure == nil {
+		if e.ComplexityRoot.SignalAggregations.ObdBarometricPressure == nil {
 			break
 		}
 
@@ -1399,9 +1384,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.ObdBarometricPressure(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.ObdBarometricPressure(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.obdCommandedEGR":
-		if e.complexity.SignalAggregations.ObdCommandedEgr == nil {
+		if e.ComplexityRoot.SignalAggregations.ObdCommandedEgr == nil {
 			break
 		}
 
@@ -1410,9 +1395,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.ObdCommandedEgr(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.ObdCommandedEgr(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.obdCommandedEVAP":
-		if e.complexity.SignalAggregations.ObdCommandedEvap == nil {
+		if e.ComplexityRoot.SignalAggregations.ObdCommandedEvap == nil {
 			break
 		}
 
@@ -1421,9 +1406,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.ObdCommandedEvap(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.ObdCommandedEvap(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.obdDTCList":
-		if e.complexity.SignalAggregations.ObdDTCList == nil {
+		if e.ComplexityRoot.SignalAggregations.ObdDTCList == nil {
 			break
 		}
 
@@ -1432,9 +1417,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.ObdDTCList(childComplexity, args["agg"].(model.StringAggregation)), true
+		return e.ComplexityRoot.SignalAggregations.ObdDTCList(childComplexity, args["agg"].(model.StringAggregation)), true
 	case "SignalAggregations.obdDistanceSinceDTCClear":
-		if e.complexity.SignalAggregations.ObdDistanceSinceDTCClear == nil {
+		if e.ComplexityRoot.SignalAggregations.ObdDistanceSinceDTCClear == nil {
 			break
 		}
 
@@ -1443,9 +1428,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.ObdDistanceSinceDTCClear(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.ObdDistanceSinceDTCClear(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.obdDistanceWithMIL":
-		if e.complexity.SignalAggregations.ObdDistanceWithMil == nil {
+		if e.ComplexityRoot.SignalAggregations.ObdDistanceWithMil == nil {
 			break
 		}
 
@@ -1454,9 +1439,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.ObdDistanceWithMil(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.ObdDistanceWithMil(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.obdEngineLoad":
-		if e.complexity.SignalAggregations.ObdEngineLoad == nil {
+		if e.ComplexityRoot.SignalAggregations.ObdEngineLoad == nil {
 			break
 		}
 
@@ -1465,9 +1450,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.ObdEngineLoad(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.ObdEngineLoad(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.obdFuelPressure":
-		if e.complexity.SignalAggregations.ObdFuelPressure == nil {
+		if e.ComplexityRoot.SignalAggregations.ObdFuelPressure == nil {
 			break
 		}
 
@@ -1476,9 +1461,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.ObdFuelPressure(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.ObdFuelPressure(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.obdFuelRate":
-		if e.complexity.SignalAggregations.ObdFuelRate == nil {
+		if e.ComplexityRoot.SignalAggregations.ObdFuelRate == nil {
 			break
 		}
 
@@ -1487,9 +1472,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.ObdFuelRate(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.ObdFuelRate(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.obdFuelTypeName":
-		if e.complexity.SignalAggregations.ObdFuelTypeName == nil {
+		if e.ComplexityRoot.SignalAggregations.ObdFuelTypeName == nil {
 			break
 		}
 
@@ -1498,9 +1483,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.ObdFuelTypeName(childComplexity, args["agg"].(model.StringAggregation)), true
+		return e.ComplexityRoot.SignalAggregations.ObdFuelTypeName(childComplexity, args["agg"].(model.StringAggregation)), true
 	case "SignalAggregations.obdIntakeTemp":
-		if e.complexity.SignalAggregations.ObdIntakeTemp == nil {
+		if e.ComplexityRoot.SignalAggregations.ObdIntakeTemp == nil {
 			break
 		}
 
@@ -1509,9 +1494,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.ObdIntakeTemp(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.ObdIntakeTemp(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.obdIsEngineBlocked":
-		if e.complexity.SignalAggregations.ObdIsEngineBlocked == nil {
+		if e.ComplexityRoot.SignalAggregations.ObdIsEngineBlocked == nil {
 			break
 		}
 
@@ -1520,9 +1505,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.ObdIsEngineBlocked(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.ObdIsEngineBlocked(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.obdIsPTOActive":
-		if e.complexity.SignalAggregations.ObdIsPTOActive == nil {
+		if e.ComplexityRoot.SignalAggregations.ObdIsPTOActive == nil {
 			break
 		}
 
@@ -1531,9 +1516,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.ObdIsPTOActive(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.ObdIsPTOActive(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.obdIsPluggedIn":
-		if e.complexity.SignalAggregations.ObdIsPluggedIn == nil {
+		if e.ComplexityRoot.SignalAggregations.ObdIsPluggedIn == nil {
 			break
 		}
 
@@ -1542,9 +1527,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.ObdIsPluggedIn(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.ObdIsPluggedIn(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.obdLongTermFuelTrim1":
-		if e.complexity.SignalAggregations.ObdLongTermFuelTrim1 == nil {
+		if e.ComplexityRoot.SignalAggregations.ObdLongTermFuelTrim1 == nil {
 			break
 		}
 
@@ -1553,9 +1538,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.ObdLongTermFuelTrim1(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.ObdLongTermFuelTrim1(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.obdMAP":
-		if e.complexity.SignalAggregations.ObdMap == nil {
+		if e.ComplexityRoot.SignalAggregations.ObdMap == nil {
 			break
 		}
 
@@ -1564,9 +1549,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.ObdMap(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.ObdMap(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.obdO2WRSensor1Voltage":
-		if e.complexity.SignalAggregations.ObdO2WRSensor1Voltage == nil {
+		if e.ComplexityRoot.SignalAggregations.ObdO2WRSensor1Voltage == nil {
 			break
 		}
 
@@ -1575,9 +1560,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.ObdO2WRSensor1Voltage(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.ObdO2WRSensor1Voltage(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.obdO2WRSensor2Voltage":
-		if e.complexity.SignalAggregations.ObdO2WRSensor2Voltage == nil {
+		if e.ComplexityRoot.SignalAggregations.ObdO2WRSensor2Voltage == nil {
 			break
 		}
 
@@ -1586,9 +1571,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.ObdO2WRSensor2Voltage(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.ObdO2WRSensor2Voltage(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.obdOilTemperature":
-		if e.complexity.SignalAggregations.ObdOilTemperature == nil {
+		if e.ComplexityRoot.SignalAggregations.ObdOilTemperature == nil {
 			break
 		}
 
@@ -1597,9 +1582,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.ObdOilTemperature(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.ObdOilTemperature(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.obdRunTime":
-		if e.complexity.SignalAggregations.ObdRunTime == nil {
+		if e.ComplexityRoot.SignalAggregations.ObdRunTime == nil {
 			break
 		}
 
@@ -1608,9 +1593,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.ObdRunTime(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.ObdRunTime(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.obdShortTermFuelTrim1":
-		if e.complexity.SignalAggregations.ObdShortTermFuelTrim1 == nil {
+		if e.ComplexityRoot.SignalAggregations.ObdShortTermFuelTrim1 == nil {
 			break
 		}
 
@@ -1619,9 +1604,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.ObdShortTermFuelTrim1(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.ObdShortTermFuelTrim1(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.obdStatusDTCCount":
-		if e.complexity.SignalAggregations.ObdStatusDTCCount == nil {
+		if e.ComplexityRoot.SignalAggregations.ObdStatusDTCCount == nil {
 			break
 		}
 
@@ -1630,9 +1615,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.ObdStatusDTCCount(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.ObdStatusDTCCount(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.obdWarmupsSinceDTCClear":
-		if e.complexity.SignalAggregations.ObdWarmupsSinceDTCClear == nil {
+		if e.ComplexityRoot.SignalAggregations.ObdWarmupsSinceDTCClear == nil {
 			break
 		}
 
@@ -1641,9 +1626,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.ObdWarmupsSinceDTCClear(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.ObdWarmupsSinceDTCClear(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.powertrainCombustionEngineDieselExhaustFluidCapacity":
-		if e.complexity.SignalAggregations.PowertrainCombustionEngineDieselExhaustFluidCapacity == nil {
+		if e.ComplexityRoot.SignalAggregations.PowertrainCombustionEngineDieselExhaustFluidCapacity == nil {
 			break
 		}
 
@@ -1652,9 +1637,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainCombustionEngineDieselExhaustFluidCapacity(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.PowertrainCombustionEngineDieselExhaustFluidCapacity(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.powertrainCombustionEngineDieselExhaustFluidLevel":
-		if e.complexity.SignalAggregations.PowertrainCombustionEngineDieselExhaustFluidLevel == nil {
+		if e.ComplexityRoot.SignalAggregations.PowertrainCombustionEngineDieselExhaustFluidLevel == nil {
 			break
 		}
 
@@ -1663,9 +1648,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainCombustionEngineDieselExhaustFluidLevel(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.PowertrainCombustionEngineDieselExhaustFluidLevel(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.powertrainCombustionEngineECT":
-		if e.complexity.SignalAggregations.PowertrainCombustionEngineEct == nil {
+		if e.ComplexityRoot.SignalAggregations.PowertrainCombustionEngineEct == nil {
 			break
 		}
 
@@ -1674,9 +1659,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainCombustionEngineEct(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.PowertrainCombustionEngineEct(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.powertrainCombustionEngineEngineOilLevel":
-		if e.complexity.SignalAggregations.PowertrainCombustionEngineEngineOilLevel == nil {
+		if e.ComplexityRoot.SignalAggregations.PowertrainCombustionEngineEngineOilLevel == nil {
 			break
 		}
 
@@ -1685,9 +1670,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainCombustionEngineEngineOilLevel(childComplexity, args["agg"].(model.StringAggregation)), true
+		return e.ComplexityRoot.SignalAggregations.PowertrainCombustionEngineEngineOilLevel(childComplexity, args["agg"].(model.StringAggregation)), true
 	case "SignalAggregations.powertrainCombustionEngineEngineOilRelativeLevel":
-		if e.complexity.SignalAggregations.PowertrainCombustionEngineEngineOilRelativeLevel == nil {
+		if e.ComplexityRoot.SignalAggregations.PowertrainCombustionEngineEngineOilRelativeLevel == nil {
 			break
 		}
 
@@ -1696,9 +1681,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainCombustionEngineEngineOilRelativeLevel(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.PowertrainCombustionEngineEngineOilRelativeLevel(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.powertrainCombustionEngineEOP":
-		if e.complexity.SignalAggregations.PowertrainCombustionEngineEop == nil {
+		if e.ComplexityRoot.SignalAggregations.PowertrainCombustionEngineEop == nil {
 			break
 		}
 
@@ -1707,9 +1692,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainCombustionEngineEop(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.PowertrainCombustionEngineEop(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.powertrainCombustionEngineEOT":
-		if e.complexity.SignalAggregations.PowertrainCombustionEngineEot == nil {
+		if e.ComplexityRoot.SignalAggregations.PowertrainCombustionEngineEot == nil {
 			break
 		}
 
@@ -1718,9 +1703,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainCombustionEngineEot(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.PowertrainCombustionEngineEot(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.powertrainCombustionEngineMAF":
-		if e.complexity.SignalAggregations.PowertrainCombustionEngineMaf == nil {
+		if e.ComplexityRoot.SignalAggregations.PowertrainCombustionEngineMaf == nil {
 			break
 		}
 
@@ -1729,9 +1714,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainCombustionEngineMaf(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.PowertrainCombustionEngineMaf(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.powertrainCombustionEngineSpeed":
-		if e.complexity.SignalAggregations.PowertrainCombustionEngineSpeed == nil {
+		if e.ComplexityRoot.SignalAggregations.PowertrainCombustionEngineSpeed == nil {
 			break
 		}
 
@@ -1740,9 +1725,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainCombustionEngineSpeed(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.PowertrainCombustionEngineSpeed(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.powertrainCombustionEngineTorque":
-		if e.complexity.SignalAggregations.PowertrainCombustionEngineTorque == nil {
+		if e.ComplexityRoot.SignalAggregations.PowertrainCombustionEngineTorque == nil {
 			break
 		}
 
@@ -1751,9 +1736,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainCombustionEngineTorque(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.PowertrainCombustionEngineTorque(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.powertrainCombustionEngineTorquePercent":
-		if e.complexity.SignalAggregations.PowertrainCombustionEngineTorquePercent == nil {
+		if e.ComplexityRoot.SignalAggregations.PowertrainCombustionEngineTorquePercent == nil {
 			break
 		}
 
@@ -1762,9 +1747,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainCombustionEngineTorquePercent(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.PowertrainCombustionEngineTorquePercent(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.powertrainCombustionEngineTPS":
-		if e.complexity.SignalAggregations.PowertrainCombustionEngineTps == nil {
+		if e.ComplexityRoot.SignalAggregations.PowertrainCombustionEngineTps == nil {
 			break
 		}
 
@@ -1773,9 +1758,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainCombustionEngineTps(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.PowertrainCombustionEngineTps(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.powertrainFuelSystemAbsoluteLevel":
-		if e.complexity.SignalAggregations.PowertrainFuelSystemAbsoluteLevel == nil {
+		if e.ComplexityRoot.SignalAggregations.PowertrainFuelSystemAbsoluteLevel == nil {
 			break
 		}
 
@@ -1784,9 +1769,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainFuelSystemAbsoluteLevel(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.PowertrainFuelSystemAbsoluteLevel(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.powertrainFuelSystemAccumulatedConsumption":
-		if e.complexity.SignalAggregations.PowertrainFuelSystemAccumulatedConsumption == nil {
+		if e.ComplexityRoot.SignalAggregations.PowertrainFuelSystemAccumulatedConsumption == nil {
 			break
 		}
 
@@ -1795,9 +1780,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainFuelSystemAccumulatedConsumption(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.PowertrainFuelSystemAccumulatedConsumption(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.powertrainFuelSystemRelativeLevel":
-		if e.complexity.SignalAggregations.PowertrainFuelSystemRelativeLevel == nil {
+		if e.ComplexityRoot.SignalAggregations.PowertrainFuelSystemRelativeLevel == nil {
 			break
 		}
 
@@ -1806,9 +1791,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainFuelSystemRelativeLevel(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.PowertrainFuelSystemRelativeLevel(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.powertrainFuelSystemSupportedFuelTypes":
-		if e.complexity.SignalAggregations.PowertrainFuelSystemSupportedFuelTypes == nil {
+		if e.ComplexityRoot.SignalAggregations.PowertrainFuelSystemSupportedFuelTypes == nil {
 			break
 		}
 
@@ -1817,9 +1802,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainFuelSystemSupportedFuelTypes(childComplexity, args["agg"].(model.StringAggregation)), true
+		return e.ComplexityRoot.SignalAggregations.PowertrainFuelSystemSupportedFuelTypes(childComplexity, args["agg"].(model.StringAggregation)), true
 	case "SignalAggregations.powertrainRange":
-		if e.complexity.SignalAggregations.PowertrainRange == nil {
+		if e.ComplexityRoot.SignalAggregations.PowertrainRange == nil {
 			break
 		}
 
@@ -1828,9 +1813,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainRange(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.PowertrainRange(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.powertrainTractionBatteryChargingAddedEnergy":
-		if e.complexity.SignalAggregations.PowertrainTractionBatteryChargingAddedEnergy == nil {
+		if e.ComplexityRoot.SignalAggregations.PowertrainTractionBatteryChargingAddedEnergy == nil {
 			break
 		}
 
@@ -1839,9 +1824,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainTractionBatteryChargingAddedEnergy(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.PowertrainTractionBatteryChargingAddedEnergy(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.powertrainTractionBatteryChargingChargeCurrentAC":
-		if e.complexity.SignalAggregations.PowertrainTractionBatteryChargingChargeCurrentAc == nil {
+		if e.ComplexityRoot.SignalAggregations.PowertrainTractionBatteryChargingChargeCurrentAc == nil {
 			break
 		}
 
@@ -1850,9 +1835,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainTractionBatteryChargingChargeCurrentAc(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.PowertrainTractionBatteryChargingChargeCurrentAc(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.powertrainTractionBatteryChargingChargeLimit":
-		if e.complexity.SignalAggregations.PowertrainTractionBatteryChargingChargeLimit == nil {
+		if e.ComplexityRoot.SignalAggregations.PowertrainTractionBatteryChargingChargeLimit == nil {
 			break
 		}
 
@@ -1861,9 +1846,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainTractionBatteryChargingChargeLimit(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.PowertrainTractionBatteryChargingChargeLimit(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.powertrainTractionBatteryChargingChargeVoltageUnknownType":
-		if e.complexity.SignalAggregations.PowertrainTractionBatteryChargingChargeVoltageUnknownType == nil {
+		if e.ComplexityRoot.SignalAggregations.PowertrainTractionBatteryChargingChargeVoltageUnknownType == nil {
 			break
 		}
 
@@ -1872,9 +1857,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainTractionBatteryChargingChargeVoltageUnknownType(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.PowertrainTractionBatteryChargingChargeVoltageUnknownType(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.powertrainTractionBatteryChargingIsCharging":
-		if e.complexity.SignalAggregations.PowertrainTractionBatteryChargingIsCharging == nil {
+		if e.ComplexityRoot.SignalAggregations.PowertrainTractionBatteryChargingIsCharging == nil {
 			break
 		}
 
@@ -1883,9 +1868,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainTractionBatteryChargingIsCharging(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.PowertrainTractionBatteryChargingIsCharging(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.powertrainTractionBatteryChargingIsChargingCableConnected":
-		if e.complexity.SignalAggregations.PowertrainTractionBatteryChargingIsChargingCableConnected == nil {
+		if e.ComplexityRoot.SignalAggregations.PowertrainTractionBatteryChargingIsChargingCableConnected == nil {
 			break
 		}
 
@@ -1894,9 +1879,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainTractionBatteryChargingIsChargingCableConnected(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.PowertrainTractionBatteryChargingIsChargingCableConnected(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.powertrainTractionBatteryChargingPower":
-		if e.complexity.SignalAggregations.PowertrainTractionBatteryChargingPower == nil {
+		if e.ComplexityRoot.SignalAggregations.PowertrainTractionBatteryChargingPower == nil {
 			break
 		}
 
@@ -1905,9 +1890,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainTractionBatteryChargingPower(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.PowertrainTractionBatteryChargingPower(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.powertrainTractionBatteryCurrentPower":
-		if e.complexity.SignalAggregations.PowertrainTractionBatteryCurrentPower == nil {
+		if e.ComplexityRoot.SignalAggregations.PowertrainTractionBatteryCurrentPower == nil {
 			break
 		}
 
@@ -1916,9 +1901,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainTractionBatteryCurrentPower(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.PowertrainTractionBatteryCurrentPower(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.powertrainTractionBatteryCurrentVoltage":
-		if e.complexity.SignalAggregations.PowertrainTractionBatteryCurrentVoltage == nil {
+		if e.ComplexityRoot.SignalAggregations.PowertrainTractionBatteryCurrentVoltage == nil {
 			break
 		}
 
@@ -1927,9 +1912,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainTractionBatteryCurrentVoltage(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.PowertrainTractionBatteryCurrentVoltage(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.powertrainTractionBatteryGrossCapacity":
-		if e.complexity.SignalAggregations.PowertrainTractionBatteryGrossCapacity == nil {
+		if e.ComplexityRoot.SignalAggregations.PowertrainTractionBatteryGrossCapacity == nil {
 			break
 		}
 
@@ -1938,9 +1923,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainTractionBatteryGrossCapacity(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.PowertrainTractionBatteryGrossCapacity(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.powertrainTractionBatteryRange":
-		if e.complexity.SignalAggregations.PowertrainTractionBatteryRange == nil {
+		if e.ComplexityRoot.SignalAggregations.PowertrainTractionBatteryRange == nil {
 			break
 		}
 
@@ -1949,9 +1934,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainTractionBatteryRange(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.PowertrainTractionBatteryRange(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.powertrainTractionBatteryStateOfChargeCurrent":
-		if e.complexity.SignalAggregations.PowertrainTractionBatteryStateOfChargeCurrent == nil {
+		if e.ComplexityRoot.SignalAggregations.PowertrainTractionBatteryStateOfChargeCurrent == nil {
 			break
 		}
 
@@ -1960,9 +1945,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainTractionBatteryStateOfChargeCurrent(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.PowertrainTractionBatteryStateOfChargeCurrent(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.powertrainTractionBatteryStateOfChargeCurrentEnergy":
-		if e.complexity.SignalAggregations.PowertrainTractionBatteryStateOfChargeCurrentEnergy == nil {
+		if e.ComplexityRoot.SignalAggregations.PowertrainTractionBatteryStateOfChargeCurrentEnergy == nil {
 			break
 		}
 
@@ -1971,9 +1956,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainTractionBatteryStateOfChargeCurrentEnergy(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.PowertrainTractionBatteryStateOfChargeCurrentEnergy(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.powertrainTractionBatteryStateOfHealth":
-		if e.complexity.SignalAggregations.PowertrainTractionBatteryStateOfHealth == nil {
+		if e.ComplexityRoot.SignalAggregations.PowertrainTractionBatteryStateOfHealth == nil {
 			break
 		}
 
@@ -1982,9 +1967,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainTractionBatteryStateOfHealth(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.PowertrainTractionBatteryStateOfHealth(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.powertrainTractionBatteryTemperatureAverage":
-		if e.complexity.SignalAggregations.PowertrainTractionBatteryTemperatureAverage == nil {
+		if e.ComplexityRoot.SignalAggregations.PowertrainTractionBatteryTemperatureAverage == nil {
 			break
 		}
 
@@ -1993,9 +1978,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainTractionBatteryTemperatureAverage(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.PowertrainTractionBatteryTemperatureAverage(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.powertrainTransmissionCurrentGear":
-		if e.complexity.SignalAggregations.PowertrainTransmissionCurrentGear == nil {
+		if e.ComplexityRoot.SignalAggregations.PowertrainTransmissionCurrentGear == nil {
 			break
 		}
 
@@ -2004,9 +1989,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainTransmissionCurrentGear(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.PowertrainTransmissionCurrentGear(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.powertrainTransmissionIsClutchSwitchOperated":
-		if e.complexity.SignalAggregations.PowertrainTransmissionIsClutchSwitchOperated == nil {
+		if e.ComplexityRoot.SignalAggregations.PowertrainTransmissionIsClutchSwitchOperated == nil {
 			break
 		}
 
@@ -2015,9 +2000,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainTransmissionIsClutchSwitchOperated(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.PowertrainTransmissionIsClutchSwitchOperated(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.powertrainTransmissionRetarderActualTorque":
-		if e.complexity.SignalAggregations.PowertrainTransmissionRetarderActualTorque == nil {
+		if e.ComplexityRoot.SignalAggregations.PowertrainTransmissionRetarderActualTorque == nil {
 			break
 		}
 
@@ -2026,9 +2011,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainTransmissionRetarderActualTorque(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.PowertrainTransmissionRetarderActualTorque(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.powertrainTransmissionRetarderTorqueMode":
-		if e.complexity.SignalAggregations.PowertrainTransmissionRetarderTorqueMode == nil {
+		if e.ComplexityRoot.SignalAggregations.PowertrainTransmissionRetarderTorqueMode == nil {
 			break
 		}
 
@@ -2037,9 +2022,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainTransmissionRetarderTorqueMode(childComplexity, args["agg"].(model.StringAggregation)), true
+		return e.ComplexityRoot.SignalAggregations.PowertrainTransmissionRetarderTorqueMode(childComplexity, args["agg"].(model.StringAggregation)), true
 	case "SignalAggregations.powertrainTransmissionSelectedGear":
-		if e.complexity.SignalAggregations.PowertrainTransmissionSelectedGear == nil {
+		if e.ComplexityRoot.SignalAggregations.PowertrainTransmissionSelectedGear == nil {
 			break
 		}
 
@@ -2048,9 +2033,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainTransmissionSelectedGear(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.PowertrainTransmissionSelectedGear(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.powertrainTransmissionTemperature":
-		if e.complexity.SignalAggregations.PowertrainTransmissionTemperature == nil {
+		if e.ComplexityRoot.SignalAggregations.PowertrainTransmissionTemperature == nil {
 			break
 		}
 
@@ -2059,9 +2044,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainTransmissionTemperature(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.PowertrainTransmissionTemperature(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.powertrainTransmissionTravelledDistance":
-		if e.complexity.SignalAggregations.PowertrainTransmissionTravelledDistance == nil {
+		if e.ComplexityRoot.SignalAggregations.PowertrainTransmissionTravelledDistance == nil {
 			break
 		}
 
@@ -2070,9 +2055,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainTransmissionTravelledDistance(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.PowertrainTransmissionTravelledDistance(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.powertrainType":
-		if e.complexity.SignalAggregations.PowertrainType == nil {
+		if e.ComplexityRoot.SignalAggregations.PowertrainType == nil {
 			break
 		}
 
@@ -2081,9 +2066,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.PowertrainType(childComplexity, args["agg"].(model.StringAggregation)), true
+		return e.ComplexityRoot.SignalAggregations.PowertrainType(childComplexity, args["agg"].(model.StringAggregation)), true
 	case "SignalAggregations.serviceDistanceToService":
-		if e.complexity.SignalAggregations.ServiceDistanceToService == nil {
+		if e.ComplexityRoot.SignalAggregations.ServiceDistanceToService == nil {
 			break
 		}
 
@@ -2092,9 +2077,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.ServiceDistanceToService(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.ServiceDistanceToService(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.serviceTimeToService":
-		if e.complexity.SignalAggregations.ServiceTimeToService == nil {
+		if e.ComplexityRoot.SignalAggregations.ServiceTimeToService == nil {
 			break
 		}
 
@@ -2103,9 +2088,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.ServiceTimeToService(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.ServiceTimeToService(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.speed":
-		if e.complexity.SignalAggregations.Speed == nil {
+		if e.ComplexityRoot.SignalAggregations.Speed == nil {
 			break
 		}
 
@@ -2114,824 +2099,824 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.SignalAggregations.Speed(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
+		return e.ComplexityRoot.SignalAggregations.Speed(childComplexity, args["agg"].(model.FloatAggregation), args["filter"].(*model.SignalFloatFilter)), true
 	case "SignalAggregations.timestamp":
-		if e.complexity.SignalAggregations.Timestamp == nil {
+		if e.ComplexityRoot.SignalAggregations.Timestamp == nil {
 			break
 		}
 
-		return e.complexity.SignalAggregations.Timestamp(childComplexity), true
+		return e.ComplexityRoot.SignalAggregations.Timestamp(childComplexity), true
 
 	case "SignalCollection.angularVelocityYaw":
-		if e.complexity.SignalCollection.AngularVelocityYaw == nil {
+		if e.ComplexityRoot.SignalCollection.AngularVelocityYaw == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.AngularVelocityYaw(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.AngularVelocityYaw(childComplexity), true
 	case "SignalCollection.bodyLightsIsAirbagWarningOn":
-		if e.complexity.SignalCollection.BodyLightsIsAirbagWarningOn == nil {
+		if e.ComplexityRoot.SignalCollection.BodyLightsIsAirbagWarningOn == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.BodyLightsIsAirbagWarningOn(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.BodyLightsIsAirbagWarningOn(childComplexity), true
 	case "SignalCollection.bodyLockIsLocked":
-		if e.complexity.SignalCollection.BodyLockIsLocked == nil {
+		if e.ComplexityRoot.SignalCollection.BodyLockIsLocked == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.BodyLockIsLocked(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.BodyLockIsLocked(childComplexity), true
 	case "SignalCollection.bodyTrunkFrontIsOpen":
-		if e.complexity.SignalCollection.BodyTrunkFrontIsOpen == nil {
+		if e.ComplexityRoot.SignalCollection.BodyTrunkFrontIsOpen == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.BodyTrunkFrontIsOpen(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.BodyTrunkFrontIsOpen(childComplexity), true
 	case "SignalCollection.bodyTrunkRearIsOpen":
-		if e.complexity.SignalCollection.BodyTrunkRearIsOpen == nil {
+		if e.ComplexityRoot.SignalCollection.BodyTrunkRearIsOpen == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.BodyTrunkRearIsOpen(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.BodyTrunkRearIsOpen(childComplexity), true
 	case "SignalCollection.cabinDoorRow1DriverSideIsOpen":
-		if e.complexity.SignalCollection.CabinDoorRow1DriverSideIsOpen == nil {
+		if e.ComplexityRoot.SignalCollection.CabinDoorRow1DriverSideIsOpen == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.CabinDoorRow1DriverSideIsOpen(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.CabinDoorRow1DriverSideIsOpen(childComplexity), true
 	case "SignalCollection.cabinDoorRow1DriverSideWindowIsOpen":
-		if e.complexity.SignalCollection.CabinDoorRow1DriverSideWindowIsOpen == nil {
+		if e.ComplexityRoot.SignalCollection.CabinDoorRow1DriverSideWindowIsOpen == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.CabinDoorRow1DriverSideWindowIsOpen(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.CabinDoorRow1DriverSideWindowIsOpen(childComplexity), true
 	case "SignalCollection.cabinDoorRow1PassengerSideIsOpen":
-		if e.complexity.SignalCollection.CabinDoorRow1PassengerSideIsOpen == nil {
+		if e.ComplexityRoot.SignalCollection.CabinDoorRow1PassengerSideIsOpen == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.CabinDoorRow1PassengerSideIsOpen(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.CabinDoorRow1PassengerSideIsOpen(childComplexity), true
 	case "SignalCollection.cabinDoorRow1PassengerSideWindowIsOpen":
-		if e.complexity.SignalCollection.CabinDoorRow1PassengerSideWindowIsOpen == nil {
+		if e.ComplexityRoot.SignalCollection.CabinDoorRow1PassengerSideWindowIsOpen == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.CabinDoorRow1PassengerSideWindowIsOpen(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.CabinDoorRow1PassengerSideWindowIsOpen(childComplexity), true
 	case "SignalCollection.cabinDoorRow2DriverSideIsOpen":
-		if e.complexity.SignalCollection.CabinDoorRow2DriverSideIsOpen == nil {
+		if e.ComplexityRoot.SignalCollection.CabinDoorRow2DriverSideIsOpen == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.CabinDoorRow2DriverSideIsOpen(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.CabinDoorRow2DriverSideIsOpen(childComplexity), true
 	case "SignalCollection.cabinDoorRow2DriverSideWindowIsOpen":
-		if e.complexity.SignalCollection.CabinDoorRow2DriverSideWindowIsOpen == nil {
+		if e.ComplexityRoot.SignalCollection.CabinDoorRow2DriverSideWindowIsOpen == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.CabinDoorRow2DriverSideWindowIsOpen(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.CabinDoorRow2DriverSideWindowIsOpen(childComplexity), true
 	case "SignalCollection.cabinDoorRow2PassengerSideIsOpen":
-		if e.complexity.SignalCollection.CabinDoorRow2PassengerSideIsOpen == nil {
+		if e.ComplexityRoot.SignalCollection.CabinDoorRow2PassengerSideIsOpen == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.CabinDoorRow2PassengerSideIsOpen(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.CabinDoorRow2PassengerSideIsOpen(childComplexity), true
 	case "SignalCollection.cabinDoorRow2PassengerSideWindowIsOpen":
-		if e.complexity.SignalCollection.CabinDoorRow2PassengerSideWindowIsOpen == nil {
+		if e.ComplexityRoot.SignalCollection.CabinDoorRow2PassengerSideWindowIsOpen == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.CabinDoorRow2PassengerSideWindowIsOpen(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.CabinDoorRow2PassengerSideWindowIsOpen(childComplexity), true
 	case "SignalCollection.cabinSeatRow1DriverSideIsBelted":
-		if e.complexity.SignalCollection.CabinSeatRow1DriverSideIsBelted == nil {
+		if e.ComplexityRoot.SignalCollection.CabinSeatRow1DriverSideIsBelted == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.CabinSeatRow1DriverSideIsBelted(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.CabinSeatRow1DriverSideIsBelted(childComplexity), true
 	case "SignalCollection.cabinSeatRow1PassengerSideIsBelted":
-		if e.complexity.SignalCollection.CabinSeatRow1PassengerSideIsBelted == nil {
+		if e.ComplexityRoot.SignalCollection.CabinSeatRow1PassengerSideIsBelted == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.CabinSeatRow1PassengerSideIsBelted(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.CabinSeatRow1PassengerSideIsBelted(childComplexity), true
 	case "SignalCollection.cabinSeatRow2DriverSideIsBelted":
-		if e.complexity.SignalCollection.CabinSeatRow2DriverSideIsBelted == nil {
+		if e.ComplexityRoot.SignalCollection.CabinSeatRow2DriverSideIsBelted == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.CabinSeatRow2DriverSideIsBelted(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.CabinSeatRow2DriverSideIsBelted(childComplexity), true
 	case "SignalCollection.cabinSeatRow2MiddleIsBelted":
-		if e.complexity.SignalCollection.CabinSeatRow2MiddleIsBelted == nil {
+		if e.ComplexityRoot.SignalCollection.CabinSeatRow2MiddleIsBelted == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.CabinSeatRow2MiddleIsBelted(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.CabinSeatRow2MiddleIsBelted(childComplexity), true
 	case "SignalCollection.cabinSeatRow2PassengerSideIsBelted":
-		if e.complexity.SignalCollection.CabinSeatRow2PassengerSideIsBelted == nil {
+		if e.ComplexityRoot.SignalCollection.CabinSeatRow2PassengerSideIsBelted == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.CabinSeatRow2PassengerSideIsBelted(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.CabinSeatRow2PassengerSideIsBelted(childComplexity), true
 	case "SignalCollection.cabinSeatRow3DriverSideIsBelted":
-		if e.complexity.SignalCollection.CabinSeatRow3DriverSideIsBelted == nil {
+		if e.ComplexityRoot.SignalCollection.CabinSeatRow3DriverSideIsBelted == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.CabinSeatRow3DriverSideIsBelted(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.CabinSeatRow3DriverSideIsBelted(childComplexity), true
 	case "SignalCollection.cabinSeatRow3PassengerSideIsBelted":
-		if e.complexity.SignalCollection.CabinSeatRow3PassengerSideIsBelted == nil {
+		if e.ComplexityRoot.SignalCollection.CabinSeatRow3PassengerSideIsBelted == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.CabinSeatRow3PassengerSideIsBelted(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.CabinSeatRow3PassengerSideIsBelted(childComplexity), true
 	case "SignalCollection.chassisAxleRow1WheelLeftSpeed":
-		if e.complexity.SignalCollection.ChassisAxleRow1WheelLeftSpeed == nil {
+		if e.ComplexityRoot.SignalCollection.ChassisAxleRow1WheelLeftSpeed == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.ChassisAxleRow1WheelLeftSpeed(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.ChassisAxleRow1WheelLeftSpeed(childComplexity), true
 	case "SignalCollection.chassisAxleRow1WheelLeftTirePressure":
-		if e.complexity.SignalCollection.ChassisAxleRow1WheelLeftTirePressure == nil {
+		if e.ComplexityRoot.SignalCollection.ChassisAxleRow1WheelLeftTirePressure == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.ChassisAxleRow1WheelLeftTirePressure(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.ChassisAxleRow1WheelLeftTirePressure(childComplexity), true
 	case "SignalCollection.chassisAxleRow1WheelRightSpeed":
-		if e.complexity.SignalCollection.ChassisAxleRow1WheelRightSpeed == nil {
+		if e.ComplexityRoot.SignalCollection.ChassisAxleRow1WheelRightSpeed == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.ChassisAxleRow1WheelRightSpeed(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.ChassisAxleRow1WheelRightSpeed(childComplexity), true
 	case "SignalCollection.chassisAxleRow1WheelRightTirePressure":
-		if e.complexity.SignalCollection.ChassisAxleRow1WheelRightTirePressure == nil {
+		if e.ComplexityRoot.SignalCollection.ChassisAxleRow1WheelRightTirePressure == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.ChassisAxleRow1WheelRightTirePressure(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.ChassisAxleRow1WheelRightTirePressure(childComplexity), true
 	case "SignalCollection.chassisAxleRow2WheelLeftTirePressure":
-		if e.complexity.SignalCollection.ChassisAxleRow2WheelLeftTirePressure == nil {
+		if e.ComplexityRoot.SignalCollection.ChassisAxleRow2WheelLeftTirePressure == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.ChassisAxleRow2WheelLeftTirePressure(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.ChassisAxleRow2WheelLeftTirePressure(childComplexity), true
 	case "SignalCollection.chassisAxleRow2WheelRightTirePressure":
-		if e.complexity.SignalCollection.ChassisAxleRow2WheelRightTirePressure == nil {
+		if e.ComplexityRoot.SignalCollection.ChassisAxleRow2WheelRightTirePressure == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.ChassisAxleRow2WheelRightTirePressure(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.ChassisAxleRow2WheelRightTirePressure(childComplexity), true
 	case "SignalCollection.chassisAxleRow3Weight":
-		if e.complexity.SignalCollection.ChassisAxleRow3Weight == nil {
+		if e.ComplexityRoot.SignalCollection.ChassisAxleRow3Weight == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.ChassisAxleRow3Weight(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.ChassisAxleRow3Weight(childComplexity), true
 	case "SignalCollection.chassisAxleRow4Weight":
-		if e.complexity.SignalCollection.ChassisAxleRow4Weight == nil {
+		if e.ComplexityRoot.SignalCollection.ChassisAxleRow4Weight == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.ChassisAxleRow4Weight(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.ChassisAxleRow4Weight(childComplexity), true
 	case "SignalCollection.chassisAxleRow5Weight":
-		if e.complexity.SignalCollection.ChassisAxleRow5Weight == nil {
+		if e.ComplexityRoot.SignalCollection.ChassisAxleRow5Weight == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.ChassisAxleRow5Weight(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.ChassisAxleRow5Weight(childComplexity), true
 	case "SignalCollection.chassisBrakeABSIsWarningOn":
-		if e.complexity.SignalCollection.ChassisBrakeABSIsWarningOn == nil {
+		if e.ComplexityRoot.SignalCollection.ChassisBrakeABSIsWarningOn == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.ChassisBrakeABSIsWarningOn(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.ChassisBrakeABSIsWarningOn(childComplexity), true
 	case "SignalCollection.chassisBrakeCircuit1PressurePrimary":
-		if e.complexity.SignalCollection.ChassisBrakeCircuit1PressurePrimary == nil {
+		if e.ComplexityRoot.SignalCollection.ChassisBrakeCircuit1PressurePrimary == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.ChassisBrakeCircuit1PressurePrimary(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.ChassisBrakeCircuit1PressurePrimary(childComplexity), true
 	case "SignalCollection.chassisBrakeCircuit2PressurePrimary":
-		if e.complexity.SignalCollection.ChassisBrakeCircuit2PressurePrimary == nil {
+		if e.ComplexityRoot.SignalCollection.ChassisBrakeCircuit2PressurePrimary == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.ChassisBrakeCircuit2PressurePrimary(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.ChassisBrakeCircuit2PressurePrimary(childComplexity), true
 	case "SignalCollection.chassisBrakeIsPedalPressed":
-		if e.complexity.SignalCollection.ChassisBrakeIsPedalPressed == nil {
+		if e.ComplexityRoot.SignalCollection.ChassisBrakeIsPedalPressed == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.ChassisBrakeIsPedalPressed(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.ChassisBrakeIsPedalPressed(childComplexity), true
 	case "SignalCollection.chassisBrakePedalPosition":
-		if e.complexity.SignalCollection.ChassisBrakePedalPosition == nil {
+		if e.ComplexityRoot.SignalCollection.ChassisBrakePedalPosition == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.ChassisBrakePedalPosition(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.ChassisBrakePedalPosition(childComplexity), true
 	case "SignalCollection.chassisParkingBrakeIsEngaged":
-		if e.complexity.SignalCollection.ChassisParkingBrakeIsEngaged == nil {
+		if e.ComplexityRoot.SignalCollection.ChassisParkingBrakeIsEngaged == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.ChassisParkingBrakeIsEngaged(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.ChassisParkingBrakeIsEngaged(childComplexity), true
 	case "SignalCollection.chassisTireSystemIsWarningOn":
-		if e.complexity.SignalCollection.ChassisTireSystemIsWarningOn == nil {
+		if e.ComplexityRoot.SignalCollection.ChassisTireSystemIsWarningOn == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.ChassisTireSystemIsWarningOn(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.ChassisTireSystemIsWarningOn(childComplexity), true
 	case "SignalCollection.connectivityCellularIsJammingDetected":
-		if e.complexity.SignalCollection.ConnectivityCellularIsJammingDetected == nil {
+		if e.ComplexityRoot.SignalCollection.ConnectivityCellularIsJammingDetected == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.ConnectivityCellularIsJammingDetected(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.ConnectivityCellularIsJammingDetected(childComplexity), true
 	case "SignalCollection.currentLocationAltitude":
-		if e.complexity.SignalCollection.CurrentLocationAltitude == nil {
+		if e.ComplexityRoot.SignalCollection.CurrentLocationAltitude == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.CurrentLocationAltitude(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.CurrentLocationAltitude(childComplexity), true
 	case "SignalCollection.currentLocationApproximateCoordinates":
-		if e.complexity.SignalCollection.CurrentLocationApproximateCoordinates == nil {
+		if e.ComplexityRoot.SignalCollection.CurrentLocationApproximateCoordinates == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.CurrentLocationApproximateCoordinates(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.CurrentLocationApproximateCoordinates(childComplexity), true
 	case "SignalCollection.currentLocationCoordinates":
-		if e.complexity.SignalCollection.CurrentLocationCoordinates == nil {
+		if e.ComplexityRoot.SignalCollection.CurrentLocationCoordinates == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.CurrentLocationCoordinates(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.CurrentLocationCoordinates(childComplexity), true
 	case "SignalCollection.currentLocationHeading":
-		if e.complexity.SignalCollection.CurrentLocationHeading == nil {
+		if e.ComplexityRoot.SignalCollection.CurrentLocationHeading == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.CurrentLocationHeading(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.CurrentLocationHeading(childComplexity), true
 	case "SignalCollection.exteriorAirTemperature":
-		if e.complexity.SignalCollection.ExteriorAirTemperature == nil {
+		if e.ComplexityRoot.SignalCollection.ExteriorAirTemperature == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.ExteriorAirTemperature(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.ExteriorAirTemperature(childComplexity), true
 	case "SignalCollection.isIgnitionOn":
-		if e.complexity.SignalCollection.IsIgnitionOn == nil {
+		if e.ComplexityRoot.SignalCollection.IsIgnitionOn == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.IsIgnitionOn(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.IsIgnitionOn(childComplexity), true
 	case "SignalCollection.lastSeen":
-		if e.complexity.SignalCollection.LastSeen == nil {
+		if e.ComplexityRoot.SignalCollection.LastSeen == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.LastSeen(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.LastSeen(childComplexity), true
 	case "SignalCollection.lowVoltageBatteryCurrentVoltage":
-		if e.complexity.SignalCollection.LowVoltageBatteryCurrentVoltage == nil {
+		if e.ComplexityRoot.SignalCollection.LowVoltageBatteryCurrentVoltage == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.LowVoltageBatteryCurrentVoltage(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.LowVoltageBatteryCurrentVoltage(childComplexity), true
 	case "SignalCollection.obdBarometricPressure":
-		if e.complexity.SignalCollection.OBDBarometricPressure == nil {
+		if e.ComplexityRoot.SignalCollection.OBDBarometricPressure == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.OBDBarometricPressure(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.OBDBarometricPressure(childComplexity), true
 	case "SignalCollection.obdCommandedEGR":
-		if e.complexity.SignalCollection.OBDCommandedEGR == nil {
+		if e.ComplexityRoot.SignalCollection.OBDCommandedEGR == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.OBDCommandedEGR(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.OBDCommandedEGR(childComplexity), true
 	case "SignalCollection.obdCommandedEVAP":
-		if e.complexity.SignalCollection.OBDCommandedEVAP == nil {
+		if e.ComplexityRoot.SignalCollection.OBDCommandedEVAP == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.OBDCommandedEVAP(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.OBDCommandedEVAP(childComplexity), true
 	case "SignalCollection.obdDTCList":
-		if e.complexity.SignalCollection.OBDDTCList == nil {
+		if e.ComplexityRoot.SignalCollection.OBDDTCList == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.OBDDTCList(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.OBDDTCList(childComplexity), true
 	case "SignalCollection.obdDistanceSinceDTCClear":
-		if e.complexity.SignalCollection.OBDDistanceSinceDTCClear == nil {
+		if e.ComplexityRoot.SignalCollection.OBDDistanceSinceDTCClear == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.OBDDistanceSinceDTCClear(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.OBDDistanceSinceDTCClear(childComplexity), true
 	case "SignalCollection.obdDistanceWithMIL":
-		if e.complexity.SignalCollection.OBDDistanceWithMIL == nil {
+		if e.ComplexityRoot.SignalCollection.OBDDistanceWithMIL == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.OBDDistanceWithMIL(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.OBDDistanceWithMIL(childComplexity), true
 	case "SignalCollection.obdEngineLoad":
-		if e.complexity.SignalCollection.OBDEngineLoad == nil {
+		if e.ComplexityRoot.SignalCollection.OBDEngineLoad == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.OBDEngineLoad(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.OBDEngineLoad(childComplexity), true
 	case "SignalCollection.obdFuelPressure":
-		if e.complexity.SignalCollection.OBDFuelPressure == nil {
+		if e.ComplexityRoot.SignalCollection.OBDFuelPressure == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.OBDFuelPressure(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.OBDFuelPressure(childComplexity), true
 	case "SignalCollection.obdFuelRate":
-		if e.complexity.SignalCollection.OBDFuelRate == nil {
+		if e.ComplexityRoot.SignalCollection.OBDFuelRate == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.OBDFuelRate(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.OBDFuelRate(childComplexity), true
 	case "SignalCollection.obdFuelTypeName":
-		if e.complexity.SignalCollection.OBDFuelTypeName == nil {
+		if e.ComplexityRoot.SignalCollection.OBDFuelTypeName == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.OBDFuelTypeName(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.OBDFuelTypeName(childComplexity), true
 	case "SignalCollection.obdIntakeTemp":
-		if e.complexity.SignalCollection.OBDIntakeTemp == nil {
+		if e.ComplexityRoot.SignalCollection.OBDIntakeTemp == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.OBDIntakeTemp(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.OBDIntakeTemp(childComplexity), true
 	case "SignalCollection.obdIsEngineBlocked":
-		if e.complexity.SignalCollection.OBDIsEngineBlocked == nil {
+		if e.ComplexityRoot.SignalCollection.OBDIsEngineBlocked == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.OBDIsEngineBlocked(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.OBDIsEngineBlocked(childComplexity), true
 	case "SignalCollection.obdIsPTOActive":
-		if e.complexity.SignalCollection.OBDIsPTOActive == nil {
+		if e.ComplexityRoot.SignalCollection.OBDIsPTOActive == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.OBDIsPTOActive(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.OBDIsPTOActive(childComplexity), true
 	case "SignalCollection.obdIsPluggedIn":
-		if e.complexity.SignalCollection.OBDIsPluggedIn == nil {
+		if e.ComplexityRoot.SignalCollection.OBDIsPluggedIn == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.OBDIsPluggedIn(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.OBDIsPluggedIn(childComplexity), true
 	case "SignalCollection.obdLongTermFuelTrim1":
-		if e.complexity.SignalCollection.OBDLongTermFuelTrim1 == nil {
+		if e.ComplexityRoot.SignalCollection.OBDLongTermFuelTrim1 == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.OBDLongTermFuelTrim1(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.OBDLongTermFuelTrim1(childComplexity), true
 	case "SignalCollection.obdMAP":
-		if e.complexity.SignalCollection.OBDMAP == nil {
+		if e.ComplexityRoot.SignalCollection.OBDMAP == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.OBDMAP(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.OBDMAP(childComplexity), true
 	case "SignalCollection.obdO2WRSensor1Voltage":
-		if e.complexity.SignalCollection.OBDO2WRSensor1Voltage == nil {
+		if e.ComplexityRoot.SignalCollection.OBDO2WRSensor1Voltage == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.OBDO2WRSensor1Voltage(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.OBDO2WRSensor1Voltage(childComplexity), true
 	case "SignalCollection.obdO2WRSensor2Voltage":
-		if e.complexity.SignalCollection.OBDO2WRSensor2Voltage == nil {
+		if e.ComplexityRoot.SignalCollection.OBDO2WRSensor2Voltage == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.OBDO2WRSensor2Voltage(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.OBDO2WRSensor2Voltage(childComplexity), true
 	case "SignalCollection.obdOilTemperature":
-		if e.complexity.SignalCollection.OBDOilTemperature == nil {
+		if e.ComplexityRoot.SignalCollection.OBDOilTemperature == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.OBDOilTemperature(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.OBDOilTemperature(childComplexity), true
 	case "SignalCollection.obdRunTime":
-		if e.complexity.SignalCollection.OBDRunTime == nil {
+		if e.ComplexityRoot.SignalCollection.OBDRunTime == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.OBDRunTime(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.OBDRunTime(childComplexity), true
 	case "SignalCollection.obdShortTermFuelTrim1":
-		if e.complexity.SignalCollection.OBDShortTermFuelTrim1 == nil {
+		if e.ComplexityRoot.SignalCollection.OBDShortTermFuelTrim1 == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.OBDShortTermFuelTrim1(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.OBDShortTermFuelTrim1(childComplexity), true
 	case "SignalCollection.obdStatusDTCCount":
-		if e.complexity.SignalCollection.OBDStatusDTCCount == nil {
+		if e.ComplexityRoot.SignalCollection.OBDStatusDTCCount == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.OBDStatusDTCCount(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.OBDStatusDTCCount(childComplexity), true
 	case "SignalCollection.obdWarmupsSinceDTCClear":
-		if e.complexity.SignalCollection.OBDWarmupsSinceDTCClear == nil {
+		if e.ComplexityRoot.SignalCollection.OBDWarmupsSinceDTCClear == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.OBDWarmupsSinceDTCClear(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.OBDWarmupsSinceDTCClear(childComplexity), true
 	case "SignalCollection.powertrainCombustionEngineDieselExhaustFluidCapacity":
-		if e.complexity.SignalCollection.PowertrainCombustionEngineDieselExhaustFluidCapacity == nil {
+		if e.ComplexityRoot.SignalCollection.PowertrainCombustionEngineDieselExhaustFluidCapacity == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.PowertrainCombustionEngineDieselExhaustFluidCapacity(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.PowertrainCombustionEngineDieselExhaustFluidCapacity(childComplexity), true
 	case "SignalCollection.powertrainCombustionEngineDieselExhaustFluidLevel":
-		if e.complexity.SignalCollection.PowertrainCombustionEngineDieselExhaustFluidLevel == nil {
+		if e.ComplexityRoot.SignalCollection.PowertrainCombustionEngineDieselExhaustFluidLevel == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.PowertrainCombustionEngineDieselExhaustFluidLevel(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.PowertrainCombustionEngineDieselExhaustFluidLevel(childComplexity), true
 	case "SignalCollection.powertrainCombustionEngineECT":
-		if e.complexity.SignalCollection.PowertrainCombustionEngineECT == nil {
+		if e.ComplexityRoot.SignalCollection.PowertrainCombustionEngineECT == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.PowertrainCombustionEngineECT(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.PowertrainCombustionEngineECT(childComplexity), true
 	case "SignalCollection.powertrainCombustionEngineEOP":
-		if e.complexity.SignalCollection.PowertrainCombustionEngineEOP == nil {
+		if e.ComplexityRoot.SignalCollection.PowertrainCombustionEngineEOP == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.PowertrainCombustionEngineEOP(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.PowertrainCombustionEngineEOP(childComplexity), true
 	case "SignalCollection.powertrainCombustionEngineEOT":
-		if e.complexity.SignalCollection.PowertrainCombustionEngineEOT == nil {
+		if e.ComplexityRoot.SignalCollection.PowertrainCombustionEngineEOT == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.PowertrainCombustionEngineEOT(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.PowertrainCombustionEngineEOT(childComplexity), true
 	case "SignalCollection.powertrainCombustionEngineEngineOilLevel":
-		if e.complexity.SignalCollection.PowertrainCombustionEngineEngineOilLevel == nil {
+		if e.ComplexityRoot.SignalCollection.PowertrainCombustionEngineEngineOilLevel == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.PowertrainCombustionEngineEngineOilLevel(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.PowertrainCombustionEngineEngineOilLevel(childComplexity), true
 	case "SignalCollection.powertrainCombustionEngineEngineOilRelativeLevel":
-		if e.complexity.SignalCollection.PowertrainCombustionEngineEngineOilRelativeLevel == nil {
+		if e.ComplexityRoot.SignalCollection.PowertrainCombustionEngineEngineOilRelativeLevel == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.PowertrainCombustionEngineEngineOilRelativeLevel(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.PowertrainCombustionEngineEngineOilRelativeLevel(childComplexity), true
 	case "SignalCollection.powertrainCombustionEngineMAF":
-		if e.complexity.SignalCollection.PowertrainCombustionEngineMAF == nil {
+		if e.ComplexityRoot.SignalCollection.PowertrainCombustionEngineMAF == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.PowertrainCombustionEngineMAF(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.PowertrainCombustionEngineMAF(childComplexity), true
 	case "SignalCollection.powertrainCombustionEngineSpeed":
-		if e.complexity.SignalCollection.PowertrainCombustionEngineSpeed == nil {
+		if e.ComplexityRoot.SignalCollection.PowertrainCombustionEngineSpeed == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.PowertrainCombustionEngineSpeed(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.PowertrainCombustionEngineSpeed(childComplexity), true
 	case "SignalCollection.powertrainCombustionEngineTPS":
-		if e.complexity.SignalCollection.PowertrainCombustionEngineTPS == nil {
+		if e.ComplexityRoot.SignalCollection.PowertrainCombustionEngineTPS == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.PowertrainCombustionEngineTPS(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.PowertrainCombustionEngineTPS(childComplexity), true
 	case "SignalCollection.powertrainCombustionEngineTorque":
-		if e.complexity.SignalCollection.PowertrainCombustionEngineTorque == nil {
+		if e.ComplexityRoot.SignalCollection.PowertrainCombustionEngineTorque == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.PowertrainCombustionEngineTorque(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.PowertrainCombustionEngineTorque(childComplexity), true
 	case "SignalCollection.powertrainCombustionEngineTorquePercent":
-		if e.complexity.SignalCollection.PowertrainCombustionEngineTorquePercent == nil {
+		if e.ComplexityRoot.SignalCollection.PowertrainCombustionEngineTorquePercent == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.PowertrainCombustionEngineTorquePercent(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.PowertrainCombustionEngineTorquePercent(childComplexity), true
 	case "SignalCollection.powertrainFuelSystemAbsoluteLevel":
-		if e.complexity.SignalCollection.PowertrainFuelSystemAbsoluteLevel == nil {
+		if e.ComplexityRoot.SignalCollection.PowertrainFuelSystemAbsoluteLevel == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.PowertrainFuelSystemAbsoluteLevel(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.PowertrainFuelSystemAbsoluteLevel(childComplexity), true
 	case "SignalCollection.powertrainFuelSystemAccumulatedConsumption":
-		if e.complexity.SignalCollection.PowertrainFuelSystemAccumulatedConsumption == nil {
+		if e.ComplexityRoot.SignalCollection.PowertrainFuelSystemAccumulatedConsumption == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.PowertrainFuelSystemAccumulatedConsumption(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.PowertrainFuelSystemAccumulatedConsumption(childComplexity), true
 	case "SignalCollection.powertrainFuelSystemRelativeLevel":
-		if e.complexity.SignalCollection.PowertrainFuelSystemRelativeLevel == nil {
+		if e.ComplexityRoot.SignalCollection.PowertrainFuelSystemRelativeLevel == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.PowertrainFuelSystemRelativeLevel(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.PowertrainFuelSystemRelativeLevel(childComplexity), true
 	case "SignalCollection.powertrainFuelSystemSupportedFuelTypes":
-		if e.complexity.SignalCollection.PowertrainFuelSystemSupportedFuelTypes == nil {
+		if e.ComplexityRoot.SignalCollection.PowertrainFuelSystemSupportedFuelTypes == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.PowertrainFuelSystemSupportedFuelTypes(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.PowertrainFuelSystemSupportedFuelTypes(childComplexity), true
 	case "SignalCollection.powertrainRange":
-		if e.complexity.SignalCollection.PowertrainRange == nil {
+		if e.ComplexityRoot.SignalCollection.PowertrainRange == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.PowertrainRange(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.PowertrainRange(childComplexity), true
 	case "SignalCollection.powertrainTractionBatteryChargingAddedEnergy":
-		if e.complexity.SignalCollection.PowertrainTractionBatteryChargingAddedEnergy == nil {
+		if e.ComplexityRoot.SignalCollection.PowertrainTractionBatteryChargingAddedEnergy == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.PowertrainTractionBatteryChargingAddedEnergy(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.PowertrainTractionBatteryChargingAddedEnergy(childComplexity), true
 	case "SignalCollection.powertrainTractionBatteryChargingChargeCurrentAC":
-		if e.complexity.SignalCollection.PowertrainTractionBatteryChargingChargeCurrentAC == nil {
+		if e.ComplexityRoot.SignalCollection.PowertrainTractionBatteryChargingChargeCurrentAC == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.PowertrainTractionBatteryChargingChargeCurrentAC(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.PowertrainTractionBatteryChargingChargeCurrentAC(childComplexity), true
 	case "SignalCollection.powertrainTractionBatteryChargingChargeLimit":
-		if e.complexity.SignalCollection.PowertrainTractionBatteryChargingChargeLimit == nil {
+		if e.ComplexityRoot.SignalCollection.PowertrainTractionBatteryChargingChargeLimit == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.PowertrainTractionBatteryChargingChargeLimit(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.PowertrainTractionBatteryChargingChargeLimit(childComplexity), true
 	case "SignalCollection.powertrainTractionBatteryChargingChargeVoltageUnknownType":
-		if e.complexity.SignalCollection.PowertrainTractionBatteryChargingChargeVoltageUnknownType == nil {
+		if e.ComplexityRoot.SignalCollection.PowertrainTractionBatteryChargingChargeVoltageUnknownType == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.PowertrainTractionBatteryChargingChargeVoltageUnknownType(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.PowertrainTractionBatteryChargingChargeVoltageUnknownType(childComplexity), true
 	case "SignalCollection.powertrainTractionBatteryChargingIsCharging":
-		if e.complexity.SignalCollection.PowertrainTractionBatteryChargingIsCharging == nil {
+		if e.ComplexityRoot.SignalCollection.PowertrainTractionBatteryChargingIsCharging == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.PowertrainTractionBatteryChargingIsCharging(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.PowertrainTractionBatteryChargingIsCharging(childComplexity), true
 	case "SignalCollection.powertrainTractionBatteryChargingIsChargingCableConnected":
-		if e.complexity.SignalCollection.PowertrainTractionBatteryChargingIsChargingCableConnected == nil {
+		if e.ComplexityRoot.SignalCollection.PowertrainTractionBatteryChargingIsChargingCableConnected == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.PowertrainTractionBatteryChargingIsChargingCableConnected(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.PowertrainTractionBatteryChargingIsChargingCableConnected(childComplexity), true
 	case "SignalCollection.powertrainTractionBatteryChargingPower":
-		if e.complexity.SignalCollection.PowertrainTractionBatteryChargingPower == nil {
+		if e.ComplexityRoot.SignalCollection.PowertrainTractionBatteryChargingPower == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.PowertrainTractionBatteryChargingPower(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.PowertrainTractionBatteryChargingPower(childComplexity), true
 	case "SignalCollection.powertrainTractionBatteryCurrentPower":
-		if e.complexity.SignalCollection.PowertrainTractionBatteryCurrentPower == nil {
+		if e.ComplexityRoot.SignalCollection.PowertrainTractionBatteryCurrentPower == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.PowertrainTractionBatteryCurrentPower(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.PowertrainTractionBatteryCurrentPower(childComplexity), true
 	case "SignalCollection.powertrainTractionBatteryCurrentVoltage":
-		if e.complexity.SignalCollection.PowertrainTractionBatteryCurrentVoltage == nil {
+		if e.ComplexityRoot.SignalCollection.PowertrainTractionBatteryCurrentVoltage == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.PowertrainTractionBatteryCurrentVoltage(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.PowertrainTractionBatteryCurrentVoltage(childComplexity), true
 	case "SignalCollection.powertrainTractionBatteryGrossCapacity":
-		if e.complexity.SignalCollection.PowertrainTractionBatteryGrossCapacity == nil {
+		if e.ComplexityRoot.SignalCollection.PowertrainTractionBatteryGrossCapacity == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.PowertrainTractionBatteryGrossCapacity(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.PowertrainTractionBatteryGrossCapacity(childComplexity), true
 	case "SignalCollection.powertrainTractionBatteryRange":
-		if e.complexity.SignalCollection.PowertrainTractionBatteryRange == nil {
+		if e.ComplexityRoot.SignalCollection.PowertrainTractionBatteryRange == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.PowertrainTractionBatteryRange(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.PowertrainTractionBatteryRange(childComplexity), true
 	case "SignalCollection.powertrainTractionBatteryStateOfChargeCurrent":
-		if e.complexity.SignalCollection.PowertrainTractionBatteryStateOfChargeCurrent == nil {
+		if e.ComplexityRoot.SignalCollection.PowertrainTractionBatteryStateOfChargeCurrent == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.PowertrainTractionBatteryStateOfChargeCurrent(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.PowertrainTractionBatteryStateOfChargeCurrent(childComplexity), true
 	case "SignalCollection.powertrainTractionBatteryStateOfChargeCurrentEnergy":
-		if e.complexity.SignalCollection.PowertrainTractionBatteryStateOfChargeCurrentEnergy == nil {
+		if e.ComplexityRoot.SignalCollection.PowertrainTractionBatteryStateOfChargeCurrentEnergy == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.PowertrainTractionBatteryStateOfChargeCurrentEnergy(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.PowertrainTractionBatteryStateOfChargeCurrentEnergy(childComplexity), true
 	case "SignalCollection.powertrainTractionBatteryStateOfHealth":
-		if e.complexity.SignalCollection.PowertrainTractionBatteryStateOfHealth == nil {
+		if e.ComplexityRoot.SignalCollection.PowertrainTractionBatteryStateOfHealth == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.PowertrainTractionBatteryStateOfHealth(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.PowertrainTractionBatteryStateOfHealth(childComplexity), true
 	case "SignalCollection.powertrainTractionBatteryTemperatureAverage":
-		if e.complexity.SignalCollection.PowertrainTractionBatteryTemperatureAverage == nil {
+		if e.ComplexityRoot.SignalCollection.PowertrainTractionBatteryTemperatureAverage == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.PowertrainTractionBatteryTemperatureAverage(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.PowertrainTractionBatteryTemperatureAverage(childComplexity), true
 	case "SignalCollection.powertrainTransmissionCurrentGear":
-		if e.complexity.SignalCollection.PowertrainTransmissionCurrentGear == nil {
+		if e.ComplexityRoot.SignalCollection.PowertrainTransmissionCurrentGear == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.PowertrainTransmissionCurrentGear(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.PowertrainTransmissionCurrentGear(childComplexity), true
 	case "SignalCollection.powertrainTransmissionIsClutchSwitchOperated":
-		if e.complexity.SignalCollection.PowertrainTransmissionIsClutchSwitchOperated == nil {
+		if e.ComplexityRoot.SignalCollection.PowertrainTransmissionIsClutchSwitchOperated == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.PowertrainTransmissionIsClutchSwitchOperated(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.PowertrainTransmissionIsClutchSwitchOperated(childComplexity), true
 	case "SignalCollection.powertrainTransmissionRetarderActualTorque":
-		if e.complexity.SignalCollection.PowertrainTransmissionRetarderActualTorque == nil {
+		if e.ComplexityRoot.SignalCollection.PowertrainTransmissionRetarderActualTorque == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.PowertrainTransmissionRetarderActualTorque(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.PowertrainTransmissionRetarderActualTorque(childComplexity), true
 	case "SignalCollection.powertrainTransmissionRetarderTorqueMode":
-		if e.complexity.SignalCollection.PowertrainTransmissionRetarderTorqueMode == nil {
+		if e.ComplexityRoot.SignalCollection.PowertrainTransmissionRetarderTorqueMode == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.PowertrainTransmissionRetarderTorqueMode(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.PowertrainTransmissionRetarderTorqueMode(childComplexity), true
 	case "SignalCollection.powertrainTransmissionSelectedGear":
-		if e.complexity.SignalCollection.PowertrainTransmissionSelectedGear == nil {
+		if e.ComplexityRoot.SignalCollection.PowertrainTransmissionSelectedGear == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.PowertrainTransmissionSelectedGear(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.PowertrainTransmissionSelectedGear(childComplexity), true
 	case "SignalCollection.powertrainTransmissionTemperature":
-		if e.complexity.SignalCollection.PowertrainTransmissionTemperature == nil {
+		if e.ComplexityRoot.SignalCollection.PowertrainTransmissionTemperature == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.PowertrainTransmissionTemperature(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.PowertrainTransmissionTemperature(childComplexity), true
 	case "SignalCollection.powertrainTransmissionTravelledDistance":
-		if e.complexity.SignalCollection.PowertrainTransmissionTravelledDistance == nil {
+		if e.ComplexityRoot.SignalCollection.PowertrainTransmissionTravelledDistance == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.PowertrainTransmissionTravelledDistance(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.PowertrainTransmissionTravelledDistance(childComplexity), true
 	case "SignalCollection.powertrainType":
-		if e.complexity.SignalCollection.PowertrainType == nil {
+		if e.ComplexityRoot.SignalCollection.PowertrainType == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.PowertrainType(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.PowertrainType(childComplexity), true
 	case "SignalCollection.serviceDistanceToService":
-		if e.complexity.SignalCollection.ServiceDistanceToService == nil {
+		if e.ComplexityRoot.SignalCollection.ServiceDistanceToService == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.ServiceDistanceToService(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.ServiceDistanceToService(childComplexity), true
 	case "SignalCollection.serviceTimeToService":
-		if e.complexity.SignalCollection.ServiceTimeToService == nil {
+		if e.ComplexityRoot.SignalCollection.ServiceTimeToService == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.ServiceTimeToService(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.ServiceTimeToService(childComplexity), true
 	case "SignalCollection.speed":
-		if e.complexity.SignalCollection.Speed == nil {
+		if e.ComplexityRoot.SignalCollection.Speed == nil {
 			break
 		}
 
-		return e.complexity.SignalCollection.Speed(childComplexity), true
+		return e.ComplexityRoot.SignalCollection.Speed(childComplexity), true
 
 	case "SignalFloat.timestamp":
-		if e.complexity.SignalFloat.Timestamp == nil {
+		if e.ComplexityRoot.SignalFloat.Timestamp == nil {
 			break
 		}
 
-		return e.complexity.SignalFloat.Timestamp(childComplexity), true
+		return e.ComplexityRoot.SignalFloat.Timestamp(childComplexity), true
 	case "SignalFloat.value":
-		if e.complexity.SignalFloat.Value == nil {
+		if e.ComplexityRoot.SignalFloat.Value == nil {
 			break
 		}
 
-		return e.complexity.SignalFloat.Value(childComplexity), true
+		return e.ComplexityRoot.SignalFloat.Value(childComplexity), true
 
 	case "SignalLocation.timestamp":
-		if e.complexity.SignalLocation.Timestamp == nil {
+		if e.ComplexityRoot.SignalLocation.Timestamp == nil {
 			break
 		}
 
-		return e.complexity.SignalLocation.Timestamp(childComplexity), true
+		return e.ComplexityRoot.SignalLocation.Timestamp(childComplexity), true
 	case "SignalLocation.value":
-		if e.complexity.SignalLocation.Value == nil {
+		if e.ComplexityRoot.SignalLocation.Value == nil {
 			break
 		}
 
-		return e.complexity.SignalLocation.Value(childComplexity), true
+		return e.ComplexityRoot.SignalLocation.Value(childComplexity), true
 
 	case "SignalString.timestamp":
-		if e.complexity.SignalString.Timestamp == nil {
+		if e.ComplexityRoot.SignalString.Timestamp == nil {
 			break
 		}
 
-		return e.complexity.SignalString.Timestamp(childComplexity), true
+		return e.ComplexityRoot.SignalString.Timestamp(childComplexity), true
 	case "SignalString.value":
-		if e.complexity.SignalString.Value == nil {
+		if e.ComplexityRoot.SignalString.Value == nil {
 			break
 		}
 
-		return e.complexity.SignalString.Value(childComplexity), true
+		return e.ComplexityRoot.SignalString.Value(childComplexity), true
 
 	case "VINVC.countryCode":
-		if e.complexity.VINVC.CountryCode == nil {
+		if e.ComplexityRoot.VINVC.CountryCode == nil {
 			break
 		}
 
-		return e.complexity.VINVC.CountryCode(childComplexity), true
+		return e.ComplexityRoot.VINVC.CountryCode(childComplexity), true
 	case "VINVC.rawVC":
-		if e.complexity.VINVC.RawVc == nil {
+		if e.ComplexityRoot.VINVC.RawVc == nil {
 			break
 		}
 
-		return e.complexity.VINVC.RawVc(childComplexity), true
+		return e.ComplexityRoot.VINVC.RawVc(childComplexity), true
 	case "VINVC.recordedAt":
-		if e.complexity.VINVC.RecordedAt == nil {
+		if e.ComplexityRoot.VINVC.RecordedAt == nil {
 			break
 		}
 
-		return e.complexity.VINVC.RecordedAt(childComplexity), true
+		return e.ComplexityRoot.VINVC.RecordedAt(childComplexity), true
 	case "VINVC.recordedBy":
-		if e.complexity.VINVC.RecordedBy == nil {
+		if e.ComplexityRoot.VINVC.RecordedBy == nil {
 			break
 		}
 
-		return e.complexity.VINVC.RecordedBy(childComplexity), true
+		return e.ComplexityRoot.VINVC.RecordedBy(childComplexity), true
 	case "VINVC.validFrom":
-		if e.complexity.VINVC.ValidFrom == nil {
+		if e.ComplexityRoot.VINVC.ValidFrom == nil {
 			break
 		}
 
-		return e.complexity.VINVC.ValidFrom(childComplexity), true
+		return e.ComplexityRoot.VINVC.ValidFrom(childComplexity), true
 	case "VINVC.validTo":
-		if e.complexity.VINVC.ValidTo == nil {
+		if e.ComplexityRoot.VINVC.ValidTo == nil {
 			break
 		}
 
-		return e.complexity.VINVC.ValidTo(childComplexity), true
+		return e.ComplexityRoot.VINVC.ValidTo(childComplexity), true
 	case "VINVC.vehicleContractAddress":
-		if e.complexity.VINVC.VehicleContractAddress == nil {
+		if e.ComplexityRoot.VINVC.VehicleContractAddress == nil {
 			break
 		}
 
-		return e.complexity.VINVC.VehicleContractAddress(childComplexity), true
+		return e.ComplexityRoot.VINVC.VehicleContractAddress(childComplexity), true
 	case "VINVC.vehicleTokenId":
-		if e.complexity.VINVC.VehicleTokenID == nil {
+		if e.ComplexityRoot.VINVC.VehicleTokenID == nil {
 			break
 		}
 
-		return e.complexity.VINVC.VehicleTokenID(childComplexity), true
+		return e.ComplexityRoot.VINVC.VehicleTokenID(childComplexity), true
 	case "VINVC.vin":
-		if e.complexity.VINVC.Vin == nil {
+		if e.ComplexityRoot.VINVC.Vin == nil {
 			break
 		}
 
-		return e.complexity.VINVC.Vin(childComplexity), true
+		return e.ComplexityRoot.VINVC.Vin(childComplexity), true
 
 	case "eventDataSummary.firstSeen":
-		if e.complexity.EventDataSummary.FirstSeen == nil {
+		if e.ComplexityRoot.EventDataSummary.FirstSeen == nil {
 			break
 		}
 
-		return e.complexity.EventDataSummary.FirstSeen(childComplexity), true
+		return e.ComplexityRoot.EventDataSummary.FirstSeen(childComplexity), true
 	case "eventDataSummary.lastSeen":
-		if e.complexity.EventDataSummary.LastSeen == nil {
+		if e.ComplexityRoot.EventDataSummary.LastSeen == nil {
 			break
 		}
 
-		return e.complexity.EventDataSummary.LastSeen(childComplexity), true
+		return e.ComplexityRoot.EventDataSummary.LastSeen(childComplexity), true
 	case "eventDataSummary.name":
-		if e.complexity.EventDataSummary.Name == nil {
+		if e.ComplexityRoot.EventDataSummary.Name == nil {
 			break
 		}
 
-		return e.complexity.EventDataSummary.Name(childComplexity), true
+		return e.ComplexityRoot.EventDataSummary.Name(childComplexity), true
 	case "eventDataSummary.numberOfEvents":
-		if e.complexity.EventDataSummary.NumberOfEvents == nil {
+		if e.ComplexityRoot.EventDataSummary.NumberOfEvents == nil {
 			break
 		}
 
-		return e.complexity.EventDataSummary.NumberOfEvents(childComplexity), true
+		return e.ComplexityRoot.EventDataSummary.NumberOfEvents(childComplexity), true
 
 	case "signalDataSummary.firstSeen":
-		if e.complexity.SignalDataSummary.FirstSeen == nil {
+		if e.ComplexityRoot.SignalDataSummary.FirstSeen == nil {
 			break
 		}
 
-		return e.complexity.SignalDataSummary.FirstSeen(childComplexity), true
+		return e.ComplexityRoot.SignalDataSummary.FirstSeen(childComplexity), true
 	case "signalDataSummary.lastSeen":
-		if e.complexity.SignalDataSummary.LastSeen == nil {
+		if e.ComplexityRoot.SignalDataSummary.LastSeen == nil {
 			break
 		}
 
-		return e.complexity.SignalDataSummary.LastSeen(childComplexity), true
+		return e.ComplexityRoot.SignalDataSummary.LastSeen(childComplexity), true
 	case "signalDataSummary.name":
-		if e.complexity.SignalDataSummary.Name == nil {
+		if e.ComplexityRoot.SignalDataSummary.Name == nil {
 			break
 		}
 
-		return e.complexity.SignalDataSummary.Name(childComplexity), true
+		return e.ComplexityRoot.SignalDataSummary.Name(childComplexity), true
 	case "signalDataSummary.numberOfSignals":
-		if e.complexity.SignalDataSummary.NumberOfSignals == nil {
+		if e.ComplexityRoot.SignalDataSummary.NumberOfSignals == nil {
 			break
 		}
 
-		return e.complexity.SignalDataSummary.NumberOfSignals(childComplexity), true
+		return e.ComplexityRoot.SignalDataSummary.NumberOfSignals(childComplexity), true
 
 	}
 	return 0, false
@@ -2939,7 +2924,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	opCtx := graphql.GetOperationContext(ctx)
-	ec := executionContext{opCtx, e, 0, 0, make(chan graphql.DeferredResult)}
+	ec := newExecutionContext(opCtx, e, make(chan graphql.DeferredResult))
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
 		ec.unmarshalInputAttestationFilter,
 		ec.unmarshalInputEventFilter,
@@ -2966,9 +2951,9 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 				ctx = graphql.WithUnmarshalerMap(ctx, inputUnmarshalMap)
 				data = ec._Query(ctx, opCtx.Operation.SelectionSet)
 			} else {
-				if atomic.LoadInt32(&ec.pendingDeferred) > 0 {
-					result := <-ec.deferredResults
-					atomic.AddInt32(&ec.pendingDeferred, -1)
+				if atomic.LoadInt32(&ec.PendingDeferred) > 0 {
+					result := <-ec.DeferredResults
+					atomic.AddInt32(&ec.PendingDeferred, -1)
 					data = result.Result
 					response.Path = result.Path
 					response.Label = result.Label
@@ -2980,8 +2965,8 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 			var buf bytes.Buffer
 			data.MarshalGQL(&buf)
 			response.Data = buf.Bytes()
-			if atomic.LoadInt32(&ec.deferred) > 0 {
-				hasNext := atomic.LoadInt32(&ec.pendingDeferred) > 0
+			if atomic.LoadInt32(&ec.Deferred) > 0 {
+				hasNext := atomic.LoadInt32(&ec.PendingDeferred) > 0
 				response.HasNext = &hasNext
 			}
 
@@ -2994,44 +2979,22 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 }
 
 type executionContext struct {
-	*graphql.OperationContext
-	*executableSchema
-	deferred        int32
-	pendingDeferred int32
-	deferredResults chan graphql.DeferredResult
+	*graphql.ExecutionContextState[ResolverRoot, DirectiveRoot, ComplexityRoot]
 }
 
-func (ec *executionContext) processDeferredGroup(dg graphql.DeferredGroup) {
-	atomic.AddInt32(&ec.pendingDeferred, 1)
-	go func() {
-		ctx := graphql.WithFreshResponseContext(dg.Context)
-		dg.FieldSet.Dispatch(ctx)
-		ds := graphql.DeferredResult{
-			Path:   dg.Path,
-			Label:  dg.Label,
-			Result: dg.FieldSet,
-			Errors: graphql.GetErrors(ctx),
-		}
-		// null fields should bubble up
-		if dg.FieldSet.Invalids > 0 {
-			ds.Result = graphql.Null
-		}
-		ec.deferredResults <- ds
-	}()
-}
-
-func (ec *executionContext) introspectSchema() (*introspection.Schema, error) {
-	if ec.DisableIntrospection {
-		return nil, errors.New("introspection disabled")
+func newExecutionContext(
+	opCtx *graphql.OperationContext,
+	execSchema *executableSchema,
+	deferredResults chan graphql.DeferredResult,
+) executionContext {
+	return executionContext{
+		ExecutionContextState: graphql.NewExecutionContextState[ResolverRoot, DirectiveRoot, ComplexityRoot](
+			opCtx,
+			(*graphql.ExecutableSchemaState[ResolverRoot, DirectiveRoot, ComplexityRoot])(execSchema),
+			parsedSchema,
+			deferredResults,
+		),
 	}
-	return introspection.WrapSchema(ec.Schema()), nil
-}
-
-func (ec *executionContext) introspectType(name string) (*introspection.Type, error) {
-	if ec.DisableIntrospection {
-		return nil, errors.New("introspection disabled")
-	}
-	return introspection.WrapTypeFromDef(ec.Schema(), ec.Schema().Types[name]), nil
 }
 
 var sources = []*ast.Source{
@@ -3529,6 +3492,10 @@ input StringValueFilter {
   in array of strings in the array
   """
   in: [String!]
+  """
+  startsWith matches strings that begin with the given prefix.
+  """
+  startsWith: String
   """
   or array of string value filters
   """
@@ -5588,7 +5555,6 @@ extend type SignalCollection {
 extend input EventFilter {
   """
   tags is the tags of the event.
-  available tags: behavior.harshAcceleration, behavior.harshBraking, behavior.harshCornering, safety.collision
   """
   tags: StringArrayFilter
 }
@@ -8692,17 +8658,17 @@ func (ec *executionContext) _Query_signals(ctx context.Context, field graphql.Co
 		ec.fieldContext_Query_signals,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Query().Signals(ctx, fc.Args["tokenId"].(int), fc.Args["interval"].(string), fc.Args["from"].(time.Time), fc.Args["to"].(time.Time), fc.Args["filter"].(*model.SignalFilter))
+			return ec.Resolvers.Query().Signals(ctx, fc.Args["tokenId"].(int), fc.Args["interval"].(string), fc.Args["from"].(time.Time), fc.Args["to"].(time.Time), fc.Args["filter"].(*model.SignalFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
-				if ec.directives.RequiresVehicleToken == nil {
+				if ec.Directives.RequiresVehicleToken == nil {
 					var zeroVal []*model.SignalAggregations
 					return zeroVal, errors.New("directive requiresVehicleToken is not implemented")
 				}
-				return ec.directives.RequiresVehicleToken(ctx, nil, directive0)
+				return ec.Directives.RequiresVehicleToken(ctx, nil, directive0)
 			}
 
 			next = directive1
@@ -8970,17 +8936,17 @@ func (ec *executionContext) _Query_signalsLatest(ctx context.Context, field grap
 		ec.fieldContext_Query_signalsLatest,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Query().SignalsLatest(ctx, fc.Args["tokenId"].(int), fc.Args["filter"].(*model.SignalFilter))
+			return ec.Resolvers.Query().SignalsLatest(ctx, fc.Args["tokenId"].(int), fc.Args["filter"].(*model.SignalFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
-				if ec.directives.RequiresVehicleToken == nil {
+				if ec.Directives.RequiresVehicleToken == nil {
 					var zeroVal *model.SignalCollection
 					return zeroVal, errors.New("directive requiresVehicleToken is not implemented")
 				}
-				return ec.directives.RequiresVehicleToken(ctx, nil, directive0)
+				return ec.Directives.RequiresVehicleToken(ctx, nil, directive0)
 			}
 
 			next = directive1
@@ -9248,17 +9214,17 @@ func (ec *executionContext) _Query_availableSignals(ctx context.Context, field g
 		ec.fieldContext_Query_availableSignals,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Query().AvailableSignals(ctx, fc.Args["tokenId"].(int), fc.Args["filter"].(*model.SignalFilter))
+			return ec.Resolvers.Query().AvailableSignals(ctx, fc.Args["tokenId"].(int), fc.Args["filter"].(*model.SignalFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
-				if ec.directives.RequiresVehicleToken == nil {
+				if ec.Directives.RequiresVehicleToken == nil {
 					var zeroVal []string
 					return zeroVal, errors.New("directive requiresVehicleToken is not implemented")
 				}
-				return ec.directives.RequiresVehicleToken(ctx, nil, directive0)
+				return ec.Directives.RequiresVehicleToken(ctx, nil, directive0)
 			}
 
 			next = directive1
@@ -9302,17 +9268,17 @@ func (ec *executionContext) _Query_dataSummary(ctx context.Context, field graphq
 		ec.fieldContext_Query_dataSummary,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Query().DataSummary(ctx, fc.Args["tokenId"].(int), fc.Args["filter"].(*model.SignalFilter))
+			return ec.Resolvers.Query().DataSummary(ctx, fc.Args["tokenId"].(int), fc.Args["filter"].(*model.SignalFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
-				if ec.directives.RequiresVehicleToken == nil {
+				if ec.Directives.RequiresVehicleToken == nil {
 					var zeroVal *model.DataSummary
 					return zeroVal, errors.New("directive requiresVehicleToken is not implemented")
 				}
-				return ec.directives.RequiresVehicleToken(ctx, nil, directive0)
+				return ec.Directives.RequiresVehicleToken(ctx, nil, directive0)
 			}
 
 			next = directive1
@@ -9370,7 +9336,7 @@ func (ec *executionContext) _Query_attestations(ctx context.Context, field graph
 		ec.fieldContext_Query_attestations,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Query().Attestations(ctx, fc.Args["tokenId"].(*int), fc.Args["subject"].(*string), fc.Args["filter"].(*model.AttestationFilter))
+			return ec.Resolvers.Query().Attestations(ctx, fc.Args["tokenId"].(*int), fc.Args["subject"].(*string), fc.Args["filter"].(*model.AttestationFilter))
 		},
 		nil,
 		ec.marshalOAttestation2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐAttestation,
@@ -9433,17 +9399,17 @@ func (ec *executionContext) _Query_events(ctx context.Context, field graphql.Col
 		ec.fieldContext_Query_events,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Query().Events(ctx, fc.Args["tokenId"].(int), fc.Args["from"].(time.Time), fc.Args["to"].(time.Time), fc.Args["filter"].(*model.EventFilter))
+			return ec.Resolvers.Query().Events(ctx, fc.Args["tokenId"].(int), fc.Args["from"].(time.Time), fc.Args["to"].(time.Time), fc.Args["filter"].(*model.EventFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
-				if ec.directives.RequiresVehicleToken == nil {
+				if ec.Directives.RequiresVehicleToken == nil {
 					var zeroVal []*model.Event
 					return zeroVal, errors.New("directive requiresVehicleToken is not implemented")
 				}
-				return ec.directives.RequiresVehicleToken(ctx, nil, directive0)
+				return ec.Directives.RequiresVehicleToken(ctx, nil, directive0)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA", "VEHICLE_ALL_TIME_LOCATION"})
@@ -9451,11 +9417,11 @@ func (ec *executionContext) _Query_events(ctx context.Context, field graphql.Col
 					var zeroVal []*model.Event
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal []*model.Event
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, nil, directive1, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, nil, directive1, privileges)
 			}
 
 			next = directive2
@@ -9511,17 +9477,17 @@ func (ec *executionContext) _Query_segments(ctx context.Context, field graphql.C
 		ec.fieldContext_Query_segments,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Query().Segments(ctx, fc.Args["tokenId"].(int), fc.Args["from"].(time.Time), fc.Args["to"].(time.Time), fc.Args["mechanism"].(model.DetectionMechanism), fc.Args["config"].(*model.SegmentConfig), fc.Args["signalRequests"].([]*model.SegmentSignalRequest), fc.Args["eventRequests"].([]*model.SegmentEventRequest), fc.Args["limit"].(*int), fc.Args["after"].(*time.Time))
+			return ec.Resolvers.Query().Segments(ctx, fc.Args["tokenId"].(int), fc.Args["from"].(time.Time), fc.Args["to"].(time.Time), fc.Args["mechanism"].(model.DetectionMechanism), fc.Args["config"].(*model.SegmentConfig), fc.Args["signalRequests"].([]*model.SegmentSignalRequest), fc.Args["eventRequests"].([]*model.SegmentEventRequest), fc.Args["limit"].(*int), fc.Args["after"].(*time.Time))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
-				if ec.directives.RequiresVehicleToken == nil {
+				if ec.Directives.RequiresVehicleToken == nil {
 					var zeroVal []*model.Segment
 					return zeroVal, errors.New("directive requiresVehicleToken is not implemented")
 				}
-				return ec.directives.RequiresVehicleToken(ctx, nil, directive0)
+				return ec.Directives.RequiresVehicleToken(ctx, nil, directive0)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_ALL_TIME_LOCATION", "VEHICLE_NON_LOCATION_DATA"})
@@ -9529,11 +9495,11 @@ func (ec *executionContext) _Query_segments(ctx context.Context, field graphql.C
 					var zeroVal []*model.Segment
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal []*model.Segment
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, nil, directive1, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, nil, directive1, privileges)
 			}
 
 			next = directive2
@@ -9593,17 +9559,17 @@ func (ec *executionContext) _Query_dailyActivity(ctx context.Context, field grap
 		ec.fieldContext_Query_dailyActivity,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Query().DailyActivity(ctx, fc.Args["tokenId"].(int), fc.Args["from"].(time.Time), fc.Args["to"].(time.Time), fc.Args["mechanism"].(model.DetectionMechanism), fc.Args["config"].(*model.SegmentConfig), fc.Args["signalRequests"].([]*model.SegmentSignalRequest), fc.Args["eventRequests"].([]*model.SegmentEventRequest), fc.Args["timezone"].(*string))
+			return ec.Resolvers.Query().DailyActivity(ctx, fc.Args["tokenId"].(int), fc.Args["from"].(time.Time), fc.Args["to"].(time.Time), fc.Args["mechanism"].(model.DetectionMechanism), fc.Args["config"].(*model.SegmentConfig), fc.Args["signalRequests"].([]*model.SegmentSignalRequest), fc.Args["eventRequests"].([]*model.SegmentEventRequest), fc.Args["timezone"].(*string))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
-				if ec.directives.RequiresVehicleToken == nil {
+				if ec.Directives.RequiresVehicleToken == nil {
 					var zeroVal []*model.DailyActivity
 					return zeroVal, errors.New("directive requiresVehicleToken is not implemented")
 				}
-				return ec.directives.RequiresVehicleToken(ctx, nil, directive0)
+				return ec.Directives.RequiresVehicleToken(ctx, nil, directive0)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_ALL_TIME_LOCATION", "VEHICLE_NON_LOCATION_DATA"})
@@ -9611,11 +9577,11 @@ func (ec *executionContext) _Query_dailyActivity(ctx context.Context, field grap
 					var zeroVal []*model.DailyActivity
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal []*model.DailyActivity
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, nil, directive1, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, nil, directive1, privileges)
 			}
 
 			next = directive2
@@ -9673,17 +9639,17 @@ func (ec *executionContext) _Query_vinVCLatest(ctx context.Context, field graphq
 		ec.fieldContext_Query_vinVCLatest,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Query().VinVCLatest(ctx, fc.Args["tokenId"].(int))
+			return ec.Resolvers.Query().VinVCLatest(ctx, fc.Args["tokenId"].(int))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
 
 			directive1 := func(ctx context.Context) (any, error) {
-				if ec.directives.RequiresVehicleToken == nil {
+				if ec.Directives.RequiresVehicleToken == nil {
 					var zeroVal *model.Vinvc
 					return zeroVal, errors.New("directive requiresVehicleToken is not implemented")
 				}
-				return ec.directives.RequiresVehicleToken(ctx, nil, directive0)
+				return ec.Directives.RequiresVehicleToken(ctx, nil, directive0)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
 				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_VIN_CREDENTIAL"})
@@ -9691,11 +9657,11 @@ func (ec *executionContext) _Query_vinVCLatest(ctx context.Context, field graphq
 					var zeroVal *model.Vinvc
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.Vinvc
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, nil, directive1, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, nil, directive1, privileges)
 			}
 
 			next = directive2
@@ -9759,7 +9725,7 @@ func (ec *executionContext) _Query___type(ctx context.Context, field graphql.Col
 		ec.fieldContext_Query___type,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.introspectType(fc.Args["name"].(string))
+			return ec.IntrospectType(fc.Args["name"].(string))
 		},
 		nil,
 		ec.marshalO__Type2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType,
@@ -9823,7 +9789,7 @@ func (ec *executionContext) _Query___schema(ctx context.Context, field graphql.C
 		field,
 		ec.fieldContext_Query___schema,
 		func(ctx context.Context) (any, error) {
-			return ec.introspectSchema()
+			return ec.IntrospectSchema()
 		},
 		nil,
 		ec.marshalO__Schema2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐSchema,
@@ -10212,7 +10178,7 @@ func (ec *executionContext) _SignalAggregations_currentLocationApproximateCoordi
 		ec.fieldContext_SignalAggregations_currentLocationApproximateCoordinates,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().CurrentLocationApproximateCoordinates(ctx, obj, fc.Args["agg"].(model.LocationAggregation))
+			return ec.Resolvers.SignalAggregations().CurrentLocationApproximateCoordinates(ctx, obj, fc.Args["agg"].(model.LocationAggregation))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -10223,25 +10189,25 @@ func (ec *executionContext) _SignalAggregations_currentLocationApproximateCoordi
 					var zeroVal *model.Location
 					return zeroVal, err
 				}
-				if ec.directives.RequiresOneOfPrivilege == nil {
+				if ec.Directives.RequiresOneOfPrivilege == nil {
 					var zeroVal *model.Location
 					return zeroVal, errors.New("directive requiresOneOfPrivilege is not implemented")
 				}
-				return ec.directives.RequiresOneOfPrivilege(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresOneOfPrivilege(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.Location
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *model.Location
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -10293,7 +10259,7 @@ func (ec *executionContext) _SignalAggregations_angularVelocityYaw(ctx context.C
 		ec.fieldContext_SignalAggregations_angularVelocityYaw,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().AngularVelocityYaw(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().AngularVelocityYaw(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -10304,25 +10270,25 @@ func (ec *executionContext) _SignalAggregations_angularVelocityYaw(ctx context.C
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -10366,7 +10332,7 @@ func (ec *executionContext) _SignalAggregations_bodyLightsIsAirbagWarningOn(ctx 
 		ec.fieldContext_SignalAggregations_bodyLightsIsAirbagWarningOn,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().BodyLightsIsAirbagWarningOn(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().BodyLightsIsAirbagWarningOn(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -10377,25 +10343,25 @@ func (ec *executionContext) _SignalAggregations_bodyLightsIsAirbagWarningOn(ctx 
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -10439,7 +10405,7 @@ func (ec *executionContext) _SignalAggregations_bodyLockIsLocked(ctx context.Con
 		ec.fieldContext_SignalAggregations_bodyLockIsLocked,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().BodyLockIsLocked(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().BodyLockIsLocked(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -10450,25 +10416,25 @@ func (ec *executionContext) _SignalAggregations_bodyLockIsLocked(ctx context.Con
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -10512,7 +10478,7 @@ func (ec *executionContext) _SignalAggregations_bodyTrunkFrontIsOpen(ctx context
 		ec.fieldContext_SignalAggregations_bodyTrunkFrontIsOpen,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().BodyTrunkFrontIsOpen(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().BodyTrunkFrontIsOpen(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -10523,25 +10489,25 @@ func (ec *executionContext) _SignalAggregations_bodyTrunkFrontIsOpen(ctx context
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -10585,7 +10551,7 @@ func (ec *executionContext) _SignalAggregations_bodyTrunkRearIsOpen(ctx context.
 		ec.fieldContext_SignalAggregations_bodyTrunkRearIsOpen,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().BodyTrunkRearIsOpen(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().BodyTrunkRearIsOpen(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -10596,25 +10562,25 @@ func (ec *executionContext) _SignalAggregations_bodyTrunkRearIsOpen(ctx context.
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -10658,7 +10624,7 @@ func (ec *executionContext) _SignalAggregations_cabinDoorRow1DriverSideIsOpen(ct
 		ec.fieldContext_SignalAggregations_cabinDoorRow1DriverSideIsOpen,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().CabinDoorRow1DriverSideIsOpen(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().CabinDoorRow1DriverSideIsOpen(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -10669,25 +10635,25 @@ func (ec *executionContext) _SignalAggregations_cabinDoorRow1DriverSideIsOpen(ct
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -10731,7 +10697,7 @@ func (ec *executionContext) _SignalAggregations_cabinDoorRow1DriverSideWindowIsO
 		ec.fieldContext_SignalAggregations_cabinDoorRow1DriverSideWindowIsOpen,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().CabinDoorRow1DriverSideWindowIsOpen(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().CabinDoorRow1DriverSideWindowIsOpen(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -10742,25 +10708,25 @@ func (ec *executionContext) _SignalAggregations_cabinDoorRow1DriverSideWindowIsO
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -10804,7 +10770,7 @@ func (ec *executionContext) _SignalAggregations_cabinDoorRow1PassengerSideIsOpen
 		ec.fieldContext_SignalAggregations_cabinDoorRow1PassengerSideIsOpen,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().CabinDoorRow1PassengerSideIsOpen(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().CabinDoorRow1PassengerSideIsOpen(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -10815,25 +10781,25 @@ func (ec *executionContext) _SignalAggregations_cabinDoorRow1PassengerSideIsOpen
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -10877,7 +10843,7 @@ func (ec *executionContext) _SignalAggregations_cabinDoorRow1PassengerSideWindow
 		ec.fieldContext_SignalAggregations_cabinDoorRow1PassengerSideWindowIsOpen,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().CabinDoorRow1PassengerSideWindowIsOpen(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().CabinDoorRow1PassengerSideWindowIsOpen(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -10888,25 +10854,25 @@ func (ec *executionContext) _SignalAggregations_cabinDoorRow1PassengerSideWindow
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -10950,7 +10916,7 @@ func (ec *executionContext) _SignalAggregations_cabinDoorRow2DriverSideIsOpen(ct
 		ec.fieldContext_SignalAggregations_cabinDoorRow2DriverSideIsOpen,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().CabinDoorRow2DriverSideIsOpen(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().CabinDoorRow2DriverSideIsOpen(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -10961,25 +10927,25 @@ func (ec *executionContext) _SignalAggregations_cabinDoorRow2DriverSideIsOpen(ct
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -11023,7 +10989,7 @@ func (ec *executionContext) _SignalAggregations_cabinDoorRow2DriverSideWindowIsO
 		ec.fieldContext_SignalAggregations_cabinDoorRow2DriverSideWindowIsOpen,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().CabinDoorRow2DriverSideWindowIsOpen(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().CabinDoorRow2DriverSideWindowIsOpen(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -11034,25 +11000,25 @@ func (ec *executionContext) _SignalAggregations_cabinDoorRow2DriverSideWindowIsO
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -11096,7 +11062,7 @@ func (ec *executionContext) _SignalAggregations_cabinDoorRow2PassengerSideIsOpen
 		ec.fieldContext_SignalAggregations_cabinDoorRow2PassengerSideIsOpen,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().CabinDoorRow2PassengerSideIsOpen(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().CabinDoorRow2PassengerSideIsOpen(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -11107,25 +11073,25 @@ func (ec *executionContext) _SignalAggregations_cabinDoorRow2PassengerSideIsOpen
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -11169,7 +11135,7 @@ func (ec *executionContext) _SignalAggregations_cabinDoorRow2PassengerSideWindow
 		ec.fieldContext_SignalAggregations_cabinDoorRow2PassengerSideWindowIsOpen,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().CabinDoorRow2PassengerSideWindowIsOpen(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().CabinDoorRow2PassengerSideWindowIsOpen(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -11180,25 +11146,25 @@ func (ec *executionContext) _SignalAggregations_cabinDoorRow2PassengerSideWindow
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -11242,7 +11208,7 @@ func (ec *executionContext) _SignalAggregations_cabinSeatRow1DriverSideIsBelted(
 		ec.fieldContext_SignalAggregations_cabinSeatRow1DriverSideIsBelted,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().CabinSeatRow1DriverSideIsBelted(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().CabinSeatRow1DriverSideIsBelted(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -11253,25 +11219,25 @@ func (ec *executionContext) _SignalAggregations_cabinSeatRow1DriverSideIsBelted(
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -11315,7 +11281,7 @@ func (ec *executionContext) _SignalAggregations_cabinSeatRow1PassengerSideIsBelt
 		ec.fieldContext_SignalAggregations_cabinSeatRow1PassengerSideIsBelted,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().CabinSeatRow1PassengerSideIsBelted(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().CabinSeatRow1PassengerSideIsBelted(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -11326,25 +11292,25 @@ func (ec *executionContext) _SignalAggregations_cabinSeatRow1PassengerSideIsBelt
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -11388,7 +11354,7 @@ func (ec *executionContext) _SignalAggregations_cabinSeatRow2DriverSideIsBelted(
 		ec.fieldContext_SignalAggregations_cabinSeatRow2DriverSideIsBelted,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().CabinSeatRow2DriverSideIsBelted(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().CabinSeatRow2DriverSideIsBelted(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -11399,25 +11365,25 @@ func (ec *executionContext) _SignalAggregations_cabinSeatRow2DriverSideIsBelted(
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -11461,7 +11427,7 @@ func (ec *executionContext) _SignalAggregations_cabinSeatRow2MiddleIsBelted(ctx 
 		ec.fieldContext_SignalAggregations_cabinSeatRow2MiddleIsBelted,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().CabinSeatRow2MiddleIsBelted(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().CabinSeatRow2MiddleIsBelted(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -11472,25 +11438,25 @@ func (ec *executionContext) _SignalAggregations_cabinSeatRow2MiddleIsBelted(ctx 
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -11534,7 +11500,7 @@ func (ec *executionContext) _SignalAggregations_cabinSeatRow2PassengerSideIsBelt
 		ec.fieldContext_SignalAggregations_cabinSeatRow2PassengerSideIsBelted,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().CabinSeatRow2PassengerSideIsBelted(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().CabinSeatRow2PassengerSideIsBelted(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -11545,25 +11511,25 @@ func (ec *executionContext) _SignalAggregations_cabinSeatRow2PassengerSideIsBelt
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -11607,7 +11573,7 @@ func (ec *executionContext) _SignalAggregations_cabinSeatRow3DriverSideIsBelted(
 		ec.fieldContext_SignalAggregations_cabinSeatRow3DriverSideIsBelted,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().CabinSeatRow3DriverSideIsBelted(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().CabinSeatRow3DriverSideIsBelted(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -11618,25 +11584,25 @@ func (ec *executionContext) _SignalAggregations_cabinSeatRow3DriverSideIsBelted(
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -11680,7 +11646,7 @@ func (ec *executionContext) _SignalAggregations_cabinSeatRow3PassengerSideIsBelt
 		ec.fieldContext_SignalAggregations_cabinSeatRow3PassengerSideIsBelted,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().CabinSeatRow3PassengerSideIsBelted(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().CabinSeatRow3PassengerSideIsBelted(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -11691,25 +11657,25 @@ func (ec *executionContext) _SignalAggregations_cabinSeatRow3PassengerSideIsBelt
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -11753,7 +11719,7 @@ func (ec *executionContext) _SignalAggregations_chassisAxleRow1WheelLeftSpeed(ct
 		ec.fieldContext_SignalAggregations_chassisAxleRow1WheelLeftSpeed,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().ChassisAxleRow1WheelLeftSpeed(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().ChassisAxleRow1WheelLeftSpeed(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -11764,25 +11730,25 @@ func (ec *executionContext) _SignalAggregations_chassisAxleRow1WheelLeftSpeed(ct
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -11826,7 +11792,7 @@ func (ec *executionContext) _SignalAggregations_chassisAxleRow1WheelLeftTirePres
 		ec.fieldContext_SignalAggregations_chassisAxleRow1WheelLeftTirePressure,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().ChassisAxleRow1WheelLeftTirePressure(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().ChassisAxleRow1WheelLeftTirePressure(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -11837,25 +11803,25 @@ func (ec *executionContext) _SignalAggregations_chassisAxleRow1WheelLeftTirePres
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -11899,7 +11865,7 @@ func (ec *executionContext) _SignalAggregations_chassisAxleRow1WheelRightSpeed(c
 		ec.fieldContext_SignalAggregations_chassisAxleRow1WheelRightSpeed,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().ChassisAxleRow1WheelRightSpeed(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().ChassisAxleRow1WheelRightSpeed(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -11910,25 +11876,25 @@ func (ec *executionContext) _SignalAggregations_chassisAxleRow1WheelRightSpeed(c
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -11972,7 +11938,7 @@ func (ec *executionContext) _SignalAggregations_chassisAxleRow1WheelRightTirePre
 		ec.fieldContext_SignalAggregations_chassisAxleRow1WheelRightTirePressure,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().ChassisAxleRow1WheelRightTirePressure(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().ChassisAxleRow1WheelRightTirePressure(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -11983,25 +11949,25 @@ func (ec *executionContext) _SignalAggregations_chassisAxleRow1WheelRightTirePre
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -12045,7 +12011,7 @@ func (ec *executionContext) _SignalAggregations_chassisAxleRow2WheelLeftTirePres
 		ec.fieldContext_SignalAggregations_chassisAxleRow2WheelLeftTirePressure,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().ChassisAxleRow2WheelLeftTirePressure(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().ChassisAxleRow2WheelLeftTirePressure(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -12056,25 +12022,25 @@ func (ec *executionContext) _SignalAggregations_chassisAxleRow2WheelLeftTirePres
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -12118,7 +12084,7 @@ func (ec *executionContext) _SignalAggregations_chassisAxleRow2WheelRightTirePre
 		ec.fieldContext_SignalAggregations_chassisAxleRow2WheelRightTirePressure,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().ChassisAxleRow2WheelRightTirePressure(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().ChassisAxleRow2WheelRightTirePressure(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -12129,25 +12095,25 @@ func (ec *executionContext) _SignalAggregations_chassisAxleRow2WheelRightTirePre
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -12191,7 +12157,7 @@ func (ec *executionContext) _SignalAggregations_chassisAxleRow3Weight(ctx contex
 		ec.fieldContext_SignalAggregations_chassisAxleRow3Weight,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().ChassisAxleRow3Weight(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().ChassisAxleRow3Weight(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -12202,25 +12168,25 @@ func (ec *executionContext) _SignalAggregations_chassisAxleRow3Weight(ctx contex
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -12264,7 +12230,7 @@ func (ec *executionContext) _SignalAggregations_chassisAxleRow4Weight(ctx contex
 		ec.fieldContext_SignalAggregations_chassisAxleRow4Weight,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().ChassisAxleRow4Weight(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().ChassisAxleRow4Weight(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -12275,25 +12241,25 @@ func (ec *executionContext) _SignalAggregations_chassisAxleRow4Weight(ctx contex
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -12337,7 +12303,7 @@ func (ec *executionContext) _SignalAggregations_chassisAxleRow5Weight(ctx contex
 		ec.fieldContext_SignalAggregations_chassisAxleRow5Weight,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().ChassisAxleRow5Weight(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().ChassisAxleRow5Weight(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -12348,25 +12314,25 @@ func (ec *executionContext) _SignalAggregations_chassisAxleRow5Weight(ctx contex
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -12410,7 +12376,7 @@ func (ec *executionContext) _SignalAggregations_chassisBrakeABSIsWarningOn(ctx c
 		ec.fieldContext_SignalAggregations_chassisBrakeABSIsWarningOn,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().ChassisBrakeABSIsWarningOn(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().ChassisBrakeABSIsWarningOn(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -12421,25 +12387,25 @@ func (ec *executionContext) _SignalAggregations_chassisBrakeABSIsWarningOn(ctx c
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -12483,7 +12449,7 @@ func (ec *executionContext) _SignalAggregations_chassisBrakeCircuit1PressurePrim
 		ec.fieldContext_SignalAggregations_chassisBrakeCircuit1PressurePrimary,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().ChassisBrakeCircuit1PressurePrimary(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().ChassisBrakeCircuit1PressurePrimary(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -12494,25 +12460,25 @@ func (ec *executionContext) _SignalAggregations_chassisBrakeCircuit1PressurePrim
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -12556,7 +12522,7 @@ func (ec *executionContext) _SignalAggregations_chassisBrakeCircuit2PressurePrim
 		ec.fieldContext_SignalAggregations_chassisBrakeCircuit2PressurePrimary,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().ChassisBrakeCircuit2PressurePrimary(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().ChassisBrakeCircuit2PressurePrimary(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -12567,25 +12533,25 @@ func (ec *executionContext) _SignalAggregations_chassisBrakeCircuit2PressurePrim
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -12629,7 +12595,7 @@ func (ec *executionContext) _SignalAggregations_chassisBrakeIsPedalPressed(ctx c
 		ec.fieldContext_SignalAggregations_chassisBrakeIsPedalPressed,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().ChassisBrakeIsPedalPressed(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().ChassisBrakeIsPedalPressed(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -12640,25 +12606,25 @@ func (ec *executionContext) _SignalAggregations_chassisBrakeIsPedalPressed(ctx c
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -12702,7 +12668,7 @@ func (ec *executionContext) _SignalAggregations_chassisBrakePedalPosition(ctx co
 		ec.fieldContext_SignalAggregations_chassisBrakePedalPosition,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().ChassisBrakePedalPosition(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().ChassisBrakePedalPosition(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -12713,25 +12679,25 @@ func (ec *executionContext) _SignalAggregations_chassisBrakePedalPosition(ctx co
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -12775,7 +12741,7 @@ func (ec *executionContext) _SignalAggregations_chassisParkingBrakeIsEngaged(ctx
 		ec.fieldContext_SignalAggregations_chassisParkingBrakeIsEngaged,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().ChassisParkingBrakeIsEngaged(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().ChassisParkingBrakeIsEngaged(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -12786,25 +12752,25 @@ func (ec *executionContext) _SignalAggregations_chassisParkingBrakeIsEngaged(ctx
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -12848,7 +12814,7 @@ func (ec *executionContext) _SignalAggregations_chassisTireSystemIsWarningOn(ctx
 		ec.fieldContext_SignalAggregations_chassisTireSystemIsWarningOn,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().ChassisTireSystemIsWarningOn(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().ChassisTireSystemIsWarningOn(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -12859,25 +12825,25 @@ func (ec *executionContext) _SignalAggregations_chassisTireSystemIsWarningOn(ctx
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -12921,7 +12887,7 @@ func (ec *executionContext) _SignalAggregations_connectivityCellularIsJammingDet
 		ec.fieldContext_SignalAggregations_connectivityCellularIsJammingDetected,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().ConnectivityCellularIsJammingDetected(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().ConnectivityCellularIsJammingDetected(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -12932,25 +12898,25 @@ func (ec *executionContext) _SignalAggregations_connectivityCellularIsJammingDet
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -12994,7 +12960,7 @@ func (ec *executionContext) _SignalAggregations_currentLocationAltitude(ctx cont
 		ec.fieldContext_SignalAggregations_currentLocationAltitude,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().CurrentLocationAltitude(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().CurrentLocationAltitude(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -13005,25 +12971,25 @@ func (ec *executionContext) _SignalAggregations_currentLocationAltitude(ctx cont
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -13067,7 +13033,7 @@ func (ec *executionContext) _SignalAggregations_currentLocationCoordinates(ctx c
 		ec.fieldContext_SignalAggregations_currentLocationCoordinates,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().CurrentLocationCoordinates(ctx, obj, fc.Args["agg"].(model.LocationAggregation), fc.Args["filter"].(*model.SignalLocationFilter))
+			return ec.Resolvers.SignalAggregations().CurrentLocationCoordinates(ctx, obj, fc.Args["agg"].(model.LocationAggregation), fc.Args["filter"].(*model.SignalLocationFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -13078,25 +13044,25 @@ func (ec *executionContext) _SignalAggregations_currentLocationCoordinates(ctx c
 					var zeroVal *model.Location
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.Location
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.Location
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *model.Location
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -13148,7 +13114,7 @@ func (ec *executionContext) _SignalAggregations_currentLocationHeading(ctx conte
 		ec.fieldContext_SignalAggregations_currentLocationHeading,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().CurrentLocationHeading(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().CurrentLocationHeading(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -13159,25 +13125,25 @@ func (ec *executionContext) _SignalAggregations_currentLocationHeading(ctx conte
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -13221,7 +13187,7 @@ func (ec *executionContext) _SignalAggregations_exteriorAirTemperature(ctx conte
 		ec.fieldContext_SignalAggregations_exteriorAirTemperature,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().ExteriorAirTemperature(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().ExteriorAirTemperature(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -13232,25 +13198,25 @@ func (ec *executionContext) _SignalAggregations_exteriorAirTemperature(ctx conte
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -13294,7 +13260,7 @@ func (ec *executionContext) _SignalAggregations_isIgnitionOn(ctx context.Context
 		ec.fieldContext_SignalAggregations_isIgnitionOn,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().IsIgnitionOn(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().IsIgnitionOn(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -13305,25 +13271,25 @@ func (ec *executionContext) _SignalAggregations_isIgnitionOn(ctx context.Context
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -13367,7 +13333,7 @@ func (ec *executionContext) _SignalAggregations_lowVoltageBatteryCurrentVoltage(
 		ec.fieldContext_SignalAggregations_lowVoltageBatteryCurrentVoltage,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().LowVoltageBatteryCurrentVoltage(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().LowVoltageBatteryCurrentVoltage(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -13378,25 +13344,25 @@ func (ec *executionContext) _SignalAggregations_lowVoltageBatteryCurrentVoltage(
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -13440,7 +13406,7 @@ func (ec *executionContext) _SignalAggregations_obdBarometricPressure(ctx contex
 		ec.fieldContext_SignalAggregations_obdBarometricPressure,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().ObdBarometricPressure(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().ObdBarometricPressure(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -13451,25 +13417,25 @@ func (ec *executionContext) _SignalAggregations_obdBarometricPressure(ctx contex
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -13513,7 +13479,7 @@ func (ec *executionContext) _SignalAggregations_obdCommandedEGR(ctx context.Cont
 		ec.fieldContext_SignalAggregations_obdCommandedEGR,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().ObdCommandedEgr(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().ObdCommandedEgr(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -13524,25 +13490,25 @@ func (ec *executionContext) _SignalAggregations_obdCommandedEGR(ctx context.Cont
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -13586,7 +13552,7 @@ func (ec *executionContext) _SignalAggregations_obdCommandedEVAP(ctx context.Con
 		ec.fieldContext_SignalAggregations_obdCommandedEVAP,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().ObdCommandedEvap(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().ObdCommandedEvap(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -13597,25 +13563,25 @@ func (ec *executionContext) _SignalAggregations_obdCommandedEVAP(ctx context.Con
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -13659,7 +13625,7 @@ func (ec *executionContext) _SignalAggregations_obdDTCList(ctx context.Context, 
 		ec.fieldContext_SignalAggregations_obdDTCList,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().ObdDTCList(ctx, obj, fc.Args["agg"].(model.StringAggregation))
+			return ec.Resolvers.SignalAggregations().ObdDTCList(ctx, obj, fc.Args["agg"].(model.StringAggregation))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -13670,25 +13636,25 @@ func (ec *executionContext) _SignalAggregations_obdDTCList(ctx context.Context, 
 					var zeroVal *string
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *string
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *string
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *string
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -13732,7 +13698,7 @@ func (ec *executionContext) _SignalAggregations_obdDistanceSinceDTCClear(ctx con
 		ec.fieldContext_SignalAggregations_obdDistanceSinceDTCClear,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().ObdDistanceSinceDTCClear(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().ObdDistanceSinceDTCClear(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -13743,25 +13709,25 @@ func (ec *executionContext) _SignalAggregations_obdDistanceSinceDTCClear(ctx con
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -13805,7 +13771,7 @@ func (ec *executionContext) _SignalAggregations_obdDistanceWithMIL(ctx context.C
 		ec.fieldContext_SignalAggregations_obdDistanceWithMIL,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().ObdDistanceWithMil(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().ObdDistanceWithMil(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -13816,25 +13782,25 @@ func (ec *executionContext) _SignalAggregations_obdDistanceWithMIL(ctx context.C
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -13878,7 +13844,7 @@ func (ec *executionContext) _SignalAggregations_obdEngineLoad(ctx context.Contex
 		ec.fieldContext_SignalAggregations_obdEngineLoad,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().ObdEngineLoad(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().ObdEngineLoad(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -13889,25 +13855,25 @@ func (ec *executionContext) _SignalAggregations_obdEngineLoad(ctx context.Contex
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -13951,7 +13917,7 @@ func (ec *executionContext) _SignalAggregations_obdFuelPressure(ctx context.Cont
 		ec.fieldContext_SignalAggregations_obdFuelPressure,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().ObdFuelPressure(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().ObdFuelPressure(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -13962,25 +13928,25 @@ func (ec *executionContext) _SignalAggregations_obdFuelPressure(ctx context.Cont
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -14024,7 +13990,7 @@ func (ec *executionContext) _SignalAggregations_obdFuelRate(ctx context.Context,
 		ec.fieldContext_SignalAggregations_obdFuelRate,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().ObdFuelRate(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().ObdFuelRate(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -14035,25 +14001,25 @@ func (ec *executionContext) _SignalAggregations_obdFuelRate(ctx context.Context,
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -14097,7 +14063,7 @@ func (ec *executionContext) _SignalAggregations_obdFuelTypeName(ctx context.Cont
 		ec.fieldContext_SignalAggregations_obdFuelTypeName,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().ObdFuelTypeName(ctx, obj, fc.Args["agg"].(model.StringAggregation))
+			return ec.Resolvers.SignalAggregations().ObdFuelTypeName(ctx, obj, fc.Args["agg"].(model.StringAggregation))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -14108,25 +14074,25 @@ func (ec *executionContext) _SignalAggregations_obdFuelTypeName(ctx context.Cont
 					var zeroVal *string
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *string
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *string
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *string
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -14170,7 +14136,7 @@ func (ec *executionContext) _SignalAggregations_obdIntakeTemp(ctx context.Contex
 		ec.fieldContext_SignalAggregations_obdIntakeTemp,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().ObdIntakeTemp(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().ObdIntakeTemp(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -14181,25 +14147,25 @@ func (ec *executionContext) _SignalAggregations_obdIntakeTemp(ctx context.Contex
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -14243,7 +14209,7 @@ func (ec *executionContext) _SignalAggregations_obdIsEngineBlocked(ctx context.C
 		ec.fieldContext_SignalAggregations_obdIsEngineBlocked,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().ObdIsEngineBlocked(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().ObdIsEngineBlocked(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -14254,25 +14220,25 @@ func (ec *executionContext) _SignalAggregations_obdIsEngineBlocked(ctx context.C
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -14316,7 +14282,7 @@ func (ec *executionContext) _SignalAggregations_obdIsPTOActive(ctx context.Conte
 		ec.fieldContext_SignalAggregations_obdIsPTOActive,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().ObdIsPTOActive(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().ObdIsPTOActive(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -14327,25 +14293,25 @@ func (ec *executionContext) _SignalAggregations_obdIsPTOActive(ctx context.Conte
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -14389,7 +14355,7 @@ func (ec *executionContext) _SignalAggregations_obdIsPluggedIn(ctx context.Conte
 		ec.fieldContext_SignalAggregations_obdIsPluggedIn,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().ObdIsPluggedIn(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().ObdIsPluggedIn(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -14400,25 +14366,25 @@ func (ec *executionContext) _SignalAggregations_obdIsPluggedIn(ctx context.Conte
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -14462,7 +14428,7 @@ func (ec *executionContext) _SignalAggregations_obdLongTermFuelTrim1(ctx context
 		ec.fieldContext_SignalAggregations_obdLongTermFuelTrim1,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().ObdLongTermFuelTrim1(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().ObdLongTermFuelTrim1(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -14473,25 +14439,25 @@ func (ec *executionContext) _SignalAggregations_obdLongTermFuelTrim1(ctx context
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -14535,7 +14501,7 @@ func (ec *executionContext) _SignalAggregations_obdMAP(ctx context.Context, fiel
 		ec.fieldContext_SignalAggregations_obdMAP,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().ObdMap(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().ObdMap(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -14546,25 +14512,25 @@ func (ec *executionContext) _SignalAggregations_obdMAP(ctx context.Context, fiel
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -14608,7 +14574,7 @@ func (ec *executionContext) _SignalAggregations_obdO2WRSensor1Voltage(ctx contex
 		ec.fieldContext_SignalAggregations_obdO2WRSensor1Voltage,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().ObdO2WRSensor1Voltage(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().ObdO2WRSensor1Voltage(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -14619,25 +14585,25 @@ func (ec *executionContext) _SignalAggregations_obdO2WRSensor1Voltage(ctx contex
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -14681,7 +14647,7 @@ func (ec *executionContext) _SignalAggregations_obdO2WRSensor2Voltage(ctx contex
 		ec.fieldContext_SignalAggregations_obdO2WRSensor2Voltage,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().ObdO2WRSensor2Voltage(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().ObdO2WRSensor2Voltage(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -14692,25 +14658,25 @@ func (ec *executionContext) _SignalAggregations_obdO2WRSensor2Voltage(ctx contex
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -14754,7 +14720,7 @@ func (ec *executionContext) _SignalAggregations_obdOilTemperature(ctx context.Co
 		ec.fieldContext_SignalAggregations_obdOilTemperature,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().ObdOilTemperature(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().ObdOilTemperature(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -14765,25 +14731,25 @@ func (ec *executionContext) _SignalAggregations_obdOilTemperature(ctx context.Co
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -14827,7 +14793,7 @@ func (ec *executionContext) _SignalAggregations_obdRunTime(ctx context.Context, 
 		ec.fieldContext_SignalAggregations_obdRunTime,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().ObdRunTime(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().ObdRunTime(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -14838,25 +14804,25 @@ func (ec *executionContext) _SignalAggregations_obdRunTime(ctx context.Context, 
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -14900,7 +14866,7 @@ func (ec *executionContext) _SignalAggregations_obdShortTermFuelTrim1(ctx contex
 		ec.fieldContext_SignalAggregations_obdShortTermFuelTrim1,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().ObdShortTermFuelTrim1(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().ObdShortTermFuelTrim1(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -14911,25 +14877,25 @@ func (ec *executionContext) _SignalAggregations_obdShortTermFuelTrim1(ctx contex
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -14973,7 +14939,7 @@ func (ec *executionContext) _SignalAggregations_obdStatusDTCCount(ctx context.Co
 		ec.fieldContext_SignalAggregations_obdStatusDTCCount,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().ObdStatusDTCCount(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().ObdStatusDTCCount(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -14984,25 +14950,25 @@ func (ec *executionContext) _SignalAggregations_obdStatusDTCCount(ctx context.Co
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -15046,7 +15012,7 @@ func (ec *executionContext) _SignalAggregations_obdWarmupsSinceDTCClear(ctx cont
 		ec.fieldContext_SignalAggregations_obdWarmupsSinceDTCClear,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().ObdWarmupsSinceDTCClear(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().ObdWarmupsSinceDTCClear(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -15057,25 +15023,25 @@ func (ec *executionContext) _SignalAggregations_obdWarmupsSinceDTCClear(ctx cont
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -15119,7 +15085,7 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineDiesel
 		ec.fieldContext_SignalAggregations_powertrainCombustionEngineDieselExhaustFluidCapacity,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().PowertrainCombustionEngineDieselExhaustFluidCapacity(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().PowertrainCombustionEngineDieselExhaustFluidCapacity(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -15130,25 +15096,25 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineDiesel
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -15192,7 +15158,7 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineDiesel
 		ec.fieldContext_SignalAggregations_powertrainCombustionEngineDieselExhaustFluidLevel,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().PowertrainCombustionEngineDieselExhaustFluidLevel(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().PowertrainCombustionEngineDieselExhaustFluidLevel(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -15203,25 +15169,25 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineDiesel
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -15265,7 +15231,7 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineECT(ct
 		ec.fieldContext_SignalAggregations_powertrainCombustionEngineECT,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().PowertrainCombustionEngineEct(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().PowertrainCombustionEngineEct(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -15276,25 +15242,25 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineECT(ct
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -15338,7 +15304,7 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineEOP(ct
 		ec.fieldContext_SignalAggregations_powertrainCombustionEngineEOP,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().PowertrainCombustionEngineEop(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().PowertrainCombustionEngineEop(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -15349,25 +15315,25 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineEOP(ct
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -15411,7 +15377,7 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineEOT(ct
 		ec.fieldContext_SignalAggregations_powertrainCombustionEngineEOT,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().PowertrainCombustionEngineEot(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().PowertrainCombustionEngineEot(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -15422,25 +15388,25 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineEOT(ct
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -15484,7 +15450,7 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineEngine
 		ec.fieldContext_SignalAggregations_powertrainCombustionEngineEngineOilLevel,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().PowertrainCombustionEngineEngineOilLevel(ctx, obj, fc.Args["agg"].(model.StringAggregation))
+			return ec.Resolvers.SignalAggregations().PowertrainCombustionEngineEngineOilLevel(ctx, obj, fc.Args["agg"].(model.StringAggregation))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -15495,25 +15461,25 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineEngine
 					var zeroVal *string
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *string
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *string
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *string
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -15557,7 +15523,7 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineEngine
 		ec.fieldContext_SignalAggregations_powertrainCombustionEngineEngineOilRelativeLevel,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().PowertrainCombustionEngineEngineOilRelativeLevel(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().PowertrainCombustionEngineEngineOilRelativeLevel(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -15568,25 +15534,25 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineEngine
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -15630,7 +15596,7 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineMAF(ct
 		ec.fieldContext_SignalAggregations_powertrainCombustionEngineMAF,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().PowertrainCombustionEngineMaf(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().PowertrainCombustionEngineMaf(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -15641,25 +15607,25 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineMAF(ct
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -15703,7 +15669,7 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineSpeed(
 		ec.fieldContext_SignalAggregations_powertrainCombustionEngineSpeed,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().PowertrainCombustionEngineSpeed(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().PowertrainCombustionEngineSpeed(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -15714,25 +15680,25 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineSpeed(
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -15776,7 +15742,7 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineTPS(ct
 		ec.fieldContext_SignalAggregations_powertrainCombustionEngineTPS,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().PowertrainCombustionEngineTps(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().PowertrainCombustionEngineTps(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -15787,25 +15753,25 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineTPS(ct
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -15849,7 +15815,7 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineTorque
 		ec.fieldContext_SignalAggregations_powertrainCombustionEngineTorque,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().PowertrainCombustionEngineTorque(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().PowertrainCombustionEngineTorque(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -15860,25 +15826,25 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineTorque
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -15922,7 +15888,7 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineTorque
 		ec.fieldContext_SignalAggregations_powertrainCombustionEngineTorquePercent,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().PowertrainCombustionEngineTorquePercent(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().PowertrainCombustionEngineTorquePercent(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -15933,25 +15899,25 @@ func (ec *executionContext) _SignalAggregations_powertrainCombustionEngineTorque
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -15995,7 +15961,7 @@ func (ec *executionContext) _SignalAggregations_powertrainFuelSystemAbsoluteLeve
 		ec.fieldContext_SignalAggregations_powertrainFuelSystemAbsoluteLevel,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().PowertrainFuelSystemAbsoluteLevel(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().PowertrainFuelSystemAbsoluteLevel(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -16006,25 +15972,25 @@ func (ec *executionContext) _SignalAggregations_powertrainFuelSystemAbsoluteLeve
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -16068,7 +16034,7 @@ func (ec *executionContext) _SignalAggregations_powertrainFuelSystemAccumulatedC
 		ec.fieldContext_SignalAggregations_powertrainFuelSystemAccumulatedConsumption,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().PowertrainFuelSystemAccumulatedConsumption(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().PowertrainFuelSystemAccumulatedConsumption(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -16079,25 +16045,25 @@ func (ec *executionContext) _SignalAggregations_powertrainFuelSystemAccumulatedC
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -16141,7 +16107,7 @@ func (ec *executionContext) _SignalAggregations_powertrainFuelSystemRelativeLeve
 		ec.fieldContext_SignalAggregations_powertrainFuelSystemRelativeLevel,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().PowertrainFuelSystemRelativeLevel(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().PowertrainFuelSystemRelativeLevel(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -16152,25 +16118,25 @@ func (ec *executionContext) _SignalAggregations_powertrainFuelSystemRelativeLeve
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -16214,7 +16180,7 @@ func (ec *executionContext) _SignalAggregations_powertrainFuelSystemSupportedFue
 		ec.fieldContext_SignalAggregations_powertrainFuelSystemSupportedFuelTypes,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().PowertrainFuelSystemSupportedFuelTypes(ctx, obj, fc.Args["agg"].(model.StringAggregation))
+			return ec.Resolvers.SignalAggregations().PowertrainFuelSystemSupportedFuelTypes(ctx, obj, fc.Args["agg"].(model.StringAggregation))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -16225,25 +16191,25 @@ func (ec *executionContext) _SignalAggregations_powertrainFuelSystemSupportedFue
 					var zeroVal *string
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *string
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *string
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *string
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -16287,7 +16253,7 @@ func (ec *executionContext) _SignalAggregations_powertrainRange(ctx context.Cont
 		ec.fieldContext_SignalAggregations_powertrainRange,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().PowertrainRange(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().PowertrainRange(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -16298,25 +16264,25 @@ func (ec *executionContext) _SignalAggregations_powertrainRange(ctx context.Cont
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -16360,7 +16326,7 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryChargin
 		ec.fieldContext_SignalAggregations_powertrainTractionBatteryChargingAddedEnergy,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryChargingAddedEnergy(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().PowertrainTractionBatteryChargingAddedEnergy(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -16371,25 +16337,25 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryChargin
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -16433,7 +16399,7 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryChargin
 		ec.fieldContext_SignalAggregations_powertrainTractionBatteryChargingChargeCurrentAC,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryChargingChargeCurrentAc(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().PowertrainTractionBatteryChargingChargeCurrentAc(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -16444,25 +16410,25 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryChargin
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -16506,7 +16472,7 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryChargin
 		ec.fieldContext_SignalAggregations_powertrainTractionBatteryChargingChargeLimit,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryChargingChargeLimit(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().PowertrainTractionBatteryChargingChargeLimit(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -16517,25 +16483,25 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryChargin
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -16579,7 +16545,7 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryChargin
 		ec.fieldContext_SignalAggregations_powertrainTractionBatteryChargingChargeVoltageUnknownType,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryChargingChargeVoltageUnknownType(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().PowertrainTractionBatteryChargingChargeVoltageUnknownType(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -16590,25 +16556,25 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryChargin
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -16652,7 +16618,7 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryChargin
 		ec.fieldContext_SignalAggregations_powertrainTractionBatteryChargingIsCharging,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryChargingIsCharging(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().PowertrainTractionBatteryChargingIsCharging(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -16663,25 +16629,25 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryChargin
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -16725,7 +16691,7 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryChargin
 		ec.fieldContext_SignalAggregations_powertrainTractionBatteryChargingIsChargingCableConnected,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryChargingIsChargingCableConnected(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().PowertrainTractionBatteryChargingIsChargingCableConnected(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -16736,25 +16702,25 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryChargin
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -16798,7 +16764,7 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryChargin
 		ec.fieldContext_SignalAggregations_powertrainTractionBatteryChargingPower,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryChargingPower(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().PowertrainTractionBatteryChargingPower(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -16809,25 +16775,25 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryChargin
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -16871,7 +16837,7 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryCurrent
 		ec.fieldContext_SignalAggregations_powertrainTractionBatteryCurrentPower,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryCurrentPower(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().PowertrainTractionBatteryCurrentPower(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -16882,25 +16848,25 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryCurrent
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -16944,7 +16910,7 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryCurrent
 		ec.fieldContext_SignalAggregations_powertrainTractionBatteryCurrentVoltage,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryCurrentVoltage(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().PowertrainTractionBatteryCurrentVoltage(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -16955,25 +16921,25 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryCurrent
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -17017,7 +16983,7 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryGrossCa
 		ec.fieldContext_SignalAggregations_powertrainTractionBatteryGrossCapacity,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryGrossCapacity(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().PowertrainTractionBatteryGrossCapacity(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -17028,25 +16994,25 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryGrossCa
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -17090,7 +17056,7 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryRange(c
 		ec.fieldContext_SignalAggregations_powertrainTractionBatteryRange,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryRange(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().PowertrainTractionBatteryRange(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -17101,25 +17067,25 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryRange(c
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -17163,7 +17129,7 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryStateOf
 		ec.fieldContext_SignalAggregations_powertrainTractionBatteryStateOfChargeCurrent,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryStateOfChargeCurrent(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().PowertrainTractionBatteryStateOfChargeCurrent(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -17174,25 +17140,25 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryStateOf
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -17236,7 +17202,7 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryStateOf
 		ec.fieldContext_SignalAggregations_powertrainTractionBatteryStateOfChargeCurrentEnergy,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryStateOfChargeCurrentEnergy(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().PowertrainTractionBatteryStateOfChargeCurrentEnergy(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -17247,25 +17213,25 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryStateOf
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -17309,7 +17275,7 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryStateOf
 		ec.fieldContext_SignalAggregations_powertrainTractionBatteryStateOfHealth,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryStateOfHealth(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().PowertrainTractionBatteryStateOfHealth(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -17320,25 +17286,25 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryStateOf
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -17382,7 +17348,7 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryTempera
 		ec.fieldContext_SignalAggregations_powertrainTractionBatteryTemperatureAverage,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().PowertrainTractionBatteryTemperatureAverage(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().PowertrainTractionBatteryTemperatureAverage(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -17393,25 +17359,25 @@ func (ec *executionContext) _SignalAggregations_powertrainTractionBatteryTempera
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -17455,7 +17421,7 @@ func (ec *executionContext) _SignalAggregations_powertrainTransmissionCurrentGea
 		ec.fieldContext_SignalAggregations_powertrainTransmissionCurrentGear,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().PowertrainTransmissionCurrentGear(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().PowertrainTransmissionCurrentGear(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -17466,25 +17432,25 @@ func (ec *executionContext) _SignalAggregations_powertrainTransmissionCurrentGea
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -17528,7 +17494,7 @@ func (ec *executionContext) _SignalAggregations_powertrainTransmissionIsClutchSw
 		ec.fieldContext_SignalAggregations_powertrainTransmissionIsClutchSwitchOperated,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().PowertrainTransmissionIsClutchSwitchOperated(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().PowertrainTransmissionIsClutchSwitchOperated(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -17539,25 +17505,25 @@ func (ec *executionContext) _SignalAggregations_powertrainTransmissionIsClutchSw
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -17601,7 +17567,7 @@ func (ec *executionContext) _SignalAggregations_powertrainTransmissionRetarderAc
 		ec.fieldContext_SignalAggregations_powertrainTransmissionRetarderActualTorque,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().PowertrainTransmissionRetarderActualTorque(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().PowertrainTransmissionRetarderActualTorque(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -17612,25 +17578,25 @@ func (ec *executionContext) _SignalAggregations_powertrainTransmissionRetarderAc
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -17674,7 +17640,7 @@ func (ec *executionContext) _SignalAggregations_powertrainTransmissionRetarderTo
 		ec.fieldContext_SignalAggregations_powertrainTransmissionRetarderTorqueMode,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().PowertrainTransmissionRetarderTorqueMode(ctx, obj, fc.Args["agg"].(model.StringAggregation))
+			return ec.Resolvers.SignalAggregations().PowertrainTransmissionRetarderTorqueMode(ctx, obj, fc.Args["agg"].(model.StringAggregation))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -17685,25 +17651,25 @@ func (ec *executionContext) _SignalAggregations_powertrainTransmissionRetarderTo
 					var zeroVal *string
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *string
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *string
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *string
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -17747,7 +17713,7 @@ func (ec *executionContext) _SignalAggregations_powertrainTransmissionSelectedGe
 		ec.fieldContext_SignalAggregations_powertrainTransmissionSelectedGear,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().PowertrainTransmissionSelectedGear(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().PowertrainTransmissionSelectedGear(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -17758,25 +17724,25 @@ func (ec *executionContext) _SignalAggregations_powertrainTransmissionSelectedGe
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -17820,7 +17786,7 @@ func (ec *executionContext) _SignalAggregations_powertrainTransmissionTemperatur
 		ec.fieldContext_SignalAggregations_powertrainTransmissionTemperature,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().PowertrainTransmissionTemperature(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().PowertrainTransmissionTemperature(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -17831,25 +17797,25 @@ func (ec *executionContext) _SignalAggregations_powertrainTransmissionTemperatur
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -17893,7 +17859,7 @@ func (ec *executionContext) _SignalAggregations_powertrainTransmissionTravelledD
 		ec.fieldContext_SignalAggregations_powertrainTransmissionTravelledDistance,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().PowertrainTransmissionTravelledDistance(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().PowertrainTransmissionTravelledDistance(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -17904,25 +17870,25 @@ func (ec *executionContext) _SignalAggregations_powertrainTransmissionTravelledD
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -17966,7 +17932,7 @@ func (ec *executionContext) _SignalAggregations_powertrainType(ctx context.Conte
 		ec.fieldContext_SignalAggregations_powertrainType,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().PowertrainType(ctx, obj, fc.Args["agg"].(model.StringAggregation))
+			return ec.Resolvers.SignalAggregations().PowertrainType(ctx, obj, fc.Args["agg"].(model.StringAggregation))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -17977,25 +17943,25 @@ func (ec *executionContext) _SignalAggregations_powertrainType(ctx context.Conte
 					var zeroVal *string
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *string
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *string
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *string
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -18039,7 +18005,7 @@ func (ec *executionContext) _SignalAggregations_serviceDistanceToService(ctx con
 		ec.fieldContext_SignalAggregations_serviceDistanceToService,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().ServiceDistanceToService(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().ServiceDistanceToService(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -18050,25 +18016,25 @@ func (ec *executionContext) _SignalAggregations_serviceDistanceToService(ctx con
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -18112,7 +18078,7 @@ func (ec *executionContext) _SignalAggregations_serviceTimeToService(ctx context
 		ec.fieldContext_SignalAggregations_serviceTimeToService,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().ServiceTimeToService(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().ServiceTimeToService(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -18123,25 +18089,25 @@ func (ec *executionContext) _SignalAggregations_serviceTimeToService(ctx context
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -18185,7 +18151,7 @@ func (ec *executionContext) _SignalAggregations_speed(ctx context.Context, field
 		ec.fieldContext_SignalAggregations_speed,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.SignalAggregations().Speed(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
+			return ec.Resolvers.SignalAggregations().Speed(ctx, obj, fc.Args["agg"].(model.FloatAggregation), fc.Args["filter"].(*model.SignalFloatFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -18196,25 +18162,25 @@ func (ec *executionContext) _SignalAggregations_speed(ctx context.Context, field
 					var zeroVal *float64
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 			directive3 := func(ctx context.Context) (any, error) {
-				if ec.directives.HasAggregation == nil {
+				if ec.Directives.HasAggregation == nil {
 					var zeroVal *float64
 					return zeroVal, errors.New("directive hasAggregation is not implemented")
 				}
-				return ec.directives.HasAggregation(ctx, obj, directive2)
+				return ec.Directives.HasAggregation(ctx, obj, directive2)
 			}
 
 			next = directive3
@@ -18297,18 +18263,18 @@ func (ec *executionContext) _SignalCollection_currentLocationApproximateCoordina
 					var zeroVal *model.SignalLocation
 					return zeroVal, err
 				}
-				if ec.directives.RequiresOneOfPrivilege == nil {
+				if ec.Directives.RequiresOneOfPrivilege == nil {
 					var zeroVal *model.SignalLocation
 					return zeroVal, errors.New("directive requiresOneOfPrivilege is not implemented")
 				}
-				return ec.directives.RequiresOneOfPrivilege(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresOneOfPrivilege(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalLocation
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -18357,18 +18323,18 @@ func (ec *executionContext) _SignalCollection_angularVelocityYaw(ctx context.Con
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -18417,18 +18383,18 @@ func (ec *executionContext) _SignalCollection_bodyLightsIsAirbagWarningOn(ctx co
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -18477,18 +18443,18 @@ func (ec *executionContext) _SignalCollection_bodyLockIsLocked(ctx context.Conte
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -18537,18 +18503,18 @@ func (ec *executionContext) _SignalCollection_bodyTrunkFrontIsOpen(ctx context.C
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -18597,18 +18563,18 @@ func (ec *executionContext) _SignalCollection_bodyTrunkRearIsOpen(ctx context.Co
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -18657,18 +18623,18 @@ func (ec *executionContext) _SignalCollection_cabinDoorRow1DriverSideIsOpen(ctx 
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -18717,18 +18683,18 @@ func (ec *executionContext) _SignalCollection_cabinDoorRow1DriverSideWindowIsOpe
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -18777,18 +18743,18 @@ func (ec *executionContext) _SignalCollection_cabinDoorRow1PassengerSideIsOpen(c
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -18837,18 +18803,18 @@ func (ec *executionContext) _SignalCollection_cabinDoorRow1PassengerSideWindowIs
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -18897,18 +18863,18 @@ func (ec *executionContext) _SignalCollection_cabinDoorRow2DriverSideIsOpen(ctx 
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -18957,18 +18923,18 @@ func (ec *executionContext) _SignalCollection_cabinDoorRow2DriverSideWindowIsOpe
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -19017,18 +18983,18 @@ func (ec *executionContext) _SignalCollection_cabinDoorRow2PassengerSideIsOpen(c
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -19077,18 +19043,18 @@ func (ec *executionContext) _SignalCollection_cabinDoorRow2PassengerSideWindowIs
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -19137,18 +19103,18 @@ func (ec *executionContext) _SignalCollection_cabinSeatRow1DriverSideIsBelted(ct
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -19197,18 +19163,18 @@ func (ec *executionContext) _SignalCollection_cabinSeatRow1PassengerSideIsBelted
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -19257,18 +19223,18 @@ func (ec *executionContext) _SignalCollection_cabinSeatRow2DriverSideIsBelted(ct
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -19317,18 +19283,18 @@ func (ec *executionContext) _SignalCollection_cabinSeatRow2MiddleIsBelted(ctx co
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -19377,18 +19343,18 @@ func (ec *executionContext) _SignalCollection_cabinSeatRow2PassengerSideIsBelted
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -19437,18 +19403,18 @@ func (ec *executionContext) _SignalCollection_cabinSeatRow3DriverSideIsBelted(ct
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -19497,18 +19463,18 @@ func (ec *executionContext) _SignalCollection_cabinSeatRow3PassengerSideIsBelted
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -19557,18 +19523,18 @@ func (ec *executionContext) _SignalCollection_chassisAxleRow1WheelLeftSpeed(ctx 
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -19617,18 +19583,18 @@ func (ec *executionContext) _SignalCollection_chassisAxleRow1WheelLeftTirePressu
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -19677,18 +19643,18 @@ func (ec *executionContext) _SignalCollection_chassisAxleRow1WheelRightSpeed(ctx
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -19737,18 +19703,18 @@ func (ec *executionContext) _SignalCollection_chassisAxleRow1WheelRightTirePress
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -19797,18 +19763,18 @@ func (ec *executionContext) _SignalCollection_chassisAxleRow2WheelLeftTirePressu
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -19857,18 +19823,18 @@ func (ec *executionContext) _SignalCollection_chassisAxleRow2WheelRightTirePress
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -19917,18 +19883,18 @@ func (ec *executionContext) _SignalCollection_chassisAxleRow3Weight(ctx context.
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -19977,18 +19943,18 @@ func (ec *executionContext) _SignalCollection_chassisAxleRow4Weight(ctx context.
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -20037,18 +20003,18 @@ func (ec *executionContext) _SignalCollection_chassisAxleRow5Weight(ctx context.
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -20097,18 +20063,18 @@ func (ec *executionContext) _SignalCollection_chassisBrakeABSIsWarningOn(ctx con
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -20157,18 +20123,18 @@ func (ec *executionContext) _SignalCollection_chassisBrakeCircuit1PressurePrimar
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -20217,18 +20183,18 @@ func (ec *executionContext) _SignalCollection_chassisBrakeCircuit2PressurePrimar
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -20277,18 +20243,18 @@ func (ec *executionContext) _SignalCollection_chassisBrakeIsPedalPressed(ctx con
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -20337,18 +20303,18 @@ func (ec *executionContext) _SignalCollection_chassisBrakePedalPosition(ctx cont
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -20397,18 +20363,18 @@ func (ec *executionContext) _SignalCollection_chassisParkingBrakeIsEngaged(ctx c
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -20457,18 +20423,18 @@ func (ec *executionContext) _SignalCollection_chassisTireSystemIsWarningOn(ctx c
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -20517,18 +20483,18 @@ func (ec *executionContext) _SignalCollection_connectivityCellularIsJammingDetec
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -20577,18 +20543,18 @@ func (ec *executionContext) _SignalCollection_currentLocationAltitude(ctx contex
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -20637,18 +20603,18 @@ func (ec *executionContext) _SignalCollection_currentLocationCoordinates(ctx con
 					var zeroVal *model.SignalLocation
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalLocation
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalLocation
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -20697,18 +20663,18 @@ func (ec *executionContext) _SignalCollection_currentLocationHeading(ctx context
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -20757,18 +20723,18 @@ func (ec *executionContext) _SignalCollection_exteriorAirTemperature(ctx context
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -20817,18 +20783,18 @@ func (ec *executionContext) _SignalCollection_isIgnitionOn(ctx context.Context, 
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -20877,18 +20843,18 @@ func (ec *executionContext) _SignalCollection_lowVoltageBatteryCurrentVoltage(ct
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -20937,18 +20903,18 @@ func (ec *executionContext) _SignalCollection_obdBarometricPressure(ctx context.
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -20997,18 +20963,18 @@ func (ec *executionContext) _SignalCollection_obdCommandedEGR(ctx context.Contex
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -21057,18 +21023,18 @@ func (ec *executionContext) _SignalCollection_obdCommandedEVAP(ctx context.Conte
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -21117,18 +21083,18 @@ func (ec *executionContext) _SignalCollection_obdDTCList(ctx context.Context, fi
 					var zeroVal *model.SignalString
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalString
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalString
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -21177,18 +21143,18 @@ func (ec *executionContext) _SignalCollection_obdDistanceSinceDTCClear(ctx conte
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -21237,18 +21203,18 @@ func (ec *executionContext) _SignalCollection_obdDistanceWithMIL(ctx context.Con
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -21297,18 +21263,18 @@ func (ec *executionContext) _SignalCollection_obdEngineLoad(ctx context.Context,
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -21357,18 +21323,18 @@ func (ec *executionContext) _SignalCollection_obdFuelPressure(ctx context.Contex
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -21417,18 +21383,18 @@ func (ec *executionContext) _SignalCollection_obdFuelRate(ctx context.Context, f
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -21477,18 +21443,18 @@ func (ec *executionContext) _SignalCollection_obdFuelTypeName(ctx context.Contex
 					var zeroVal *model.SignalString
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalString
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalString
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -21537,18 +21503,18 @@ func (ec *executionContext) _SignalCollection_obdIntakeTemp(ctx context.Context,
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -21597,18 +21563,18 @@ func (ec *executionContext) _SignalCollection_obdIsEngineBlocked(ctx context.Con
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -21657,18 +21623,18 @@ func (ec *executionContext) _SignalCollection_obdIsPTOActive(ctx context.Context
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -21717,18 +21683,18 @@ func (ec *executionContext) _SignalCollection_obdIsPluggedIn(ctx context.Context
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -21777,18 +21743,18 @@ func (ec *executionContext) _SignalCollection_obdLongTermFuelTrim1(ctx context.C
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -21837,18 +21803,18 @@ func (ec *executionContext) _SignalCollection_obdMAP(ctx context.Context, field 
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -21897,18 +21863,18 @@ func (ec *executionContext) _SignalCollection_obdO2WRSensor1Voltage(ctx context.
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -21957,18 +21923,18 @@ func (ec *executionContext) _SignalCollection_obdO2WRSensor2Voltage(ctx context.
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -22017,18 +21983,18 @@ func (ec *executionContext) _SignalCollection_obdOilTemperature(ctx context.Cont
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -22077,18 +22043,18 @@ func (ec *executionContext) _SignalCollection_obdRunTime(ctx context.Context, fi
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -22137,18 +22103,18 @@ func (ec *executionContext) _SignalCollection_obdShortTermFuelTrim1(ctx context.
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -22197,18 +22163,18 @@ func (ec *executionContext) _SignalCollection_obdStatusDTCCount(ctx context.Cont
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -22257,18 +22223,18 @@ func (ec *executionContext) _SignalCollection_obdWarmupsSinceDTCClear(ctx contex
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -22317,18 +22283,18 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineDieselEx
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -22377,18 +22343,18 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineDieselEx
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -22437,18 +22403,18 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineECT(ctx 
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -22497,18 +22463,18 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineEOP(ctx 
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -22557,18 +22523,18 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineEOT(ctx 
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -22617,18 +22583,18 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineEngineOi
 					var zeroVal *model.SignalString
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalString
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalString
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -22677,18 +22643,18 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineEngineOi
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -22737,18 +22703,18 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineMAF(ctx 
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -22797,18 +22763,18 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineSpeed(ct
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -22857,18 +22823,18 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineTPS(ctx 
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -22917,18 +22883,18 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineTorque(c
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -22977,18 +22943,18 @@ func (ec *executionContext) _SignalCollection_powertrainCombustionEngineTorquePe
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -23037,18 +23003,18 @@ func (ec *executionContext) _SignalCollection_powertrainFuelSystemAbsoluteLevel(
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -23097,18 +23063,18 @@ func (ec *executionContext) _SignalCollection_powertrainFuelSystemAccumulatedCon
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -23157,18 +23123,18 @@ func (ec *executionContext) _SignalCollection_powertrainFuelSystemRelativeLevel(
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -23217,18 +23183,18 @@ func (ec *executionContext) _SignalCollection_powertrainFuelSystemSupportedFuelT
 					var zeroVal *model.SignalString
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalString
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalString
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -23277,18 +23243,18 @@ func (ec *executionContext) _SignalCollection_powertrainRange(ctx context.Contex
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -23337,18 +23303,18 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryChargingA
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -23397,18 +23363,18 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryChargingC
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -23457,18 +23423,18 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryChargingC
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -23517,18 +23483,18 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryChargingC
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -23577,18 +23543,18 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryChargingI
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -23637,18 +23603,18 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryChargingI
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -23697,18 +23663,18 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryChargingP
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -23757,18 +23723,18 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryCurrentPo
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -23817,18 +23783,18 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryCurrentVo
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -23877,18 +23843,18 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryGrossCapa
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -23937,18 +23903,18 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryRange(ctx
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -23997,18 +23963,18 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryStateOfCh
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -24057,18 +24023,18 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryStateOfCh
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -24117,18 +24083,18 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryStateOfHe
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -24177,18 +24143,18 @@ func (ec *executionContext) _SignalCollection_powertrainTractionBatteryTemperatu
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -24237,18 +24203,18 @@ func (ec *executionContext) _SignalCollection_powertrainTransmissionCurrentGear(
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -24297,18 +24263,18 @@ func (ec *executionContext) _SignalCollection_powertrainTransmissionIsClutchSwit
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -24357,18 +24323,18 @@ func (ec *executionContext) _SignalCollection_powertrainTransmissionRetarderActu
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -24417,18 +24383,18 @@ func (ec *executionContext) _SignalCollection_powertrainTransmissionRetarderTorq
 					var zeroVal *model.SignalString
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalString
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalString
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -24477,18 +24443,18 @@ func (ec *executionContext) _SignalCollection_powertrainTransmissionSelectedGear
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -24537,18 +24503,18 @@ func (ec *executionContext) _SignalCollection_powertrainTransmissionTemperature(
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -24597,18 +24563,18 @@ func (ec *executionContext) _SignalCollection_powertrainTransmissionTravelledDis
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -24657,18 +24623,18 @@ func (ec *executionContext) _SignalCollection_powertrainType(ctx context.Context
 					var zeroVal *model.SignalString
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalString
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalString
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -24717,18 +24683,18 @@ func (ec *executionContext) _SignalCollection_serviceDistanceToService(ctx conte
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -24777,18 +24743,18 @@ func (ec *executionContext) _SignalCollection_serviceTimeToService(ctx context.C
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -24837,18 +24803,18 @@ func (ec *executionContext) _SignalCollection_speed(ctx context.Context, field g
 					var zeroVal *model.SignalFloat
 					return zeroVal, err
 				}
-				if ec.directives.RequiresAllOfPrivileges == nil {
+				if ec.Directives.RequiresAllOfPrivileges == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive requiresAllOfPrivileges is not implemented")
 				}
-				return ec.directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
+				return ec.Directives.RequiresAllOfPrivileges(ctx, obj, directive0, privileges)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				if ec.directives.IsSignal == nil {
+				if ec.Directives.IsSignal == nil {
 					var zeroVal *model.SignalFloat
 					return zeroVal, errors.New("directive isSignal is not implemented")
 				}
-				return ec.directives.IsSignal(ctx, obj, directive1)
+				return ec.Directives.IsSignal(ctx, obj, directive1)
 			}
 
 			next = directive2
@@ -27079,7 +27045,6 @@ func (ec *executionContext) unmarshalInputAttestationFilter(ctx context.Context,
 			it.Tags = data
 		}
 	}
-
 	return it, nil
 }
 
@@ -27120,7 +27085,6 @@ func (ec *executionContext) unmarshalInputEventFilter(ctx context.Context, obj a
 			it.Tags = data
 		}
 	}
-
 	return it, nil
 }
 
@@ -27154,7 +27118,6 @@ func (ec *executionContext) unmarshalInputFilterLocation(ctx context.Context, ob
 			it.Longitude = data
 		}
 	}
-
 	return it, nil
 }
 
@@ -27188,7 +27151,6 @@ func (ec *executionContext) unmarshalInputInCircleFilter(ctx context.Context, ob
 			it.Radius = data
 		}
 	}
-
 	return it, nil
 }
 
@@ -27259,7 +27221,6 @@ func (ec *executionContext) unmarshalInputSegmentConfig(ctx context.Context, obj
 			it.MinIncreasePercent = data
 		}
 	}
-
 	return it, nil
 }
 
@@ -27286,7 +27247,6 @@ func (ec *executionContext) unmarshalInputSegmentEventRequest(ctx context.Contex
 			it.Name = data
 		}
 	}
-
 	return it, nil
 }
 
@@ -27320,7 +27280,6 @@ func (ec *executionContext) unmarshalInputSegmentSignalRequest(ctx context.Conte
 			it.Agg = data
 		}
 	}
-
 	return it, nil
 }
 
@@ -27347,7 +27306,6 @@ func (ec *executionContext) unmarshalInputSignalFilter(ctx context.Context, obj 
 			it.Source = data
 		}
 	}
-
 	return it, nil
 }
 
@@ -27430,7 +27388,6 @@ func (ec *executionContext) unmarshalInputSignalFloatFilter(ctx context.Context,
 			it.Or = data
 		}
 	}
-
 	return it, nil
 }
 
@@ -27464,7 +27421,6 @@ func (ec *executionContext) unmarshalInputSignalLocationFilter(ctx context.Conte
 			it.InCircle = data
 		}
 	}
-
 	return it, nil
 }
 
@@ -27519,7 +27475,6 @@ func (ec *executionContext) unmarshalInputStringArrayFilter(ctx context.Context,
 			it.Or = data
 		}
 	}
-
 	return it, nil
 }
 
@@ -27530,7 +27485,7 @@ func (ec *executionContext) unmarshalInputStringValueFilter(ctx context.Context,
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"eq", "neq", "notIn", "in", "or"}
+	fieldsInOrder := [...]string{"eq", "neq", "notIn", "in", "startsWith", "or"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -27565,6 +27520,13 @@ func (ec *executionContext) unmarshalInputStringValueFilter(ctx context.Context,
 				return it, err
 			}
 			it.In = data
+		case "startsWith":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("startsWith"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.StartsWith = data
 		case "or":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("or"))
 			data, err := ec.unmarshalOStringValueFilter2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐStringValueFilterᚄ(ctx, v)
@@ -27574,7 +27536,6 @@ func (ec *executionContext) unmarshalInputStringValueFilter(ctx context.Context,
 			it.Or = data
 		}
 	}
-
 	return it, nil
 }
 
@@ -27650,10 +27611,10 @@ func (ec *executionContext) _Attestation(ctx context.Context, sel ast.SelectionS
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
 
 	for label, dfs := range deferred {
-		ec.processDeferredGroup(graphql.DeferredGroup{
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
 			Label:    label,
 			Path:     graphql.GetPath(ctx),
 			FieldSet: dfs,
@@ -27708,10 +27669,10 @@ func (ec *executionContext) _DailyActivity(ctx context.Context, sel ast.Selectio
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
 
 	for label, dfs := range deferred {
-		ec.processDeferredGroup(graphql.DeferredGroup{
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
 			Label:    label,
 			Path:     graphql.GetPath(ctx),
 			FieldSet: dfs,
@@ -27772,10 +27733,10 @@ func (ec *executionContext) _DataSummary(ctx context.Context, sel ast.SelectionS
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
 
 	for label, dfs := range deferred {
-		ec.processDeferredGroup(graphql.DeferredGroup{
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
 			Label:    label,
 			Path:     graphql.GetPath(ctx),
 			FieldSet: dfs,
@@ -27828,10 +27789,10 @@ func (ec *executionContext) _Event(ctx context.Context, sel ast.SelectionSet, ob
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
 
 	for label, dfs := range deferred {
-		ec.processDeferredGroup(graphql.DeferredGroup{
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
 			Label:    label,
 			Path:     graphql.GetPath(ctx),
 			FieldSet: dfs,
@@ -27872,10 +27833,10 @@ func (ec *executionContext) _EventCount(ctx context.Context, sel ast.SelectionSe
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
 
 	for label, dfs := range deferred {
-		ec.processDeferredGroup(graphql.DeferredGroup{
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
 			Label:    label,
 			Path:     graphql.GetPath(ctx),
 			FieldSet: dfs,
@@ -27921,10 +27882,10 @@ func (ec *executionContext) _Location(ctx context.Context, sel ast.SelectionSet,
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
 
 	for label, dfs := range deferred {
-		ec.processDeferredGroup(graphql.DeferredGroup{
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
 			Label:    label,
 			Path:     graphql.GetPath(ctx),
 			FieldSet: dfs,
@@ -28148,10 +28109,10 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
 
 	for label, dfs := range deferred {
-		ec.processDeferredGroup(graphql.DeferredGroup{
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
 			Label:    label,
 			Path:     graphql.GetPath(ctx),
 			FieldSet: dfs,
@@ -28208,10 +28169,10 @@ func (ec *executionContext) _Segment(ctx context.Context, sel ast.SelectionSet, 
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
 
 	for label, dfs := range deferred {
-		ec.processDeferredGroup(graphql.DeferredGroup{
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
 			Label:    label,
 			Path:     graphql.GetPath(ctx),
 			FieldSet: dfs,
@@ -28257,10 +28218,10 @@ func (ec *executionContext) _SignalAggregationValue(ctx context.Context, sel ast
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
 
 	for label, dfs := range deferred {
-		ec.processDeferredGroup(graphql.DeferredGroup{
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
 			Label:    label,
 			Path:     graphql.GetPath(ctx),
 			FieldSet: dfs,
@@ -31926,10 +31887,10 @@ func (ec *executionContext) _SignalAggregations(ctx context.Context, sel ast.Sel
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
 
 	for label, dfs := range deferred {
-		ec.processDeferredGroup(graphql.DeferredGroup{
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
 			Label:    label,
 			Path:     graphql.GetPath(ctx),
 			FieldSet: dfs,
@@ -32182,10 +32143,10 @@ func (ec *executionContext) _SignalCollection(ctx context.Context, sel ast.Selec
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
 
 	for label, dfs := range deferred {
-		ec.processDeferredGroup(graphql.DeferredGroup{
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
 			Label:    label,
 			Path:     graphql.GetPath(ctx),
 			FieldSet: dfs,
@@ -32226,10 +32187,10 @@ func (ec *executionContext) _SignalFloat(ctx context.Context, sel ast.SelectionS
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
 
 	for label, dfs := range deferred {
-		ec.processDeferredGroup(graphql.DeferredGroup{
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
 			Label:    label,
 			Path:     graphql.GetPath(ctx),
 			FieldSet: dfs,
@@ -32270,10 +32231,10 @@ func (ec *executionContext) _SignalLocation(ctx context.Context, sel ast.Selecti
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
 
 	for label, dfs := range deferred {
-		ec.processDeferredGroup(graphql.DeferredGroup{
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
 			Label:    label,
 			Path:     graphql.GetPath(ctx),
 			FieldSet: dfs,
@@ -32314,10 +32275,10 @@ func (ec *executionContext) _SignalString(ctx context.Context, sel ast.Selection
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
 
 	for label, dfs := range deferred {
-		ec.processDeferredGroup(graphql.DeferredGroup{
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
 			Label:    label,
 			Path:     graphql.GetPath(ctx),
 			FieldSet: dfs,
@@ -32369,10 +32330,10 @@ func (ec *executionContext) _VINVC(ctx context.Context, sel ast.SelectionSet, ob
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
 
 	for label, dfs := range deferred {
-		ec.processDeferredGroup(graphql.DeferredGroup{
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
 			Label:    label,
 			Path:     graphql.GetPath(ctx),
 			FieldSet: dfs,
@@ -32425,10 +32386,10 @@ func (ec *executionContext) ___Directive(ctx context.Context, sel ast.SelectionS
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
 
 	for label, dfs := range deferred {
-		ec.processDeferredGroup(graphql.DeferredGroup{
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
 			Label:    label,
 			Path:     graphql.GetPath(ctx),
 			FieldSet: dfs,
@@ -32473,10 +32434,10 @@ func (ec *executionContext) ___EnumValue(ctx context.Context, sel ast.SelectionS
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
 
 	for label, dfs := range deferred {
-		ec.processDeferredGroup(graphql.DeferredGroup{
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
 			Label:    label,
 			Path:     graphql.GetPath(ctx),
 			FieldSet: dfs,
@@ -32531,10 +32492,10 @@ func (ec *executionContext) ___Field(ctx context.Context, sel ast.SelectionSet, 
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
 
 	for label, dfs := range deferred {
-		ec.processDeferredGroup(graphql.DeferredGroup{
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
 			Label:    label,
 			Path:     graphql.GetPath(ctx),
 			FieldSet: dfs,
@@ -32586,10 +32547,10 @@ func (ec *executionContext) ___InputValue(ctx context.Context, sel ast.Selection
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
 
 	for label, dfs := range deferred {
-		ec.processDeferredGroup(graphql.DeferredGroup{
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
 			Label:    label,
 			Path:     graphql.GetPath(ctx),
 			FieldSet: dfs,
@@ -32641,10 +32602,10 @@ func (ec *executionContext) ___Schema(ctx context.Context, sel ast.SelectionSet,
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
 
 	for label, dfs := range deferred {
-		ec.processDeferredGroup(graphql.DeferredGroup{
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
 			Label:    label,
 			Path:     graphql.GetPath(ctx),
 			FieldSet: dfs,
@@ -32700,10 +32661,10 @@ func (ec *executionContext) ___Type(ctx context.Context, sel ast.SelectionSet, o
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
 
 	for label, dfs := range deferred {
-		ec.processDeferredGroup(graphql.DeferredGroup{
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
 			Label:    label,
 			Path:     graphql.GetPath(ctx),
 			FieldSet: dfs,
@@ -32754,10 +32715,10 @@ func (ec *executionContext) _eventDataSummary(ctx context.Context, sel ast.Selec
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
 
 	for label, dfs := range deferred {
-		ec.processDeferredGroup(graphql.DeferredGroup{
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
 			Label:    label,
 			Path:     graphql.GetPath(ctx),
 			FieldSet: dfs,
@@ -32808,10 +32769,10 @@ func (ec *executionContext) _signalDataSummary(ctx context.Context, sel ast.Sele
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
 
 	for label, dfs := range deferred {
-		ec.processDeferredGroup(graphql.DeferredGroup{
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
 			Label:    label,
 			Path:     graphql.GetPath(ctx),
 			FieldSet: dfs,
@@ -32836,7 +32797,7 @@ func (ec *executionContext) marshalNAddress2githubᚗcomᚋethereumᚋgoᚑether
 	res := model.MarshalAddress(v)
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
 		}
 	}
 	return res
@@ -32852,46 +32813,18 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	res := graphql.MarshalBoolean(v)
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
 		}
 	}
 	return res
 }
 
 func (ec *executionContext) marshalNDailyActivity2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐDailyActivityᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.DailyActivity) graphql.Marshaler {
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalNDailyActivity2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐDailyActivity(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
+	ret := graphql.MarshalSliceConcurrently(ctx, len(v), 0, false, func(ctx context.Context, i int) graphql.Marshaler {
+		fc := graphql.GetFieldContext(ctx)
+		fc.Result = &v[i]
+		return ec.marshalNDailyActivity2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐDailyActivity(ctx, sel, v[i])
+	})
 
 	for _, e := range ret {
 		if e == graphql.Null {
@@ -32905,7 +32838,7 @@ func (ec *executionContext) marshalNDailyActivity2ᚕᚖgithubᚗcomᚋDIMOᚑNe
 func (ec *executionContext) marshalNDailyActivity2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐDailyActivity(ctx context.Context, sel ast.SelectionSet, v *model.DailyActivity) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
 		}
 		return graphql.Null
 	}
@@ -32925,7 +32858,7 @@ func (ec *executionContext) marshalNDetectionMechanism2githubᚗcomᚋDIMOᚑNet
 func (ec *executionContext) marshalNEvent2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐEvent(ctx context.Context, sel ast.SelectionSet, v *model.Event) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
 		}
 		return graphql.Null
 	}
@@ -32933,39 +32866,11 @@ func (ec *executionContext) marshalNEvent2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtel
 }
 
 func (ec *executionContext) marshalNEventCount2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐEventCountᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.EventCount) graphql.Marshaler {
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalNEventCount2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐEventCount(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
+	ret := graphql.MarshalSliceConcurrently(ctx, len(v), 0, false, func(ctx context.Context, i int) graphql.Marshaler {
+		fc := graphql.GetFieldContext(ctx)
+		fc.Result = &v[i]
+		return ec.marshalNEventCount2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐEventCount(ctx, sel, v[i])
+	})
 
 	for _, e := range ret {
 		if e == graphql.Null {
@@ -32979,7 +32884,7 @@ func (ec *executionContext) marshalNEventCount2ᚕᚖgithubᚗcomᚋDIMOᚑNetwo
 func (ec *executionContext) marshalNEventCount2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐEventCount(ctx context.Context, sel ast.SelectionSet, v *model.EventCount) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
 		}
 		return graphql.Null
 	}
@@ -33001,7 +32906,7 @@ func (ec *executionContext) marshalNFloat2float64(ctx context.Context, sel ast.S
 	res := graphql.MarshalFloatContext(v)
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
 		}
 	}
 	return graphql.WrapContextMarshaler(ctx, res)
@@ -33027,7 +32932,7 @@ func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.Selecti
 	res := graphql.MarshalInt(v)
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
 		}
 	}
 	return res
@@ -33036,7 +32941,7 @@ func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.Selecti
 func (ec *executionContext) marshalNLocation2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐLocation(ctx context.Context, sel ast.SelectionSet, v *model.Location) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
 		}
 		return graphql.Null
 	}
@@ -33064,7 +32969,7 @@ func (ec *executionContext) marshalNPrivilege2string(ctx context.Context, sel as
 	res := graphql.MarshalString(marshalNPrivilege2string[v])
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
 		}
 	}
 	return res
@@ -33107,39 +33012,11 @@ func (ec *executionContext) unmarshalNPrivilege2ᚕstringᚄ(ctx context.Context
 }
 
 func (ec *executionContext) marshalNPrivilege2ᚕstringᚄ(ctx context.Context, sel ast.SelectionSet, v []string) graphql.Marshaler {
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalNPrivilege2string(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
+	ret := graphql.MarshalSliceConcurrently(ctx, len(v), 0, false, func(ctx context.Context, i int) graphql.Marshaler {
+		fc := graphql.GetFieldContext(ctx)
+		fc.Result = &v[i]
+		return ec.marshalNPrivilege2string(ctx, sel, v[i])
+	})
 
 	for _, e := range ret {
 		if e == graphql.Null {
@@ -33151,39 +33028,11 @@ func (ec *executionContext) marshalNPrivilege2ᚕstringᚄ(ctx context.Context, 
 }
 
 func (ec *executionContext) marshalNSegment2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSegmentᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Segment) graphql.Marshaler {
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalNSegment2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSegment(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
+	ret := graphql.MarshalSliceConcurrently(ctx, len(v), 0, false, func(ctx context.Context, i int) graphql.Marshaler {
+		fc := graphql.GetFieldContext(ctx)
+		fc.Result = &v[i]
+		return ec.marshalNSegment2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSegment(ctx, sel, v[i])
+	})
 
 	for _, e := range ret {
 		if e == graphql.Null {
@@ -33197,7 +33046,7 @@ func (ec *executionContext) marshalNSegment2ᚕᚖgithubᚗcomᚋDIMOᚑNetwork�
 func (ec *executionContext) marshalNSegment2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSegment(ctx context.Context, sel ast.SelectionSet, v *model.Segment) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
 		}
 		return graphql.Null
 	}
@@ -33215,39 +33064,11 @@ func (ec *executionContext) unmarshalNSegmentSignalRequest2ᚖgithubᚗcomᚋDIM
 }
 
 func (ec *executionContext) marshalNSignalAggregationValue2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalAggregationValueᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.SignalAggregationValue) graphql.Marshaler {
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalNSignalAggregationValue2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalAggregationValue(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
+	ret := graphql.MarshalSliceConcurrently(ctx, len(v), 0, false, func(ctx context.Context, i int) graphql.Marshaler {
+		fc := graphql.GetFieldContext(ctx)
+		fc.Result = &v[i]
+		return ec.marshalNSignalAggregationValue2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalAggregationValue(ctx, sel, v[i])
+	})
 
 	for _, e := range ret {
 		if e == graphql.Null {
@@ -33261,7 +33082,7 @@ func (ec *executionContext) marshalNSignalAggregationValue2ᚕᚖgithubᚗcomᚋ
 func (ec *executionContext) marshalNSignalAggregationValue2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalAggregationValue(ctx context.Context, sel ast.SelectionSet, v *model.SignalAggregationValue) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
 		}
 		return graphql.Null
 	}
@@ -33271,7 +33092,7 @@ func (ec *executionContext) marshalNSignalAggregationValue2ᚖgithubᚗcomᚋDIM
 func (ec *executionContext) marshalNSignalAggregations2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalAggregations(ctx context.Context, sel ast.SelectionSet, v *model.SignalAggregations) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
 		}
 		return graphql.Null
 	}
@@ -33286,7 +33107,7 @@ func (ec *executionContext) unmarshalNSignalFloatFilter2ᚖgithubᚗcomᚋDIMO�
 func (ec *executionContext) marshalNSignalLocation2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalLocation(ctx context.Context, sel ast.SelectionSet, v *model.SignalLocation) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
 		}
 		return graphql.Null
 	}
@@ -33303,7 +33124,7 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 	res := graphql.MarshalString(v)
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
 		}
 	}
 	return res
@@ -33369,7 +33190,7 @@ func (ec *executionContext) marshalNTime2timeᚐTime(ctx context.Context, sel as
 	res := graphql.MarshalTime(v)
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
 		}
 	}
 	return res
@@ -33385,7 +33206,7 @@ func (ec *executionContext) marshalNUint642uint64(ctx context.Context, sel ast.S
 	res := graphql.MarshalUint64(v)
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
 		}
 	}
 	return res
@@ -33396,39 +33217,11 @@ func (ec *executionContext) marshalN__Directive2githubᚗcomᚋ99designsᚋgqlge
 }
 
 func (ec *executionContext) marshalN__Directive2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐDirectiveᚄ(ctx context.Context, sel ast.SelectionSet, v []introspection.Directive) graphql.Marshaler {
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalN__Directive2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐDirective(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
+	ret := graphql.MarshalSliceConcurrently(ctx, len(v), 0, false, func(ctx context.Context, i int) graphql.Marshaler {
+		fc := graphql.GetFieldContext(ctx)
+		fc.Result = &v[i]
+		return ec.marshalN__Directive2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐDirective(ctx, sel, v[i])
+	})
 
 	for _, e := range ret {
 		if e == graphql.Null {
@@ -33449,7 +33242,7 @@ func (ec *executionContext) marshalN__DirectiveLocation2string(ctx context.Conte
 	res := graphql.MarshalString(v)
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
 		}
 	}
 	return res
@@ -33471,39 +33264,11 @@ func (ec *executionContext) unmarshalN__DirectiveLocation2ᚕstringᚄ(ctx conte
 }
 
 func (ec *executionContext) marshalN__DirectiveLocation2ᚕstringᚄ(ctx context.Context, sel ast.SelectionSet, v []string) graphql.Marshaler {
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalN__DirectiveLocation2string(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
+	ret := graphql.MarshalSliceConcurrently(ctx, len(v), 0, false, func(ctx context.Context, i int) graphql.Marshaler {
+		fc := graphql.GetFieldContext(ctx)
+		fc.Result = &v[i]
+		return ec.marshalN__DirectiveLocation2string(ctx, sel, v[i])
+	})
 
 	for _, e := range ret {
 		if e == graphql.Null {
@@ -33527,39 +33292,11 @@ func (ec *executionContext) marshalN__InputValue2githubᚗcomᚋ99designsᚋgqlg
 }
 
 func (ec *executionContext) marshalN__InputValue2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐInputValueᚄ(ctx context.Context, sel ast.SelectionSet, v []introspection.InputValue) graphql.Marshaler {
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalN__InputValue2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐInputValue(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
+	ret := graphql.MarshalSliceConcurrently(ctx, len(v), 0, false, func(ctx context.Context, i int) graphql.Marshaler {
+		fc := graphql.GetFieldContext(ctx)
+		fc.Result = &v[i]
+		return ec.marshalN__InputValue2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐInputValue(ctx, sel, v[i])
+	})
 
 	for _, e := range ret {
 		if e == graphql.Null {
@@ -33575,39 +33312,11 @@ func (ec *executionContext) marshalN__Type2githubᚗcomᚋ99designsᚋgqlgenᚋg
 }
 
 func (ec *executionContext) marshalN__Type2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐTypeᚄ(ctx context.Context, sel ast.SelectionSet, v []introspection.Type) graphql.Marshaler {
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalN__Type2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
+	ret := graphql.MarshalSliceConcurrently(ctx, len(v), 0, false, func(ctx context.Context, i int) graphql.Marshaler {
+		fc := graphql.GetFieldContext(ctx)
+		fc.Result = &v[i]
+		return ec.marshalN__Type2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType(ctx, sel, v[i])
+	})
 
 	for _, e := range ret {
 		if e == graphql.Null {
@@ -33621,7 +33330,7 @@ func (ec *executionContext) marshalN__Type2ᚕgithubᚗcomᚋ99designsᚋgqlgen�
 func (ec *executionContext) marshalN__Type2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType(ctx context.Context, sel ast.SelectionSet, v *introspection.Type) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
 		}
 		return graphql.Null
 	}
@@ -33638,46 +33347,18 @@ func (ec *executionContext) marshalN__TypeKind2string(ctx context.Context, sel a
 	res := graphql.MarshalString(v)
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
 		}
 	}
 	return res
 }
 
 func (ec *executionContext) marshalNeventDataSummary2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐEventDataSummaryᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.EventDataSummary) graphql.Marshaler {
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalNeventDataSummary2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐEventDataSummary(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
+	ret := graphql.MarshalSliceConcurrently(ctx, len(v), 0, false, func(ctx context.Context, i int) graphql.Marshaler {
+		fc := graphql.GetFieldContext(ctx)
+		fc.Result = &v[i]
+		return ec.marshalNeventDataSummary2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐEventDataSummary(ctx, sel, v[i])
+	})
 
 	for _, e := range ret {
 		if e == graphql.Null {
@@ -33691,7 +33372,7 @@ func (ec *executionContext) marshalNeventDataSummary2ᚕᚖgithubᚗcomᚋDIMO�
 func (ec *executionContext) marshalNeventDataSummary2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐEventDataSummary(ctx context.Context, sel ast.SelectionSet, v *model.EventDataSummary) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
 		}
 		return graphql.Null
 	}
@@ -33699,39 +33380,11 @@ func (ec *executionContext) marshalNeventDataSummary2ᚖgithubᚗcomᚋDIMOᚑNe
 }
 
 func (ec *executionContext) marshalNsignalDataSummary2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalDataSummaryᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.SignalDataSummary) graphql.Marshaler {
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalNsignalDataSummary2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalDataSummary(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
+	ret := graphql.MarshalSliceConcurrently(ctx, len(v), 0, false, func(ctx context.Context, i int) graphql.Marshaler {
+		fc := graphql.GetFieldContext(ctx)
+		fc.Result = &v[i]
+		return ec.marshalNsignalDataSummary2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalDataSummary(ctx, sel, v[i])
+	})
 
 	for _, e := range ret {
 		if e == graphql.Null {
@@ -33745,7 +33398,7 @@ func (ec *executionContext) marshalNsignalDataSummary2ᚕᚖgithubᚗcomᚋDIMO�
 func (ec *executionContext) marshalNsignalDataSummary2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalDataSummary(ctx context.Context, sel ast.SelectionSet, v *model.SignalDataSummary) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
 		}
 		return graphql.Null
 	}
@@ -33774,39 +33427,11 @@ func (ec *executionContext) marshalOAttestation2ᚕᚖgithubᚗcomᚋDIMOᚑNetw
 	if v == nil {
 		return graphql.Null
 	}
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalOAttestation2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐAttestation(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
+	ret := graphql.MarshalSliceConcurrently(ctx, len(v), 0, false, func(ctx context.Context, i int) graphql.Marshaler {
+		fc := graphql.GetFieldContext(ctx)
+		fc.Result = &v[i]
+		return ec.marshalOAttestation2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐAttestation(ctx, sel, v[i])
+	})
 
 	return ret
 }
@@ -33867,39 +33492,11 @@ func (ec *executionContext) marshalOEvent2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋ
 	if v == nil {
 		return graphql.Null
 	}
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalNEvent2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐEvent(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
+	ret := graphql.MarshalSliceConcurrently(ctx, len(v), 0, false, func(ctx context.Context, i int) graphql.Marshaler {
+		fc := graphql.GetFieldContext(ctx)
+		fc.Result = &v[i]
+		return ec.marshalNEvent2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐEvent(ctx, sel, v[i])
+	})
 
 	for _, e := range ret {
 		if e == graphql.Null {
@@ -33914,39 +33511,11 @@ func (ec *executionContext) marshalOEventCount2ᚕᚖgithubᚗcomᚋDIMOᚑNetwo
 	if v == nil {
 		return graphql.Null
 	}
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalNEventCount2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐEventCount(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
+	ret := graphql.MarshalSliceConcurrently(ctx, len(v), 0, false, func(ctx context.Context, i int) graphql.Marshaler {
+		fc := graphql.GetFieldContext(ctx)
+		fc.Result = &v[i]
+		return ec.marshalNEventCount2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐEventCount(ctx, sel, v[i])
+	})
 
 	for _, e := range ret {
 		if e == graphql.Null {
@@ -34117,39 +33686,11 @@ func (ec *executionContext) marshalOSignalAggregationValue2ᚕᚖgithubᚗcomᚋ
 	if v == nil {
 		return graphql.Null
 	}
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalNSignalAggregationValue2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalAggregationValue(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
+	ret := graphql.MarshalSliceConcurrently(ctx, len(v), 0, false, func(ctx context.Context, i int) graphql.Marshaler {
+		fc := graphql.GetFieldContext(ctx)
+		fc.Result = &v[i]
+		return ec.marshalNSignalAggregationValue2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalAggregationValue(ctx, sel, v[i])
+	})
 
 	for _, e := range ret {
 		if e == graphql.Null {
@@ -34164,39 +33705,11 @@ func (ec *executionContext) marshalOSignalAggregations2ᚕᚖgithubᚗcomᚋDIMO
 	if v == nil {
 		return graphql.Null
 	}
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalNSignalAggregations2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalAggregations(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
+	ret := graphql.MarshalSliceConcurrently(ctx, len(v), 0, false, func(ctx context.Context, i int) graphql.Marshaler {
+		fc := graphql.GetFieldContext(ctx)
+		fc.Result = &v[i]
+		return ec.marshalNSignalAggregations2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalAggregations(ctx, sel, v[i])
+	})
 
 	for _, e := range ret {
 		if e == graphql.Null {
@@ -34412,39 +33925,11 @@ func (ec *executionContext) marshalO__EnumValue2ᚕgithubᚗcomᚋ99designsᚋgq
 	if v == nil {
 		return graphql.Null
 	}
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalN__EnumValue2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐEnumValue(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
+	ret := graphql.MarshalSliceConcurrently(ctx, len(v), 0, false, func(ctx context.Context, i int) graphql.Marshaler {
+		fc := graphql.GetFieldContext(ctx)
+		fc.Result = &v[i]
+		return ec.marshalN__EnumValue2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐEnumValue(ctx, sel, v[i])
+	})
 
 	for _, e := range ret {
 		if e == graphql.Null {
@@ -34459,39 +33944,11 @@ func (ec *executionContext) marshalO__Field2ᚕgithubᚗcomᚋ99designsᚋgqlgen
 	if v == nil {
 		return graphql.Null
 	}
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalN__Field2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐField(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
+	ret := graphql.MarshalSliceConcurrently(ctx, len(v), 0, false, func(ctx context.Context, i int) graphql.Marshaler {
+		fc := graphql.GetFieldContext(ctx)
+		fc.Result = &v[i]
+		return ec.marshalN__Field2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐField(ctx, sel, v[i])
+	})
 
 	for _, e := range ret {
 		if e == graphql.Null {
@@ -34506,39 +33963,11 @@ func (ec *executionContext) marshalO__InputValue2ᚕgithubᚗcomᚋ99designsᚋg
 	if v == nil {
 		return graphql.Null
 	}
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalN__InputValue2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐInputValue(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
+	ret := graphql.MarshalSliceConcurrently(ctx, len(v), 0, false, func(ctx context.Context, i int) graphql.Marshaler {
+		fc := graphql.GetFieldContext(ctx)
+		fc.Result = &v[i]
+		return ec.marshalN__InputValue2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐInputValue(ctx, sel, v[i])
+	})
 
 	for _, e := range ret {
 		if e == graphql.Null {
@@ -34560,39 +33989,11 @@ func (ec *executionContext) marshalO__Type2ᚕgithubᚗcomᚋ99designsᚋgqlgen�
 	if v == nil {
 		return graphql.Null
 	}
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalN__Type2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
+	ret := graphql.MarshalSliceConcurrently(ctx, len(v), 0, false, func(ctx context.Context, i int) graphql.Marshaler {
+		fc := graphql.GetFieldContext(ctx)
+		fc.Result = &v[i]
+		return ec.marshalN__Type2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType(ctx, sel, v[i])
+	})
 
 	for _, e := range ret {
 		if e == graphql.Null {

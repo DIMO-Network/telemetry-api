@@ -233,7 +233,7 @@ func TestGetSignalLatest(t *testing.T) {
 			latestArgs: defaultArgs,
 			mockSetup: func(m *Mocks) {
 				signals := []*vss.Signal{
-					{Timestamp: time.Date(1970, 1, 1, 0, 0, 0, 0, time.UTC), Name: model.LastSeenField},
+					{Data: vss.SignalData{Timestamp: time.Date(1970, 1, 1, 0, 0, 0, 0, time.UTC), Name: model.LastSeenField}},
 				}
 				m.CHService.EXPECT().
 					GetLatestSignals(gomock.Any(), testSubject, defaultArgs).
@@ -249,8 +249,8 @@ func TestGetSignalLatest(t *testing.T) {
 			latestArgs: defaultArgs,
 			mockSetup: func(m *Mocks) {
 				signals := []*vss.Signal{
-					{Timestamp: time.Date(2024, 6, 11, 0, 0, 0, 0, time.UTC), Name: vss.FieldSpeed, ValueNumber: 1.0},
-					{Timestamp: time.Date(2024, 6, 11, 0, 0, 0, 0, time.UTC), Name: model.LastSeenField},
+					{Data: vss.SignalData{Timestamp: time.Date(2024, 6, 11, 0, 0, 0, 0, time.UTC), Name: vss.FieldSpeed, ValueNumber: 1.0}},
+					{Data: vss.SignalData{Timestamp: time.Date(2024, 6, 11, 0, 0, 0, 0, time.UTC), Name: model.LastSeenField}},
 				}
 				m.CHService.EXPECT().
 					GetLatestSignals(gomock.Any(), testSubject, defaultArgs).
@@ -270,10 +270,10 @@ func TestGetSignalLatest(t *testing.T) {
 			latestArgs: defaultArgs,
 			mockSetup: func(m *Mocks) {
 				signals := []*vss.Signal{
-					{Timestamp: time.Date(2024, 6, 11, 0, 0, 0, 0, time.UTC), Name: "speed", ValueNumber: 1.0},
-					{Timestamp: time.Date(2024, 6, 11, 0, 0, 0, 0, time.UTC), Name: "speed", ValueNumber: 2.0},
-					{Timestamp: time.Date(2024, 6, 11, 0, 0, 0, 0, time.UTC), Name: "speed", ValueNumber: 3.0},
-					{Timestamp: time.Date(2024, 6, 11, 2, 0, 0, 0, time.UTC), Name: model.LastSeenField},
+					{Data: vss.SignalData{Timestamp: time.Date(2024, 6, 11, 0, 0, 0, 0, time.UTC), Name: "speed", ValueNumber: 1.0}},
+					{Data: vss.SignalData{Timestamp: time.Date(2024, 6, 11, 0, 0, 0, 0, time.UTC), Name: "speed", ValueNumber: 2.0}},
+					{Data: vss.SignalData{Timestamp: time.Date(2024, 6, 11, 0, 0, 0, 0, time.UTC), Name: "speed", ValueNumber: 3.0}},
+					{Data: vss.SignalData{Timestamp: time.Date(2024, 6, 11, 2, 0, 0, 0, time.UTC), Name: model.LastSeenField}},
 				}
 				m.CHService.EXPECT().
 					GetLatestSignals(gomock.Any(), testSubject, defaultArgs).
@@ -455,18 +455,26 @@ func TestGetEvents(t *testing.T) {
 	eventMeta := "{\"foo\":\"bar\"}"
 	vssEvents := []*vss.Event{
 		{
-			Timestamp:  from.Add(10 * time.Minute),
-			Name:       "event1",
-			Source:     "source1",
-			DurationNs: 123,
-			Metadata:   eventMeta,
+			CloudEventHeader: cloudevent.CloudEventHeader{
+				Source: "source1",
+			},
+			Data: vss.EventData{
+				Timestamp:  from.Add(10 * time.Minute),
+				Name:       "event1",
+				DurationNs: 123,
+				Metadata:   eventMeta,
+			},
 		},
 		{
-			Timestamp:  from.Add(20 * time.Minute),
-			Name:       "event2",
-			Source:     "source2",
-			DurationNs: 456,
-			Metadata:   "",
+			CloudEventHeader: cloudevent.CloudEventHeader{
+				Source: "source2",
+			},
+			Data: vss.EventData{
+				Timestamp:  from.Add(20 * time.Minute),
+				Name:       "event2",
+				DurationNs: 456,
+				Metadata:   "",
+			},
 		},
 	}
 
@@ -481,13 +489,13 @@ func TestGetEvents(t *testing.T) {
 		result, err := repo.GetEvents(context.Background(), tokenID, from, to, filter)
 		require.NoError(t, err)
 		require.Len(t, result, 2)
-		require.Equal(t, vssEvents[0].Name, result[0].Name)
+		require.Equal(t, vssEvents[0].Data.Name, result[0].Name)
 		require.Equal(t, vssEvents[0].Source, result[0].Source)
-		require.Equal(t, vssEvents[0].Timestamp, result[0].Timestamp)
-		require.Equal(t, int(vssEvents[0].DurationNs), result[0].DurationNs)
-		if vssEvents[0].Metadata != "" {
+		require.Equal(t, vssEvents[0].Data.Timestamp, result[0].Timestamp)
+		require.Equal(t, int(vssEvents[0].Data.DurationNs), result[0].DurationNs)
+		if vssEvents[0].Data.Metadata != "" {
 			require.NotNil(t, result[0].Metadata)
-			require.Equal(t, vssEvents[0].Metadata, *result[0].Metadata)
+			require.Equal(t, vssEvents[0].Data.Metadata, *result[0].Metadata)
 		} else {
 			require.Nil(t, result[0].Metadata)
 		}

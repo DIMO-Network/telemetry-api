@@ -156,7 +156,7 @@ func (s *Service) getSignals(ctx context.Context, stmt string, args []any) ([]*v
 	signals := []*vss.Signal{}
 	for rows.Next() {
 		var signal vss.Signal
-		err := rows.Scan(&signal.Name, &signal.Timestamp, &signal.ValueNumber, &signal.ValueString, &signal.ValueLocation)
+		err := rows.Scan(&signal.Data.Name, &signal.Data.Timestamp, &signal.Data.ValueNumber, &signal.Data.ValueString, &signal.Data.ValueLocation)
 		if err != nil {
 			_ = rows.Close()
 			return nil, fmt.Errorf("failed scanning clickhouse row: %w", err)
@@ -333,7 +333,7 @@ func (s *Service) GetEvents(ctx context.Context, subject string, from, to time.T
 	events := []*vss.Event{}
 	for rows.Next() {
 		var event vss.Event
-		err := rows.Scan(&event.Name, &event.Source, &event.Timestamp, &event.DurationNs, &event.Metadata, &event.Tags)
+		err := rows.Scan(&event.Data.Name, &event.Source, &event.Data.Timestamp, &event.Data.DurationNs, &event.Data.Metadata, &event.Tags)
 		if err != nil {
 			_ = rows.Close()
 			return nil, fmt.Errorf("failed scanning clickhouse event row: %w", err)

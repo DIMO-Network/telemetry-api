@@ -6,27 +6,27 @@ func SetCollectionField(collection *SignalCollection, signal *vss.Signal) {
     if collection == nil || signal == nil {
         return
     }
-    switch signal.Name {
+    switch signal.Data.Name {
 {{- range .Signals }}
     case "{{ .JSONName }}":
         {{- if eq .GQLType "Float" }}
         collection.{{ .GOName }} = &SignalFloat{
-            Timestamp: signal.Timestamp,
-            Value: signal.ValueNumber,
+            Timestamp: signal.Data.Timestamp,
+            Value: signal.Data.ValueNumber,
         }
         {{- else if eq .GQLType "Location" }}
         collection.{{ .GOName }} = &SignalLocation{
-            Timestamp: signal.Timestamp,
+            Timestamp: signal.Data.Timestamp,
             Value: &Location{
-                Latitude: signal.ValueLocation.Latitude,
-                Longitude: signal.ValueLocation.Longitude,
-                Hdop: signal.ValueLocation.HDOP,
+                Latitude: signal.Data.ValueLocation.Latitude,
+                Longitude: signal.Data.ValueLocation.Longitude,
+                Hdop: signal.Data.ValueLocation.HDOP,
             },
         }
         {{- else }}
         collection.{{ .GOName }} = &SignalString{
-            Timestamp: signal.Timestamp,
-            Value: signal.ValueString,
+            Timestamp: signal.Data.Timestamp,
+            Value: signal.Data.ValueString,
         }
         {{- end }}
 {{- end }}

@@ -143,8 +143,8 @@ func (r *Repository) GetSignalLatest(ctx context.Context, latestArgs *model.Late
 	coll := &model.SignalCollection{}
 	for _, signal := range signals {
 		// ClickHouse returns the Unix epoch for max(timestamp) if there are no rows.
-		if signal.Name == model.LastSeenField && !signal.Timestamp.Equal(unixEpoch) {
-			coll.LastSeen = &signal.Timestamp
+		if signal.Data.Name == model.LastSeenField && !signal.Data.Timestamp.Equal(unixEpoch) {
+			coll.LastSeen = &signal.Data.Timestamp
 			continue
 		}
 		model.SetCollectionField(coll, signal)
@@ -239,13 +239,13 @@ func (r *Repository) GetEvents(ctx context.Context, tokenID int, from, to time.T
 	retEvents := make([]*model.Event, len(allEvents))
 	for i, event := range allEvents {
 		retEvents[i] = &model.Event{
-			Timestamp:  event.Timestamp,
-			Name:       event.Name,
+			Timestamp:  event.Data.Timestamp,
+			Name:       event.Data.Name,
 			Source:     event.Source,
-			DurationNs: int(event.DurationNs),
+			DurationNs: int(event.Data.DurationNs),
 		}
-		if event.Metadata != "" {
-			retEvents[i].Metadata = &event.Metadata
+		if event.Data.Metadata != "" {
+			retEvents[i].Metadata = &event.Data.Metadata
 		}
 	}
 	return retEvents, nil

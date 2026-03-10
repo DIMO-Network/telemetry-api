@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/DIMO-Network/cloudevent"
 	"github.com/DIMO-Network/model-garage/pkg/vss"
 	"github.com/DIMO-Network/telemetry-api/internal/repositories"
 	"github.com/DIMO-Network/token-exchange-api/pkg/tokenclaims"
@@ -23,26 +24,34 @@ func TestApproximateLocation(t *testing.T) {
 	const endHDOP = 2.0
 	signals := []vss.Signal{
 		{
-			Source:    "0xcd445F4c6bDAD32b68a2939b912150Fe3C88803E",
-			Timestamp: locationTime.Add(-time.Hour * 24),
-			Name:      vss.FieldCurrentLocationCoordinates,
-			ValueLocation: vss.Location{
-				Latitude:  startLoc.Lat,
-				Longitude: startLoc.Lng,
-				HDOP:      startHDOP,
+			CloudEventHeader: cloudevent.CloudEventHeader{
+				Source:  "0xcd445F4c6bDAD32b68a2939b912150Fe3C88803E",
+				Subject: "did:erc721:137:0xbA5738a18d83D41847dfFbDC6101d37C69c9B0cF:39718",
 			},
-			Subject: "did:erc721:137:0xbA5738a18d83D41847dfFbDC6101d37C69c9B0cF:39718",
+			Data: vss.SignalData{
+				Timestamp: locationTime.Add(-time.Hour * 24),
+				Name:      vss.FieldCurrentLocationCoordinates,
+				ValueLocation: vss.Location{
+					Latitude:  startLoc.Lat,
+					Longitude: startLoc.Lng,
+					HDOP:      startHDOP,
+				},
+			},
 		},
 		{
-			Source:    "0xcd445F4c6bDAD32b68a2939b912150Fe3C88803E",
-			Timestamp: locationTime,
-			Name:      vss.FieldCurrentLocationCoordinates,
-			ValueLocation: vss.Location{
-				Latitude:  endLoc.Lat,
-				Longitude: endLoc.Lng,
-				HDOP:      endHDOP,
+			CloudEventHeader: cloudevent.CloudEventHeader{
+				Source:  "0xcd445F4c6bDAD32b68a2939b912150Fe3C88803E",
+				Subject: "did:erc721:137:0xbA5738a18d83D41847dfFbDC6101d37C69c9B0cF:39718",
 			},
-			Subject: "did:erc721:137:0xbA5738a18d83D41847dfFbDC6101d37C69c9B0cF:39718",
+			Data: vss.SignalData{
+				Timestamp: locationTime,
+				Name:      vss.FieldCurrentLocationCoordinates,
+				ValueLocation: vss.Location{
+					Latitude:  endLoc.Lat,
+					Longitude: endLoc.Lng,
+					HDOP:      endHDOP,
+				},
+			},
 		},
 	}
 

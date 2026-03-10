@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/DIMO-Network/cloudevent"
 	"github.com/DIMO-Network/model-garage/pkg/vss"
 	"github.com/DIMO-Network/token-exchange-api/pkg/tokenclaims"
 	"github.com/stretchr/testify/assert"
@@ -28,75 +29,111 @@ func TestSignalsMetadata(t *testing.T) {
 	signals := []vss.Signal{
 		// SmartCar signals - speed and location
 		{
-			Source:      "0xcd445F4c6bDAD32b68a2939b912150Fe3C88803E",
-			Timestamp:   smartCarTime1,
-			Name:        vss.FieldSpeed,
-			ValueNumber: 65.5,
-			Subject:     subject,
-		},
-		{
-			Source:      "0xcd445F4c6bDAD32b68a2939b912150Fe3C88803E",
-			Timestamp:   smartCarTime2,
-			Name:        vss.FieldSpeed,
-			ValueNumber: 70.2,
-			Subject:     subject,
-		},
-		{
-			Source:    "0xcd445F4c6bDAD32b68a2939b912150Fe3C88803E",
-			Timestamp: smartCarTime1,
-			Name:      vss.FieldCurrentLocationCoordinates,
-			ValueLocation: vss.Location{
-				Latitude:  40.73899538333504,
-				Longitude: 73.99386110247163,
+			CloudEventHeader: cloudevent.CloudEventHeader{
+				Source:  "0xcd445F4c6bDAD32b68a2939b912150Fe3C88803E",
+				Subject: subject,
 			},
-			Subject: subject,
+			Data: vss.SignalData{
+				Timestamp:   smartCarTime1,
+				Name:        vss.FieldSpeed,
+				ValueNumber: 65.5,
+			},
+		},
+		{
+			CloudEventHeader: cloudevent.CloudEventHeader{
+				Source:  "0xcd445F4c6bDAD32b68a2939b912150Fe3C88803E",
+				Subject: subject,
+			},
+			Data: vss.SignalData{
+				Timestamp:   smartCarTime2,
+				Name:        vss.FieldSpeed,
+				ValueNumber: 70.2,
+			},
+		},
+		{
+			CloudEventHeader: cloudevent.CloudEventHeader{
+				Source:  "0xcd445F4c6bDAD32b68a2939b912150Fe3C88803E",
+				Subject: subject,
+			},
+			Data: vss.SignalData{
+				Timestamp: smartCarTime1,
+				Name:      vss.FieldCurrentLocationCoordinates,
+				ValueLocation: vss.Location{
+					Latitude:  40.73899538333504,
+					Longitude: 73.99386110247163,
+				},
+			},
 		},
 		// AutoPi signals - speed and battery
 		{
-			Source:      "0x5e31bBc786D7bEd95216383787deA1ab0f1c1897",
-			Timestamp:   autopiTime1,
-			Name:        vss.FieldSpeed,
-			ValueNumber: 14,
-			Subject:     subject,
+			CloudEventHeader: cloudevent.CloudEventHeader{
+				Source:  "0x5e31bBc786D7bEd95216383787deA1ab0f1c1897",
+				Subject: subject,
+			},
+			Data: vss.SignalData{
+				Timestamp:   autopiTime1,
+				Name:        vss.FieldSpeed,
+				ValueNumber: 14,
+			},
 		},
 		{
-			Source:      "0x5e31bBc786D7bEd95216383787deA1ab0f1c1897",
-			Timestamp:   autopiTime2,
-			Name:        vss.FieldSpeed,
-			ValueNumber: 25.8,
-			Subject:     subject,
+			CloudEventHeader: cloudevent.CloudEventHeader{
+				Source:  "0x5e31bBc786D7bEd95216383787deA1ab0f1c1897",
+				Subject: subject,
+			},
+			Data: vss.SignalData{
+				Timestamp:   autopiTime2,
+				Name:        vss.FieldSpeed,
+				ValueNumber: 25.8,
+			},
 		},
 		{
-			Source:      "0x5e31bBc786D7bEd95216383787deA1ab0f1c1897",
-			Timestamp:   autopiTime1,
-			Name:        vss.FieldPowertrainTractionBatteryStateOfChargeCurrent,
-			ValueNumber: 75.5,
-			Subject:     subject,
+			CloudEventHeader: cloudevent.CloudEventHeader{
+				Source:  "0x5e31bBc786D7bEd95216383787deA1ab0f1c1897",
+				Subject: subject,
+			},
+			Data: vss.SignalData{
+				Timestamp:   autopiTime1,
+				Name:        vss.FieldPowertrainTractionBatteryStateOfChargeCurrent,
+				ValueNumber: 75.5,
+			},
 		},
 
 		// Macaron signals - just speed
 		{
-			Source:      "0x4c674ddE8189aEF6e3b58F5a36d7438b2b1f6Bc2",
-			Timestamp:   macaronTime,
-			Name:        vss.FieldSpeed,
-			ValueNumber: 3,
-			Subject:     subject,
+			CloudEventHeader: cloudevent.CloudEventHeader{
+				Source:  "0x4c674ddE8189aEF6e3b58F5a36d7438b2b1f6Bc2",
+				Subject: subject,
+			},
+			Data: vss.SignalData{
+				Timestamp:   macaronTime,
+				Name:        vss.FieldSpeed,
+				ValueNumber: 3,
+			},
 		},
 
 		// Tesla signals - speed and different battery field
 		{
-			Source:      "0xc4035Fecb1cc906130423EF05f9C20977F643722",
-			Timestamp:   teslaTime,
-			Name:        vss.FieldSpeed,
-			ValueNumber: 88.5,
-			Subject:     subject,
+			CloudEventHeader: cloudevent.CloudEventHeader{
+				Source:  "0xc4035Fecb1cc906130423EF05f9C20977F643722",
+				Subject: subject,
+			},
+			Data: vss.SignalData{
+				Timestamp:   teslaTime,
+				Name:        vss.FieldSpeed,
+				ValueNumber: 88.5,
+			},
 		},
 		{
-			Source:      "0xc4035Fecb1cc906130423EF05f9C20977F643722",
-			Timestamp:   teslaTime,
-			Name:        vss.FieldPowertrainTractionBatteryChargingChargeCurrentAC,
-			ValueNumber: 82.3,
-			Subject:     subject,
+			CloudEventHeader: cloudevent.CloudEventHeader{
+				Source:  "0xc4035Fecb1cc906130423EF05f9C20977F643722",
+				Subject: subject,
+			},
+			Data: vss.SignalData{
+				Timestamp:   teslaTime,
+				Name:        vss.FieldPowertrainTractionBatteryChargingChargeCurrentAC,
+				ValueNumber: 82.3,
+			},
 		},
 	}
 

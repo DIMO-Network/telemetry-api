@@ -26,77 +26,101 @@ func TestEvents(t *testing.T) {
 	// Use real-world event names and 0x addresses for sources
 	events := []vss.Event{
 		{
-			Name:       "harshBraking",
-			Source:     "0x1234567890abcdef1234567890abcdef12345678",
-			Timestamp:  event1Time,
-			DurationNs: 1000000, // 1ms
-			Subject: cloudevent.ERC721DID{
-				ChainID:         services.Settings.ChainID,
-				ContractAddress: services.Settings.VehicleNFTAddress,
-				TokenID:         big.NewInt(39718),
-			}.String(),
-			Metadata: `{"counter": 3}`,
+			CloudEventHeader: cloudevent.CloudEventHeader{
+				Source: "0x1234567890abcdef1234567890abcdef12345678",
+				Subject: cloudevent.ERC721DID{
+					ChainID:         services.Settings.ChainID,
+					ContractAddress: services.Settings.VehicleNFTAddress,
+					TokenID:         big.NewInt(39718),
+				}.String(),
+			},
+			Data: vss.EventData{
+				Name:       "behavior.harshBraking",
+				Timestamp:  event1Time,
+				DurationNs: 1000000, // 1ms
+				Metadata:   `{"counter": 3}`,
+			},
 		},
 		{
-			Name:       "extremeBraking",
-			Source:     "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd",
-			Timestamp:  event2Time,
-			DurationNs: 2000000, // 2ms
-			Subject: cloudevent.ERC721DID{
-				ChainID:         services.Settings.ChainID,
-				ContractAddress: services.Settings.VehicleNFTAddress,
-				TokenID:         big.NewInt(39718),
-			}.String(),
-			Metadata: `{"counter": 1}`,
+			CloudEventHeader: cloudevent.CloudEventHeader{
+				Source: "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd",
+				Subject: cloudevent.ERC721DID{
+					ChainID:         services.Settings.ChainID,
+					ContractAddress: services.Settings.VehicleNFTAddress,
+					TokenID:         big.NewInt(39718),
+				}.String(),
+			},
+			Data: vss.EventData{
+				Name:       "behavior.extremeBraking",
+				Timestamp:  event2Time,
+				DurationNs: 2000000, // 2ms
+				Metadata:   `{"counter": 1}`,
+			},
 		},
 		{
-			Name:       "chargingStart",
-			Source:     "0xfeedfeedfeedfeedfeedfeedfeedfeedfeedfeed",
-			Timestamp:  event3Time,
-			DurationNs: 500000, // 0.5ms
-			Subject: cloudevent.ERC721DID{
-				ChainID:         services.Settings.ChainID,
-				ContractAddress: services.Settings.VehicleNFTAddress,
-				TokenID:         big.NewInt(39718),
-			}.String(),
-			Metadata: `{"station": "tesla_supercharger"}`,
+			CloudEventHeader: cloudevent.CloudEventHeader{
+				Source: "0xfeedfeedfeedfeedfeedfeedfeedfeedfeedfeed",
+				Subject: cloudevent.ERC721DID{
+					ChainID:         services.Settings.ChainID,
+					ContractAddress: services.Settings.VehicleNFTAddress,
+					TokenID:         big.NewInt(39718),
+				}.String(),
+			},
+			Data: vss.EventData{
+				Name:       "energy.chargingStart",
+				Timestamp:  event3Time,
+				DurationNs: 500000, // 0.5ms
+				Metadata:   `{"station": "tesla_supercharger"}`,
+			},
 		},
 		{
-			Name:       "chargingStart",
-			Source:     "0xfeedfeedfeedfeedfeedfeedfeedfeedfeedfeed",
-			Timestamp:  event4Time,
-			DurationNs: 3000000, // 3ms
-			Subject: cloudevent.ERC721DID{
-				ChainID:         services.Settings.ChainID,
-				ContractAddress: services.Settings.VehicleNFTAddress,
-				TokenID:         big.NewInt(39718),
-			}.String(),
-			Metadata: "", // Empty metadata
+			CloudEventHeader: cloudevent.CloudEventHeader{
+				Source: "0xfeedfeedfeedfeedfeedfeedfeedfeedfeedfeed",
+				Subject: cloudevent.ERC721DID{
+					ChainID:         services.Settings.ChainID,
+					ContractAddress: services.Settings.VehicleNFTAddress,
+					TokenID:         big.NewInt(39718),
+				}.String(),
+			},
+			Data: vss.EventData{
+				Name:       "energy.chargingStart",
+				Timestamp:  event4Time,
+				DurationNs: 3000000, // 3ms
+				Metadata:   "",      // Empty metadata
+			},
 		},
 		{
-			Name:       "harshBraking",
-			Source:     "0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
-			Timestamp:  event1Time.Add(1 * time.Hour),
-			DurationNs: 750000, // 0.75ms
-			Subject: cloudevent.ERC721DID{
-				ChainID:         services.Settings.ChainID,
-				ContractAddress: services.Settings.VehicleNFTAddress,
-				TokenID:         big.NewInt(39718),
-			}.String(),
-			Metadata: `{"counter": 2}`,
+			CloudEventHeader: cloudevent.CloudEventHeader{
+				Source: "0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
+				Subject: cloudevent.ERC721DID{
+					ChainID:         services.Settings.ChainID,
+					ContractAddress: services.Settings.VehicleNFTAddress,
+					TokenID:         big.NewInt(39718),
+				}.String(),
+			},
+			Data: vss.EventData{
+				Name:       "behavior.harshBraking",
+				Timestamp:  event1Time.Add(1 * time.Hour),
+				DurationNs: 750000, // 0.75ms
+				Metadata:   `{"counter": 2}`,
+			},
 		},
 		// Event for different token (should not appear in results)
 		{
-			Name:       "harshBraking",
-			Source:     "0x1234567890abcdef1234567890abcdef12345678",
-			Timestamp:  event1Time,
-			DurationNs: 1000000,
-			Subject: cloudevent.ERC721DID{
-				ChainID:         services.Settings.ChainID,
-				ContractAddress: services.Settings.VehicleNFTAddress,
-				TokenID:         big.NewInt(99999),
-			}.String(),
-			Metadata: `{"counter": 99}`,
+			CloudEventHeader: cloudevent.CloudEventHeader{
+				Source: "0x1234567890abcdef1234567890abcdef12345678",
+				Subject: cloudevent.ERC721DID{
+					ChainID:         services.Settings.ChainID,
+					ContractAddress: services.Settings.VehicleNFTAddress,
+					TokenID:         big.NewInt(99999),
+				}.String(),
+			},
+			Data: vss.EventData{
+				Name:       "behavior.harshBraking",
+				Timestamp:  event1Time,
+				DurationNs: 1000000,
+				Metadata:   `{"counter": 99}`,
+			},
 		},
 	}
 
@@ -132,19 +156,19 @@ func TestEvents(t *testing.T) {
 		require.Len(t, result.Events, 5)
 
 		// Events should be ordered by timestamp DESC (newest first)
-		assert.Equal(t, "harshBraking", result.Events[0].Name)
+		assert.Equal(t, "behavior.harshBraking", result.Events[0].Name)
 		assert.Equal(t, "0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef", result.Events[0].Source)
 		assert.Equal(t, event1Time.Add(1*time.Hour).Format(time.RFC3339), result.Events[0].Timestamp)
 		assert.NotNil(t, result.Events[0].Metadata)
 		assert.Equal(t, `{"counter": 2}`, *result.Events[0].Metadata)
 
-		assert.Equal(t, "chargingStart", result.Events[1].Name)
+		assert.Equal(t, "energy.chargingStart", result.Events[1].Name)
 		assert.Equal(t, "0xfeedfeedfeedfeedfeedfeedfeedfeedfeedfeed", result.Events[1].Source)
 		assert.Equal(t, event4Time.Format(time.RFC3339), result.Events[1].Timestamp)
 		assert.Equal(t, 3000000, result.Events[1].DurationNs)
 		assert.Nil(t, result.Events[1].Metadata) // Empty metadata should be nil
 
-		assert.Equal(t, "chargingStart", result.Events[2].Name)
+		assert.Equal(t, "energy.chargingStart", result.Events[2].Name)
 		assert.Equal(t, "0xfeedfeedfeedfeedfeedfeedfeedfeedfeedfeed", result.Events[2].Source)
 		assert.Equal(t, event3Time.Format(time.RFC3339), result.Events[2].Timestamp)
 		assert.Equal(t, 500000, result.Events[2].DurationNs)
@@ -178,7 +202,7 @@ func TestEvents(t *testing.T) {
 		require.Len(t, result.Events, 2)
 		for _, event := range result.Events {
 			assert.Equal(t, "0xfeedfeedfeedfeedfeedfeedfeedfeedfeedfeed", event.Source)
-			assert.Equal(t, "chargingStart", event.Name)
+			assert.Equal(t, "energy.chargingStart", event.Name)
 		}
 	})
 
@@ -190,7 +214,7 @@ func TestEvents(t *testing.T) {
 				tokenId: 39718,
 				from: "2024-11-15T11:00:00Z",
 				to: "2024-11-15T14:00:00Z",
-				filter: {name: {eq: "harshBraking"}}
+				filter: {name: {eq: "behavior.harshBraking"}}
 			) {
 				timestamp
 				name
@@ -207,7 +231,7 @@ func TestEvents(t *testing.T) {
 		// Should return only harshBraking events (2 events)
 		require.Len(t, result.Events, 2)
 		for _, event := range result.Events {
-			assert.Equal(t, "harshBraking", event.Name)
+			assert.Equal(t, "behavior.harshBraking", event.Name)
 			assert.NotNil(t, event.Metadata)
 		}
 		// Check that both sources are represented
@@ -224,7 +248,7 @@ func TestEvents(t *testing.T) {
 				tokenId: 39718,
 				from: "2024-11-15T11:00:00Z",
 				to: "2024-11-15T14:00:00Z",
-				filter: {name: {eq: "extremeBraking"}, source: {eq: "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd"}}
+				filter: {name: {eq: "behavior.extremeBraking"}, source: {eq: "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd"}}
 			) {
 				timestamp
 				name
@@ -241,12 +265,150 @@ func TestEvents(t *testing.T) {
 		// Should return only the one matching event
 		require.Len(t, result.Events, 1)
 		event := result.Events[0]
-		assert.Equal(t, "extremeBraking", event.Name)
+		assert.Equal(t, "behavior.extremeBraking", event.Name)
 		assert.Equal(t, "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd", event.Source)
 		assert.NotNil(t, event.Metadata)
 		assert.Equal(t, `{"counter": 1}`, *event.Metadata)
 	})
 
+}
+
+func TestEventTags(t *testing.T) {
+	services := GetTestServices(t)
+
+	baseTime := time.Date(2024, 11, 20, 10, 0, 0, 0, time.UTC)
+	subject := cloudevent.ERC721DID{
+		ChainID:         services.Settings.ChainID,
+		ContractAddress: services.Settings.VehicleNFTAddress,
+		TokenID:         big.NewInt(39718),
+	}.String()
+
+	events := []vss.Event{
+		{
+			CloudEventHeader: cloudevent.CloudEventHeader{
+				Source:  "0x1111111111111111111111111111111111111111",
+				Subject: subject,
+			},
+			Data: vss.EventData{
+				Name:       "behavior.harshBraking",
+				Timestamp:  baseTime,
+				DurationNs: 1000,
+				Tags:       []string{"behavior.harshAcceleration", "behavior.harshBraking"},
+			},
+		},
+		{
+			CloudEventHeader: cloudevent.CloudEventHeader{
+				Source:  "0x2222222222222222222222222222222222222222",
+				Subject: subject,
+			},
+			Data: vss.EventData{
+				Name:       "safety.collision",
+				Timestamp:  baseTime.Add(5 * time.Minute),
+				DurationNs: 2000,
+				Tags:       []string{"safety.collision"},
+			},
+		},
+		{
+			CloudEventHeader: cloudevent.CloudEventHeader{
+				Source:  "0x3333333333333333333333333333333333333333",
+				Subject: subject,
+			},
+			Data: vss.EventData{
+				Name:       "behavior.harshAcceleration",
+				Timestamp:  baseTime.Add(10 * time.Minute),
+				DurationNs: 3000,
+				Tags:       []string{"behavior.harshAcceleration"},
+			},
+		},
+	}
+
+	insertEvent(t, services.CH, events)
+
+	telemetryClient := NewGraphQLServer(t, services.Settings)
+	token := services.Auth.CreateVehicleToken(t, 39718, []string{tokenclaims.PermissionGetNonLocationHistory, tokenclaims.PermissionGetLocationHistory})
+
+	t.Run("filter by tags containsAny returns matching events", func(t *testing.T) {
+		query := `
+		query {
+			events(
+				tokenId: 39718,
+				from: "2024-11-20T09:00:00Z",
+				to: "2024-11-20T11:00:00Z",
+				filter: {tags: {containsAny: ["safety.collision"]}}
+			) {
+				name
+				source
+			}
+		}`
+
+		result := EventsResult{}
+		err := telemetryClient.Post(query, &result, WithToken(token))
+		require.NoError(t, err)
+		require.Len(t, result.Events, 1)
+		assert.Equal(t, "safety.collision", result.Events[0].Name)
+		assert.Equal(t, "0x2222222222222222222222222222222222222222", result.Events[0].Source)
+	})
+
+	t.Run("filter by tags containsAny matches multiple events", func(t *testing.T) {
+		query := `
+		query {
+			events(
+				tokenId: 39718,
+				from: "2024-11-20T09:00:00Z",
+				to: "2024-11-20T11:00:00Z",
+				filter: {tags: {containsAny: ["behavior.harshAcceleration"]}}
+			) {
+				name
+			}
+		}`
+
+		result := EventsResult{}
+		err := telemetryClient.Post(query, &result, WithToken(token))
+		require.NoError(t, err)
+		require.Len(t, result.Events, 2)
+		// Ordered DESC by timestamp
+		assert.Equal(t, "behavior.harshAcceleration", result.Events[0].Name)
+		assert.Equal(t, "behavior.harshBraking", result.Events[1].Name)
+	})
+
+	t.Run("filter by tags containsAll requires all tags present", func(t *testing.T) {
+		query := `
+		query {
+			events(
+				tokenId: 39718,
+				from: "2024-11-20T09:00:00Z",
+				to: "2024-11-20T11:00:00Z",
+				filter: {tags: {containsAll: ["behavior.harshAcceleration", "behavior.harshBraking"]}}
+			) {
+				name
+			}
+		}`
+
+		result := EventsResult{}
+		err := telemetryClient.Post(query, &result, WithToken(token))
+		require.NoError(t, err)
+		require.Len(t, result.Events, 1)
+		assert.Equal(t, "behavior.harshBraking", result.Events[0].Name)
+	})
+
+	t.Run("filter by tags no match returns empty", func(t *testing.T) {
+		query := `
+		query {
+			events(
+				tokenId: 39718,
+				from: "2024-11-20T09:00:00Z",
+				to: "2024-11-20T11:00:00Z",
+				filter: {tags: {containsAll: ["behavior.harshAcceleration", "safety.collision"]}}
+			) {
+				name
+			}
+		}`
+
+		result := EventsResult{}
+		err := telemetryClient.Post(query, &result, WithToken(token))
+		require.NoError(t, err)
+		require.Len(t, result.Events, 0)
+	})
 }
 
 type EventsResult struct {

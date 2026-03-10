@@ -845,6 +845,9 @@ func stringFilterMod(field string, filter *model.StringValueFilter) []qm.QueryMo
 	if filter.In != nil {
 		newMods = append(newMods, qm.WhereIn(field+" IN (?)", filter.In))
 	}
+	if filter.StartsWith != nil {
+		newMods = append(newMods, qm.Where(field+" LIKE ?", escapeLikePrefix(*filter.StartsWith)))
+	}
 
 	for _, cond := range filter.Or {
 		clauseMods := stringFilterMod(field, cond)
@@ -859,6 +862,13 @@ func stringFilterMod(field string, filter *model.StringValueFilter) []qm.QueryMo
 	}
 
 	return newMods
+}
+
+func escapeLikePrefix(prefix string) string {
+	s := strings.ReplaceAll(prefix, `\`, `\\`)
+	s = strings.ReplaceAll(s, `%`, `\%`)
+	s = strings.ReplaceAll(s, `_`, `\_`)
+	return s + "%"
 }
 
 func stringArrayFilterMod(filter *model.StringArrayFilter, field string) []qm.QueryMod {

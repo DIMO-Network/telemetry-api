@@ -47,7 +47,6 @@ extend type SignalCollection {
 extend input EventFilter {
   """
   tags is the tags of the event.
-  available tags: {{ range $i, $tag := .EventTags }}{{ if $i }}, {{ end }}{{ $tag.Name }}{{ end }}
   """
   tags: StringArrayFilter
 }

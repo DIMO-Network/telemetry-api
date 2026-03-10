@@ -112,7 +112,6 @@ type EventFilter struct {
 	// source is the name of the source connection that created the event.
 	Source *StringValueFilter `json:"source,omitempty"`
 	// tags is the tags of the event.
-	// available tags: behavior.harshAcceleration, behavior.harshBraking, behavior.harshCornering, safety.collision
 	Tags *StringArrayFilter `json:"tags,omitempty"`
 }
 
@@ -677,6 +676,8 @@ type StringValueFilter struct {
 	NotIn []string `json:"notIn,omitempty"`
 	// in array of strings in the array
 	In []string `json:"in,omitempty"`
+	// startsWith matches strings that begin with the given prefix.
+	StartsWith *string `json:"startsWith,omitempty"`
 	// or array of string value filters
 	Or []*StringValueFilter `json:"or,omitempty"`
 }

@@ -8,9 +8,11 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
 	"testing"
 	"time"
 
+	"github.com/DIMO-Network/cloudevent"
 	chconfig "github.com/DIMO-Network/clickhouse-infra/pkg/connect/config"
 	"github.com/DIMO-Network/clickhouse-infra/pkg/container"
 	sigmigrations "github.com/DIMO-Network/model-garage/pkg/migrations"
@@ -48,11 +50,12 @@ func insertSignal(t *testing.T, ch *container.Container, signals []vss.Signal) {
 
 	conn, err := ch.GetClickHouseAsConn()
 	require.NoError(t, err)
-	batch, err := conn.PrepareBatch(context.Background(), fmt.Sprintf("INSERT INTO %s", vss.TableName))
+	cols := strings.Join(vss.SignalColNames(), ", ")
+	batch, err := conn.PrepareBatch(context.Background(), fmt.Sprintf("INSERT INTO %s (%s)", vss.TableName, cols))
 	require.NoError(t, err)
 
 	for _, sig := range signals {
-		err := batch.AppendStruct(&sig)
+		err := batch.Append(vss.SignalToSlice(sig)...)
 		require.NoError(t, err, "Failed to append signal to batch")
 	}
 	err = batch.Send()
@@ -65,11 +68,12 @@ func insertEvent(t *testing.T, ch *container.Container, events []vss.Event) {
 
 	conn, err := ch.GetClickHouseAsConn()
 	require.NoError(t, err)
-	batch, err := conn.PrepareBatch(context.Background(), fmt.Sprintf("INSERT INTO %s", vss.EventTableName))
+	cols := strings.Join(vss.EventColNames(), ", ")
+	batch, err := conn.PrepareBatch(context.Background(), fmt.Sprintf("INSERT INTO %s (%s)", vss.EventTableName, cols))
 	require.NoError(t, err)
 
 	for _, event := range events {
-		err := batch.AppendStruct(&event)
+		err := batch.Append(vss.EventToSlice(event)...)
 		require.NoError(t, err, "Failed to append event to batch")
 	}
 	err = batch.Send()
@@ -106,15 +110,19 @@ func LoadSampleDataInto(t *testing.T, ch *container.Container, signalPath, event
 		}
 		valNum, _ := strconv.ParseFloat(row[6], 64)
 		signals = append(signals, vss.Signal{
-			Subject:       row[0],
-			Timestamp:     ts,
-			Name:          row[2],
-			Source:        row[3],
-			Producer:      row[4],
-			CloudEventID:  row[5],
-			ValueNumber:   valNum,
-			ValueString:   row[7],
-			ValueLocation: loc,
+			CloudEventHeader: cloudevent.CloudEventHeader{
+				Subject:  row[0],
+				Source:   row[3],
+				Producer: row[4],
+			},
+			Data: vss.SignalData{
+				Timestamp:     ts,
+				Name:          row[2],
+				CloudEventID:  row[5],
+				ValueNumber:   valNum,
+				ValueString:   row[7],
+				ValueLocation: loc,
+			},
 		})
 	}
 	for i := 0; i < len(signals); i += loadBatchSize {
@@ -151,15 +159,19 @@ func LoadSampleDataInto(t *testing.T, ch *container.Container, signalPath, event
 			_ = json.Unmarshal([]byte(row[8]), &tags)
 		}
 		events = append(events, vss.Event{
-			Subject:      row[0],
-			Source:       row[1],
-			Producer:     row[2],
-			CloudEventID: row[3],
-			Name:         row[4],
-			Timestamp:    ts,
-			DurationNs:   durNs,
-			Metadata:     row[7],
-			Tags:         tags,
+			CloudEventHeader: cloudevent.CloudEventHeader{
+				Subject:  row[0],
+				Source:    row[1],
+				Producer: row[2],
+				ID:       row[3],
+			},
+			Data: vss.EventData{
+				Name:       row[4],
+				Timestamp:  ts,
+				DurationNs: durNs,
+				Metadata:   row[7],
+				Tags:       tags,
+			},
 		})
 	}
 	for i := 0; i < len(events); i += loadBatchSize {

@@ -4,7 +4,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/DIMO-Network/model-garage/pkg/vss"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	"github.com/stretchr/testify/require"
 )
@@ -37,19 +36,6 @@ func TestValidateEventArgs(t *testing.T) {
 	t.Run("from after to", func(t *testing.T) {
 		from := validTo.Add(time.Second)
 		err := validateEventArgs(1, from, validTo, validFilter)
-		require.Error(t, err)
-	})
-
-	t.Run("valid tags", func(t *testing.T) {
-		err := validateEventArgs(1, validFrom, validTo, &model.EventFilter{Tags: &model.StringArrayFilter{ContainsAny: []string{vss.TagBehaviorHarshAcceleration, vss.TagSafetyCollision}}})
-		require.NoError(t, err)
-		err = validateEventArgs(1, validFrom, validTo, &model.EventFilter{Tags: &model.StringArrayFilter{ContainsAll: []string{vss.TagBehaviorHarshAcceleration}}})
-		require.NoError(t, err)
-	})
-	t.Run("invalid tags", func(t *testing.T) {
-		err := validateEventArgs(1, validFrom, validTo, &model.EventFilter{Tags: &model.StringArrayFilter{ContainsAny: []string{"invalid"}}})
-		require.Error(t, err)
-		err = validateEventArgs(1, validFrom, validTo, &model.EventFilter{Tags: &model.StringArrayFilter{ContainsAll: []string{vss.TagBehaviorHarshAcceleration, "invalid"}}})
 		require.Error(t, err)
 	})
 
@@ -207,6 +193,68 @@ func TestValidateFilter(t *testing.T) {
 	t.Run("nil source", func(t *testing.T) {
 		err := validateFilter(&model.SignalFilter{Source: nil})
 		require.NoError(t, err)
+	})
+}
+
+func strRef(s string) *string { return &s }
+
+func TestValidateEventNameFilter(t *testing.T) {
+	t.Run("nil filter", func(t *testing.T) {
+		require.NoError(t, validateEventNameFilter(nil))
+	})
+
+	t.Run("valid 2-segment eq", func(t *testing.T) {
+		require.NoError(t, validateEventNameFilter(&model.StringValueFilter{Eq: strRef("behavior.harshBraking")}))
+	})
+
+	t.Run("valid 2-segment in", func(t *testing.T) {
+		require.NoError(t, validateEventNameFilter(&model.StringValueFilter{In: []string{"behavior.harshBraking", "safety.collision"}}))
+	})
+
+	t.Run("invalid eq - no dot", func(t *testing.T) {
+		require.Error(t, validateEventNameFilter(&model.StringValueFilter{Eq: strRef("harshBraking")}))
+	})
+
+	t.Run("invalid eq - empty segment", func(t *testing.T) {
+		require.Error(t, validateEventNameFilter(&model.StringValueFilter{Eq: strRef("behavior.")}))
+	})
+
+	t.Run("invalid eq - 3 segments", func(t *testing.T) {
+		require.Error(t, validateEventNameFilter(&model.StringValueFilter{Eq: strRef("a.b.c")}))
+	})
+
+	t.Run("invalid in - mixed", func(t *testing.T) {
+		require.Error(t, validateEventNameFilter(&model.StringValueFilter{In: []string{"behavior.harshBraking", "invalid"}}))
+	})
+
+	t.Run("valid startsWith - category with dot", func(t *testing.T) {
+		require.NoError(t, validateEventNameFilter(&model.StringValueFilter{StartsWith: strRef("behavior.")}))
+	})
+
+	t.Run("valid startsWith - partial name", func(t *testing.T) {
+		require.NoError(t, validateEventNameFilter(&model.StringValueFilter{StartsWith: strRef("behavior.harsh")}))
+	})
+
+	t.Run("invalid startsWith - no dot", func(t *testing.T) {
+		require.Error(t, validateEventNameFilter(&model.StringValueFilter{StartsWith: strRef("behavior")}))
+	})
+
+	t.Run("neq is NOT validated", func(t *testing.T) {
+		require.NoError(t, validateEventNameFilter(&model.StringValueFilter{Neq: strRef("anything-goes")}))
+	})
+
+	t.Run("or recursion", func(t *testing.T) {
+		require.NoError(t, validateEventNameFilter(&model.StringValueFilter{
+			Or: []*model.StringValueFilter{
+				{Eq: strRef("behavior.harshBraking")},
+				{StartsWith: strRef("safety.")},
+			},
+		}))
+		require.Error(t, validateEventNameFilter(&model.StringValueFilter{
+			Or: []*model.StringValueFilter{
+				{Eq: strRef("invalid")},
+			},
+		}))
 	})
 }
 
