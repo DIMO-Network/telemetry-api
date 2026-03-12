@@ -376,10 +376,18 @@ type SignalCollection struct {
 	// Unit: 'percent'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	OBDEngineLoad *SignalFloat `json:"obdEngineLoad,omitempty"`
+	// PID 52 - Percentage of ethanol in the fuel
+	// Unit: 'percent'
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	OBDEthanolPercent *SignalFloat `json:"obdEthanolPercent,omitempty"`
 	// PID 0A - Fuel pressure
 	// Unit: 'kPa'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	OBDFuelPressure *SignalFloat `json:"obdFuelPressure,omitempty"`
+	// Fuel rail pressure from OBD. Uses PID 0x22 (fuel rail pressure relative to manifold vacuum) when available, otherwise falls back to PID 0x23 (fuel rail pressure direct injection).
+	// Unit: 'kPa'
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	OBDFuelRailPressure *SignalFloat `json:"obdFuelRailPressure,omitempty"`
 	// PID 5E - Engine fuel rate
 	// Unit: 'l/h'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
@@ -404,10 +412,18 @@ type SignalCollection struct {
 	// Unit: 'percent'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	OBDLongTermFuelTrim1 *SignalFloat `json:"obdLongTermFuelTrim1,omitempty"`
+	// PID 09 - Long Term (learned) Fuel Trim - Bank 2 - negative percent leaner, positive percent richer
+	// Unit: 'percent'
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	OBDLongTermFuelTrim2 *SignalFloat `json:"obdLongTermFuelTrim2,omitempty"`
 	// PID 0B - Intake manifold pressure
 	// Unit: 'kPa'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	OBDMAP *SignalFloat `json:"obdMAP,omitempty"`
+	// PID 50 - Maximum flow for mass air flow sensor
+	// Unit: 'g/s'
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	OBDMaxMAF *SignalFloat `json:"obdMaxMAF,omitempty"`
 	// PID 2x (byte CD) - Voltage for wide range/band oxygen sensor
 	// Unit: 'V'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
@@ -431,6 +447,10 @@ type SignalCollection struct {
 	// Number of Diagnostic Trouble Codes (DTC)
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	OBDStatusDTCCount *SignalFloat `json:"obdStatusDTCCount,omitempty"`
+	// PID 11 - Throttle position - 0 = closed throttle, 100 = open throttle
+	// Unit: 'percent'
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	OBDThrottlePosition *SignalFloat `json:"obdThrottlePosition,omitempty"`
 	// PID 30 - Number of warm-ups since codes cleared
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	OBDWarmupsSinceDTCClear *SignalFloat `json:"obdWarmupsSinceDTCClear,omitempty"`
@@ -558,6 +578,12 @@ type SignalCollection struct {
 	// Unit: 'celsius'
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainTractionBatteryTemperatureAverage *SignalFloat `json:"powertrainTractionBatteryTemperatureAverage,omitempty"`
+	// Actual transmission gear currently engaged. 0 = neutral, 1-15 = gear number.
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	PowertrainTransmissionActualGear *SignalFloat `json:"powertrainTransmissionActualGear,omitempty"`
+	// Actual transmission gear ratio.
+	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+	PowertrainTransmissionActualGearRatio *SignalFloat `json:"powertrainTransmissionActualGearRatio,omitempty"`
 	// The current gear. 0=Neutral, 1/2/..=Forward, -1/-2/..=Reverse.
 	// Required Privileges: [VEHICLE_NON_LOCATION_DATA]
 	PowertrainTransmissionCurrentGear *SignalFloat `json:"powertrainTransmissionCurrentGear,omitempty"`
