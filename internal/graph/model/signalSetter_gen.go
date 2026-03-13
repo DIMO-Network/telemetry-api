@@ -263,8 +263,18 @@ func SetCollectionField(collection *SignalCollection, signal *vss.Signal) {
 			Timestamp: signal.Data.Timestamp,
 			Value:     signal.Data.ValueNumber,
 		}
+	case "obdEthanolPercent":
+		collection.OBDEthanolPercent = &SignalFloat{
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
+		}
 	case "obdFuelPressure":
 		collection.OBDFuelPressure = &SignalFloat{
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
+		}
+	case "obdFuelRailPressure":
+		collection.OBDFuelRailPressure = &SignalFloat{
 			Timestamp: signal.Data.Timestamp,
 			Value:     signal.Data.ValueNumber,
 		}
@@ -303,8 +313,18 @@ func SetCollectionField(collection *SignalCollection, signal *vss.Signal) {
 			Timestamp: signal.Data.Timestamp,
 			Value:     signal.Data.ValueNumber,
 		}
+	case "obdLongTermFuelTrim2":
+		collection.OBDLongTermFuelTrim2 = &SignalFloat{
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
+		}
 	case "obdMAP":
 		collection.OBDMAP = &SignalFloat{
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
+		}
+	case "obdMaxMAF":
+		collection.OBDMaxMAF = &SignalFloat{
 			Timestamp: signal.Data.Timestamp,
 			Value:     signal.Data.ValueNumber,
 		}
@@ -335,6 +355,11 @@ func SetCollectionField(collection *SignalCollection, signal *vss.Signal) {
 		}
 	case "obdStatusDTCCount":
 		collection.OBDStatusDTCCount = &SignalFloat{
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
+		}
+	case "obdThrottlePosition":
+		collection.OBDThrottlePosition = &SignalFloat{
 			Timestamp: signal.Data.Timestamp,
 			Value:     signal.Data.ValueNumber,
 		}
@@ -500,6 +525,16 @@ func SetCollectionField(collection *SignalCollection, signal *vss.Signal) {
 		}
 	case "powertrainTractionBatteryTemperatureAverage":
 		collection.PowertrainTractionBatteryTemperatureAverage = &SignalFloat{
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
+		}
+	case "powertrainTransmissionActualGear":
+		collection.PowertrainTransmissionActualGear = &SignalFloat{
+			Timestamp: signal.Data.Timestamp,
+			Value:     signal.Data.ValueNumber,
+		}
+	case "powertrainTransmissionActualGearRatio":
+		collection.PowertrainTransmissionActualGearRatio = &SignalFloat{
 			Timestamp: signal.Data.Timestamp,
 			Value:     signal.Data.ValueNumber,
 		}

@@ -473,6 +473,16 @@ extend type SignalAggregations {
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDEngineLoad", forceResolver: true) @isSignal @hasAggregation
   
   """
+  PID 52 - Percentage of ethanol in the fuel
+  Unit: 'percent'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  obdEthanolPercent(
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDEthanolPercent", forceResolver: true) @isSignal @hasAggregation
+  
+  """
   PID 0A - Fuel pressure
   Unit: 'kPa'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
@@ -481,6 +491,16 @@ extend type SignalAggregations {
     agg: FloatAggregation!,
     filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDFuelPressure", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  Fuel rail pressure from OBD. Uses PID 0x22 (fuel rail pressure relative to manifold vacuum) when available, otherwise falls back to PID 0x23 (fuel rail pressure direct injection).
+  Unit: 'kPa'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  obdFuelRailPressure(
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDFuelRailPressure", forceResolver: true) @isSignal @hasAggregation
   
   """
   PID 5E - Engine fuel rate
@@ -548,6 +568,16 @@ extend type SignalAggregations {
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDLongTermFuelTrim1", forceResolver: true) @isSignal @hasAggregation
   
   """
+  PID 09 - Long Term (learned) Fuel Trim - Bank 2 - negative percent leaner, positive percent richer
+  Unit: 'percent'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  obdLongTermFuelTrim2(
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDLongTermFuelTrim2", forceResolver: true) @isSignal @hasAggregation
+  
+  """
   PID 0B - Intake manifold pressure
   Unit: 'kPa'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
@@ -556,6 +586,16 @@ extend type SignalAggregations {
     agg: FloatAggregation!,
     filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDMAP", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  PID 50 - Maximum flow for mass air flow sensor
+  Unit: 'g/s'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  obdMaxMAF(
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDMaxMAF", forceResolver: true) @isSignal @hasAggregation
   
   """
   PID 2x (byte CD) - Voltage for wide range/band oxygen sensor
@@ -615,6 +655,16 @@ extend type SignalAggregations {
     agg: FloatAggregation!,
     filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDStatusDTCCount", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  PID 11 - Throttle position - 0 = closed throttle, 100 = open throttle
+  Unit: 'percent'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  obdThrottlePosition(
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDThrottlePosition", forceResolver: true) @isSignal @hasAggregation
   
   """
   PID 30 - Number of warm-ups since codes cleared
@@ -938,6 +988,24 @@ extend type SignalAggregations {
     agg: FloatAggregation!,
     filter: SignalFloatFilter
   ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryTemperatureAverage", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  Actual transmission gear currently engaged. 0 = neutral, 1-15 = gear number.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  powertrainTransmissionActualGear(
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTransmissionActualGear", forceResolver: true) @isSignal @hasAggregation
+  
+  """
+  Actual transmission gear ratio.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  powertrainTransmissionActualGearRatio(
+    agg: FloatAggregation!,
+    filter: SignalFloatFilter
+  ):  Float @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTransmissionActualGearRatio", forceResolver: true) @isSignal @hasAggregation
   
   """
   The current gear. 0=Neutral, 1/2/..=Forward, -1/-2/..=Reverse.
@@ -1369,11 +1437,25 @@ extend type SignalCollection {
   obdEngineLoad: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDEngineLoad") @isSignal
   
   """
+  PID 52 - Percentage of ethanol in the fuel
+  Unit: 'percent'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  obdEthanolPercent: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDEthanolPercent") @isSignal
+  
+  """
   PID 0A - Fuel pressure
   Unit: 'kPa'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   obdFuelPressure: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDFuelPressure") @isSignal
+  
+  """
+  Fuel rail pressure from OBD. Uses PID 0x22 (fuel rail pressure relative to manifold vacuum) when available, otherwise falls back to PID 0x23 (fuel rail pressure direct injection).
+  Unit: 'kPa'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  obdFuelRailPressure: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDFuelRailPressure") @isSignal
   
   """
   PID 5E - Engine fuel rate
@@ -1421,11 +1503,25 @@ extend type SignalCollection {
   obdLongTermFuelTrim1: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDLongTermFuelTrim1") @isSignal
   
   """
+  PID 09 - Long Term (learned) Fuel Trim - Bank 2 - negative percent leaner, positive percent richer
+  Unit: 'percent'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  obdLongTermFuelTrim2: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDLongTermFuelTrim2") @isSignal
+  
+  """
   PID 0B - Intake manifold pressure
   Unit: 'kPa'
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   obdMAP: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDMAP") @isSignal
+  
+  """
+  PID 50 - Maximum flow for mass air flow sensor
+  Unit: 'g/s'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  obdMaxMAF: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDMaxMAF") @isSignal
   
   """
   PID 2x (byte CD) - Voltage for wide range/band oxygen sensor
@@ -1467,6 +1563,13 @@ extend type SignalCollection {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   obdStatusDTCCount: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDStatusDTCCount") @isSignal
+  
+  """
+  PID 11 - Throttle position - 0 = closed throttle, 100 = open throttle
+  Unit: 'percent'
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  obdThrottlePosition: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "OBDThrottlePosition") @isSignal
   
   """
   PID 30 - Number of warm-ups since codes cleared
@@ -1693,6 +1796,18 @@ extend type SignalCollection {
   Required Privileges: [VEHICLE_NON_LOCATION_DATA]
   """
   powertrainTractionBatteryTemperatureAverage: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTractionBatteryTemperatureAverage") @isSignal
+  
+  """
+  Actual transmission gear currently engaged. 0 = neutral, 1-15 = gear number.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  powertrainTransmissionActualGear: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTransmissionActualGear") @isSignal
+  
+  """
+  Actual transmission gear ratio.
+  Required Privileges: [VEHICLE_NON_LOCATION_DATA]
+  """
+  powertrainTransmissionActualGearRatio: SignalFloat @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @goField(name: "PowertrainTransmissionActualGearRatio") @isSignal
   
   """
   The current gear. 0=Neutral, 1/2/..=Forward, -1/-2/..=Reverse.

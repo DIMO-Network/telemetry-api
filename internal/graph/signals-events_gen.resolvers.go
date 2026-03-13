@@ -512,8 +512,28 @@ func (r *signalAggregationsResolver) ObdEngineLoad(ctx context.Context, obj *mod
 	return &vn, nil
 }
 
+// ObdEthanolPercent is the resolver for the obdEthanolPercent
+func (r *signalAggregationsResolver) ObdEthanolPercent(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error) {
+	fieldCtx := graphql.GetFieldContext(ctx)
+	vn, ok := obj.ValueNumbers[fieldCtx.Field.Alias]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
 // ObdFuelPressure is the resolver for the obdFuelPressure
 func (r *signalAggregationsResolver) ObdFuelPressure(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error) {
+	fieldCtx := graphql.GetFieldContext(ctx)
+	vn, ok := obj.ValueNumbers[fieldCtx.Field.Alias]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
+// ObdFuelRailPressure is the resolver for the obdFuelRailPressure
+func (r *signalAggregationsResolver) ObdFuelRailPressure(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error) {
 	fieldCtx := graphql.GetFieldContext(ctx)
 	vn, ok := obj.ValueNumbers[fieldCtx.Field.Alias]
 	if !ok {
@@ -592,8 +612,28 @@ func (r *signalAggregationsResolver) ObdLongTermFuelTrim1(ctx context.Context, o
 	return &vn, nil
 }
 
+// ObdLongTermFuelTrim2 is the resolver for the obdLongTermFuelTrim2
+func (r *signalAggregationsResolver) ObdLongTermFuelTrim2(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error) {
+	fieldCtx := graphql.GetFieldContext(ctx)
+	vn, ok := obj.ValueNumbers[fieldCtx.Field.Alias]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
 // ObdMap is the resolver for the obdMAP
 func (r *signalAggregationsResolver) ObdMap(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error) {
+	fieldCtx := graphql.GetFieldContext(ctx)
+	vn, ok := obj.ValueNumbers[fieldCtx.Field.Alias]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
+// ObdMaxMaf is the resolver for the obdMaxMAF
+func (r *signalAggregationsResolver) ObdMaxMaf(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error) {
 	fieldCtx := graphql.GetFieldContext(ctx)
 	vn, ok := obj.ValueNumbers[fieldCtx.Field.Alias]
 	if !ok {
@@ -654,6 +694,16 @@ func (r *signalAggregationsResolver) ObdShortTermFuelTrim1(ctx context.Context, 
 
 // ObdStatusDTCCount is the resolver for the obdStatusDTCCount
 func (r *signalAggregationsResolver) ObdStatusDTCCount(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error) {
+	fieldCtx := graphql.GetFieldContext(ctx)
+	vn, ok := obj.ValueNumbers[fieldCtx.Field.Alias]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
+// ObdThrottlePosition is the resolver for the obdThrottlePosition
+func (r *signalAggregationsResolver) ObdThrottlePosition(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error) {
 	fieldCtx := graphql.GetFieldContext(ctx)
 	vn, ok := obj.ValueNumbers[fieldCtx.Field.Alias]
 	if !ok {
@@ -984,6 +1034,26 @@ func (r *signalAggregationsResolver) PowertrainTractionBatteryStateOfHealth(ctx 
 
 // PowertrainTractionBatteryTemperatureAverage is the resolver for the powertrainTractionBatteryTemperatureAverage
 func (r *signalAggregationsResolver) PowertrainTractionBatteryTemperatureAverage(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error) {
+	fieldCtx := graphql.GetFieldContext(ctx)
+	vn, ok := obj.ValueNumbers[fieldCtx.Field.Alias]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
+// PowertrainTransmissionActualGear is the resolver for the powertrainTransmissionActualGear
+func (r *signalAggregationsResolver) PowertrainTransmissionActualGear(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error) {
+	fieldCtx := graphql.GetFieldContext(ctx)
+	vn, ok := obj.ValueNumbers[fieldCtx.Field.Alias]
+	if !ok {
+		return nil, nil
+	}
+	return &vn, nil
+}
+
+// PowertrainTransmissionActualGearRatio is the resolver for the powertrainTransmissionActualGearRatio
+func (r *signalAggregationsResolver) PowertrainTransmissionActualGearRatio(ctx context.Context, obj *model.SignalAggregations, agg model.FloatAggregation, filter *model.SignalFloatFilter) (*float64, error) {
 	fieldCtx := graphql.GetFieldContext(ctx)
 	vn, ok := obj.ValueNumbers[fieldCtx.Field.Alias]
 	if !ok {
