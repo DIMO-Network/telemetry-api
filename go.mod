@@ -3,31 +3,31 @@ module github.com/DIMO-Network/telemetry-api
 go 1.25.3
 
 require (
-	github.com/99designs/gqlgen v0.17.87
-	github.com/ClickHouse/clickhouse-go/v2 v2.40.1
-	github.com/DIMO-Network/attestation-api v0.1.2
+	github.com/99designs/gqlgen v0.17.88
+	github.com/ClickHouse/clickhouse-go/v2 v2.43.0
+	github.com/DIMO-Network/attestation-api v0.1.15
 	github.com/DIMO-Network/clickhouse-infra v0.0.7
-	github.com/DIMO-Network/cloudevent v0.2.6
+	github.com/DIMO-Network/cloudevent v1.0.4
 	github.com/DIMO-Network/credit-tracker v0.0.6
-	github.com/DIMO-Network/fetch-api v0.0.16
+	github.com/DIMO-Network/fetch-api v0.1.1
 	github.com/DIMO-Network/model-garage v1.0.6
-	github.com/DIMO-Network/server-garage v0.0.7
-	github.com/DIMO-Network/shared v1.0.7
-	github.com/DIMO-Network/token-exchange-api v0.3.7
-	github.com/aarondl/sqlboiler/v4 v4.19.5
-	github.com/auth0/go-jwt-middleware/v2 v2.3.0
+	github.com/DIMO-Network/server-garage v0.0.8
+	github.com/DIMO-Network/shared v1.1.5
+	github.com/DIMO-Network/token-exchange-api v0.4.0
+	github.com/aarondl/sqlboiler/v4 v4.19.7
+	github.com/auth0/go-jwt-middleware/v2 v2.3.1
 	github.com/ethereum/go-ethereum v1.17.1
 	github.com/go-jose/go-jose/v4 v4.1.3
-	github.com/prometheus/client_golang v1.23.0
+	github.com/prometheus/client_golang v1.23.2
 	github.com/rs/zerolog v1.34.0
 	github.com/segmentio/ksuid v1.0.4
 	github.com/stretchr/testify v1.11.1
-	github.com/uber/h3-go/v4 v4.3.0
+	github.com/uber/h3-go/v4 v4.4.0
 	github.com/vektah/gqlparser/v2 v2.5.32
 	go.uber.org/mock v0.6.0
-	golang.org/x/sync v0.19.0
+	golang.org/x/sync v0.20.0
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20260217215200-42d3e9bedb6d
-	google.golang.org/grpc v1.79.1
+	google.golang.org/grpc v1.79.2
 	google.golang.org/protobuf v1.36.11
 )
 
@@ -96,18 +96,18 @@ require (
 	github.com/paulmach/orb v0.12.0 // indirect
 	github.com/pierrec/lz4/v4 v4.1.26 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
-	github.com/pmezard/go-difflib v1.0.0 // indirect
+	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/power-devops/perfstat v0.0.0-20240221224432-82ca36839d55 // indirect
-	github.com/pressly/goose/v3 v3.26.0 // indirect
+	github.com/pressly/goose/v3 v3.27.0 // indirect
 	github.com/prometheus/client_model v0.6.2 // indirect
-	github.com/prometheus/common v0.65.0 // indirect
+	github.com/prometheus/common v0.66.1 // indirect
 	github.com/prometheus/procfs v0.19.2 // indirect
 	github.com/segmentio/asm v1.2.1 // indirect
 	github.com/sethvargo/go-retry v0.3.0 // indirect
 	github.com/shirou/gopsutil/v4 v4.26.2 // indirect
 	github.com/shopspring/decimal v1.4.0 // indirect
 	github.com/sirupsen/logrus v1.9.4 // indirect
-	github.com/sosodev/duration v1.3.1 // indirect
+	github.com/sosodev/duration v1.4.0 // indirect
 	github.com/spf13/cast v1.10.0 // indirect
 	github.com/testcontainers/testcontainers-go v0.40.0 // indirect
 	github.com/testcontainers/testcontainers-go/modules/clickhouse v0.40.0 // indirect
@@ -116,7 +116,7 @@ require (
 	github.com/tidwall/pretty v1.2.1 // indirect
 	github.com/tklauser/go-sysconf v0.3.16 // indirect
 	github.com/tklauser/numcpus v0.11.0 // indirect
-	github.com/urfave/cli/v3 v3.6.2 // indirect
+	github.com/urfave/cli/v3 v3.7.0 // indirect
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.67.0 // indirect
@@ -124,6 +124,8 @@ require (
 	go.opentelemetry.io/otel/metric v1.42.0 // indirect
 	go.opentelemetry.io/otel/trace v1.42.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
+	go.yaml.in/yaml/v2 v2.4.2 // indirect
+	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/crypto v0.48.0 // indirect
 	golang.org/x/mod v0.33.0 // indirect
 	golang.org/x/net v0.50.0 // indirect
