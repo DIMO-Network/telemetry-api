@@ -85,14 +85,14 @@ func (d *IgnitionDetector) getStateChangesQueryWithLookback(subject string, from
 	// - All state changes in range [from, to)
 	//
 	// PREWHERE on subject filters before FINAL merge, significantly reducing work
-	query := `
+	query := fmt.Sprintf(`
 SELECT timestamp, new_state, prev_state FROM (
   SELECT timestamp, new_state, prev_state
   FROM signal_state_changes FINAL
   PREWHERE subject = ?
   WHERE signal_name = 'isIgnitionOn'
-    AND timestamp >= ?
-    AND timestamp < ?
+    AND timestamp >= %s
+    AND timestamp < %s
     AND prev_state != new_state
   ORDER BY timestamp DESC
   LIMIT 1
@@ -104,13 +104,13 @@ SELECT timestamp, new_state, prev_state FROM (
   FROM signal_state_changes FINAL
   PREWHERE subject = ?
   WHERE signal_name = 'isIgnitionOn'
-    AND timestamp >= ?
-    AND timestamp < ?
+    AND timestamp >= %s
+    AND timestamp < %s
     AND prev_state != new_state
 )
-ORDER BY timestamp`
+ORDER BY timestamp`, dateTime64Micro(lookbackLimit), dateTime64Micro(from), dateTime64Micro(from), dateTime64Micro(to))
 
-	args := []any{subject, lookbackLimit, from, subject, from, to}
+	args := []any{subject, subject}
 
 	return query, args
 }
