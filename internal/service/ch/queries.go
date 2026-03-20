@@ -25,8 +25,8 @@ const (
 	subjectWhere      = vss.SubjectCol + " = ?"
 	eventSubjectWhere = vss.EventSubjectCol + " = ?"
 	nameIn            = vss.NameCol + " IN ?"
-	timestampFrom     = vss.TimestampCol + " >= ?"
-	timestampTo       = vss.TimestampCol + " < ?"
+	timestampFrom     = vss.TimestampCol + " >= fromUnixTimestamp64Micro(?)"
+	timestampTo       = vss.TimestampCol + " < fromUnixTimestamp64Micro(?)"
 	sourceWhere       = vss.SourceCol + " = ?"
 	groupAsc          = IntervalGroup + " ASC"
 	signalTypeCol     = "signal_type"
@@ -510,8 +510,8 @@ func getAggQuery(subject string, aggArgs *model.AggregatedSignalArgs) (string, [
 		selectStringAggs(aggArgs.StringArgs),
 		selectLocationAggs(aggArgs.LocationArgs),
 		qm.Where(subjectWhere, subject),
-		qm.Where(timestampFrom, aggArgs.FromTS),
-		qm.Where(timestampTo, aggArgs.ToTS),
+		qm.Where(timestampFrom, aggArgs.FromTS.UnixMicro()),
+		qm.Where(timestampTo, aggArgs.ToTS.UnixMicro()),
 		qm.From(vss.TableName),
 		qm.InnerJoin(valueTable),
 		qm.GroupBy(IntervalGroup),
@@ -540,9 +540,9 @@ func getBatchAggQuery(subject string, ranges []TimeRange, globalFrom, globalTo t
 	multiIf := buildSegmentIndexMultiIf(vss.TimestampCol, len(ranges))
 	args := make([]any, 0, 2*len(ranges)+3)
 	for _, r := range ranges {
-		args = append(args, r.From, r.To)
+		args = append(args, r.From.UnixMicro(), r.To.UnixMicro())
 	}
-	args = append(args, subject, globalFrom, globalTo)
+	args = append(args, subject, globalFrom.UnixMicro(), globalTo.UnixMicro())
 	inner := buildBatchAggInner(valueTable, multiIf)
 	outer := buildBatchAggOuter(inner, floatArgs, locationArgs)
 	return outer, args, nil
@@ -562,7 +562,7 @@ func buildBatchAggValueTable(floatArgs []model.FloatSignalArgs, locationArgs []m
 func buildBatchAggInner(valueTable, multiIf string) string {
 	selectList := multiIf + ", " + signalTypeCol + ", " + signalIndexCol + ", " + vss.TimestampCol + ", " + vss.ValueNumberCol + ", " + vss.ValueStringCol + ", " + vss.ValueLocationCol
 	return "SELECT " + selectList + " FROM " + vss.TableName + " INNER JOIN " + valueTable +
-		" WHERE " + subjectWhere + " AND " + vss.TimestampCol + " >= ? AND " + vss.TimestampCol + " < ?"
+		" WHERE " + subjectWhere + " AND " + vss.TimestampCol + " >= fromUnixTimestamp64Micro(?) AND " + vss.TimestampCol + " < fromUnixTimestamp64Micro(?)"
 }
 
 func buildBatchAggOuter(inner string, floatArgs []model.FloatSignalArgs, locationArgs []model.LocationSignalArgs) string {
@@ -683,7 +683,7 @@ func buildSegmentIndexMultiIf(timestampCol string, nRanges int) string {
 	if nRanges == 0 {
 		return "toInt32(-1) AS seg_idx"
 	}
-	cond := "(" + timestampCol + " >= ? AND " + timestampCol + " < ?)"
+	cond := "(" + timestampCol + " >= fromUnixTimestamp64Micro(?) AND " + timestampCol + " < fromUnixTimestamp64Micro(?))"
 	parts := make([]string, 0, nRanges)
 	for i := 0; i < nRanges; i++ {
 		parts = append(parts, cond+", "+fmt.Sprintf("%d", i))
@@ -771,8 +771,8 @@ func getEventCountsQuery(subject string, from, to time.Time, eventNames []string
 		qm.Select("count(*) AS count"),
 		qm.From(vss.EventTableName),
 		qm.Where(eventSubjectWhere, subject),
-		qm.Where(vss.EventTimestampCol+" >= ?", from),
-		qm.Where(vss.EventTimestampCol+" < ?", to),
+		qm.Where(vss.EventTimestampCol+" >= fromUnixTimestamp64Micro(?)", from.UnixMicro()),
+		qm.Where(vss.EventTimestampCol+" < fromUnixTimestamp64Micro(?)", to.UnixMicro()),
 		qm.GroupBy(vss.EventNameCol),
 	}
 	if len(eventNames) > 0 {
@@ -807,7 +807,7 @@ func eventCountsForRangesEmptyQuery() string {
 func buildEventCountsForRangesArgs(ranges []TimeRange, subject string, eventNames []string) []any {
 	args := make([]any, 0, 2*len(ranges)+1+len(eventNames))
 	for _, r := range ranges {
-		args = append(args, r.From, r.To)
+		args = append(args, r.From.UnixMicro(), r.To.UnixMicro())
 	}
 	args = append(args, subject)
 	for _, n := range eventNames {

@@ -772,6 +772,37 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 			},
 		},
 		{
+			// Regression test: when from/to have sub-second precision, the
+			// clickhouse-go driver would truncate time.Time parameters to whole
+			// seconds. If both truncate to the same second (e.g. from=T-0.5s,
+			// to=T+0.5s both → T), the WHERE clause becomes
+			// "timestamp >= T AND timestamp < T" which is always false.
+			name: "subsecond boundary timestamps",
+			aggArgs: model.AggregatedSignalArgs{
+				SignalArgs: model.SignalArgs{
+					TokenID: 1,
+				},
+				FromTS:   c.dataStartTime.Add(-500 * time.Millisecond),
+				ToTS:     c.dataStartTime.Add(500 * time.Millisecond),
+				Interval: day.Microseconds(),
+				FloatArgs: []model.FloatSignalArgs{
+					{
+						Name:  vss.FieldSpeed,
+						Agg:   model.FloatAggregationAvg,
+						Alias: vss.FieldSpeed,
+					},
+				},
+			},
+			expected: []AggSignal{
+				{
+					SignalType:  FloatType,
+					SignalIndex: 0,
+					Timestamp:   c.dataStartTime.Add(-500 * time.Millisecond),
+					ValueNumber: 0,
+				},
+			},
+		},
+		{
 			name: "first location in fence",
 			aggArgs: model.AggregatedSignalArgs{
 				SignalArgs: model.SignalArgs{
