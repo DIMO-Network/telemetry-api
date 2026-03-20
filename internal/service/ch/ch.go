@@ -319,8 +319,8 @@ func (s *Service) GetEvents(ctx context.Context, subject string, from, to time.T
 		qm.Select(vss.EventNameCol, vss.EventSourceCol, vss.EventTimestampCol, vss.EventDurationNsCol, vss.EventMetadataCol, vss.EventTagsCol),
 		qm.From(vss.EventTableName),
 		qm.Where(eventSubjectWhere, subject),
-		qm.Where(vss.EventTimestampCol+" >= ?", from),
-		qm.Where(vss.EventTimestampCol+" < ?", to),
+		qm.Where(vss.EventTimestampCol + " >= " + dateTime64Micro(from)),
+		qm.Where(vss.EventTimestampCol + " < " + dateTime64Micro(to)),
 		qm.OrderBy(vss.EventTimestampCol + " DESC"),
 	}
 	mods = appendEventFilterMods(mods, filter)

@@ -36,7 +36,7 @@ func getWindowedSignalCounts(
 	signalThreshold int,
 	distinctSignalThreshold int,
 ) (_ []ActiveWindow, retErr error) {
-	query := `
+	query := fmt.Sprintf(`
 SELECT
     toStartOfInterval(timestamp, INTERVAL ? second) AS window_start,
     toStartOfInterval(timestamp, INTERVAL ? second) + INTERVAL ? second AS window_end,
@@ -44,13 +44,13 @@ SELECT
     uniq(name) AS distinct_signal_count
 FROM signal FINAL
 PREWHERE subject = ?
-WHERE timestamp >= ?
-  AND timestamp < ?
+WHERE timestamp >= %s
+  AND timestamp < %s
 GROUP BY window_start
 HAVING signal_count >= ? AND distinct_signal_count >= ?
-ORDER BY window_start`
+ORDER BY window_start`, dateTime64Micro(from), dateTime64Micro(to))
 
-	rows, err := conn.Query(ctx, query, windowSizeSeconds, windowSizeSeconds, windowSizeSeconds, subject, from, to, signalThreshold, distinctSignalThreshold)
+	rows, err := conn.Query(ctx, query, windowSizeSeconds, windowSizeSeconds, windowSizeSeconds, subject, signalThreshold, distinctSignalThreshold)
 	if err != nil {
 		return nil, fmt.Errorf("failed to query windowed signal counts: %w", err)
 	}
@@ -127,9 +127,9 @@ func getLevelSamples(ctx context.Context, conn clickhouse.Conn, subject string, 
 	query := "SELECT " + vss.TimestampCol + ", " + vss.ValueNumberCol +
 		" FROM " + vss.TableName + " FINAL" +
 		" PREWHERE " + vss.SubjectCol + " = ?" +
-		" WHERE " + vss.NameCol + " = ? AND " + vss.TimestampCol + " >= ? AND " + vss.TimestampCol + " < ?" +
+		" WHERE " + vss.NameCol + " = ? AND " + vss.TimestampCol + " >= " + dateTime64Micro(from) + " AND " + vss.TimestampCol + " < " + dateTime64Micro(to) +
 		" ORDER BY " + vss.TimestampCol
-	rows, err := conn.Query(ctx, query, subject, name, from, to)
+	rows, err := conn.Query(ctx, query, subject, name)
 	if err != nil {
 		return nil, err
 	}
