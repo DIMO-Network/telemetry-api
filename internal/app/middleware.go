@@ -7,9 +7,12 @@ import (
 	"net/http"
 	"os"
 	"runtime/debug"
+	"time"
 
+	"github.com/99designs/gqlgen/graphql"
 	"github.com/DIMO-Network/server-garage/pkg/gql/errorhandler"
 	"github.com/DIMO-Network/telemetry-api/internal/auth"
+	"github.com/DIMO-Network/telemetry-api/internal/limits"
 	"github.com/rs/zerolog"
 	"github.com/vektah/gqlparser/v2/gqlerror"
 )
@@ -18,6 +21,25 @@ import (
 // for client errors. The default behavior logs everything at error level, which is too
 // noisy for invalid queries and bad request inputs.
 func errorPresenter(ctx context.Context, err error) *gqlerror.Error {
+	// Handle client disconnects before other error processing.
+	// context.Canceled propagates through all subsystems (ClickHouse, gRPC, credit tracker)
+	// when the client drops the connection — treat it as a client error, not a server error.
+	if errors.Is(err, context.Canceled) {
+		msg := "request canceled by client"
+		if start, ok := limits.RequestStartTime(ctx); ok {
+			msg = fmt.Sprintf("request canceled by client after %s", time.Since(start).Truncate(time.Millisecond))
+		}
+		gqlPath := graphql.GetPath(ctx)
+		zerolog.Ctx(ctx).Warn().Err(err).Str("gqlPath", gqlPath.String()).Msg(msg)
+		return &gqlerror.Error{
+			Message: msg,
+			Path:    gqlPath,
+			Extensions: map[string]any{
+				"code": "REQUEST_CANCELED",
+			},
+		}
+	}
+
 	var gqlErr *gqlerror.Error
 	if errors.As(err, &gqlErr) {
 		code := errorhandler.ErrCode(gqlErr)

@@ -7,6 +7,14 @@ import (
 	"time"
 )
 
+type contextKey struct{}
+
+// RequestStartTime returns the time the request started, if set by the Limiter middleware.
+func RequestStartTime(ctx context.Context) (time.Time, bool) {
+	t, ok := ctx.Value(contextKey{}).(time.Time)
+	return t, ok
+}
+
 // Limiter adds request timeouts to HTTP handlers.
 type Limiter struct {
 	maxRequestDuration time.Duration
@@ -33,6 +41,7 @@ func New(maxRequestDuration string) (*Limiter, error) {
 func (l *Limiter) AddRequestTimeout(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(r.Context(), l.maxRequestDuration)
+		ctx = context.WithValue(ctx, contextKey{}, time.Now())
 		defer cancel()
 		next.ServeHTTP(w, r.Clone(ctx))
 	})
