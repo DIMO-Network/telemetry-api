@@ -2,7 +2,7 @@ replicaCount: 4
 image:
   repository: dimozone/telemetry-api
   pullPolicy: IfNotPresent
-  tag: 1.4.3
+  tag: 0.4.6
 cronJob:
   enabled: false
   schedule: 0 0 * * 0
