@@ -51,7 +51,6 @@ func GetTestServices(t *testing.T) *TestServices {
 			MaxRequestDuration:   "1m",
 			VINVCDataVersion:     "VINVCv1.0",
 			ChainID:              137,
-			DeviceLastSeenBinHrs: 3,
 		}
 
 		// Setup services
