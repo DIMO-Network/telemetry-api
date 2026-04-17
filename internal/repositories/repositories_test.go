@@ -20,9 +20,8 @@ import (
 )
 
 var baseSettings = config.Settings{
-	DeviceLastSeenBinHrs: 3,
-	ChainID:              80002,
-	VehicleNFTAddress:    common.HexToAddress("0x1234567890123456789012345678901234567890"),
+	ChainID:           80002,
+	VehicleNFTAddress: common.HexToAddress("0x1234567890123456789012345678901234567890"),
 }
 
 type Mocks struct {

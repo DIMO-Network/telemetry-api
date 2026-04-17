@@ -54,9 +54,8 @@ func (c *CHServiceTestSuite) SetupSuite() {
 	c.Require().NoError(err, "Failed to run migrations")
 
 	settings := config.Settings{
-		Clickhouse:           cfg,
-		MaxRequestDuration:   "1s",
-		DeviceLastSeenBinHrs: 3,
+		Clickhouse:         cfg,
+		MaxRequestDuration: "1s",
 	}
 	c.chService, err = NewService(settings)
 	c.Require().NoError(err, "Failed to create repository")

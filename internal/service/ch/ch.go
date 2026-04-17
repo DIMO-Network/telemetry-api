@@ -24,8 +24,8 @@ const (
 
 // Service is a ClickHouse service that interacts with the ClickHouse database.
 type Service struct {
-	conn              clickhouse.Conn
-	lastSeenBucketHrs int64
+	conn           clickhouse.Conn
+	latestLookback time.Duration
 }
 
 // NewService creates a new ClickHouse service.
@@ -60,7 +60,14 @@ func NewService(settings config.Settings) (*Service, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to ping clickhouse: %w", err)
 	}
-	return &Service{conn: conn, lastSeenBucketHrs: settings.DeviceLastSeenBinHrs}, nil
+	var latestLookback time.Duration
+	if settings.LatestSignalsLookbackDays > 0 {
+		latestLookback = time.Duration(settings.LatestSignalsLookbackDays) * 24 * time.Hour
+	}
+	return &Service{
+		conn:           conn,
+		latestLookback: latestLookback,
+	}, nil
 }
 
 func getMaxExecutionTime(maxRequestDuration string) (int, error) {
@@ -76,9 +83,10 @@ func getMaxExecutionTime(maxRequestDuration string) (int, error) {
 
 // GetLatestSignals returns the latest signals based on the provided arguments from the ClickHouse database.
 func (s *Service) GetLatestSignals(ctx context.Context, subject string, latestArgs *model.LatestSignalsArgs) ([]*vss.Signal, error) {
-	stmt, args := getLatestQuery(subject, latestArgs)
+	lookbackFrom := s.lookbackFrom()
+	stmt, args := getLatestQuery(subject, latestArgs, lookbackFrom)
 	if latestArgs.IncludeLastSeen {
-		lastSeenStmt, lastSeenArgs := getLastSeenQuery(subject, &latestArgs.SignalArgs)
+		lastSeenStmt, lastSeenArgs := getLastSeenQuery(subject, &latestArgs.SignalArgs, lookbackFrom)
 		stmt, args = unionAll([]string{stmt, lastSeenStmt}, [][]any{args, lastSeenArgs})
 	}
 
@@ -87,6 +95,15 @@ func (s *Service) GetLatestSignals(ctx context.Context, subject string, latestAr
 		return nil, err
 	}
 	return signals, nil
+}
+
+// lookbackFrom returns the earliest timestamp the "latest" queries will
+// scan, or the zero Time if no lower bound is configured.
+func (s *Service) lookbackFrom() time.Time {
+	if s.latestLookback <= 0 {
+		return time.Time{}
+	}
+	return time.Now().Add(-s.latestLookback)
 }
 
 // GetAggregatedSignals returns a slice of aggregated signals based on the provided arguments from the ClickHouse database.
