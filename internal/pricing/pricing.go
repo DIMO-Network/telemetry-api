@@ -25,6 +25,7 @@ func DefaultPricingConfig() *PricingConfig {
 		BaseCosts: map[string]uint64{
 			"signals":          1, // Most expensive - time-series aggregations
 			"signalsLatest":    1, // Medium - latest value lookups
+			"signalsSnapshot":  5, // Fetches all signals in one query
 			"events":           3, // Medium - event log queries
 			"availableSignals": 1, // Cheap - metadata query
 			"vinVCLatest":      1, // Simple - credential lookup
@@ -129,6 +130,16 @@ func (c *CostCalculator) calculateFieldCostBreakdown(ctx context.Context, field 
 		return c.calculateSignalsCost(ctx, field, variables)
 	case "signalsLatest":
 		return c.calculateSignalsLatestCost(field, variables)
+	case "signalsSnapshot":
+		baseCost, err := c.getBaseCost("signalsSnapshot")
+		if err != nil {
+			return nil, err
+		}
+		return &CostBreakdown{
+			Name:        field.Alias,
+			Cost:        baseCost,
+			Description: "Flat cost for signalsSnapshot (fetches all signals)",
+		}, nil
 	case "events":
 		return c.calculateEventsCost(field, variables)
 	default:

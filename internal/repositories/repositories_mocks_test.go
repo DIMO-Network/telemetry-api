@@ -74,6 +74,21 @@ func (mr *MockCHServiceMockRecorder) GetAggregatedSignalsForRanges(ctx, subject,
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAggregatedSignalsForRanges", reflect.TypeOf((*MockCHService)(nil).GetAggregatedSignalsForRanges), ctx, subject, ranges, globalFrom, globalTo, floatArgs, locationArgs)
 }
 
+// GetAllLatestSignals mocks base method.
+func (m *MockCHService) GetAllLatestSignals(ctx context.Context, subject string, filter *model.SignalFilter) ([]*vss.Signal, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetAllLatestSignals", ctx, subject, filter)
+	ret0, _ := ret[0].([]*vss.Signal)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetAllLatestSignals indicates an expected call of GetAllLatestSignals.
+func (mr *MockCHServiceMockRecorder) GetAllLatestSignals(ctx, subject, filter any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllLatestSignals", reflect.TypeOf((*MockCHService)(nil).GetAllLatestSignals), ctx, subject, filter)
+}
+
 // GetAvailableSignals mocks base method.
 func (m *MockCHService) GetAvailableSignals(ctx context.Context, subject string, filter *model.SignalFilter) ([]string, error) {
 	m.ctrl.T.Helper()

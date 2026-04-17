@@ -106,6 +106,17 @@ type EventCount struct {
 	Count int    `json:"count"`
 }
 
+type EventDataSummary struct {
+	// Event name
+	Name string `json:"name"`
+	// Number of times this event occurred for the vehicle
+	NumberOfEvents uint64 `json:"numberOfEvents"`
+	// First seen timestamp
+	FirstSeen time.Time `json:"firstSeen"`
+	// Last seen timestamp
+	LastSeen time.Time `json:"lastSeen"`
+}
+
 type EventFilter struct {
 	// name is the name of the event.
 	Name *StringValueFilter `json:"name,omitempty"`
@@ -127,6 +138,20 @@ type InCircleFilter struct {
 	Center *FilterLocation `json:"center"`
 	// Radius of the circle around the center, in kilometers (km).
 	Radius float64 `json:"radius"`
+}
+
+// LatestSignal represents a single signal's most recent value.
+type LatestSignal struct {
+	// Signal name (e.g., "speed", "currentLocationCoordinates")
+	Name string `json:"name"`
+	// Timestamp of the most recent reading
+	Timestamp time.Time `json:"timestamp"`
+	// Numeric value, present for float-type signals
+	ValueNumber *float64 `json:"valueNumber,omitempty"`
+	// String value, present for string-type signals
+	ValueString *string `json:"valueString,omitempty"`
+	// Location value, present for location-type signals
+	ValueLocation *Location `json:"valueLocation,omitempty"`
 }
 
 type Location struct {
@@ -625,6 +650,17 @@ type SignalCollection struct {
 	Speed *SignalFloat `json:"speed,omitempty"`
 }
 
+type SignalDataSummary struct {
+	// signal name
+	Name string `json:"name"`
+	// number of this specific signal
+	NumberOfSignals uint64 `json:"numberOfSignals"`
+	// first seen timestamp
+	FirstSeen time.Time `json:"firstSeen"`
+	// last seen timestamp
+	LastSeen time.Time `json:"lastSeen"`
+}
+
 // SignalFilter holds the filter parameters for the signal querys.
 type SignalFilter struct {
 	// Filter signals by source using an ethr DID.
@@ -678,6 +714,14 @@ type SignalString struct {
 	Value string `json:"value"`
 }
 
+// Response for signalsSnapshot query.
+type SignalsSnapshotResponse struct {
+	// The last time any signal was seen matching the filter.
+	LastSeen *time.Time `json:"lastSeen,omitempty"`
+	// List of all latest signal values the caller is authorized to see.
+	Signals []*LatestSignal `json:"signals"`
+}
+
 // Filters that apply to string arrays.
 type StringArrayFilter struct {
 	// containsAny array of strings containing any of the strings in the array
@@ -727,28 +771,6 @@ type Vinvc struct {
 	ValidTo *time.Time `json:"validTo,omitempty"`
 	// rawVC is the raw VC JSON.
 	RawVc string `json:"rawVC"`
-}
-
-type EventDataSummary struct {
-	// Event name
-	Name string `json:"name"`
-	// Number of times this event occurred for the vehicle
-	NumberOfEvents uint64 `json:"numberOfEvents"`
-	// First seen timestamp
-	FirstSeen time.Time `json:"firstSeen"`
-	// Last seen timestamp
-	LastSeen time.Time `json:"lastSeen"`
-}
-
-type SignalDataSummary struct {
-	// signal name
-	Name string `json:"name"`
-	// number of this specific signal
-	NumberOfSignals uint64 `json:"numberOfSignals"`
-	// first seen timestamp
-	FirstSeen time.Time `json:"firstSeen"`
-	// last seen timestamp
-	LastSeen time.Time `json:"lastSeen"`
 }
 
 type DetectionMechanism string
