@@ -52,7 +52,7 @@ resources:
     cpu: 1
     memory: 4Gi
 autoscaling:
-  enabled: true
+  enabled: false
   minReplicas: 3
   maxReplicas: 64
   targetMemoryUtilizationPercentage: 100
