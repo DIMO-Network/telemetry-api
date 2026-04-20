@@ -8,7 +8,6 @@ extend type Query {
     @requiresVehicleToken
     @requiresAllOfPrivileges(privileges: [VEHICLE_VIN_CREDENTIAL])
     @mcpTool(name: "get_vin_credential", description: "Get the latest VIN verifiable credential for a vehicle by token ID. Returns VIN, recording entity, timestamp, country code, and validity period.", selection: "vehicleTokenId vin recordedBy recordedAt countryCode vehicleContractAddress validFrom validTo rawVC")
-    @mcpExample(description: "VIN credential lookup", query: "query VIN($tokenId:Int!) { vinVCLatest(tokenId:$tokenId) { vin recordedBy recordedAt countryCode } }")
 
 }
 

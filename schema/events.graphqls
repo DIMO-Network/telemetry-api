@@ -10,7 +10,6 @@ extend type Query {
       privileges: [VEHICLE_NON_LOCATION_DATA, VEHICLE_ALL_TIME_LOCATION]
     )
     @mcpTool(name: "get_events", description: "Get discrete events for a vehicle in a time range. Returns event name, source, timestamp, duration, and optional metadata.", selection: "timestamp name source durationNs metadata")
-    @mcpExample(description: "Events in a time range", query: "query Events($tokenId:Int!,$from:Time!,$to:Time!) { events(tokenId:$tokenId,from:$from,to:$to) { timestamp name source durationNs metadata } }")
 }
 
 type Event {

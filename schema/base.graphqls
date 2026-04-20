@@ -44,7 +44,6 @@ type Query {
   availableSignals(tokenId: Int!, filter: SignalFilter): [String!]
     @requiresVehicleToken
     @mcpTool(name: "get_available_signals", description: "List queryable signal names that have stored data for a vehicle by token ID.", selection: "")
-    @mcpExample(description: "List available signals with data summary", query: "query Available($tokenId:Int!) { availableSignals(tokenId:$tokenId) }")
 
   """
   Point-in-time snapshot of all accessible signals. Equivalent to availableSignals + signalsLatest in a single request.
@@ -57,7 +56,6 @@ type Query {
   dataSummary(tokenId: Int!, filter: SignalFilter): DataSummary
     @requiresVehicleToken
     @mcpTool(name: "get_data_summary", description: "Get a summary of all data available for a vehicle by token ID. Returns total signal count, available signal names, first/last seen timestamps, and per-signal and per-event breakdowns.", selection: "numberOfSignals availableSignals firstSeen lastSeen signalDataSummary { name numberOfSignals firstSeen lastSeen } eventDataSummary { name numberOfEvents firstSeen lastSeen }")
-    @mcpExample(description: "Data summary with signal count and time range", query: "query Summary($tokenId:Int!) { dataSummary(tokenId:$tokenId) { numberOfSignals availableSignals firstSeen lastSeen } }")
 }
 type SignalAggregations {
   timestamp: Time!

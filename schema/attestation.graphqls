@@ -5,7 +5,6 @@ extend type Query {
     filter: AttestationFilter
   ): [Attestation]
     @mcpTool(name: "get_attestations", description: "Get verifiable attestations for a vehicle. Returns attestation ID, timestamp, type, source address, signature, and tags. Supports filtering by source, data version, producer, time range, and tags.", selection: "id vehicleTokenId time type source dataVersion producer signature tags")
-    @mcpExample(description: "Attestations for a vehicle", query: "query Attestations($tokenId:Int!) { attestations(tokenId:$tokenId) { id time type source signature tags } }")
 }
 
 type Attestation {
