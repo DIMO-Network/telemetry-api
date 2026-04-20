@@ -37,6 +37,7 @@ type ResolverRoot interface {
 type DirectiveRoot struct {
 	HasAggregation          func(ctx context.Context, obj any, next graphql.Resolver) (res any, err error)
 	IsSignal                func(ctx context.Context, obj any, next graphql.Resolver) (res any, err error)
+	McpHide                 func(ctx context.Context, obj any, next graphql.Resolver) (res any, err error)
 	RequiresAllOfPrivileges func(ctx context.Context, obj any, next graphql.Resolver, privileges []string) (res any, err error)
 	RequiresOneOfPrivilege  func(ctx context.Context, obj any, next graphql.Resolver, privileges []string) (res any, err error)
 	RequiresVehicleToken    func(ctx context.Context, obj any, next graphql.Resolver) (res any, err error)
@@ -3209,126 +3210,43 @@ func newExecutionContext(
 
 var sources = []*ast.Source{
 	{Name: "../../schema/attestation.graphqls", Input: `extend type Query {
-  """
-  attestations returns all attestations for a given subject.
-  """
   attestations(
-    """
-    The token ID of the vehicle.
-    """
     tokenId: Int
-
-    """
-    The subject of the attestation.
-    """
     subject: String
-
-    """
-    Filter attestations by metadata fields.
-    """
     filter: AttestationFilter
   ): [Attestation]
+    @mcpTool(name: "get_attestations", description: "Get verifiable attestations for a vehicle. Returns attestation ID, timestamp, type, source address, signature, and tags. Supports filtering by source, data version, producer, time range, and tags.", selection: "id vehicleTokenId time type source dataVersion producer signature tags")
 }
 
 type Attestation {
-  """
-  id is the id of the attestation.
-  """
   id: String!
-
-  """
-  vehicleTokenId is the token ID of the vehicle.
-  """
   vehicleTokenId: Int!
-
-  """
-  time represents the time the attestation was made at.
-  """
   time: Time!
-
-  """
-  attestation is the JSON-encoded attestation.
-  """
+  """JSON-encoded attestation data."""
   attestation: String!
-
-  """
-  type
-  """
   type: String!
-
-  """
-  source is the address that created and signed the attestation
-  """
+  """Address that signed the attestation."""
   source: Address!
-
-  """
-  dataversion
-  """
   dataVersion: String!
-
-  """
-  producer of the attestation data
-  """
   producer: String
-
-  """
-  signature of the attestation data
-  """
   signature: String!
-
-  """
-  tags tags associated with the attestation.
-  """
   tags: [String!]
 }
 
-"""
-AttestationFilter holds the filter parameters for the attestation querys.
-"""
 input AttestationFilter {
-  """
-  id is the id of the attestation.
-  """
   id: String
-
-  """
-  The attesting party.
-  """
+  """The attesting party."""
   source: Address
-
-  """
-  Filter attestations by data version.
-  """
   dataVersion: String
-
-  """
-  Filter attestations by source type.
-  """
   producer: String
-
-  """
-  Filter attestations made prior to this timestamp.
-  """
+  """Before this timestamp."""
   before: Time
-
-  """
-  Filter attestations made after this timestamp.
-  """
+  """After this timestamp."""
   after: Time
-
-  """
-  Limit attestations returned to this value. Defaults to 10.
-  """
+  """Max results. Default 10."""
   limit: Int
-
-  """
-  Cursor for pagination (exclusive). 
-  """
+  """Pagination cursor (exclusive)."""
   cursor: Time
-
-  """
-  Filter attestations by tags.
-  """
   tags: StringArrayFilter
 }
 `, BuiltIn: false},
@@ -3355,7 +3273,7 @@ enum Privilege {
 directive @requiresVehicleToken on FIELD_DEFINITION
 `, BuiltIn: false},
 	{Name: "../../schema/base.graphqls", Input: `"""
-A point in time, encoded per RFC-3999. Typically these will be in second precision,
+A point in time, encoded per RFC-3339. Typically these will be in second precision,
 just like the blockchain, and in UTC.
 """
 scalar Time
@@ -3381,53 +3299,39 @@ directive @hasAggregation on INPUT_FIELD_DEFINITION | FIELD_DEFINITION
 The root query type for the GraphQL schema.
 """
 type Query {
-  """
-  signals returns a collection of signals for a given token in a given time range.
-  """
   signals(
     tokenId: Int!
     """
-    interval is a time span that used for aggregatting the data with.
-    A duration string is a sequence of decimal numbers, each with optional fraction and a unit suffix,
-    such as "300ms" or "2h45m". Valid time units are "ms", "s", "m", "h"
+    Duration string for data aggregation buckets (e.g., "5m", "1h", "2h45m"). Valid units: ms, s, m, h. Common values: "5m" (5 minutes), "1h" (1 hour), "6h", "24h". Days are not a valid unit — use "24h" instead of "1d".
     """
     interval: String!
     from: Time!
     to: Time!
     filter: SignalFilter
   ): [SignalAggregations!] @requiresVehicleToken
-  """
-  SignalsLatest returns the latest signals for a given token.
-  """
+    @mcpTool(name: "get_signals_time_series", description: "Get aggregated signal time series for a vehicle over a date range. Returns signal values bucketed by the specified interval (e.g. '1h', '15m'). Use with signal field names and aggregation functions.", selection: "timestamp")
+    @mcpExample(description: "Hourly average speed over a time range", query: "query TimeSeries($tokenId:Int!,$from:Time!,$to:Time!) { signals(tokenId:$tokenId,interval:\"1h\",from:$from,to:$to) { timestamp speed(agg:AVG) } }")
   signalsLatest(tokenId: Int!, filter: SignalFilter): SignalCollection
     @requiresVehicleToken
     @mcpTool(name: "get_latest_signals", description: "Get the most recent signal values for a vehicle by token ID. Returns the last-seen timestamp for the vehicle.", selection: "lastSeen")
-  """
-  availableSignals returns a list of queryable signal names that have stored data for a given tokenId.
-  """
+    @mcpExample(description: "Latest speed and battery charge", query: "query Latest($tokenId:Int!) { signalsLatest(tokenId:$tokenId) { lastSeen speed{timestamp value} powertrainTractionBatteryStateOfChargeCurrent{timestamp value} } }")
   availableSignals(tokenId: Int!, filter: SignalFilter): [String!]
     @requiresVehicleToken
     @mcpTool(name: "get_available_signals", description: "List queryable signal names that have stored data for a vehicle by token ID.", selection: "")
 
   """
-  signalsSnapshot returns a point-in-time snapshot of every available signal for a given vehicle.
-  Only signals the caller has privileges to access are included. This is equivalent to
-  calling availableSignals + signalsLatest but in a single request and database query.
+  Point-in-time snapshot of all accessible signals. Equivalent to availableSignals + signalsLatest in a single request.
   """
   signalsSnapshot(tokenId: Int!, filter: SignalFilter): SignalsSnapshotResponse
     @requiresVehicleToken
     @mcpTool(name: "get_signals_snapshot", description: "Get a point-in-time snapshot of all available signals for a vehicle by token ID. Returns every signal the caller has permission to see.", selection: "lastSeen signals { name timestamp valueNumber valueString valueLocation { latitude longitude hdop } }")
+    @mcpExample(description: "Full snapshot of all signals for a vehicle", query: "query Snapshot($tokenId:Int!) { signalsSnapshot(tokenId:$tokenId) { lastSeen signals { name timestamp valueNumber valueString valueLocation { latitude longitude hdop } } } }")
 
-  """
-  data summary of all signals for a given tokenId
-  """
   dataSummary(tokenId: Int!, filter: SignalFilter): DataSummary
     @requiresVehicleToken
+    @mcpTool(name: "get_data_summary", description: "Get a summary of all data available for a vehicle by token ID. Returns total signal count, available signal names, first/last seen timestamps, and per-signal and per-event breakdowns.", selection: "numberOfSignals availableSignals firstSeen lastSeen signalDataSummary { name numberOfSignals firstSeen lastSeen } eventDataSummary { name numberOfEvents firstSeen lastSeen }")
 }
 type SignalAggregations {
-  """
-  Timestamp of the aggregated data.
-  """
   timestamp: Time!
   """
   Approximate location of the vehicle in WGS 84 coordinates. The aggregation is applied to
@@ -3445,9 +3349,6 @@ type SignalAggregations {
 }
 
 type SignalCollection {
-  """
-  The last time any signal was seen matching the filter.
-  """
   lastSeen: Time
   """
   Approximate location of the vehicle in WGS 84 coordinates. The raw value is replaced with
@@ -3462,96 +3363,42 @@ type SignalCollection {
     @isSignal
 }
 
-"""
-LatestSignal represents a single signal's most recent value.
-"""
 type LatestSignal {
-  """Signal name (e.g., "speed", "currentLocationCoordinates")"""
   name: String!
-  """Timestamp of the most recent reading"""
   timestamp: Time!
-  """Numeric value, present for float-type signals"""
+  """Present for float-type signals."""
   valueNumber: Float
-  """String value, present for string-type signals"""
+  """Present for string-type signals."""
   valueString: String
-  """Location value, present for location-type signals"""
+  """Present for location-type signals."""
   valueLocation: Location
 }
 
-"""
-Response for signalsSnapshot query.
-"""
 type SignalsSnapshotResponse {
-  """The last time any signal was seen matching the filter."""
   lastSeen: Time
-  """List of all latest signal values the caller is authorized to see."""
   signals: [LatestSignal!]!
 }
 
 type DataSummary {
-  """
-  Total number of signals collected
-  """
   numberOfSignals: Uint64!
-  """
-  available signal names
-  """
   availableSignals: [String!]!
-  """
-  first seen timestamp
-  """
   firstSeen: Time!
-  """
-  last seen timestamp
-  """
   lastSeen: Time!
-
-  """
-  data summary of an individual signal
-  """
   signalDataSummary: [SignalDataSummary!]!
-
-  """
-  Events known to the vehicle: per-event name, count, and first/last seen.
-  """
   eventDataSummary: [EventDataSummary!]!
 }
 
 type EventDataSummary {
-  """
-  Event name
-  """
   name: String!
-  """
-  Number of times this event occurred for the vehicle
-  """
   numberOfEvents: Uint64!
-  """
-  First seen timestamp
-  """
   firstSeen: Time!
-  """
-  Last seen timestamp
-  """
   lastSeen: Time!
 }
 
 type SignalDataSummary {
-  """
-  signal name
-  """
   name: String!
-  """
-  number of this specific signal
-  """
   numberOfSignals: Uint64!
-  """
-  first seen timestamp
-  """
   firstSeen: Time!
-  """
-  last seen timestamp
-  """
   lastSeen: Time!
 }
 
@@ -3595,47 +3442,23 @@ enum StringAggregation {
   LAST
 }
 type SignalFloat {
-  """
-  timestamp of when this data was collected
-  """
   timestamp: Time!
-
-  """
-  value of the signal
-  """
   value: Float!
 }
 
 type SignalString {
-  """
-  timestamp of when this data was collected
-  """
   timestamp: Time!
-
-  """
-  value of the signal
-  """
   value: String!
 }
 
 type SignalLocation {
-  """
-  timestamp of when this data was collected
-  """
   timestamp: Time!
-
-  """
-  location (latitude, longitude, hdop) at this timestamp.
-  """
   value: Location!
 }
 
-"""
-SignalFilter holds the filter parameters for the signal querys.
-"""
 input SignalFilter {
   """
-  Filter signals by source using an ethr DID.
+  Filter by source ethr DID.
   Example: "did:ethr:137:0xcd445F4c6bDAD32b68a2939b912150Fe3C88803E"
   """
   source: String
@@ -3678,9 +3501,6 @@ type EventCount {
   count: Int!
 }
 
-"""
-Filters that apply to locations.
-"""
 input SignalLocationFilter {
   """
   Filter for locations within a polygon. The vertices should be ordered
@@ -3698,146 +3518,69 @@ input SignalLocationFilter {
 }
 
 input FilterLocation {
-  """
-  Latitude in the range [-90, 90].
-  """
+  """Latitude in the range [-90, 90]."""
   latitude: Float!
-  """
-  Longitude in the range [-180, 180].
-  """
+  """Longitude in the range [-180, 180]."""
   longitude: Float!
 }
 
 input InCircleFilter {
-  """
-  Center of the filter circle.
-  """
   center: FilterLocation!
-  """
-  Radius of the circle around the center, in kilometers (km).
-  """
+  """Radius in kilometers."""
   radius: Float!
 }
 
-"""
-Filters that apply to strings.
-"""
 input StringValueFilter {
-  """
-  eq string equal to the string
-  """
   eq: String
-  """
-  neq string not equal to the string
-  """
   neq: String
-  """
-  notIn array of strings not in the array
-  """
   notIn: [String!]
-  """
-  in array of strings in the array
-  """
   in: [String!]
-  """
-  startsWith matches strings that begin with the given prefix.
-  """
+  """Matches strings that begin with the given prefix."""
   startsWith: String
-  """
-  or array of string value filters
-  """
   or: [StringValueFilter!]
 }
 
-"""
-Filters that apply to string arrays.
-"""
 input StringArrayFilter {
-  """
-  containsAny array of strings containing any of the strings in the array
-  """
   containsAny: [String!]
-  """
-  containsAll array of strings containing all of the strings in the array
-  """
   containsAll: [String!]
-  """
-  notContainsAny array of strings does not contain any of the strings in the array
-  """
   notContainsAny: [String!]
-  """
-  notContainsAll array of strings does not contain all of the strings in the array
-  """
   notContainsAll: [String!]
-  """
-  or array of string array filters
-  """
   or: [StringArrayFilter!]
 }
 `, BuiltIn: false},
 	{Name: "../../schema/events.graphqls", Input: `extend type Query {
-  """
-  events returns a list of events for a given token in a given time range.
-  """
   events(
-    """
-    tokenId is the id of the token to get events for.
-    """
     tokenId: Int!
-    """
-    from is the start time of the event.
-    """
     from: Time!
-    """
-    to is the end time of the event.
-    """
     to: Time!
-    """
-    filter is the filter to apply to the events.
-    """
     filter: EventFilter
   ): [Event!]
     @requiresVehicleToken
     @requiresAllOfPrivileges(
       privileges: [VEHICLE_NON_LOCATION_DATA, VEHICLE_ALL_TIME_LOCATION]
     )
+    @mcpTool(name: "get_events", description: "Get discrete events for a vehicle in a time range. Returns event name, source, timestamp, duration, and optional metadata.", selection: "timestamp name source durationNs metadata")
 }
 
 type Event {
-  """
-  timestamp is the time the event occurred.
-  """
   timestamp: Time!
-  """
-  name is the name of the event.
-  """
   name: String!
-  """
-  source is the name of the source connection that created the event.
-  """
+  """Source connection that created the event."""
   source: String!
-  """
-  durationNs is the duration of the event in nanoseconds.
-  """
+  """Duration in nanoseconds."""
   durationNs: Int!
-  """
-  metadata is the metadata of the event.
-  """
   metadata: String
 }
 
 input EventFilter {
-  """
-  name is the name of the event.
-  """
   name: StringValueFilter
-  """
-  source is the name of the source connection that created the event.
-  """
+  """Source connection that created the event."""
   source: StringValueFilter
 }
 `, BuiltIn: false},
-	{Name: "../../schema/mcp.graphqls", Input: `directive @mcpTool(name: String!, description: String!, selection: String!) on FIELD_DEFINITION
+	{Name: "../../schema/mcp.graphqls", Input: `directive @mcpTool(name: String!, description: String!, selection: String!, readOnly: Boolean = true) on FIELD_DEFINITION
+directive @mcpExample(description: String!, query: String!) repeatable on FIELD_DEFINITION
+directive @mcpHide on FIELD_DEFINITION
 `, BuiltIn: false},
 	{Name: "../../schema/segments.graphqls", Input: `enum DetectionMechanism {
   """
@@ -3845,14 +3588,14 @@ input EventFilter {
   Most reliable for vehicles with proper ignition signal support.
   """
   ignitionDetection
-  
+
   """
   Frequency analysis: Segments are detected by analyzing signal update patterns.
   Uses pre-computed materialized view for optimal performance.
   Ideal for real-time APIs and bulk queries.
   """
   frequencyAnalysis
-  
+
   """
   Change point detection: Uses CUSUM algorithm to detect statistical regime changes.
   Monitors cumulative deviation in signal frequency via materialized view.
@@ -3867,7 +3610,7 @@ input EventFilter {
   idling
 
   """
-  Refuel: Detects where fuel level rises significantly. 
+  Refuel: Detects where fuel level rises significantly.
   """
   refuel
 
@@ -3881,7 +3624,7 @@ extend type Query {
   """
   Returns vehicle usage segments detected using the specified mechanism.
   Maximum date range: 31 days.
-  
+
   Detection mechanisms:
   - ignitionDetection: Uses 'isIgnitionOn' signal with configurable debouncing
   - frequencyAnalysis: Analyzes signal update frequency to detect activity periods
@@ -3889,10 +3632,10 @@ extend type Query {
   - idling: Idling segments (engine rpm idle)
   - refuel: Refueling segments (fuel level increased)
   - recharge: Charging segments (battery SoC increased)
-  
+
   Segment IDs are stable and consistent across queries as long as the segment start
   is captured in the underlying data source.
-  
+
   Each segment includes summary: signals, start/end location, and (when requested) eventCounts.
   A default set of signal requests is always applied (e.g. speed, odometer; for refuel/recharge also the level signal at start and end).
   When signalRequests is provided, those requests are added on top of the default set; duplicates (same name and agg) are omitted.
@@ -3915,6 +3658,8 @@ extend type Query {
     """
     after: Time
   ): [Segment!]! @requiresVehicleToken @requiresAllOfPrivileges(privileges: [VEHICLE_ALL_TIME_LOCATION, VEHICLE_NON_LOCATION_DATA])
+    @mcpTool(name: "get_trip_segments", description: "Get vehicle trip/activity segments detected using a specified mechanism (frequencyAnalysis, ignitionDetection, changePointDetection, idling, refuel, recharge). Returns start/end locations, duration, and optional signal aggregates and event counts. Maximum date range: 31 days.", selection: "start { timestamp value { latitude longitude } } end { timestamp value { latitude longitude } } duration isOngoing startedBeforeRange signals { name agg value } eventCounts { name count }")
+    @mcpExample(description: "Trip segments with start/end locations and signal aggregates", query: "query Trips($tokenId:Int!,$from:Time!,$to:Time!) { segments(tokenId:$tokenId,from:$from,to:$to,mechanism:frequencyAnalysis) { start{timestamp value{latitude longitude}} end{timestamp value{latitude longitude}} duration isOngoing signals{name agg value} eventCounts{name count} } }")
 
   """
   Returns one record per calendar day in the date range.
@@ -3932,6 +3677,7 @@ extend type Query {
     timezone: String
   ): [DailyActivity!]! @requiresVehicleToken @requiresAllOfPrivileges(privileges: [VEHICLE_ALL_TIME_LOCATION, VEHICLE_NON_LOCATION_DATA])
     @mcpTool(name: "get_daily_activity", description: "Get per-day driving activity summaries for a vehicle. Returns segment count, total active duration, and signal aggregates per day. Maximum date range: 31 days.", selection: "segmentCount duration signals { name agg value } eventCounts { name count }")
+    @mcpExample(description: "Daily activity summaries", query: "query Daily($tokenId:Int!,$from:Time!,$to:Time!) { dailyActivity(tokenId:$tokenId,from:$from,to:$to,mechanism:frequencyAnalysis) { segmentCount duration signals{name agg value} eventCounts{name count} } }")
 }
 
 input SegmentSignalRequest {
@@ -3944,17 +3690,15 @@ input SegmentEventRequest {
 }
 
 type DailyActivity {
-  """Start of day (timestamp = day start, value = location). Same shape as Segment.start. Null if not available."""
+  """Day start location. Null if unavailable."""
   start: SignalLocation
-  """End of day (timestamp = day end, location). Same shape as Segment.end. Null if not available."""
+  """Day end location. Null if unavailable."""
   end: SignalLocation
-  """Number of activity segments that started or fell within that day."""
+  """Activity segments that started or fell within this day."""
   segmentCount: Int!
-  """Sum of segment durations (total active time that day) in seconds."""
+  """Total active time in seconds."""
   duration: Int!
-  """Per-day signal aggregates (same shape as segment signals)."""
   signals: [SignalAggregationValue!]!
-  """Per-day event counts."""
   eventCounts: [EventCount!]!
 }
 
@@ -3966,14 +3710,14 @@ input SegmentConfig {
   Default: 300 (5 minutes), Min: 60, Max: 3600
   """
   maxGapSeconds: Int = 300
-  
+
   """
   Minimum segment duration (seconds) to include in results.
   Filters very short segments (testing, engine cycling).
   Default: 240 (4 minutes), Min: 60, Max: 3600
   """
   minSegmentDurationSeconds: Int = 240
-  
+
   """
   [frequencyAnalysis] Minimum signal count per window for activity detection.
   [idling] Minimum samples per window to consider it idle (same semantics).
@@ -3995,42 +3739,17 @@ input SegmentConfig {
 }
 
 type Segment {
-  """
-  Segment start (timestamp and location). Uses SignalLocation; always present.
-  """
   start: SignalLocation!
-  
-  """
-  Segment end (timestamp and location). Uses SignalLocation; omitted when isOngoing is true.
-  """
+  """Omitted when isOngoing is true."""
   end: SignalLocation
-  
-  """
-  Duration in seconds. If ongoing: from start to query 'to'. If complete: from start to end.
-  """
+  """In seconds. If ongoing: computed from start to query 'to'."""
   duration: Int!
-  
-  """
-  True if segment extends beyond query time range (last activity is ongoing).
-  When true, end is not included in the response.
-  """
+  """When true, end is omitted."""
   isOngoing: Boolean!
-  
-  """
-  True if segment started before query time range.
-  """
   startedBeforeRange: Boolean!
-  
-  """
-  Per-segment signal aggregates. Same shape as signals elsewhere (name, agg, value).
-  """
   signals: [SignalAggregationValue!]
-  """
-  Per-segment event counts.
-  """
   eventCounts: [EventCount!]
 }
-
 `, BuiltIn: false},
 	{Name: "../../schema/signals-events_gen.graphqls", Input: `# Code generated  with ` + "`" + `make gql-model` + "`" + ` DO NOT EDIT.
 extend type SignalAggregations {
@@ -5927,68 +5646,32 @@ extend input EventFilter {
 `, BuiltIn: false},
 	{Name: "../../schema/vc.graphqls", Input: `extend type Query {
   """
-  vinVCLatest returns the latest VINVC data for a given token.
-
   Required Privileges: [VEHICLE_VIN_CREDENTIAL]
   """
   vinVCLatest(
-    """
-    The token ID of the vehicle.
-    """
     tokenId: Int!
   ): VINVC
     @requiresVehicleToken
     @requiresAllOfPrivileges(privileges: [VEHICLE_VIN_CREDENTIAL])
+    @mcpTool(name: "get_vin_credential", description: "Get the latest VIN verifiable credential for a vehicle by token ID. Returns VIN, recording entity, timestamp, country code, and validity period.", selection: "vehicleTokenId vin recordedBy recordedAt countryCode vehicleContractAddress validFrom validTo rawVC")
 
 }
 
 type VINVC {
-  """
-  vehicleTokenId is the token ID of the vehicle.
-  """
   vehicleTokenId: Int
-
-  """
-  vin is the vehicle identification number.
-  """
   vin: String
-
-  """
-  recordedBy is the entity that recorded the VIN.
-  """
+  """Entity that recorded the VIN."""
   recordedBy: String
-
-  """
-  The time the VIN was recorded.
-  """
   recordedAt: Time
-
-  """
-  countryCode is the country code that the VIN belongs to.
-  """
   countryCode: String
-
-  """
-  vehicleContractAddress is the address of the vehicle contract.
-  """
   vehicleContractAddress: String
-
-  """
-  validFrom is the time the VC is valid from.
-  """
+  """VC validity start."""
   validFrom: Time
-
-  """
-  validTo is the time the VC is valid to.
-  """
+  """VC validity end."""
   validTo: Time
-
-  """
-  rawVC is the raw VC JSON.
-  """
+  """Raw VC JSON."""
   rawVC: String!
 }
-
 `, BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)

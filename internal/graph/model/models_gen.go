@@ -13,91 +13,67 @@ import (
 )
 
 type Attestation struct {
-	// id is the id of the attestation.
-	ID string `json:"id"`
-	// vehicleTokenId is the token ID of the vehicle.
-	VehicleTokenID int `json:"vehicleTokenId"`
-	// time represents the time the attestation was made at.
-	Time time.Time `json:"time"`
-	// attestation is the JSON-encoded attestation.
+	ID             string    `json:"id"`
+	VehicleTokenID int       `json:"vehicleTokenId"`
+	Time           time.Time `json:"time"`
+	// JSON-encoded attestation data.
 	Attestation string `json:"attestation"`
-	// type
-	Type string `json:"type"`
-	// source is the address that created and signed the attestation
-	Source common.Address `json:"source"`
-	// dataversion
-	DataVersion string `json:"dataVersion"`
-	// producer of the attestation data
-	Producer *string `json:"producer,omitempty"`
-	// signature of the attestation data
-	Signature string `json:"signature"`
-	// tags tags associated with the attestation.
-	Tags []string `json:"tags,omitempty"`
+	Type        string `json:"type"`
+	// Address that signed the attestation.
+	Source      common.Address `json:"source"`
+	DataVersion string         `json:"dataVersion"`
+	Producer    *string        `json:"producer,omitempty"`
+	Signature   string         `json:"signature"`
+	Tags        []string       `json:"tags,omitempty"`
 }
 
-// AttestationFilter holds the filter parameters for the attestation querys.
 type AttestationFilter struct {
-	// id is the id of the attestation.
 	ID *string `json:"id,omitempty"`
 	// The attesting party.
-	Source *common.Address `json:"source,omitempty"`
-	// Filter attestations by data version.
-	DataVersion *string `json:"dataVersion,omitempty"`
-	// Filter attestations by source type.
-	Producer *string `json:"producer,omitempty"`
-	// Filter attestations made prior to this timestamp.
+	Source      *common.Address `json:"source,omitempty"`
+	DataVersion *string         `json:"dataVersion,omitempty"`
+	Producer    *string         `json:"producer,omitempty"`
+	// Before this timestamp.
 	Before *time.Time `json:"before,omitempty"`
-	// Filter attestations made after this timestamp.
+	// After this timestamp.
 	After *time.Time `json:"after,omitempty"`
-	// Limit attestations returned to this value. Defaults to 10.
+	// Max results. Default 10.
 	Limit *int `json:"limit,omitempty"`
-	// Cursor for pagination (exclusive).
-	Cursor *time.Time `json:"cursor,omitempty"`
-	// Filter attestations by tags.
-	Tags *StringArrayFilter `json:"tags,omitempty"`
+	// Pagination cursor (exclusive).
+	Cursor *time.Time         `json:"cursor,omitempty"`
+	Tags   *StringArrayFilter `json:"tags,omitempty"`
 }
 
 type DailyActivity struct {
-	// Start of day (timestamp = day start, value = location). Same shape as Segment.start. Null if not available.
+	// Day start location. Null if unavailable.
 	Start *SignalLocation `json:"start,omitempty"`
-	// End of day (timestamp = day end, location). Same shape as Segment.end. Null if not available.
+	// Day end location. Null if unavailable.
 	End *SignalLocation `json:"end,omitempty"`
-	// Number of activity segments that started or fell within that day.
+	// Activity segments that started or fell within this day.
 	SegmentCount int `json:"segmentCount"`
-	// Sum of segment durations (total active time that day) in seconds.
-	Duration int `json:"duration"`
-	// Per-day signal aggregates (same shape as segment signals).
-	Signals []*SignalAggregationValue `json:"signals"`
-	// Per-day event counts.
-	EventCounts []*EventCount `json:"eventCounts"`
+	// Total active time in seconds.
+	Duration    int                       `json:"duration"`
+	Signals     []*SignalAggregationValue `json:"signals"`
+	EventCounts []*EventCount             `json:"eventCounts"`
 }
 
 type DataSummary struct {
-	// Total number of signals collected
-	NumberOfSignals uint64 `json:"numberOfSignals"`
-	// available signal names
-	AvailableSignals []string `json:"availableSignals"`
-	// first seen timestamp
-	FirstSeen time.Time `json:"firstSeen"`
-	// last seen timestamp
-	LastSeen time.Time `json:"lastSeen"`
-	// data summary of an individual signal
+	NumberOfSignals   uint64               `json:"numberOfSignals"`
+	AvailableSignals  []string             `json:"availableSignals"`
+	FirstSeen         time.Time            `json:"firstSeen"`
+	LastSeen          time.Time            `json:"lastSeen"`
 	SignalDataSummary []*SignalDataSummary `json:"signalDataSummary"`
-	// Events known to the vehicle: per-event name, count, and first/last seen.
-	EventDataSummary []*EventDataSummary `json:"eventDataSummary"`
+	EventDataSummary  []*EventDataSummary  `json:"eventDataSummary"`
 }
 
 type Event struct {
-	// timestamp is the time the event occurred.
 	Timestamp time.Time `json:"timestamp"`
-	// name is the name of the event.
-	Name string `json:"name"`
-	// source is the name of the source connection that created the event.
+	Name      string    `json:"name"`
+	// Source connection that created the event.
 	Source string `json:"source"`
-	// durationNs is the duration of the event in nanoseconds.
-	DurationNs int `json:"durationNs"`
-	// metadata is the metadata of the event.
-	Metadata *string `json:"metadata,omitempty"`
+	// Duration in nanoseconds.
+	DurationNs int     `json:"durationNs"`
+	Metadata   *string `json:"metadata,omitempty"`
 }
 
 // Event name and count. Used by segments, daily activity, and event summaries.
@@ -107,20 +83,15 @@ type EventCount struct {
 }
 
 type EventDataSummary struct {
-	// Event name
-	Name string `json:"name"`
-	// Number of times this event occurred for the vehicle
-	NumberOfEvents uint64 `json:"numberOfEvents"`
-	// First seen timestamp
-	FirstSeen time.Time `json:"firstSeen"`
-	// Last seen timestamp
-	LastSeen time.Time `json:"lastSeen"`
+	Name           string    `json:"name"`
+	NumberOfEvents uint64    `json:"numberOfEvents"`
+	FirstSeen      time.Time `json:"firstSeen"`
+	LastSeen       time.Time `json:"lastSeen"`
 }
 
 type EventFilter struct {
-	// name is the name of the event.
 	Name *StringValueFilter `json:"name,omitempty"`
-	// source is the name of the source connection that created the event.
+	// Source connection that created the event.
 	Source *StringValueFilter `json:"source,omitempty"`
 	// tags is the tags of the event.
 	Tags *StringArrayFilter `json:"tags,omitempty"`
@@ -134,23 +105,19 @@ type FilterLocation struct {
 }
 
 type InCircleFilter struct {
-	// Center of the filter circle.
 	Center *FilterLocation `json:"center"`
-	// Radius of the circle around the center, in kilometers (km).
+	// Radius in kilometers.
 	Radius float64 `json:"radius"`
 }
 
-// LatestSignal represents a single signal's most recent value.
 type LatestSignal struct {
-	// Signal name (e.g., "speed", "currentLocationCoordinates")
-	Name string `json:"name"`
-	// Timestamp of the most recent reading
+	Name      string    `json:"name"`
 	Timestamp time.Time `json:"timestamp"`
-	// Numeric value, present for float-type signals
+	// Present for float-type signals.
 	ValueNumber *float64 `json:"valueNumber,omitempty"`
-	// String value, present for string-type signals
+	// Present for string-type signals.
 	ValueString *string `json:"valueString,omitempty"`
-	// Location value, present for location-type signals
+	// Present for location-type signals.
 	ValueLocation *Location `json:"valueLocation,omitempty"`
 }
 
@@ -165,21 +132,16 @@ type Query struct {
 }
 
 type Segment struct {
-	// Segment start (timestamp and location). Uses SignalLocation; always present.
 	Start *SignalLocation `json:"start"`
-	// Segment end (timestamp and location). Uses SignalLocation; omitted when isOngoing is true.
+	// Omitted when isOngoing is true.
 	End *SignalLocation `json:"end,omitempty"`
-	// Duration in seconds. If ongoing: from start to query 'to'. If complete: from start to end.
+	// In seconds. If ongoing: computed from start to query 'to'.
 	Duration int `json:"duration"`
-	// True if segment extends beyond query time range (last activity is ongoing).
-	// When true, end is not included in the response.
-	IsOngoing bool `json:"isOngoing"`
-	// True if segment started before query time range.
-	StartedBeforeRange bool `json:"startedBeforeRange"`
-	// Per-segment signal aggregates. Same shape as signals elsewhere (name, agg, value).
-	Signals []*SignalAggregationValue `json:"signals,omitempty"`
-	// Per-segment event counts.
-	EventCounts []*EventCount `json:"eventCounts,omitempty"`
+	// When true, end is omitted.
+	IsOngoing          bool                      `json:"isOngoing"`
+	StartedBeforeRange bool                      `json:"startedBeforeRange"`
+	Signals            []*SignalAggregationValue `json:"signals,omitempty"`
+	EventCounts        []*EventCount             `json:"eventCounts,omitempty"`
 }
 
 type SegmentConfig struct {
@@ -222,7 +184,6 @@ type SignalAggregationValue struct {
 }
 
 type SignalCollection struct {
-	// The last time any signal was seen matching the filter.
 	LastSeen *time.Time `json:"lastSeen,omitempty"`
 	// Approximate location of the vehicle in WGS 84 coordinates. The raw value is replaced with
 	// the center of the containing H3 cell of resolution 6. HDOP is not obscured at all.
@@ -651,28 +612,21 @@ type SignalCollection struct {
 }
 
 type SignalDataSummary struct {
-	// signal name
-	Name string `json:"name"`
-	// number of this specific signal
-	NumberOfSignals uint64 `json:"numberOfSignals"`
-	// first seen timestamp
-	FirstSeen time.Time `json:"firstSeen"`
-	// last seen timestamp
-	LastSeen time.Time `json:"lastSeen"`
+	Name            string    `json:"name"`
+	NumberOfSignals uint64    `json:"numberOfSignals"`
+	FirstSeen       time.Time `json:"firstSeen"`
+	LastSeen        time.Time `json:"lastSeen"`
 }
 
-// SignalFilter holds the filter parameters for the signal querys.
 type SignalFilter struct {
-	// Filter signals by source using an ethr DID.
+	// Filter by source ethr DID.
 	// Example: "did:ethr:137:0xcd445F4c6bDAD32b68a2939b912150Fe3C88803E"
 	Source *string `json:"source,omitempty"`
 }
 
 type SignalFloat struct {
-	// timestamp of when this data was collected
 	Timestamp time.Time `json:"timestamp"`
-	// value of the signal
-	Value float64 `json:"value"`
+	Value     float64   `json:"value"`
 }
 
 type SignalFloatFilter struct {
@@ -688,13 +642,10 @@ type SignalFloatFilter struct {
 }
 
 type SignalLocation struct {
-	// timestamp of when this data was collected
 	Timestamp time.Time `json:"timestamp"`
-	// location (latitude, longitude, hdop) at this timestamp.
-	Value *Location `json:"value"`
+	Value     *Location `json:"value"`
 }
 
-// Filters that apply to locations.
 type SignalLocationFilter struct {
 	// Filter for locations within a polygon. The vertices should be ordered
 	// clockwise or counterclockwise, and there must be at least 3.
@@ -708,68 +659,46 @@ type SignalLocationFilter struct {
 }
 
 type SignalString struct {
-	// timestamp of when this data was collected
 	Timestamp time.Time `json:"timestamp"`
-	// value of the signal
-	Value string `json:"value"`
+	Value     string    `json:"value"`
 }
 
-// Response for signalsSnapshot query.
 type SignalsSnapshotResponse struct {
-	// The last time any signal was seen matching the filter.
-	LastSeen *time.Time `json:"lastSeen,omitempty"`
-	// List of all latest signal values the caller is authorized to see.
-	Signals []*LatestSignal `json:"signals"`
+	LastSeen *time.Time      `json:"lastSeen,omitempty"`
+	Signals  []*LatestSignal `json:"signals"`
 }
 
-// Filters that apply to string arrays.
 type StringArrayFilter struct {
-	// containsAny array of strings containing any of the strings in the array
-	ContainsAny []string `json:"containsAny,omitempty"`
-	// containsAll array of strings containing all of the strings in the array
-	ContainsAll []string `json:"containsAll,omitempty"`
-	// notContainsAny array of strings does not contain any of the strings in the array
-	NotContainsAny []string `json:"notContainsAny,omitempty"`
-	// notContainsAll array of strings does not contain all of the strings in the array
-	NotContainsAll []string `json:"notContainsAll,omitempty"`
-	// or array of string array filters
-	Or []*StringArrayFilter `json:"or,omitempty"`
+	ContainsAny    []string             `json:"containsAny,omitempty"`
+	ContainsAll    []string             `json:"containsAll,omitempty"`
+	NotContainsAny []string             `json:"notContainsAny,omitempty"`
+	NotContainsAll []string             `json:"notContainsAll,omitempty"`
+	Or             []*StringArrayFilter `json:"or,omitempty"`
 }
 
-// Filters that apply to strings.
 type StringValueFilter struct {
-	// eq string equal to the string
-	Eq *string `json:"eq,omitempty"`
-	// neq string not equal to the string
-	Neq *string `json:"neq,omitempty"`
-	// notIn array of strings not in the array
+	Eq    *string  `json:"eq,omitempty"`
+	Neq   *string  `json:"neq,omitempty"`
 	NotIn []string `json:"notIn,omitempty"`
-	// in array of strings in the array
-	In []string `json:"in,omitempty"`
-	// startsWith matches strings that begin with the given prefix.
-	StartsWith *string `json:"startsWith,omitempty"`
-	// or array of string value filters
-	Or []*StringValueFilter `json:"or,omitempty"`
+	In    []string `json:"in,omitempty"`
+	// Matches strings that begin with the given prefix.
+	StartsWith *string              `json:"startsWith,omitempty"`
+	Or         []*StringValueFilter `json:"or,omitempty"`
 }
 
 type Vinvc struct {
-	// vehicleTokenId is the token ID of the vehicle.
-	VehicleTokenID *int `json:"vehicleTokenId,omitempty"`
-	// vin is the vehicle identification number.
-	Vin *string `json:"vin,omitempty"`
-	// recordedBy is the entity that recorded the VIN.
-	RecordedBy *string `json:"recordedBy,omitempty"`
-	// The time the VIN was recorded.
-	RecordedAt *time.Time `json:"recordedAt,omitempty"`
-	// countryCode is the country code that the VIN belongs to.
-	CountryCode *string `json:"countryCode,omitempty"`
-	// vehicleContractAddress is the address of the vehicle contract.
-	VehicleContractAddress *string `json:"vehicleContractAddress,omitempty"`
-	// validFrom is the time the VC is valid from.
+	VehicleTokenID *int    `json:"vehicleTokenId,omitempty"`
+	Vin            *string `json:"vin,omitempty"`
+	// Entity that recorded the VIN.
+	RecordedBy             *string    `json:"recordedBy,omitempty"`
+	RecordedAt             *time.Time `json:"recordedAt,omitempty"`
+	CountryCode            *string    `json:"countryCode,omitempty"`
+	VehicleContractAddress *string    `json:"vehicleContractAddress,omitempty"`
+	// VC validity start.
 	ValidFrom *time.Time `json:"validFrom,omitempty"`
-	// validTo is the time the VC is valid to.
+	// VC validity end.
 	ValidTo *time.Time `json:"validTo,omitempty"`
-	// rawVC is the raw VC JSON.
+	// Raw VC JSON.
 	RawVc string `json:"rawVC"`
 }
 
