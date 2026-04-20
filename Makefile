@@ -79,6 +79,7 @@ gql-model: ## Generate gqlgen data model.
 	@go tool codegen -generators=custom -custom.output-file=schema/signals-events_gen.graphqls -custom.template-file=./schema/signals-events.tmpl
 	@go tool codegen -generators=custom -custom.output-file=internal/graph/model/signalSetter_gen.go -custom.template-file=./internal/graph/model/signalSetter.tmpl -custom.format=true
 	@go tool codegen -generators=custom -custom.output-file=internal/graph/signals-events_gen.resolvers.go -custom.template-file=./internal/graph/signals-events_gen.resolvers.tmpl -custom.format=true
+	@go tool codegen -generators=custom -custom.output-file=internal/graph/model/signalLatest_gen.go -custom.template-file=./internal/graph/model/signalLatest.tmpl -custom.format=true
 
 gql: gql-model gqlgen ## Generate all gql code.
 

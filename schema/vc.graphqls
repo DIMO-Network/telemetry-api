@@ -1,64 +1,28 @@
 extend type Query {
   """
-  vinVCLatest returns the latest VINVC data for a given token.
-
   Required Privileges: [VEHICLE_VIN_CREDENTIAL]
   """
   vinVCLatest(
-    """
-    The token ID of the vehicle.
-    """
     tokenId: Int!
   ): VINVC
     @requiresVehicleToken
     @requiresAllOfPrivileges(privileges: [VEHICLE_VIN_CREDENTIAL])
+    @mcpTool(name: "get_vin_credential", description: "Get the latest VIN verifiable credential for a vehicle by token ID. Returns VIN, recording entity, timestamp, country code, and validity period.", selection: "vehicleTokenId vin recordedBy recordedAt countryCode vehicleContractAddress validFrom validTo rawVC")
 
 }
 
 type VINVC {
-  """
-  vehicleTokenId is the token ID of the vehicle.
-  """
   vehicleTokenId: Int
-
-  """
-  vin is the vehicle identification number.
-  """
   vin: String
-
-  """
-  recordedBy is the entity that recorded the VIN.
-  """
+  """Entity that recorded the VIN."""
   recordedBy: String
-
-  """
-  The time the VIN was recorded.
-  """
   recordedAt: Time
-
-  """
-  countryCode is the country code that the VIN belongs to.
-  """
   countryCode: String
-
-  """
-  vehicleContractAddress is the address of the vehicle contract.
-  """
   vehicleContractAddress: String
-
-  """
-  validFrom is the time the VC is valid from.
-  """
+  """VC validity start."""
   validFrom: Time
-
-  """
-  validTo is the time the VC is valid to.
-  """
+  """VC validity end."""
   validTo: Time
-
-  """
-  rawVC is the raw VC JSON.
-  """
+  """Raw VC JSON."""
   rawVC: String!
 }
-

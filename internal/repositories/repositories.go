@@ -29,6 +29,7 @@ type CHService interface {
 	GetAggregatedSignals(ctx context.Context, subject string, aggArgs *model.AggregatedSignalArgs) ([]*ch.AggSignal, error)
 	GetAggregatedSignalsForRanges(ctx context.Context, subject string, ranges []ch.TimeRange, globalFrom, globalTo time.Time, floatArgs []model.FloatSignalArgs, locationArgs []model.LocationSignalArgs) ([]*ch.AggSignalForRange, error)
 	GetLatestSignals(ctx context.Context, subject string, latestArgs *model.LatestSignalsArgs) ([]*vss.Signal, error)
+	GetAllLatestSignals(ctx context.Context, subject string, filter *model.SignalFilter) ([]*vss.Signal, error)
 	GetAvailableSignals(ctx context.Context, subject string, filter *model.SignalFilter) ([]string, error)
 	GetSignalSummaries(ctx context.Context, subject string, filter *model.SignalFilter) ([]*model.SignalDataSummary, error)
 	GetEvents(ctx context.Context, subject string, from, to time.Time, filter *model.EventFilter) ([]*vss.Event, error)
@@ -168,6 +169,61 @@ func (r *Repository) GetAvailableSignals(ctx context.Context, tokenID uint32, fi
 		}
 	}
 	return retSignals, nil
+}
+
+// GetSignalSnapshot returns the latest value for every available signal for the given tokenID.
+func (r *Repository) GetSignalSnapshot(ctx context.Context, tokenID uint32, filter *model.SignalFilter) (*model.SignalsSnapshotResponse, error) {
+	if tokenID < 1 {
+		return nil, errorhandler.NewBadRequestError(ctx, ValidationError("tokenID is not a positive integer"))
+	}
+	if err := validateFilter(filter); err != nil {
+		return nil, errorhandler.NewBadRequestError(ctx, err)
+	}
+	subject := r.toSubject(tokenID)
+	signals, err := r.chService.GetAllLatestSignals(ctx, subject, filter)
+	if err != nil {
+		return nil, handleDBError(ctx, err)
+	}
+
+	resp := &model.SignalsSnapshotResponse{}
+	var rawLocationSignal *vss.Signal
+	for _, signal := range signals {
+		if signal.Data.Name == model.LastSeenField && !signal.Data.Timestamp.Equal(unixEpoch) {
+			resp.LastSeen = &signal.Data.Timestamp
+			continue
+		}
+		// Only include queryable signals.
+		if _, ok := r.queryableSignals[signal.Data.Name]; !ok {
+			continue
+		}
+		ls := model.SignalToLatestSignal(signal)
+		if ls == nil {
+			continue
+		}
+		resp.Signals = append(resp.Signals, ls)
+		if signal.Data.Name == vss.FieldCurrentLocationCoordinates {
+			rawLocationSignal = signal
+		}
+	}
+
+	// Emit approximate location entry derived from raw coordinates.
+	if rawLocationSignal != nil {
+		loc := rawLocationSignal.Data.ValueLocation
+		approx := GetApproximateLoc(loc.Latitude, loc.Longitude)
+		if approx != nil {
+			resp.Signals = append(resp.Signals, &model.LatestSignal{
+				Name:      model.ApproximateCoordinatesField,
+				Timestamp: rawLocationSignal.Data.Timestamp,
+				ValueLocation: &model.Location{
+					Latitude:  approx.Lat,
+					Longitude: approx.Lng,
+					Hdop:      loc.HDOP,
+				},
+			})
+		}
+	}
+
+	return resp, nil
 }
 
 // GetDataSummary returns the signal and event metadata for the given tokenID and filter.

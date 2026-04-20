@@ -106,6 +106,20 @@ func (s *Service) lookbackFrom() time.Time {
 	return time.Now().Add(-s.latestLookback)
 }
 
+// GetAllLatestSignals returns the latest value for every signal stored for a subject.
+func (s *Service) GetAllLatestSignals(ctx context.Context, subject string, filter *model.SignalFilter) ([]*vss.Signal, error) {
+	lookbackFrom := s.lookbackFrom()
+	stmt, args := getAllLatestQuery(subject, filter, lookbackFrom)
+	lastSeenStmt, lastSeenArgs := getLastSeenQuery(subject, &model.SignalArgs{Filter: filter}, lookbackFrom)
+	stmt, args = unionAll([]string{stmt, lastSeenStmt}, [][]any{args, lastSeenArgs})
+
+	signals, err := s.getSignals(ctx, stmt, args)
+	if err != nil {
+		return nil, err
+	}
+	return signals, nil
+}
+
 // GetAggregatedSignals returns a slice of aggregated signals based on the provided arguments from the ClickHouse database.
 // The signals are sorted by timestamp in ascending order.
 // The timestamp on each signal is for the start of the interval.

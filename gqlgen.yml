@@ -71,6 +71,12 @@ omit_resolver_fields: true
 # autobind:
 #   - "github.com/DIMO-Network/telemetry-api/internal/graph/model"
 
+directives:
+  mcpTool:
+    skip_runtime: true
+  mcpExample:
+    skip_runtime: true
+
 # This section declares type mapping between the GraphQL and go type systems
 #
 # The first line in each type will be used as defaults for resolver arguments and

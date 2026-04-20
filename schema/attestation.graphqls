@@ -1,123 +1,40 @@
 extend type Query {
-  """
-  attestations returns all attestations for a given subject.
-  """
   attestations(
-    """
-    The token ID of the vehicle.
-    """
     tokenId: Int
-
-    """
-    The subject of the attestation.
-    """
     subject: String
-
-    """
-    Filter attestations by metadata fields.
-    """
     filter: AttestationFilter
   ): [Attestation]
+    @mcpTool(name: "get_attestations", description: "Get verifiable attestations for a vehicle. Returns attestation ID, timestamp, type, source address, signature, and tags. Supports filtering by source, data version, producer, time range, and tags.", selection: "id vehicleTokenId time type source dataVersion producer signature tags")
 }
 
 type Attestation {
-  """
-  id is the id of the attestation.
-  """
   id: String!
-
-  """
-  vehicleTokenId is the token ID of the vehicle.
-  """
   vehicleTokenId: Int!
-
-  """
-  time represents the time the attestation was made at.
-  """
   time: Time!
-
-  """
-  attestation is the JSON-encoded attestation.
-  """
+  """JSON-encoded attestation data."""
   attestation: String!
-
-  """
-  type
-  """
   type: String!
-
-  """
-  source is the address that created and signed the attestation
-  """
+  """Address that signed the attestation."""
   source: Address!
-
-  """
-  dataversion
-  """
   dataVersion: String!
-
-  """
-  producer of the attestation data
-  """
   producer: String
-
-  """
-  signature of the attestation data
-  """
   signature: String!
-
-  """
-  tags tags associated with the attestation.
-  """
   tags: [String!]
 }
 
-"""
-AttestationFilter holds the filter parameters for the attestation querys.
-"""
 input AttestationFilter {
-  """
-  id is the id of the attestation.
-  """
   id: String
-
-  """
-  The attesting party.
-  """
+  """The attesting party."""
   source: Address
-
-  """
-  Filter attestations by data version.
-  """
   dataVersion: String
-
-  """
-  Filter attestations by source type.
-  """
   producer: String
-
-  """
-  Filter attestations made prior to this timestamp.
-  """
+  """Before this timestamp."""
   before: Time
-
-  """
-  Filter attestations made after this timestamp.
-  """
+  """After this timestamp."""
   after: Time
-
-  """
-  Limit attestations returned to this value. Defaults to 10.
-  """
+  """Max results. Default 10."""
   limit: Int
-
-  """
-  Cursor for pagination (exclusive). 
-  """
+  """Pagination cursor (exclusive)."""
   cursor: Time
-
-  """
-  Filter attestations by tags.
-  """
   tags: StringArrayFilter
 }

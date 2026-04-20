@@ -1,5 +1,7 @@
 package graph
 
+//go:generate go run github.com/DIMO-Network/server-garage/cmd/mcpgen -schema ../../schema/ -prefix telemetry -out mcp_tools_gen.go -package graph
+
 import (
 	"github.com/DIMO-Network/telemetry-api/internal/repositories"
 	"github.com/DIMO-Network/telemetry-api/internal/repositories/attestation"

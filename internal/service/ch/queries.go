@@ -360,6 +360,40 @@ func getLatestQuery(subject string, latestArgs *model.LatestSignalsArgs, lookbac
 	return newQuery(mods...)
 }
 
+// getAllLatestQuery creates a query to get the latest signal value for ALL signal names.
+// Unlike getLatestQuery, this does not filter by signal name.
+/*
+SELECT
+  name,
+  max(timestamp),
+  argMax(value_string, timestamp) as value_string,
+  argMax(value_number, timestamp) as value_number,
+  argMax(value_location, timestamp) as value_location
+FROM
+  signal
+WHERE
+  subject = '...'
+GROUP BY
+  name
+*/
+func getAllLatestQuery(subject string, filter *model.SignalFilter, lookbackFrom time.Time) (string, []any) {
+	mods := []qm.QueryMod{
+		qm.Select(vss.NameCol),
+		qm.Select(latestTimestamp),
+		qm.Select(latestNumber),
+		qm.Select(latestString),
+		qm.Select(latestLocation),
+		qm.From(vss.TableName),
+		qm.Where(subjectWhere, subject),
+		qm.GroupBy(vss.NameCol),
+	}
+	if !lookbackFrom.IsZero() {
+		mods = append(mods, whereTimestampFrom(lookbackFrom))
+	}
+	mods = append(mods, getFilterMods(filter)...)
+	return newQuery(mods...)
+}
+
 // GetLastSeenQuery creates a query to get the last seen timestamp of any signal.
 // returns the query statement and the arguments list,
 /*
