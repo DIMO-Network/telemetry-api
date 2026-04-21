@@ -44,13 +44,12 @@ func GetTestServices(t *testing.T) *TestServices {
 	srvcLock.Lock()
 	once.Do(func() {
 		settings := config.Settings{
-			Port:                 8080,
-			MonPort:              9090,
-			TokenExchangeIssuer:  "http://127.0.0.1:3003",
-			VehicleNFTAddress:    common.HexToAddress("0xbA5738a18d83D41847dfFbDC6101d37C69c9B0cF"),
-			MaxRequestDuration:   "1m",
-			VINVCDataVersion:     "VINVCv1.0",
-			ChainID:              137,
+			Port:                8080,
+			MonPort:             9090,
+			TokenExchangeIssuer: "http://127.0.0.1:3003",
+			VehicleNFTAddress:   common.HexToAddress("0xbA5738a18d83D41847dfFbDC6101d37C69c9B0cF"),
+			MaxRequestDuration:  "1m",
+			ChainID:             137,
 		}
 
 		// Setup services

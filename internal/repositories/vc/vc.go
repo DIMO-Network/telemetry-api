@@ -27,8 +27,6 @@ type Repository struct {
 	chainID               uint64
 	vehicleAddress        common.Address
 	storageNodeDevLicense common.Address
-
-	vinVCDataVersion string
 }
 
 // New creates a new instance of Service.
@@ -39,7 +37,6 @@ func New(indexService indexRepoService, settings config.Settings) *Repository {
 		chainID:               settings.ChainID,
 		vehicleAddress:        settings.VehicleNFTAddress,
 		storageNodeDevLicense: settings.StorageNodeDevLicense,
-		vinVCDataVersion:      settings.VINVCDataVersion,
 	}
 }
 
