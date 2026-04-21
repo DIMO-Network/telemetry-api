@@ -22,4 +22,8 @@ type Settings struct {
 	CreditTrackerEndpoint     string          `yaml:"CREDIT_TRACKER_ENDPOINT"`
 	StorageNodeDevLicense     common.Address  `yaml:"STORAGE_NODE_DEV_LICENSE"`
 	VINDataVersion            string          `yaml:"VIN_DATA_VERSION"`
+
+	// DQEndpoint is the URL of the dq GraphQL endpoint (e.g. http://dq:3000/query).
+	// When set, signal/event/segment queries are proxied to dq instead of ClickHouse.
+	DQEndpoint string `yaml:"DQ_ENDPOINT"`
 }
