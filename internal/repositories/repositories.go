@@ -150,7 +150,7 @@ func (r *Repository) GetSignalLatest(ctx context.Context, latestArgs *model.Late
 		}
 		model.SetCollectionField(coll, signal)
 	}
-	setApproximateLocationInCollection(coll)
+	SetApproximateLocationInCollection(coll)
 	return coll, nil
 }
 
@@ -331,7 +331,9 @@ func GetApproximateLoc(lat, long float64) *h3.LatLng {
 	return &latLong
 }
 
-func setApproximateLocationInCollection(coll *model.SignalCollection) {
+// SetApproximateLocationInCollection derives the approximate location field from the
+// raw coordinates already present in coll. Called after fetching signalsLatest data.
+func SetApproximateLocationInCollection(coll *model.SignalCollection) {
 	if coll == nil || coll.CurrentLocationCoordinates == nil {
 		return
 	}

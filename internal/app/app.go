@@ -18,6 +18,7 @@ import (
 	"github.com/DIMO-Network/telemetry-api/internal/graph"
 	"github.com/DIMO-Network/telemetry-api/internal/limits"
 	"github.com/DIMO-Network/telemetry-api/internal/pricing"
+	"github.com/DIMO-Network/telemetry-api/internal/proxy"
 	"github.com/DIMO-Network/telemetry-api/internal/queryRecorder"
 	"github.com/DIMO-Network/telemetry-api/internal/repositories"
 	"github.com/DIMO-Network/telemetry-api/internal/repositories/attestation"
@@ -70,6 +71,12 @@ func New(settings config.Settings) (*App, error) {
 		VCRepo:          vcRepo,
 		AttestationRepo: attRepo,
 	}
+	if settings.DQEndpoint != "" {
+		resolver.ProxyClient = proxy.NewClient(settings.DQEndpoint)
+		resolver.ProxySubjectFunc = func(tokenID int) string {
+			return proxy.ToSubject(settings.ChainID, settings.VehicleNFTAddress, tokenID)
+		}
+	}
 
 	cfg := graph.Config{Resolvers: resolver}
 	cfg.Directives.RequiresVehicleToken = auth.NewVehicleTokenCheck(settings.VehicleNFTAddress)
@@ -99,11 +106,13 @@ func New(settings config.Settings) (*App, error) {
 
 	serverHandler := PanicRecoveryMiddleware(
 		LoggerMiddleware(
-			limiter.AddRequestTimeout(
-				authMiddleware.CheckJWT(
-					authLoggerMiddleware(
-						dtcmiddleware.EstimateCostHeaderMiddleware(
-							auth.AddClaimHandler(server, settings.VehicleNFTAddress),
+			rawAuthMiddleware(
+				limiter.AddRequestTimeout(
+					authMiddleware.CheckJWT(
+						authLoggerMiddleware(
+							dtcmiddleware.EstimateCostHeaderMiddleware(
+								auth.AddClaimHandler(server, settings.VehicleNFTAddress),
+							),
 						),
 					),
 				),
@@ -125,10 +134,12 @@ func New(settings config.Settings) (*App, error) {
 	// @requiresVehicleToken at the GraphQL resolver level.
 	mcpAuthHandler := PanicRecoveryMiddleware(
 		LoggerMiddleware(
-			limiter.AddRequestTimeout(
-				authMiddleware.CheckJWT(
-					authLoggerMiddleware(
-						auth.AddClaimHandler(mcpHandler, settings.VehicleNFTAddress),
+			rawAuthMiddleware(
+				limiter.AddRequestTimeout(
+					authMiddleware.CheckJWT(
+						authLoggerMiddleware(
+							auth.AddClaimHandler(mcpHandler, settings.VehicleNFTAddress),
+						),
 					),
 				),
 			),

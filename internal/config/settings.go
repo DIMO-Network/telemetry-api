@@ -25,4 +25,8 @@ type Settings struct {
 
 	// TODO: remove these once manual vinvc are migrated to attestation
 	VINVCDataVersion string `yaml:"VINVC_DATA_VERSION"`
+
+	// DQEndpoint is the URL of the dq GraphQL endpoint (e.g. http://dq:3000/query).
+	// When set, signal/event/segment queries are proxied to dq instead of ClickHouse.
+	DQEndpoint string `yaml:"DQ_ENDPOINT"`
 }

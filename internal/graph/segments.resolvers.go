@@ -14,10 +14,16 @@ import (
 
 // Segments is the resolver for the segments field.
 func (r *queryResolver) Segments(ctx context.Context, tokenID int, from time.Time, to time.Time, mechanism model.DetectionMechanism, config *model.SegmentConfig, signalRequests []*model.SegmentSignalRequest, eventRequests []*model.SegmentEventRequest, limit *int, after *time.Time) ([]*model.Segment, error) {
+	if r.ProxyClient != nil {
+		return r.ProxyClient.ProxySegments(ctx, r.ProxySubjectFunc(tokenID), from, to, mechanism, config, signalRequests, eventRequests, limit, after)
+	}
 	return r.BaseRepo.GetSegments(ctx, tokenID, from, to, mechanism, config, signalRequests, eventRequests, limit, after)
 }
 
 // DailyActivity is the resolver for the dailyActivity field.
 func (r *queryResolver) DailyActivity(ctx context.Context, tokenID int, from time.Time, to time.Time, mechanism model.DetectionMechanism, config *model.SegmentConfig, signalRequests []*model.SegmentSignalRequest, eventRequests []*model.SegmentEventRequest, timezone *string) ([]*model.DailyActivity, error) {
+	if r.ProxyClient != nil {
+		return r.ProxyClient.ProxyDailyActivity(ctx, r.ProxySubjectFunc(tokenID), from, to, mechanism, config, signalRequests, eventRequests, timezone)
+	}
 	return r.BaseRepo.GetDailyActivity(ctx, tokenID, from, to, mechanism, config, signalRequests, eventRequests, timezone)
 }

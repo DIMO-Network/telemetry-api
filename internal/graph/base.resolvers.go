@@ -21,6 +21,9 @@ func (r *queryResolver) Signals(ctx context.Context, tokenID int, interval strin
 	if err != nil {
 		return nil, err
 	}
+	if r.ProxyClient != nil {
+		return r.ProxyClient.ProxySignals(ctx, r.ProxySubjectFunc(tokenID), interval, from, to, filter, aggArgs)
+	}
 	return r.BaseRepo.GetSignal(ctx, aggArgs)
 }
 
@@ -30,11 +33,22 @@ func (r *queryResolver) SignalsLatest(ctx context.Context, tokenID int, filter *
 	if err != nil {
 		return nil, err
 	}
+	if r.ProxyClient != nil {
+		coll, err := r.ProxyClient.ProxySignalsLatest(ctx, r.ProxySubjectFunc(tokenID), filter, latestArgs)
+		if err != nil {
+			return nil, err
+		}
+		repositories.SetApproximateLocationInCollection(coll)
+		return coll, nil
+	}
 	return r.BaseRepo.GetSignalLatest(ctx, latestArgs)
 }
 
 // AvailableSignals is the resolver for the AvailableSignals field.
 func (r *queryResolver) AvailableSignals(ctx context.Context, tokenID int, filter *model.SignalFilter) ([]string, error) {
+	if r.ProxyClient != nil {
+		return r.ProxyClient.ProxyAvailableSignals(ctx, r.ProxySubjectFunc(tokenID), filter)
+	}
 	return r.BaseRepo.GetAvailableSignals(ctx, uint32(tokenID), filter)
 }
 
@@ -66,6 +80,9 @@ func (r *queryResolver) SignalsSnapshot(ctx context.Context, tokenID int, filter
 
 // DataSummary is the resolver for the dataSummary field.
 func (r *queryResolver) DataSummary(ctx context.Context, tokenID int, filter *model.SignalFilter) (*model.DataSummary, error) {
+	if r.ProxyClient != nil {
+		return r.ProxyClient.ProxyDataSummary(ctx, r.ProxySubjectFunc(tokenID), filter)
+	}
 	return r.BaseRepo.GetDataSummary(ctx, uint32(tokenID), filter)
 }
 
