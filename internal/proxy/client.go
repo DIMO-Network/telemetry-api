@@ -57,7 +57,7 @@ func (c *Client) Execute(ctx context.Context, query string, variables map[string
 	if err != nil {
 		return nil, fmt.Errorf("executing request: %w", err)
 	}
-	defer resp.Body.Close()
+	defer resp.Body.Close() //nolint:errcheck
 
 	var gqlResp gqlResponse
 	if err := json.NewDecoder(resp.Body).Decode(&gqlResp); err != nil {
