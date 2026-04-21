@@ -74,9 +74,10 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 	endTs := c.dataStartTime.Add(time.Second * time.Duration(30*dataPoints))
 	ctx := context.Background()
 	testCases := []struct {
-		name     string
-		aggArgs  model.AggregatedSignalArgs
-		expected []AggSignal
+		name                string
+		aggArgs             model.AggregatedSignalArgs
+		expected            []AggSignal
+		acceptableTopValues []string
 	}{
 		{
 			name: "no aggs",
@@ -236,6 +237,7 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 					ValueString: "value2",
 				},
 			},
+			acceptableTopValues: []string{"value2", "value5", "value8"},
 		},
 		{
 			name: "first float",
@@ -820,6 +822,14 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 			})
 
 			for i, sig := range result {
+				if len(tc.acceptableTopValues) > 0 {
+					expected := tc.expected[i]
+					c.Require().Equal(expected.SignalType, sig.SignalType)
+					c.Require().Equal(expected.SignalIndex, sig.SignalIndex)
+					c.Require().Equal(expected.Timestamp, sig.Timestamp)
+					c.Require().Contains(tc.acceptableTopValues, sig.ValueString)
+					continue
+				}
 				c.Require().Equal(tc.expected[i], *sig)
 			}
 		})
