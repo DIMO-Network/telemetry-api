@@ -293,19 +293,6 @@ func UnmarshalDailyActivityResponse(data json.RawMessage) ([]*model.DailyActivit
 	return envelope.DailyActivity, nil
 }
 
-// EventFilterForDQ holds only the fields that dq's EventFilter supports.
-type EventFilterForDQ struct {
-	Name   *model.StringValueFilter `json:"name,omitempty"`
-	Source *model.StringValueFilter `json:"source,omitempty"`
-}
-
-// ToDQEventFilter strips fields not supported by dq's EventFilter schema.
-func ToDQEventFilter(f *model.EventFilter) *EventFilterForDQ {
-	if f == nil {
-		return nil
-	}
-	return &EventFilterForDQ{Name: f.Name, Source: f.Source}
-}
 
 // TimeVar formats a time.Time for use as a GraphQL Time variable.
 func TimeVar(t time.Time) string {
@@ -376,7 +363,7 @@ func (c *Client) ProxyEvents(ctx context.Context, subject string, from, to time.
 		"subject": subject,
 		"from":    TimeVar(from),
 		"to":      TimeVar(to),
-		"filter":  ToDQEventFilter(filter),
+		"filter":  filter,
 	})
 	if err != nil {
 		return nil, err
