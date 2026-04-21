@@ -16,6 +16,8 @@ github.com/DIMO-Network/attestation-api v0.1.2 h1:mrsProeTVr+aF7rKkoJhCVA7mlGFX6
 github.com/DIMO-Network/attestation-api v0.1.2/go.mod h1:sJT/d3Mb+qwYk1+DYKUvM8ZEohDQnM3sAqoreP+ocBI=
 github.com/DIMO-Network/clickhouse-infra v0.0.7 h1:TAsjkFFKu3D5Xg6dwBcRBryjCVSlXsNjVbTwJ4UDlTg=
 github.com/DIMO-Network/clickhouse-infra v0.0.7/go.mod h1:XS80lhSJNWBWGgZ+m4j7++zFj1wAXfmtV2gJfhGlabQ=
+github.com/DIMO-Network/clickhouse-infra v0.0.8 h1:54HPXKvNjmn9T0d9ZLYgUm4DnwTavE+Z8admrf39mJI=
+github.com/DIMO-Network/clickhouse-infra v0.0.8/go.mod h1:XS80lhSJNWBWGgZ+m4j7++zFj1wAXfmtV2gJfhGlabQ=
 github.com/DIMO-Network/cloudevent v1.0.4 h1:bZ7tRPwCbiRgAlG1gfN7qpOOUI1OEXMMoMMyS9r4omk=
 github.com/DIMO-Network/cloudevent v1.0.4/go.mod h1:I/9NcpMozV5Fw194WimhbkAsJtKVZf5UKYJ9hgc8Cdg=
 github.com/DIMO-Network/credit-tracker v0.0.6 h1:9C9AXah2uCQKCr7Kqzu2H9aXWj7wEOj4z1K2wAmVy0E=
@@ -24,6 +26,8 @@ github.com/DIMO-Network/fetch-api v0.0.16 h1:jOIM9AHOCTN9Omh5QoRrdVsy0UCPHwB+08/
 github.com/DIMO-Network/fetch-api v0.0.16/go.mod h1:pD9+5wPYjz3ORH9FBsXLlomsZJRPTyOzKy19urT6xew=
 github.com/DIMO-Network/model-garage v1.0.9 h1:MqEC/maSaImduOLEqYbIbLovgKEgzNuTn/R8wpJkARc=
 github.com/DIMO-Network/model-garage v1.0.9/go.mod h1:nvr0Ibiuu7Q7PC/hIfdZF6lPxCmq9eztQmbxUaNyus8=
+github.com/DIMO-Network/model-garage v1.0.10-0.20260421172106-675a3b86cf51 h1:boAOpxm5lMEVHZOsF34Fg24qiWN7pO2ZWHTwR0Wnzxc=
+github.com/DIMO-Network/model-garage v1.0.10-0.20260421172106-675a3b86cf51/go.mod h1:oi7EGKQVxFVpXRsu2H+YbizbKcx06aQg2N1Yu4GqOp8=
 github.com/DIMO-Network/server-garage v0.1.1 h1:EYmyy+Fgi2BNW0Bufn04BViDtb8BCWaN7C7BbEuoI5s=
 github.com/DIMO-Network/server-garage v0.1.1/go.mod h1:Z3A1KDUsXey+XhrPhmw/wyCidfrQvmEdWp7nShno7ZM=
 github.com/DIMO-Network/shared v1.1.5 h1:cRI3BbeYOgolMkeBOSqbDVGxymnDfeP/q7xgIXJ5MkY=

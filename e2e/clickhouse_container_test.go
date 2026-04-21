@@ -21,12 +21,15 @@ import (
 )
 
 const loadBatchSize = 5000
+const testClickHousePassword = "default"
 
 func setupClickhouseContainer(t *testing.T) *container.Container {
 	t.Helper()
 	ctx := context.Background()
 
-	chContainer, err := container.CreateClickHouseContainer(ctx, chconfig.Settings{})
+	chContainer, err := container.CreateClickHouseContainer(ctx, chconfig.Settings{
+		Password: testClickHousePassword,
+	})
 	if err != nil {
 		t.Fatalf("Failed to create clickhouse container: %v", err)
 	}

@@ -26,6 +26,7 @@ const (
 	testSubject1   = "did:erc721:137:0xbA5738a18d83D41847dfFbDC6101d37C69c9B0cF:1"
 	testSubject2   = "did:erc721:137:0xbA5738a18d83D41847dfFbDC6101d37C69c9B0cF:2"
 	testSubject100 = "did:erc721:137:0xbA5738a18d83D41847dfFbDC6101d37C69c9B0cF:100"
+	testClickHousePassword = "default"
 )
 
 type CHServiceTestSuite struct {
@@ -42,7 +43,9 @@ func TestCHService(t *testing.T) {
 func (c *CHServiceTestSuite) SetupSuite() {
 	ctx := context.Background()
 	var err error
-	c.container, err = container.CreateClickHouseContainer(ctx, chconfig.Settings{})
+	c.container, err = container.CreateClickHouseContainer(ctx, chconfig.Settings{
+		Password: testClickHousePassword,
+	})
 	c.Require().NoError(err, "Failed to create clickhouse container")
 
 	db, err := c.container.GetClickhouseAsDB()
