@@ -217,7 +217,7 @@ func TestSegmentDetectors(t *testing.T) {
 	ctx := context.Background()
 
 	// Setup ClickHouse container
-	chContainer, err := container.CreateClickHouseContainer(ctx, chconfig.Settings{})
+	chContainer, err := container.CreateClickHouseContainer(ctx, chconfig.Settings{Password: "default"})
 	require.NoError(t, err, "Failed to create ClickHouse container")
 	t.Cleanup(func() { chContainer.Terminate(ctx) })
 

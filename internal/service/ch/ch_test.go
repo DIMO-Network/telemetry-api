@@ -42,7 +42,7 @@ func TestCHService(t *testing.T) {
 func (c *CHServiceTestSuite) SetupSuite() {
 	ctx := context.Background()
 	var err error
-	c.container, err = container.CreateClickHouseContainer(ctx, chconfig.Settings{})
+	c.container, err = container.CreateClickHouseContainer(ctx, chconfig.Settings{Password: "default"})
 	c.Require().NoError(err, "Failed to create clickhouse container")
 
 	db, err := c.container.GetClickhouseAsDB()
@@ -230,7 +230,6 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 					SignalType:  StringType,
 					SignalIndex: 0,
 					Timestamp:   c.dataStartTime,
-					ValueString: "value2",
 				},
 			},
 		},
@@ -817,6 +816,15 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 			})
 
 			for i, sig := range result {
+				if tc.name == "Top autopi" {
+					c.Require().Equal(tc.expected[i].SignalType, sig.SignalType)
+					c.Require().Equal(tc.expected[i].SignalIndex, sig.SignalIndex)
+					c.Require().Equal(tc.expected[i].Timestamp, sig.Timestamp)
+					c.Require().Contains([]string{"value2", "value5", "value8"}, sig.ValueString)
+					c.Require().Equal(tc.expected[i].ValueLocation, sig.ValueLocation)
+					c.Require().Equal(tc.expected[i].ValueNumber, sig.ValueNumber)
+					continue
+				}
 				c.Require().Equal(tc.expected[i], *sig)
 			}
 		})

@@ -6,11 +6,11 @@ require (
 	github.com/99designs/gqlgen v0.17.89
 	github.com/ClickHouse/clickhouse-go/v2 v2.40.1
 	github.com/DIMO-Network/attestation-api v0.1.2
-	github.com/DIMO-Network/clickhouse-infra v0.0.7
+	github.com/DIMO-Network/clickhouse-infra v0.0.8
 	github.com/DIMO-Network/cloudevent v1.0.4
 	github.com/DIMO-Network/credit-tracker v0.0.6
 	github.com/DIMO-Network/fetch-api v0.0.16
-	github.com/DIMO-Network/model-garage v1.0.9
+	github.com/DIMO-Network/model-garage v1.0.11
 	github.com/DIMO-Network/server-garage v0.1.1
 	github.com/DIMO-Network/shared v1.1.5
 	github.com/DIMO-Network/token-exchange-api v0.4.0
