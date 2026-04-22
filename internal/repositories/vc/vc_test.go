@@ -67,7 +67,6 @@ func TestGetLatestVC(t *testing.T) {
 		ChainID:               chainID,
 		VehicleNFTAddress:     vehicleAddress,
 		StorageNodeDevLicense: common.HexToAddress("0x123"),
-		VINVCDataVersion:      "vinvc_data_version",
 	}
 	svc := vc.New(mockService, settings)
 

@@ -37,6 +37,7 @@ type ResolverRoot interface {
 type DirectiveRoot struct {
 	HasAggregation          func(ctx context.Context, obj any, next graphql.Resolver) (res any, err error)
 	IsSignal                func(ctx context.Context, obj any, next graphql.Resolver) (res any, err error)
+	McpHide                 func(ctx context.Context, obj any, next graphql.Resolver) (res any, err error)
 	RequiresAllOfPrivileges func(ctx context.Context, obj any, next graphql.Resolver, privileges []string) (res any, err error)
 	RequiresOneOfPrivilege  func(ctx context.Context, obj any, next graphql.Resolver, privileges []string) (res any, err error)
 	RequiresVehicleToken    func(ctx context.Context, obj any, next graphql.Resolver) (res any, err error)
@@ -87,6 +88,21 @@ type ComplexityRoot struct {
 		Name  func(childComplexity int) int
 	}
 
+	EventDataSummary struct {
+		FirstSeen      func(childComplexity int) int
+		LastSeen       func(childComplexity int) int
+		Name           func(childComplexity int) int
+		NumberOfEvents func(childComplexity int) int
+	}
+
+	LatestSignal struct {
+		Name          func(childComplexity int) int
+		Timestamp     func(childComplexity int) int
+		ValueLocation func(childComplexity int) int
+		ValueNumber   func(childComplexity int) int
+		ValueString   func(childComplexity int) int
+	}
+
 	Location struct {
 		Hdop      func(childComplexity int) int
 		Latitude  func(childComplexity int) int
@@ -102,6 +118,7 @@ type ComplexityRoot struct {
 		Segments         func(childComplexity int, tokenID int, from time.Time, to time.Time, mechanism model.DetectionMechanism, config *model.SegmentConfig, signalRequests []*model.SegmentSignalRequest, eventRequests []*model.SegmentEventRequest, limit *int, after *time.Time) int
 		Signals          func(childComplexity int, tokenID int, interval string, from time.Time, to time.Time, filter *model.SignalFilter) int
 		SignalsLatest    func(childComplexity int, tokenID int, filter *model.SignalFilter) int
+		SignalsSnapshot  func(childComplexity int, tokenID int, filter *model.SignalFilter) int
 		VinVCLatest      func(childComplexity int, tokenID int) int
 	}
 
@@ -363,6 +380,13 @@ type ComplexityRoot struct {
 		Speed                                                     func(childComplexity int) int
 	}
 
+	SignalDataSummary struct {
+		FirstSeen       func(childComplexity int) int
+		LastSeen        func(childComplexity int) int
+		Name            func(childComplexity int) int
+		NumberOfSignals func(childComplexity int) int
+	}
+
 	SignalFloat struct {
 		Timestamp func(childComplexity int) int
 		Value     func(childComplexity int) int
@@ -378,6 +402,11 @@ type ComplexityRoot struct {
 		Value     func(childComplexity int) int
 	}
 
+	SignalsSnapshotResponse struct {
+		LastSeen func(childComplexity int) int
+		Signals  func(childComplexity int) int
+	}
+
 	VINVC struct {
 		CountryCode            func(childComplexity int) int
 		RawVc                  func(childComplexity int) int
@@ -389,26 +418,13 @@ type ComplexityRoot struct {
 		VehicleTokenID         func(childComplexity int) int
 		Vin                    func(childComplexity int) int
 	}
-
-	EventDataSummary struct {
-		FirstSeen      func(childComplexity int) int
-		LastSeen       func(childComplexity int) int
-		Name           func(childComplexity int) int
-		NumberOfEvents func(childComplexity int) int
-	}
-
-	SignalDataSummary struct {
-		FirstSeen       func(childComplexity int) int
-		LastSeen        func(childComplexity int) int
-		Name            func(childComplexity int) int
-		NumberOfSignals func(childComplexity int) int
-	}
 }
 
 type QueryResolver interface {
 	Signals(ctx context.Context, tokenID int, interval string, from time.Time, to time.Time, filter *model.SignalFilter) ([]*model.SignalAggregations, error)
 	SignalsLatest(ctx context.Context, tokenID int, filter *model.SignalFilter) (*model.SignalCollection, error)
 	AvailableSignals(ctx context.Context, tokenID int, filter *model.SignalFilter) ([]string, error)
+	SignalsSnapshot(ctx context.Context, tokenID int, filter *model.SignalFilter) (*model.SignalsSnapshotResponse, error)
 	DataSummary(ctx context.Context, tokenID int, filter *model.SignalFilter) (*model.DataSummary, error)
 	Attestations(ctx context.Context, tokenID *int, subject *string, filter *model.AttestationFilter) ([]*model.Attestation, error)
 	Events(ctx context.Context, tokenID int, from time.Time, to time.Time, filter *model.EventFilter) ([]*model.Event, error)
@@ -729,6 +745,62 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.ComplexityRoot.EventCount.Name(childComplexity), true
 
+	case "EventDataSummary.firstSeen":
+		if e.ComplexityRoot.EventDataSummary.FirstSeen == nil {
+			break
+		}
+
+		return e.ComplexityRoot.EventDataSummary.FirstSeen(childComplexity), true
+	case "EventDataSummary.lastSeen":
+		if e.ComplexityRoot.EventDataSummary.LastSeen == nil {
+			break
+		}
+
+		return e.ComplexityRoot.EventDataSummary.LastSeen(childComplexity), true
+	case "EventDataSummary.name":
+		if e.ComplexityRoot.EventDataSummary.Name == nil {
+			break
+		}
+
+		return e.ComplexityRoot.EventDataSummary.Name(childComplexity), true
+	case "EventDataSummary.numberOfEvents":
+		if e.ComplexityRoot.EventDataSummary.NumberOfEvents == nil {
+			break
+		}
+
+		return e.ComplexityRoot.EventDataSummary.NumberOfEvents(childComplexity), true
+
+	case "LatestSignal.name":
+		if e.ComplexityRoot.LatestSignal.Name == nil {
+			break
+		}
+
+		return e.ComplexityRoot.LatestSignal.Name(childComplexity), true
+	case "LatestSignal.timestamp":
+		if e.ComplexityRoot.LatestSignal.Timestamp == nil {
+			break
+		}
+
+		return e.ComplexityRoot.LatestSignal.Timestamp(childComplexity), true
+	case "LatestSignal.valueLocation":
+		if e.ComplexityRoot.LatestSignal.ValueLocation == nil {
+			break
+		}
+
+		return e.ComplexityRoot.LatestSignal.ValueLocation(childComplexity), true
+	case "LatestSignal.valueNumber":
+		if e.ComplexityRoot.LatestSignal.ValueNumber == nil {
+			break
+		}
+
+		return e.ComplexityRoot.LatestSignal.ValueNumber(childComplexity), true
+	case "LatestSignal.valueString":
+		if e.ComplexityRoot.LatestSignal.ValueString == nil {
+			break
+		}
+
+		return e.ComplexityRoot.LatestSignal.ValueString(childComplexity), true
+
 	case "Location.hdop":
 		if e.ComplexityRoot.Location.Hdop == nil {
 			break
@@ -837,6 +909,17 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.ComplexityRoot.Query.SignalsLatest(childComplexity, args["tokenId"].(int), args["filter"].(*model.SignalFilter)), true
+	case "Query.signalsSnapshot":
+		if e.ComplexityRoot.Query.SignalsSnapshot == nil {
+			break
+		}
+
+		args, err := ec.field_Query_signalsSnapshot_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.ComplexityRoot.Query.SignalsSnapshot(childComplexity, args["tokenId"].(int), args["filter"].(*model.SignalFilter)), true
 	case "Query.vinVCLatest":
 		if e.ComplexityRoot.Query.VinVCLatest == nil {
 			break
@@ -2914,6 +2997,31 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.ComplexityRoot.SignalCollection.Speed(childComplexity), true
 
+	case "SignalDataSummary.firstSeen":
+		if e.ComplexityRoot.SignalDataSummary.FirstSeen == nil {
+			break
+		}
+
+		return e.ComplexityRoot.SignalDataSummary.FirstSeen(childComplexity), true
+	case "SignalDataSummary.lastSeen":
+		if e.ComplexityRoot.SignalDataSummary.LastSeen == nil {
+			break
+		}
+
+		return e.ComplexityRoot.SignalDataSummary.LastSeen(childComplexity), true
+	case "SignalDataSummary.name":
+		if e.ComplexityRoot.SignalDataSummary.Name == nil {
+			break
+		}
+
+		return e.ComplexityRoot.SignalDataSummary.Name(childComplexity), true
+	case "SignalDataSummary.numberOfSignals":
+		if e.ComplexityRoot.SignalDataSummary.NumberOfSignals == nil {
+			break
+		}
+
+		return e.ComplexityRoot.SignalDataSummary.NumberOfSignals(childComplexity), true
+
 	case "SignalFloat.timestamp":
 		if e.ComplexityRoot.SignalFloat.Timestamp == nil {
 			break
@@ -2952,6 +3060,19 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.ComplexityRoot.SignalString.Value(childComplexity), true
+
+	case "SignalsSnapshotResponse.lastSeen":
+		if e.ComplexityRoot.SignalsSnapshotResponse.LastSeen == nil {
+			break
+		}
+
+		return e.ComplexityRoot.SignalsSnapshotResponse.LastSeen(childComplexity), true
+	case "SignalsSnapshotResponse.signals":
+		if e.ComplexityRoot.SignalsSnapshotResponse.Signals == nil {
+			break
+		}
+
+		return e.ComplexityRoot.SignalsSnapshotResponse.Signals(childComplexity), true
 
 	case "VINVC.countryCode":
 		if e.ComplexityRoot.VINVC.CountryCode == nil {
@@ -3007,56 +3128,6 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.ComplexityRoot.VINVC.Vin(childComplexity), true
-
-	case "eventDataSummary.firstSeen":
-		if e.ComplexityRoot.EventDataSummary.FirstSeen == nil {
-			break
-		}
-
-		return e.ComplexityRoot.EventDataSummary.FirstSeen(childComplexity), true
-	case "eventDataSummary.lastSeen":
-		if e.ComplexityRoot.EventDataSummary.LastSeen == nil {
-			break
-		}
-
-		return e.ComplexityRoot.EventDataSummary.LastSeen(childComplexity), true
-	case "eventDataSummary.name":
-		if e.ComplexityRoot.EventDataSummary.Name == nil {
-			break
-		}
-
-		return e.ComplexityRoot.EventDataSummary.Name(childComplexity), true
-	case "eventDataSummary.numberOfEvents":
-		if e.ComplexityRoot.EventDataSummary.NumberOfEvents == nil {
-			break
-		}
-
-		return e.ComplexityRoot.EventDataSummary.NumberOfEvents(childComplexity), true
-
-	case "signalDataSummary.firstSeen":
-		if e.ComplexityRoot.SignalDataSummary.FirstSeen == nil {
-			break
-		}
-
-		return e.ComplexityRoot.SignalDataSummary.FirstSeen(childComplexity), true
-	case "signalDataSummary.lastSeen":
-		if e.ComplexityRoot.SignalDataSummary.LastSeen == nil {
-			break
-		}
-
-		return e.ComplexityRoot.SignalDataSummary.LastSeen(childComplexity), true
-	case "signalDataSummary.name":
-		if e.ComplexityRoot.SignalDataSummary.Name == nil {
-			break
-		}
-
-		return e.ComplexityRoot.SignalDataSummary.Name(childComplexity), true
-	case "signalDataSummary.numberOfSignals":
-		if e.ComplexityRoot.SignalDataSummary.NumberOfSignals == nil {
-			break
-		}
-
-		return e.ComplexityRoot.SignalDataSummary.NumberOfSignals(childComplexity), true
 
 	}
 	return 0, false
@@ -3139,126 +3210,43 @@ func newExecutionContext(
 
 var sources = []*ast.Source{
 	{Name: "../../schema/attestation.graphqls", Input: `extend type Query {
-  """
-  attestations returns all attestations for a given subject.
-  """
   attestations(
-    """
-    The token ID of the vehicle.
-    """
     tokenId: Int
-
-    """
-    The subject of the attestation.
-    """
     subject: String
-
-    """
-    Filter attestations by metadata fields.
-    """
     filter: AttestationFilter
   ): [Attestation]
+    @mcpTool(name: "get_attestations", description: "Get verifiable attestations for a vehicle. Returns attestation ID, timestamp, type, source address, signature, and tags. Supports filtering by source, data version, producer, time range, and tags.", selection: "id vehicleTokenId time type source dataVersion producer signature tags")
 }
 
 type Attestation {
-  """
-  id is the id of the attestation.
-  """
   id: String!
-
-  """
-  vehicleTokenId is the token ID of the vehicle.
-  """
   vehicleTokenId: Int!
-
-  """
-  time represents the time the attestation was made at.
-  """
   time: Time!
-
-  """
-  attestation is the JSON-encoded attestation.
-  """
+  """JSON-encoded attestation data."""
   attestation: String!
-
-  """
-  type
-  """
   type: String!
-
-  """
-  source is the address that created and signed the attestation
-  """
+  """Address that signed the attestation."""
   source: Address!
-
-  """
-  dataversion
-  """
   dataVersion: String!
-
-  """
-  producer of the attestation data
-  """
   producer: String
-
-  """
-  signature of the attestation data
-  """
   signature: String!
-
-  """
-  tags tags associated with the attestation.
-  """
   tags: [String!]
 }
 
-"""
-AttestationFilter holds the filter parameters for the attestation querys.
-"""
 input AttestationFilter {
-  """
-  id is the id of the attestation.
-  """
   id: String
-
-  """
-  The attesting party.
-  """
+  """The attesting party."""
   source: Address
-
-  """
-  Filter attestations by data version.
-  """
   dataVersion: String
-
-  """
-  Filter attestations by source type.
-  """
   producer: String
-
-  """
-  Filter attestations made prior to this timestamp.
-  """
+  """Before this timestamp."""
   before: Time
-
-  """
-  Filter attestations made after this timestamp.
-  """
+  """After this timestamp."""
   after: Time
-
-  """
-  Limit attestations returned to this value. Defaults to 10.
-  """
+  """Max results. Default 10."""
   limit: Int
-
-  """
-  Cursor for pagination (exclusive). 
-  """
+  """Pagination cursor (exclusive)."""
   cursor: Time
-
-  """
-  Filter attestations by tags.
-  """
   tags: StringArrayFilter
 }
 `, BuiltIn: false},
@@ -3285,7 +3273,7 @@ enum Privilege {
 directive @requiresVehicleToken on FIELD_DEFINITION
 `, BuiltIn: false},
 	{Name: "../../schema/base.graphqls", Input: `"""
-A point in time, encoded per RFC-3999. Typically these will be in second precision,
+A point in time, encoded per RFC-3339. Typically these will be in second precision,
 just like the blockchain, and in UTC.
 """
 scalar Time
@@ -3311,42 +3299,39 @@ directive @hasAggregation on INPUT_FIELD_DEFINITION | FIELD_DEFINITION
 The root query type for the GraphQL schema.
 """
 type Query {
-  """
-  signals returns a collection of signals for a given token in a given time range.
-  """
   signals(
     tokenId: Int!
     """
-    interval is a time span that used for aggregatting the data with.
-    A duration string is a sequence of decimal numbers, each with optional fraction and a unit suffix,
-    such as "300ms" or "2h45m". Valid time units are "ms", "s", "m", "h"
+    Duration string for data aggregation buckets (e.g., "5m", "1h", "2h45m"). Valid units: ms, s, m, h. Common values: "5m" (5 minutes), "1h" (1 hour), "6h", "24h". Days are not a valid unit — use "24h" instead of "1d".
     """
     interval: String!
     from: Time!
     to: Time!
     filter: SignalFilter
   ): [SignalAggregations!] @requiresVehicleToken
-  """
-  SignalsLatest returns the latest signals for a given token.
-  """
+    @mcpTool(name: "get_signals_time_series", description: "Get aggregated signal time series for a vehicle over a date range. Returns signal values bucketed by the specified interval (e.g. '1h', '15m'). Use with signal field names and aggregation functions.", selection: "timestamp")
+    @mcpExample(description: "Hourly average speed over a time range", query: "query TimeSeries($tokenId:Int!,$from:Time!,$to:Time!) { signals(tokenId:$tokenId,interval:\"1h\",from:$from,to:$to) { timestamp speed(agg:AVG) } }")
   signalsLatest(tokenId: Int!, filter: SignalFilter): SignalCollection
     @requiresVehicleToken
-  """
-  availableSignals returns a list of queryable signal names that have stored data for a given tokenId.
-  """
+    @mcpTool(name: "get_latest_signals", description: "Get the most recent signal values for a vehicle by token ID. Returns the last-seen timestamp for the vehicle.", selection: "lastSeen")
+    @mcpExample(description: "Latest speed and battery charge", query: "query Latest($tokenId:Int!) { signalsLatest(tokenId:$tokenId) { lastSeen speed{timestamp value} powertrainTractionBatteryStateOfChargeCurrent{timestamp value} } }")
   availableSignals(tokenId: Int!, filter: SignalFilter): [String!]
     @requiresVehicleToken
+    @mcpTool(name: "get_available_signals", description: "List queryable signal names that have stored data for a vehicle by token ID.", selection: "")
 
   """
-  data summary of all signals for a given tokenId
+  Point-in-time snapshot of all accessible signals. Equivalent to availableSignals + signalsLatest in a single request.
   """
+  signalsSnapshot(tokenId: Int!, filter: SignalFilter): SignalsSnapshotResponse
+    @requiresVehicleToken
+    @mcpTool(name: "get_signals_snapshot", description: "Get a point-in-time snapshot of all available signals for a vehicle by token ID. Returns every signal the caller has permission to see.", selection: "lastSeen signals { name timestamp valueNumber valueString valueLocation { latitude longitude hdop } }")
+    @mcpExample(description: "Full snapshot of all signals for a vehicle", query: "query Snapshot($tokenId:Int!) { signalsSnapshot(tokenId:$tokenId) { lastSeen signals { name timestamp valueNumber valueString valueLocation { latitude longitude hdop } } } }")
+
   dataSummary(tokenId: Int!, filter: SignalFilter): DataSummary
     @requiresVehicleToken
+    @mcpTool(name: "get_data_summary", description: "Get a summary of all data available for a vehicle by token ID. Returns total signal count, available signal names, first/last seen timestamps, and per-signal and per-event breakdowns.", selection: "numberOfSignals availableSignals firstSeen lastSeen signalDataSummary { name numberOfSignals firstSeen lastSeen } eventDataSummary { name numberOfEvents firstSeen lastSeen }")
 }
 type SignalAggregations {
-  """
-  Timestamp of the aggregated data.
-  """
   timestamp: Time!
   """
   Approximate location of the vehicle in WGS 84 coordinates. The aggregation is applied to
@@ -3364,9 +3349,6 @@ type SignalAggregations {
 }
 
 type SignalCollection {
-  """
-  The last time any signal was seen matching the filter.
-  """
   lastSeen: Time
   """
   Approximate location of the vehicle in WGS 84 coordinates. The raw value is replaced with
@@ -3381,70 +3363,42 @@ type SignalCollection {
     @isSignal
 }
 
+type LatestSignal {
+  name: String!
+  timestamp: Time!
+  """Present for float-type signals."""
+  valueNumber: Float
+  """Present for string-type signals."""
+  valueString: String
+  """Present for location-type signals."""
+  valueLocation: Location
+}
+
+type SignalsSnapshotResponse {
+  lastSeen: Time
+  signals: [LatestSignal!]!
+}
+
 type DataSummary {
-  """
-  Total number of signals collected
-  """
   numberOfSignals: Uint64!
-  """
-  available signal names
-  """
   availableSignals: [String!]!
-  """
-  first seen timestamp
-  """
   firstSeen: Time!
-  """
-  last seen timestamp
-  """
   lastSeen: Time!
-
-  """
-  data summary of an individual signal
-  """
-  signalDataSummary: [signalDataSummary!]!
-
-  """
-  Events known to the vehicle: per-event name, count, and first/last seen.
-  """
-  eventDataSummary: [eventDataSummary!]!
+  signalDataSummary: [SignalDataSummary!]!
+  eventDataSummary: [EventDataSummary!]!
 }
 
-type eventDataSummary {
-  """
-  Event name
-  """
+type EventDataSummary {
   name: String!
-  """
-  Number of times this event occurred for the vehicle
-  """
   numberOfEvents: Uint64!
-  """
-  First seen timestamp
-  """
   firstSeen: Time!
-  """
-  Last seen timestamp
-  """
   lastSeen: Time!
 }
 
-type signalDataSummary {
-  """
-  signal name
-  """
+type SignalDataSummary {
   name: String!
-  """
-  number of this specific signal
-  """
   numberOfSignals: Uint64!
-  """
-  first seen timestamp
-  """
   firstSeen: Time!
-  """
-  last seen timestamp
-  """
   lastSeen: Time!
 }
 
@@ -3488,47 +3442,23 @@ enum StringAggregation {
   LAST
 }
 type SignalFloat {
-  """
-  timestamp of when this data was collected
-  """
   timestamp: Time!
-
-  """
-  value of the signal
-  """
   value: Float!
 }
 
 type SignalString {
-  """
-  timestamp of when this data was collected
-  """
   timestamp: Time!
-
-  """
-  value of the signal
-  """
   value: String!
 }
 
 type SignalLocation {
-  """
-  timestamp of when this data was collected
-  """
   timestamp: Time!
-
-  """
-  location (latitude, longitude, hdop) at this timestamp.
-  """
   value: Location!
 }
 
-"""
-SignalFilter holds the filter parameters for the signal querys.
-"""
 input SignalFilter {
   """
-  Filter signals by source using an ethr DID.
+  Filter by source ethr DID.
   Example: "did:ethr:137:0xcd445F4c6bDAD32b68a2939b912150Fe3C88803E"
   """
   source: String
@@ -3571,9 +3501,6 @@ type EventCount {
   count: Int!
 }
 
-"""
-Filters that apply to locations.
-"""
 input SignalLocationFilter {
   """
   Filter for locations within a polygon. The vertices should be ordered
@@ -3591,144 +3518,69 @@ input SignalLocationFilter {
 }
 
 input FilterLocation {
-  """
-  Latitude in the range [-90, 90].
-  """
+  """Latitude in the range [-90, 90]."""
   latitude: Float!
-  """
-  Longitude in the range [-180, 180].
-  """
+  """Longitude in the range [-180, 180]."""
   longitude: Float!
 }
 
 input InCircleFilter {
-  """
-  Center of the filter circle.
-  """
   center: FilterLocation!
-  """
-  Radius of the circle around the center, in kilometers (km).
-  """
+  """Radius in kilometers."""
   radius: Float!
 }
 
-"""
-Filters that apply to strings.
-"""
 input StringValueFilter {
-  """
-  eq string equal to the string
-  """
   eq: String
-  """
-  neq string not equal to the string
-  """
   neq: String
-  """
-  notIn array of strings not in the array
-  """
   notIn: [String!]
-  """
-  in array of strings in the array
-  """
   in: [String!]
-  """
-  startsWith matches strings that begin with the given prefix.
-  """
+  """Matches strings that begin with the given prefix."""
   startsWith: String
-  """
-  or array of string value filters
-  """
   or: [StringValueFilter!]
 }
 
-"""
-Filters that apply to string arrays.
-"""
 input StringArrayFilter {
-  """
-  containsAny array of strings containing any of the strings in the array
-  """
   containsAny: [String!]
-  """
-  containsAll array of strings containing all of the strings in the array
-  """
   containsAll: [String!]
-  """
-  notContainsAny array of strings does not contain any of the strings in the array
-  """
   notContainsAny: [String!]
-  """
-  notContainsAll array of strings does not contain all of the strings in the array
-  """
   notContainsAll: [String!]
-  """
-  or array of string array filters
-  """
   or: [StringArrayFilter!]
 }
 `, BuiltIn: false},
 	{Name: "../../schema/events.graphqls", Input: `extend type Query {
-  """
-  events returns a list of events for a given token in a given time range.
-  """
   events(
-    """
-    tokenId is the id of the token to get events for.
-    """
     tokenId: Int!
-    """
-    from is the start time of the event.
-    """
     from: Time!
-    """
-    to is the end time of the event.
-    """
     to: Time!
-    """
-    filter is the filter to apply to the events.
-    """
     filter: EventFilter
   ): [Event!]
     @requiresVehicleToken
     @requiresAllOfPrivileges(
       privileges: [VEHICLE_NON_LOCATION_DATA, VEHICLE_ALL_TIME_LOCATION]
     )
+    @mcpTool(name: "get_events", description: "Get discrete events for a vehicle in a time range. Returns event name, source, timestamp, duration, and optional metadata.", selection: "timestamp name source durationNs metadata")
 }
 
 type Event {
-  """
-  timestamp is the time the event occurred.
-  """
   timestamp: Time!
-  """
-  name is the name of the event.
-  """
   name: String!
-  """
-  source is the name of the source connection that created the event.
-  """
+  """Source connection that created the event."""
   source: String!
-  """
-  durationNs is the duration of the event in nanoseconds.
-  """
+  """Duration in nanoseconds."""
   durationNs: Int!
-  """
-  metadata is the metadata of the event.
-  """
   metadata: String
 }
 
 input EventFilter {
-  """
-  name is the name of the event.
-  """
   name: StringValueFilter
-  """
-  source is the name of the source connection that created the event.
-  """
+  """Source connection that created the event."""
   source: StringValueFilter
 }
+`, BuiltIn: false},
+	{Name: "../../schema/mcp.graphqls", Input: `directive @mcpTool(name: String!, description: String!, selection: String!, readOnly: Boolean = true) on FIELD_DEFINITION
+directive @mcpExample(description: String!, query: String!) repeatable on FIELD_DEFINITION
+directive @mcpHide on FIELD_DEFINITION
 `, BuiltIn: false},
 	{Name: "../../schema/segments.graphqls", Input: `enum DetectionMechanism {
   """
@@ -3736,14 +3588,14 @@ input EventFilter {
   Most reliable for vehicles with proper ignition signal support.
   """
   ignitionDetection
-  
+
   """
   Frequency analysis: Segments are detected by analyzing signal update patterns.
   Uses pre-computed materialized view for optimal performance.
   Ideal for real-time APIs and bulk queries.
   """
   frequencyAnalysis
-  
+
   """
   Change point detection: Uses CUSUM algorithm to detect statistical regime changes.
   Monitors cumulative deviation in signal frequency via materialized view.
@@ -3758,7 +3610,7 @@ input EventFilter {
   idling
 
   """
-  Refuel: Detects where fuel level rises significantly. 
+  Refuel: Detects where fuel level rises significantly.
   """
   refuel
 
@@ -3772,7 +3624,7 @@ extend type Query {
   """
   Returns vehicle usage segments detected using the specified mechanism.
   Maximum date range: 31 days.
-  
+
   Detection mechanisms:
   - ignitionDetection: Uses 'isIgnitionOn' signal with configurable debouncing
   - frequencyAnalysis: Analyzes signal update frequency to detect activity periods
@@ -3780,10 +3632,10 @@ extend type Query {
   - idling: Idling segments (engine rpm idle)
   - refuel: Refueling segments (fuel level increased)
   - recharge: Charging segments (battery SoC increased)
-  
+
   Segment IDs are stable and consistent across queries as long as the segment start
   is captured in the underlying data source.
-  
+
   Each segment includes summary: signals, start/end location, and (when requested) eventCounts.
   A default set of signal requests is always applied (e.g. speed, odometer; for refuel/recharge also the level signal at start and end).
   When signalRequests is provided, those requests are added on top of the default set; duplicates (same name and agg) are omitted.
@@ -3806,6 +3658,8 @@ extend type Query {
     """
     after: Time
   ): [Segment!]! @requiresVehicleToken @requiresAllOfPrivileges(privileges: [VEHICLE_ALL_TIME_LOCATION, VEHICLE_NON_LOCATION_DATA])
+    @mcpTool(name: "get_trip_segments", description: "Get vehicle trip/activity segments detected using a specified mechanism (frequencyAnalysis, ignitionDetection, changePointDetection, idling, refuel, recharge). Returns start/end locations, duration, and optional signal aggregates and event counts. Maximum date range: 31 days.", selection: "start { timestamp value { latitude longitude } } end { timestamp value { latitude longitude } } duration isOngoing startedBeforeRange signals { name agg value } eventCounts { name count }")
+    @mcpExample(description: "Trip segments with start/end locations and signal aggregates", query: "query Trips($tokenId:Int!,$from:Time!,$to:Time!) { segments(tokenId:$tokenId,from:$from,to:$to,mechanism:frequencyAnalysis) { start{timestamp value{latitude longitude}} end{timestamp value{latitude longitude}} duration isOngoing signals{name agg value} eventCounts{name count} } }")
 
   """
   Returns one record per calendar day in the date range.
@@ -3822,6 +3676,8 @@ extend type Query {
     eventRequests: [SegmentEventRequest!]
     timezone: String
   ): [DailyActivity!]! @requiresVehicleToken @requiresAllOfPrivileges(privileges: [VEHICLE_ALL_TIME_LOCATION, VEHICLE_NON_LOCATION_DATA])
+    @mcpTool(name: "get_daily_activity", description: "Get per-day driving activity summaries for a vehicle. Returns segment count, total active duration, and signal aggregates per day. Maximum date range: 31 days.", selection: "segmentCount duration signals { name agg value } eventCounts { name count }")
+    @mcpExample(description: "Daily activity summaries", query: "query Daily($tokenId:Int!,$from:Time!,$to:Time!) { dailyActivity(tokenId:$tokenId,from:$from,to:$to,mechanism:frequencyAnalysis) { segmentCount duration signals{name agg value} eventCounts{name count} } }")
 }
 
 input SegmentSignalRequest {
@@ -3834,17 +3690,15 @@ input SegmentEventRequest {
 }
 
 type DailyActivity {
-  """Start of day (timestamp = day start, value = location). Same shape as Segment.start. Null if not available."""
+  """Day start location. Null if unavailable."""
   start: SignalLocation
-  """End of day (timestamp = day end, location). Same shape as Segment.end. Null if not available."""
+  """Day end location. Null if unavailable."""
   end: SignalLocation
-  """Number of activity segments that started or fell within that day."""
+  """Activity segments that started or fell within this day."""
   segmentCount: Int!
-  """Sum of segment durations (total active time that day) in seconds."""
+  """Total active time in seconds."""
   duration: Int!
-  """Per-day signal aggregates (same shape as segment signals)."""
   signals: [SignalAggregationValue!]!
-  """Per-day event counts."""
   eventCounts: [EventCount!]!
 }
 
@@ -3856,14 +3710,14 @@ input SegmentConfig {
   Default: 300 (5 minutes), Min: 60, Max: 3600
   """
   maxGapSeconds: Int = 300
-  
+
   """
   Minimum segment duration (seconds) to include in results.
   Filters very short segments (testing, engine cycling).
   Default: 240 (4 minutes), Min: 60, Max: 3600
   """
   minSegmentDurationSeconds: Int = 240
-  
+
   """
   [frequencyAnalysis] Minimum signal count per window for activity detection.
   [idling] Minimum samples per window to consider it idle (same semantics).
@@ -3885,42 +3739,17 @@ input SegmentConfig {
 }
 
 type Segment {
-  """
-  Segment start (timestamp and location). Uses SignalLocation; always present.
-  """
   start: SignalLocation!
-  
-  """
-  Segment end (timestamp and location). Uses SignalLocation; omitted when isOngoing is true.
-  """
+  """Omitted when isOngoing is true."""
   end: SignalLocation
-  
-  """
-  Duration in seconds. If ongoing: from start to query 'to'. If complete: from start to end.
-  """
+  """In seconds. If ongoing: computed from start to query 'to'."""
   duration: Int!
-  
-  """
-  True if segment extends beyond query time range (last activity is ongoing).
-  When true, end is not included in the response.
-  """
+  """When true, end is omitted."""
   isOngoing: Boolean!
-  
-  """
-  True if segment started before query time range.
-  """
   startedBeforeRange: Boolean!
-  
-  """
-  Per-segment signal aggregates. Same shape as signals elsewhere (name, agg, value).
-  """
   signals: [SignalAggregationValue!]
-  """
-  Per-segment event counts.
-  """
   eventCounts: [EventCount!]
 }
-
 `, BuiltIn: false},
 	{Name: "../../schema/signals-events_gen.graphqls", Input: `# Code generated  with ` + "`" + `make gql-model` + "`" + ` DO NOT EDIT.
 extend type SignalAggregations {
@@ -5817,68 +5646,32 @@ extend input EventFilter {
 `, BuiltIn: false},
 	{Name: "../../schema/vc.graphqls", Input: `extend type Query {
   """
-  vinVCLatest returns the latest VINVC data for a given token.
-
   Required Privileges: [VEHICLE_VIN_CREDENTIAL]
   """
   vinVCLatest(
-    """
-    The token ID of the vehicle.
-    """
     tokenId: Int!
   ): VINVC
     @requiresVehicleToken
     @requiresAllOfPrivileges(privileges: [VEHICLE_VIN_CREDENTIAL])
+    @mcpTool(name: "get_vin_credential", description: "Get the latest VIN verifiable credential for a vehicle by token ID. Returns VIN, recording entity, timestamp, country code, and validity period.", selection: "vehicleTokenId vin recordedBy recordedAt countryCode vehicleContractAddress validFrom validTo rawVC")
 
 }
 
 type VINVC {
-  """
-  vehicleTokenId is the token ID of the vehicle.
-  """
   vehicleTokenId: Int
-
-  """
-  vin is the vehicle identification number.
-  """
   vin: String
-
-  """
-  recordedBy is the entity that recorded the VIN.
-  """
+  """Entity that recorded the VIN."""
   recordedBy: String
-
-  """
-  The time the VIN was recorded.
-  """
   recordedAt: Time
-
-  """
-  countryCode is the country code that the VIN belongs to.
-  """
   countryCode: String
-
-  """
-  vehicleContractAddress is the address of the vehicle contract.
-  """
   vehicleContractAddress: String
-
-  """
-  validFrom is the time the VC is valid from.
-  """
+  """VC validity start."""
   validFrom: Time
-
-  """
-  validTo is the time the VC is valid to.
-  """
+  """VC validity end."""
   validTo: Time
-
-  """
-  rawVC is the raw VC JSON.
-  """
+  """Raw VC JSON."""
   rawVC: String!
 }
-
 `, BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)
@@ -6097,6 +5890,22 @@ func (ec *executionContext) field_Query_segments_args(ctx context.Context, rawAr
 }
 
 func (ec *executionContext) field_Query_signalsLatest_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "tokenId", ec.unmarshalNInt2int)
+	if err != nil {
+		return nil, err
+	}
+	args["tokenId"] = arg0
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFilter)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_signalsSnapshot_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
 	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "tokenId", ec.unmarshalNInt2int)
@@ -8659,7 +8468,7 @@ func (ec *executionContext) _DataSummary_signalDataSummary(ctx context.Context, 
 			return obj.SignalDataSummary, nil
 		},
 		nil,
-		ec.marshalNsignalDataSummary2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalDataSummaryᚄ,
+		ec.marshalNSignalDataSummary2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalDataSummaryᚄ,
 		true,
 		true,
 	)
@@ -8674,15 +8483,15 @@ func (ec *executionContext) fieldContext_DataSummary_signalDataSummary(_ context
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "name":
-				return ec.fieldContext_signalDataSummary_name(ctx, field)
+				return ec.fieldContext_SignalDataSummary_name(ctx, field)
 			case "numberOfSignals":
-				return ec.fieldContext_signalDataSummary_numberOfSignals(ctx, field)
+				return ec.fieldContext_SignalDataSummary_numberOfSignals(ctx, field)
 			case "firstSeen":
-				return ec.fieldContext_signalDataSummary_firstSeen(ctx, field)
+				return ec.fieldContext_SignalDataSummary_firstSeen(ctx, field)
 			case "lastSeen":
-				return ec.fieldContext_signalDataSummary_lastSeen(ctx, field)
+				return ec.fieldContext_SignalDataSummary_lastSeen(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type signalDataSummary", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type SignalDataSummary", field.Name)
 		},
 	}
 	return fc, nil
@@ -8698,7 +8507,7 @@ func (ec *executionContext) _DataSummary_eventDataSummary(ctx context.Context, f
 			return obj.EventDataSummary, nil
 		},
 		nil,
-		ec.marshalNeventDataSummary2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐEventDataSummaryᚄ,
+		ec.marshalNEventDataSummary2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐEventDataSummaryᚄ,
 		true,
 		true,
 	)
@@ -8713,15 +8522,15 @@ func (ec *executionContext) fieldContext_DataSummary_eventDataSummary(_ context.
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "name":
-				return ec.fieldContext_eventDataSummary_name(ctx, field)
+				return ec.fieldContext_EventDataSummary_name(ctx, field)
 			case "numberOfEvents":
-				return ec.fieldContext_eventDataSummary_numberOfEvents(ctx, field)
+				return ec.fieldContext_EventDataSummary_numberOfEvents(ctx, field)
 			case "firstSeen":
-				return ec.fieldContext_eventDataSummary_firstSeen(ctx, field)
+				return ec.fieldContext_EventDataSummary_firstSeen(ctx, field)
 			case "lastSeen":
-				return ec.fieldContext_eventDataSummary_lastSeen(ctx, field)
+				return ec.fieldContext_EventDataSummary_lastSeen(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type eventDataSummary", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type EventDataSummary", field.Name)
 		},
 	}
 	return fc, nil
@@ -8925,6 +8734,275 @@ func (ec *executionContext) fieldContext_EventCount_count(_ context.Context, fie
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _EventDataSummary_name(ctx context.Context, field graphql.CollectedField, obj *model.EventDataSummary) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_EventDataSummary_name,
+		func(ctx context.Context) (any, error) {
+			return obj.Name, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_EventDataSummary_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "EventDataSummary",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _EventDataSummary_numberOfEvents(ctx context.Context, field graphql.CollectedField, obj *model.EventDataSummary) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_EventDataSummary_numberOfEvents,
+		func(ctx context.Context) (any, error) {
+			return obj.NumberOfEvents, nil
+		},
+		nil,
+		ec.marshalNUint642uint64,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_EventDataSummary_numberOfEvents(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "EventDataSummary",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Uint64 does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _EventDataSummary_firstSeen(ctx context.Context, field graphql.CollectedField, obj *model.EventDataSummary) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_EventDataSummary_firstSeen,
+		func(ctx context.Context) (any, error) {
+			return obj.FirstSeen, nil
+		},
+		nil,
+		ec.marshalNTime2timeᚐTime,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_EventDataSummary_firstSeen(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "EventDataSummary",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _EventDataSummary_lastSeen(ctx context.Context, field graphql.CollectedField, obj *model.EventDataSummary) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_EventDataSummary_lastSeen,
+		func(ctx context.Context) (any, error) {
+			return obj.LastSeen, nil
+		},
+		nil,
+		ec.marshalNTime2timeᚐTime,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_EventDataSummary_lastSeen(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "EventDataSummary",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _LatestSignal_name(ctx context.Context, field graphql.CollectedField, obj *model.LatestSignal) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_LatestSignal_name,
+		func(ctx context.Context) (any, error) {
+			return obj.Name, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_LatestSignal_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "LatestSignal",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _LatestSignal_timestamp(ctx context.Context, field graphql.CollectedField, obj *model.LatestSignal) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_LatestSignal_timestamp,
+		func(ctx context.Context) (any, error) {
+			return obj.Timestamp, nil
+		},
+		nil,
+		ec.marshalNTime2timeᚐTime,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_LatestSignal_timestamp(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "LatestSignal",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _LatestSignal_valueNumber(ctx context.Context, field graphql.CollectedField, obj *model.LatestSignal) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_LatestSignal_valueNumber,
+		func(ctx context.Context) (any, error) {
+			return obj.ValueNumber, nil
+		},
+		nil,
+		ec.marshalOFloat2ᚖfloat64,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_LatestSignal_valueNumber(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "LatestSignal",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _LatestSignal_valueString(ctx context.Context, field graphql.CollectedField, obj *model.LatestSignal) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_LatestSignal_valueString,
+		func(ctx context.Context) (any, error) {
+			return obj.ValueString, nil
+		},
+		nil,
+		ec.marshalOString2ᚖstring,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_LatestSignal_valueString(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "LatestSignal",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _LatestSignal_valueLocation(ctx context.Context, field graphql.CollectedField, obj *model.LatestSignal) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_LatestSignal_valueLocation,
+		func(ctx context.Context) (any, error) {
+			return obj.ValueLocation, nil
+		},
+		nil,
+		ec.marshalOLocation2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐLocation,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_LatestSignal_valueLocation(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "LatestSignal",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "latitude":
+				return ec.fieldContext_Location_latitude(ctx, field)
+			case "longitude":
+				return ec.fieldContext_Location_longitude(ctx, field)
+			case "hdop":
+				return ec.fieldContext_Location_hdop(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Location", field.Name)
 		},
 	}
 	return fc, nil
@@ -9649,6 +9727,66 @@ func (ec *executionContext) fieldContext_Query_availableSignals(ctx context.Cont
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Query_availableSignals_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_signalsSnapshot(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Query_signalsSnapshot,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.Resolvers.Query().SignalsSnapshot(ctx, fc.Args["tokenId"].(int), fc.Args["filter"].(*model.SignalFilter))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
+
+			directive1 := func(ctx context.Context) (any, error) {
+				if ec.Directives.RequiresVehicleToken == nil {
+					var zeroVal *model.SignalsSnapshotResponse
+					return zeroVal, errors.New("directive requiresVehicleToken is not implemented")
+				}
+				return ec.Directives.RequiresVehicleToken(ctx, nil, directive0)
+			}
+
+			next = directive1
+			return next
+		},
+		ec.marshalOSignalsSnapshotResponse2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalsSnapshotResponse,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_Query_signalsSnapshot(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "lastSeen":
+				return ec.fieldContext_SignalsSnapshotResponse_lastSeen(ctx, field)
+			case "signals":
+				return ec.fieldContext_SignalsSnapshotResponse_signals(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SignalsSnapshotResponse", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_signalsSnapshot_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -26171,6 +26309,122 @@ func (ec *executionContext) fieldContext_SignalCollection_speed(_ context.Contex
 	return fc, nil
 }
 
+func (ec *executionContext) _SignalDataSummary_name(ctx context.Context, field graphql.CollectedField, obj *model.SignalDataSummary) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SignalDataSummary_name,
+		func(ctx context.Context) (any, error) {
+			return obj.Name, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SignalDataSummary_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignalDataSummary",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SignalDataSummary_numberOfSignals(ctx context.Context, field graphql.CollectedField, obj *model.SignalDataSummary) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SignalDataSummary_numberOfSignals,
+		func(ctx context.Context) (any, error) {
+			return obj.NumberOfSignals, nil
+		},
+		nil,
+		ec.marshalNUint642uint64,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SignalDataSummary_numberOfSignals(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignalDataSummary",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Uint64 does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SignalDataSummary_firstSeen(ctx context.Context, field graphql.CollectedField, obj *model.SignalDataSummary) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SignalDataSummary_firstSeen,
+		func(ctx context.Context) (any, error) {
+			return obj.FirstSeen, nil
+		},
+		nil,
+		ec.marshalNTime2timeᚐTime,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SignalDataSummary_firstSeen(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignalDataSummary",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SignalDataSummary_lastSeen(ctx context.Context, field graphql.CollectedField, obj *model.SignalDataSummary) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SignalDataSummary_lastSeen,
+		func(ctx context.Context) (any, error) {
+			return obj.LastSeen, nil
+		},
+		nil,
+		ec.marshalNTime2timeᚐTime,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SignalDataSummary_lastSeen(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignalDataSummary",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _SignalFloat_timestamp(ctx context.Context, field graphql.CollectedField, obj *model.SignalFloat) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -26348,6 +26602,76 @@ func (ec *executionContext) fieldContext_SignalString_value(_ context.Context, f
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SignalsSnapshotResponse_lastSeen(ctx context.Context, field graphql.CollectedField, obj *model.SignalsSnapshotResponse) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SignalsSnapshotResponse_lastSeen,
+		func(ctx context.Context) (any, error) {
+			return obj.LastSeen, nil
+		},
+		nil,
+		ec.marshalOTime2ᚖtimeᚐTime,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_SignalsSnapshotResponse_lastSeen(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignalsSnapshotResponse",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SignalsSnapshotResponse_signals(ctx context.Context, field graphql.CollectedField, obj *model.SignalsSnapshotResponse) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SignalsSnapshotResponse_signals,
+		func(ctx context.Context) (any, error) {
+			return obj.Signals, nil
+		},
+		nil,
+		ec.marshalNLatestSignal2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐLatestSignalᚄ,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SignalsSnapshotResponse_signals(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignalsSnapshotResponse",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "name":
+				return ec.fieldContext_LatestSignal_name(ctx, field)
+			case "timestamp":
+				return ec.fieldContext_LatestSignal_timestamp(ctx, field)
+			case "valueNumber":
+				return ec.fieldContext_LatestSignal_valueNumber(ctx, field)
+			case "valueString":
+				return ec.fieldContext_LatestSignal_valueString(ctx, field)
+			case "valueLocation":
+				return ec.fieldContext_LatestSignal_valueLocation(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type LatestSignal", field.Name)
 		},
 	}
 	return fc, nil
@@ -28056,244 +28380,16 @@ func (ec *executionContext) fieldContext___Type_isOneOf(_ context.Context, field
 	return fc, nil
 }
 
-func (ec *executionContext) _eventDataSummary_name(ctx context.Context, field graphql.CollectedField, obj *model.EventDataSummary) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_eventDataSummary_name,
-		func(ctx context.Context) (any, error) {
-			return obj.Name, nil
-		},
-		nil,
-		ec.marshalNString2string,
-		true,
-		true,
-	)
-}
-
-func (ec *executionContext) fieldContext_eventDataSummary_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "eventDataSummary",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _eventDataSummary_numberOfEvents(ctx context.Context, field graphql.CollectedField, obj *model.EventDataSummary) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_eventDataSummary_numberOfEvents,
-		func(ctx context.Context) (any, error) {
-			return obj.NumberOfEvents, nil
-		},
-		nil,
-		ec.marshalNUint642uint64,
-		true,
-		true,
-	)
-}
-
-func (ec *executionContext) fieldContext_eventDataSummary_numberOfEvents(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "eventDataSummary",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Uint64 does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _eventDataSummary_firstSeen(ctx context.Context, field graphql.CollectedField, obj *model.EventDataSummary) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_eventDataSummary_firstSeen,
-		func(ctx context.Context) (any, error) {
-			return obj.FirstSeen, nil
-		},
-		nil,
-		ec.marshalNTime2timeᚐTime,
-		true,
-		true,
-	)
-}
-
-func (ec *executionContext) fieldContext_eventDataSummary_firstSeen(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "eventDataSummary",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Time does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _eventDataSummary_lastSeen(ctx context.Context, field graphql.CollectedField, obj *model.EventDataSummary) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_eventDataSummary_lastSeen,
-		func(ctx context.Context) (any, error) {
-			return obj.LastSeen, nil
-		},
-		nil,
-		ec.marshalNTime2timeᚐTime,
-		true,
-		true,
-	)
-}
-
-func (ec *executionContext) fieldContext_eventDataSummary_lastSeen(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "eventDataSummary",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Time does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _signalDataSummary_name(ctx context.Context, field graphql.CollectedField, obj *model.SignalDataSummary) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_signalDataSummary_name,
-		func(ctx context.Context) (any, error) {
-			return obj.Name, nil
-		},
-		nil,
-		ec.marshalNString2string,
-		true,
-		true,
-	)
-}
-
-func (ec *executionContext) fieldContext_signalDataSummary_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "signalDataSummary",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _signalDataSummary_numberOfSignals(ctx context.Context, field graphql.CollectedField, obj *model.SignalDataSummary) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_signalDataSummary_numberOfSignals,
-		func(ctx context.Context) (any, error) {
-			return obj.NumberOfSignals, nil
-		},
-		nil,
-		ec.marshalNUint642uint64,
-		true,
-		true,
-	)
-}
-
-func (ec *executionContext) fieldContext_signalDataSummary_numberOfSignals(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "signalDataSummary",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Uint64 does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _signalDataSummary_firstSeen(ctx context.Context, field graphql.CollectedField, obj *model.SignalDataSummary) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_signalDataSummary_firstSeen,
-		func(ctx context.Context) (any, error) {
-			return obj.FirstSeen, nil
-		},
-		nil,
-		ec.marshalNTime2timeᚐTime,
-		true,
-		true,
-	)
-}
-
-func (ec *executionContext) fieldContext_signalDataSummary_firstSeen(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "signalDataSummary",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Time does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _signalDataSummary_lastSeen(ctx context.Context, field graphql.CollectedField, obj *model.SignalDataSummary) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_signalDataSummary_lastSeen,
-		func(ctx context.Context) (any, error) {
-			return obj.LastSeen, nil
-		},
-		nil,
-		ec.marshalNTime2timeᚐTime,
-		true,
-		true,
-	)
-}
-
-func (ec *executionContext) fieldContext_signalDataSummary_lastSeen(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "signalDataSummary",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Time does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
 // endregion **************************** field.gotpl *****************************
 
 // region    **************************** input.gotpl *****************************
 
 func (ec *executionContext) unmarshalInputAttestationFilter(ctx context.Context, obj any) (model.AttestationFilter, error) {
 	var it model.AttestationFilter
+	if obj == nil {
+		return it, nil
+	}
+
 	asMap := map[string]any{}
 	for k, v := range obj.(map[string]any) {
 		asMap[k] = v
@@ -28376,6 +28472,10 @@ func (ec *executionContext) unmarshalInputAttestationFilter(ctx context.Context,
 
 func (ec *executionContext) unmarshalInputEventFilter(ctx context.Context, obj any) (model.EventFilter, error) {
 	var it model.EventFilter
+	if obj == nil {
+		return it, nil
+	}
+
 	asMap := map[string]any{}
 	for k, v := range obj.(map[string]any) {
 		asMap[k] = v
@@ -28416,6 +28516,10 @@ func (ec *executionContext) unmarshalInputEventFilter(ctx context.Context, obj a
 
 func (ec *executionContext) unmarshalInputFilterLocation(ctx context.Context, obj any) (model.FilterLocation, error) {
 	var it model.FilterLocation
+	if obj == nil {
+		return it, nil
+	}
+
 	asMap := map[string]any{}
 	for k, v := range obj.(map[string]any) {
 		asMap[k] = v
@@ -28449,6 +28553,10 @@ func (ec *executionContext) unmarshalInputFilterLocation(ctx context.Context, ob
 
 func (ec *executionContext) unmarshalInputInCircleFilter(ctx context.Context, obj any) (model.InCircleFilter, error) {
 	var it model.InCircleFilter
+	if obj == nil {
+		return it, nil
+	}
+
 	asMap := map[string]any{}
 	for k, v := range obj.(map[string]any) {
 		asMap[k] = v
@@ -28482,6 +28590,10 @@ func (ec *executionContext) unmarshalInputInCircleFilter(ctx context.Context, ob
 
 func (ec *executionContext) unmarshalInputSegmentConfig(ctx context.Context, obj any) (model.SegmentConfig, error) {
 	var it model.SegmentConfig
+	if obj == nil {
+		return it, nil
+	}
+
 	asMap := map[string]any{}
 	for k, v := range obj.(map[string]any) {
 		asMap[k] = v
@@ -28552,6 +28664,10 @@ func (ec *executionContext) unmarshalInputSegmentConfig(ctx context.Context, obj
 
 func (ec *executionContext) unmarshalInputSegmentEventRequest(ctx context.Context, obj any) (model.SegmentEventRequest, error) {
 	var it model.SegmentEventRequest
+	if obj == nil {
+		return it, nil
+	}
+
 	asMap := map[string]any{}
 	for k, v := range obj.(map[string]any) {
 		asMap[k] = v
@@ -28578,6 +28694,10 @@ func (ec *executionContext) unmarshalInputSegmentEventRequest(ctx context.Contex
 
 func (ec *executionContext) unmarshalInputSegmentSignalRequest(ctx context.Context, obj any) (model.SegmentSignalRequest, error) {
 	var it model.SegmentSignalRequest
+	if obj == nil {
+		return it, nil
+	}
+
 	asMap := map[string]any{}
 	for k, v := range obj.(map[string]any) {
 		asMap[k] = v
@@ -28611,6 +28731,10 @@ func (ec *executionContext) unmarshalInputSegmentSignalRequest(ctx context.Conte
 
 func (ec *executionContext) unmarshalInputSignalFilter(ctx context.Context, obj any) (model.SignalFilter, error) {
 	var it model.SignalFilter
+	if obj == nil {
+		return it, nil
+	}
+
 	asMap := map[string]any{}
 	for k, v := range obj.(map[string]any) {
 		asMap[k] = v
@@ -28637,6 +28761,10 @@ func (ec *executionContext) unmarshalInputSignalFilter(ctx context.Context, obj 
 
 func (ec *executionContext) unmarshalInputSignalFloatFilter(ctx context.Context, obj any) (model.SignalFloatFilter, error) {
 	var it model.SignalFloatFilter
+	if obj == nil {
+		return it, nil
+	}
+
 	asMap := map[string]any{}
 	for k, v := range obj.(map[string]any) {
 		asMap[k] = v
@@ -28719,6 +28847,10 @@ func (ec *executionContext) unmarshalInputSignalFloatFilter(ctx context.Context,
 
 func (ec *executionContext) unmarshalInputSignalLocationFilter(ctx context.Context, obj any) (model.SignalLocationFilter, error) {
 	var it model.SignalLocationFilter
+	if obj == nil {
+		return it, nil
+	}
+
 	asMap := map[string]any{}
 	for k, v := range obj.(map[string]any) {
 		asMap[k] = v
@@ -28752,6 +28884,10 @@ func (ec *executionContext) unmarshalInputSignalLocationFilter(ctx context.Conte
 
 func (ec *executionContext) unmarshalInputStringArrayFilter(ctx context.Context, obj any) (model.StringArrayFilter, error) {
 	var it model.StringArrayFilter
+	if obj == nil {
+		return it, nil
+	}
+
 	asMap := map[string]any{}
 	for k, v := range obj.(map[string]any) {
 		asMap[k] = v
@@ -28806,6 +28942,10 @@ func (ec *executionContext) unmarshalInputStringArrayFilter(ctx context.Context,
 
 func (ec *executionContext) unmarshalInputStringValueFilter(ctx context.Context, obj any) (model.StringValueFilter, error) {
 	var it model.StringValueFilter
+	if obj == nil {
+		return it, nil
+	}
+
 	asMap := map[string]any{}
 	for k, v := range obj.(map[string]any) {
 		asMap[k] = v
@@ -29173,6 +29313,110 @@ func (ec *executionContext) _EventCount(ctx context.Context, sel ast.SelectionSe
 	return out
 }
 
+var eventDataSummaryImplementors = []string{"EventDataSummary"}
+
+func (ec *executionContext) _EventDataSummary(ctx context.Context, sel ast.SelectionSet, obj *model.EventDataSummary) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, eventDataSummaryImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("EventDataSummary")
+		case "name":
+			out.Values[i] = ec._EventDataSummary_name(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "numberOfEvents":
+			out.Values[i] = ec._EventDataSummary_numberOfEvents(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "firstSeen":
+			out.Values[i] = ec._EventDataSummary_firstSeen(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "lastSeen":
+			out.Values[i] = ec._EventDataSummary_lastSeen(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var latestSignalImplementors = []string{"LatestSignal"}
+
+func (ec *executionContext) _LatestSignal(ctx context.Context, sel ast.SelectionSet, obj *model.LatestSignal) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, latestSignalImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("LatestSignal")
+		case "name":
+			out.Values[i] = ec._LatestSignal_name(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "timestamp":
+			out.Values[i] = ec._LatestSignal_timestamp(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "valueNumber":
+			out.Values[i] = ec._LatestSignal_valueNumber(ctx, field, obj)
+		case "valueString":
+			out.Values[i] = ec._LatestSignal_valueString(ctx, field, obj)
+		case "valueLocation":
+			out.Values[i] = ec._LatestSignal_valueLocation(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var locationImplementors = []string{"Location"}
 
 func (ec *executionContext) _Location(ctx context.Context, sel ast.SelectionSet, obj *model.Location) graphql.Marshaler {
@@ -29289,6 +29533,25 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_availableSignals(ctx, field)
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "signalsSnapshot":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_signalsSnapshot(ctx, field)
 				return res
 			}
 
@@ -33728,6 +33991,60 @@ func (ec *executionContext) _SignalCollection(ctx context.Context, sel ast.Selec
 	return out
 }
 
+var signalDataSummaryImplementors = []string{"SignalDataSummary"}
+
+func (ec *executionContext) _SignalDataSummary(ctx context.Context, sel ast.SelectionSet, obj *model.SignalDataSummary) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, signalDataSummaryImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("SignalDataSummary")
+		case "name":
+			out.Values[i] = ec._SignalDataSummary_name(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "numberOfSignals":
+			out.Values[i] = ec._SignalDataSummary_numberOfSignals(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "firstSeen":
+			out.Values[i] = ec._SignalDataSummary_firstSeen(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "lastSeen":
+			out.Values[i] = ec._SignalDataSummary_lastSeen(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var signalFloatImplementors = []string{"SignalFloat"}
 
 func (ec *executionContext) _SignalFloat(ctx context.Context, sel ast.SelectionSet, obj *model.SignalFloat) graphql.Marshaler {
@@ -33834,6 +34151,47 @@ func (ec *executionContext) _SignalString(ctx context.Context, sel ast.Selection
 			}
 		case "value":
 			out.Values[i] = ec._SignalString_value(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var signalsSnapshotResponseImplementors = []string{"SignalsSnapshotResponse"}
+
+func (ec *executionContext) _SignalsSnapshotResponse(ctx context.Context, sel ast.SelectionSet, obj *model.SignalsSnapshotResponse) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, signalsSnapshotResponseImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("SignalsSnapshotResponse")
+		case "lastSeen":
+			out.Values[i] = ec._SignalsSnapshotResponse_lastSeen(ctx, field, obj)
+		case "signals":
+			out.Values[i] = ec._SignalsSnapshotResponse_signals(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -34246,114 +34604,6 @@ func (ec *executionContext) ___Type(ctx context.Context, sel ast.SelectionSet, o
 	return out
 }
 
-var eventDataSummaryImplementors = []string{"eventDataSummary"}
-
-func (ec *executionContext) _eventDataSummary(ctx context.Context, sel ast.SelectionSet, obj *model.EventDataSummary) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, eventDataSummaryImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	deferred := make(map[string]*graphql.FieldSet)
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("eventDataSummary")
-		case "name":
-			out.Values[i] = ec._eventDataSummary_name(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		case "numberOfEvents":
-			out.Values[i] = ec._eventDataSummary_numberOfEvents(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		case "firstSeen":
-			out.Values[i] = ec._eventDataSummary_firstSeen(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		case "lastSeen":
-			out.Values[i] = ec._eventDataSummary_lastSeen(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch(ctx)
-	if out.Invalids > 0 {
-		return graphql.Null
-	}
-
-	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
-
-	for label, dfs := range deferred {
-		ec.ProcessDeferredGroup(graphql.DeferredGroup{
-			Label:    label,
-			Path:     graphql.GetPath(ctx),
-			FieldSet: dfs,
-			Context:  ctx,
-		})
-	}
-
-	return out
-}
-
-var signalDataSummaryImplementors = []string{"signalDataSummary"}
-
-func (ec *executionContext) _signalDataSummary(ctx context.Context, sel ast.SelectionSet, obj *model.SignalDataSummary) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, signalDataSummaryImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	deferred := make(map[string]*graphql.FieldSet)
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("signalDataSummary")
-		case "name":
-			out.Values[i] = ec._signalDataSummary_name(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		case "numberOfSignals":
-			out.Values[i] = ec._signalDataSummary_numberOfSignals(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		case "firstSeen":
-			out.Values[i] = ec._signalDataSummary_firstSeen(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		case "lastSeen":
-			out.Values[i] = ec._signalDataSummary_lastSeen(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch(ctx)
-	if out.Invalids > 0 {
-		return graphql.Null
-	}
-
-	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
-
-	for label, dfs := range deferred {
-		ec.ProcessDeferredGroup(graphql.DeferredGroup{
-			Label:    label,
-			Path:     graphql.GetPath(ctx),
-			FieldSet: dfs,
-			Context:  ctx,
-		})
-	}
-
-	return out
-}
-
 // endregion **************************** object.gotpl ****************************
 
 // region    ***************************** type.gotpl *****************************
@@ -34462,6 +34712,32 @@ func (ec *executionContext) marshalNEventCount2ᚖgithubᚗcomᚋDIMOᚑNetwork�
 	return ec._EventCount(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalNEventDataSummary2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐEventDataSummaryᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.EventDataSummary) graphql.Marshaler {
+	ret := graphql.MarshalSliceConcurrently(ctx, len(v), 0, false, func(ctx context.Context, i int) graphql.Marshaler {
+		fc := graphql.GetFieldContext(ctx)
+		fc.Result = &v[i]
+		return ec.marshalNEventDataSummary2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐEventDataSummary(ctx, sel, v[i])
+	})
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNEventDataSummary2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐEventDataSummary(ctx context.Context, sel ast.SelectionSet, v *model.EventDataSummary) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._EventDataSummary(ctx, sel, v)
+}
+
 func (ec *executionContext) unmarshalNFilterLocation2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFilterLocation(ctx context.Context, v any) (*model.FilterLocation, error) {
 	res, err := ec.unmarshalInputFilterLocation(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
@@ -34507,6 +34783,32 @@ func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.Selecti
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) marshalNLatestSignal2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐLatestSignalᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.LatestSignal) graphql.Marshaler {
+	ret := graphql.MarshalSliceConcurrently(ctx, len(v), 0, false, func(ctx context.Context, i int) graphql.Marshaler {
+		fc := graphql.GetFieldContext(ctx)
+		fc.Result = &v[i]
+		return ec.marshalNLatestSignal2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐLatestSignal(ctx, sel, v[i])
+	})
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNLatestSignal2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐLatestSignal(ctx context.Context, sel ast.SelectionSet, v *model.LatestSignal) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._LatestSignal(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNLocation2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐLocation(ctx context.Context, sel ast.SelectionSet, v *model.Location) graphql.Marshaler {
@@ -34668,6 +34970,32 @@ func (ec *executionContext) marshalNSignalAggregations2ᚖgithubᚗcomᚋDIMOᚑ
 		return graphql.Null
 	}
 	return ec._SignalAggregations(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNSignalDataSummary2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalDataSummaryᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.SignalDataSummary) graphql.Marshaler {
+	ret := graphql.MarshalSliceConcurrently(ctx, len(v), 0, false, func(ctx context.Context, i int) graphql.Marshaler {
+		fc := graphql.GetFieldContext(ctx)
+		fc.Result = &v[i]
+		return ec.marshalNSignalDataSummary2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalDataSummary(ctx, sel, v[i])
+	})
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNSignalDataSummary2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalDataSummary(ctx context.Context, sel ast.SelectionSet, v *model.SignalDataSummary) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._SignalDataSummary(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNSignalFloatFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFloatFilter(ctx context.Context, v any) (*model.SignalFloatFilter, error) {
@@ -34922,58 +35250,6 @@ func (ec *executionContext) marshalN__TypeKind2string(ctx context.Context, sel a
 		}
 	}
 	return res
-}
-
-func (ec *executionContext) marshalNeventDataSummary2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐEventDataSummaryᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.EventDataSummary) graphql.Marshaler {
-	ret := graphql.MarshalSliceConcurrently(ctx, len(v), 0, false, func(ctx context.Context, i int) graphql.Marshaler {
-		fc := graphql.GetFieldContext(ctx)
-		fc.Result = &v[i]
-		return ec.marshalNeventDataSummary2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐEventDataSummary(ctx, sel, v[i])
-	})
-
-	for _, e := range ret {
-		if e == graphql.Null {
-			return graphql.Null
-		}
-	}
-
-	return ret
-}
-
-func (ec *executionContext) marshalNeventDataSummary2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐEventDataSummary(ctx context.Context, sel ast.SelectionSet, v *model.EventDataSummary) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
-		}
-		return graphql.Null
-	}
-	return ec._eventDataSummary(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalNsignalDataSummary2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalDataSummaryᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.SignalDataSummary) graphql.Marshaler {
-	ret := graphql.MarshalSliceConcurrently(ctx, len(v), 0, false, func(ctx context.Context, i int) graphql.Marshaler {
-		fc := graphql.GetFieldContext(ctx)
-		fc.Result = &v[i]
-		return ec.marshalNsignalDataSummary2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalDataSummary(ctx, sel, v[i])
-	})
-
-	for _, e := range ret {
-		if e == graphql.Null {
-			return graphql.Null
-		}
-	}
-
-	return ret
-}
-
-func (ec *executionContext) marshalNsignalDataSummary2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalDataSummary(ctx context.Context, sel ast.SelectionSet, v *model.SignalDataSummary) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
-		}
-		return graphql.Null
-	}
-	return ec._signalDataSummary(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalOAddress2ᚖgithubᚗcomᚋethereumᚋgoᚑethereumᚋcommonᚐAddress(ctx context.Context, v any) (*common.Address, error) {
@@ -35359,6 +35635,13 @@ func (ec *executionContext) marshalOSignalString2ᚖgithubᚗcomᚋDIMOᚑNetwor
 		return graphql.Null
 	}
 	return ec._SignalString(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOSignalsSnapshotResponse2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalsSnapshotResponse(ctx context.Context, sel ast.SelectionSet, v *model.SignalsSnapshotResponse) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._SignalsSnapshotResponse(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalOString2ᚕstringᚄ(ctx context.Context, v any) ([]string, error) {

@@ -1,5 +1,5 @@
 """
-A point in time, encoded per RFC-3999. Typically these will be in second precision,
+A point in time, encoded per RFC-3339. Typically these will be in second precision,
 just like the blockchain, and in UTC.
 """
 scalar Time
@@ -25,42 +25,39 @@ directive @hasAggregation on INPUT_FIELD_DEFINITION | FIELD_DEFINITION
 The root query type for the GraphQL schema.
 """
 type Query {
-  """
-  signals returns a collection of signals for a given token in a given time range.
-  """
   signals(
     tokenId: Int!
     """
-    interval is a time span that used for aggregatting the data with.
-    A duration string is a sequence of decimal numbers, each with optional fraction and a unit suffix,
-    such as "300ms" or "2h45m". Valid time units are "ms", "s", "m", "h"
+    Duration string for data aggregation buckets (e.g., "5m", "1h", "2h45m"). Valid units: ms, s, m, h. Common values: "5m" (5 minutes), "1h" (1 hour), "6h", "24h". Days are not a valid unit — use "24h" instead of "1d".
     """
     interval: String!
     from: Time!
     to: Time!
     filter: SignalFilter
   ): [SignalAggregations!] @requiresVehicleToken
-  """
-  SignalsLatest returns the latest signals for a given token.
-  """
+    @mcpTool(name: "get_signals_time_series", description: "Get aggregated signal time series for a vehicle over a date range. Returns signal values bucketed by the specified interval (e.g. '1h', '15m'). Use with signal field names and aggregation functions.", selection: "timestamp")
+    @mcpExample(description: "Hourly average speed over a time range", query: "query TimeSeries($tokenId:Int!,$from:Time!,$to:Time!) { signals(tokenId:$tokenId,interval:\"1h\",from:$from,to:$to) { timestamp speed(agg:AVG) } }")
   signalsLatest(tokenId: Int!, filter: SignalFilter): SignalCollection
     @requiresVehicleToken
-  """
-  availableSignals returns a list of queryable signal names that have stored data for a given tokenId.
-  """
+    @mcpTool(name: "get_latest_signals", description: "Get the most recent signal values for a vehicle by token ID. Returns the last-seen timestamp for the vehicle.", selection: "lastSeen")
+    @mcpExample(description: "Latest speed and battery charge", query: "query Latest($tokenId:Int!) { signalsLatest(tokenId:$tokenId) { lastSeen speed{timestamp value} powertrainTractionBatteryStateOfChargeCurrent{timestamp value} } }")
   availableSignals(tokenId: Int!, filter: SignalFilter): [String!]
     @requiresVehicleToken
+    @mcpTool(name: "get_available_signals", description: "List queryable signal names that have stored data for a vehicle by token ID.", selection: "")
 
   """
-  data summary of all signals for a given tokenId
+  Point-in-time snapshot of all accessible signals. Equivalent to availableSignals + signalsLatest in a single request.
   """
+  signalsSnapshot(tokenId: Int!, filter: SignalFilter): SignalsSnapshotResponse
+    @requiresVehicleToken
+    @mcpTool(name: "get_signals_snapshot", description: "Get a point-in-time snapshot of all available signals for a vehicle by token ID. Returns every signal the caller has permission to see.", selection: "lastSeen signals { name timestamp valueNumber valueString valueLocation { latitude longitude hdop } }")
+    @mcpExample(description: "Full snapshot of all signals for a vehicle", query: "query Snapshot($tokenId:Int!) { signalsSnapshot(tokenId:$tokenId) { lastSeen signals { name timestamp valueNumber valueString valueLocation { latitude longitude hdop } } } }")
+
   dataSummary(tokenId: Int!, filter: SignalFilter): DataSummary
     @requiresVehicleToken
+    @mcpTool(name: "get_data_summary", description: "Get a summary of all data available for a vehicle by token ID. Returns total signal count, available signal names, first/last seen timestamps, and per-signal and per-event breakdowns.", selection: "numberOfSignals availableSignals firstSeen lastSeen signalDataSummary { name numberOfSignals firstSeen lastSeen } eventDataSummary { name numberOfEvents firstSeen lastSeen }")
 }
 type SignalAggregations {
-  """
-  Timestamp of the aggregated data.
-  """
   timestamp: Time!
   """
   Approximate location of the vehicle in WGS 84 coordinates. The aggregation is applied to
@@ -78,9 +75,6 @@ type SignalAggregations {
 }
 
 type SignalCollection {
-  """
-  The last time any signal was seen matching the filter.
-  """
   lastSeen: Time
   """
   Approximate location of the vehicle in WGS 84 coordinates. The raw value is replaced with
@@ -95,70 +89,42 @@ type SignalCollection {
     @isSignal
 }
 
+type LatestSignal {
+  name: String!
+  timestamp: Time!
+  """Present for float-type signals."""
+  valueNumber: Float
+  """Present for string-type signals."""
+  valueString: String
+  """Present for location-type signals."""
+  valueLocation: Location
+}
+
+type SignalsSnapshotResponse {
+  lastSeen: Time
+  signals: [LatestSignal!]!
+}
+
 type DataSummary {
-  """
-  Total number of signals collected
-  """
   numberOfSignals: Uint64!
-  """
-  available signal names
-  """
   availableSignals: [String!]!
-  """
-  first seen timestamp
-  """
   firstSeen: Time!
-  """
-  last seen timestamp
-  """
   lastSeen: Time!
-
-  """
-  data summary of an individual signal
-  """
-  signalDataSummary: [signalDataSummary!]!
-
-  """
-  Events known to the vehicle: per-event name, count, and first/last seen.
-  """
-  eventDataSummary: [eventDataSummary!]!
+  signalDataSummary: [SignalDataSummary!]!
+  eventDataSummary: [EventDataSummary!]!
 }
 
-type eventDataSummary {
-  """
-  Event name
-  """
+type EventDataSummary {
   name: String!
-  """
-  Number of times this event occurred for the vehicle
-  """
   numberOfEvents: Uint64!
-  """
-  First seen timestamp
-  """
   firstSeen: Time!
-  """
-  Last seen timestamp
-  """
   lastSeen: Time!
 }
 
-type signalDataSummary {
-  """
-  signal name
-  """
+type SignalDataSummary {
   name: String!
-  """
-  number of this specific signal
-  """
   numberOfSignals: Uint64!
-  """
-  first seen timestamp
-  """
   firstSeen: Time!
-  """
-  last seen timestamp
-  """
   lastSeen: Time!
 }
 
@@ -202,47 +168,23 @@ enum StringAggregation {
   LAST
 }
 type SignalFloat {
-  """
-  timestamp of when this data was collected
-  """
   timestamp: Time!
-
-  """
-  value of the signal
-  """
   value: Float!
 }
 
 type SignalString {
-  """
-  timestamp of when this data was collected
-  """
   timestamp: Time!
-
-  """
-  value of the signal
-  """
   value: String!
 }
 
 type SignalLocation {
-  """
-  timestamp of when this data was collected
-  """
   timestamp: Time!
-
-  """
-  location (latitude, longitude, hdop) at this timestamp.
-  """
   value: Location!
 }
 
-"""
-SignalFilter holds the filter parameters for the signal querys.
-"""
 input SignalFilter {
   """
-  Filter signals by source using an ethr DID.
+  Filter by source ethr DID.
   Example: "did:ethr:137:0xcd445F4c6bDAD32b68a2939b912150Fe3C88803E"
   """
   source: String
@@ -285,9 +227,6 @@ type EventCount {
   count: Int!
 }
 
-"""
-Filters that apply to locations.
-"""
 input SignalLocationFilter {
   """
   Filter for locations within a polygon. The vertices should be ordered
@@ -305,79 +244,32 @@ input SignalLocationFilter {
 }
 
 input FilterLocation {
-  """
-  Latitude in the range [-90, 90].
-  """
+  """Latitude in the range [-90, 90]."""
   latitude: Float!
-  """
-  Longitude in the range [-180, 180].
-  """
+  """Longitude in the range [-180, 180]."""
   longitude: Float!
 }
 
 input InCircleFilter {
-  """
-  Center of the filter circle.
-  """
   center: FilterLocation!
-  """
-  Radius of the circle around the center, in kilometers (km).
-  """
+  """Radius in kilometers."""
   radius: Float!
 }
 
-"""
-Filters that apply to strings.
-"""
 input StringValueFilter {
-  """
-  eq string equal to the string
-  """
   eq: String
-  """
-  neq string not equal to the string
-  """
   neq: String
-  """
-  notIn array of strings not in the array
-  """
   notIn: [String!]
-  """
-  in array of strings in the array
-  """
   in: [String!]
-  """
-  startsWith matches strings that begin with the given prefix.
-  """
+  """Matches strings that begin with the given prefix."""
   startsWith: String
-  """
-  or array of string value filters
-  """
   or: [StringValueFilter!]
 }
 
-"""
-Filters that apply to string arrays.
-"""
 input StringArrayFilter {
-  """
-  containsAny array of strings containing any of the strings in the array
-  """
   containsAny: [String!]
-  """
-  containsAll array of strings containing all of the strings in the array
-  """
   containsAll: [String!]
-  """
-  notContainsAny array of strings does not contain any of the strings in the array
-  """
   notContainsAny: [String!]
-  """
-  notContainsAll array of strings does not contain all of the strings in the array
-  """
   notContainsAll: [String!]
-  """
-  or array of string array filters
-  """
   or: [StringArrayFilter!]
 }

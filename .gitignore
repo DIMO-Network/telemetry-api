@@ -34,3 +34,6 @@ e2e/clickhouse_container_test.go
 openspec/
 .claude
 .cursor
+telemetry-api
+
+CLAUDE.md

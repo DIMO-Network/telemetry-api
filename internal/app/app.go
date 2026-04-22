@@ -11,6 +11,7 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler/extension"
 	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/DIMO-Network/server-garage/pkg/gql/metrics"
+	"github.com/DIMO-Network/server-garage/pkg/mcpserver"
 	"github.com/DIMO-Network/telemetry-api/internal/auth"
 	"github.com/DIMO-Network/telemetry-api/internal/config"
 	"github.com/DIMO-Network/telemetry-api/internal/dtcmiddleware"
@@ -29,6 +30,7 @@ import (
 // App is the main application for the telemetry API.
 type App struct {
 	Handler       http.Handler
+	MCPHandler    http.Handler
 	QueryRecorder *queryRecorder.QueryRecorder
 	cleanup       func()
 }
@@ -78,7 +80,8 @@ func New(settings config.Settings) (*App, error) {
 
 	var costCalculator pricing.CostCalculator
 
-	server := newServer(graph.NewExecutableSchema(cfg))
+	es := graph.NewExecutableSchema(cfg)
+	server := newServer(es)
 	server.Use(dtcmiddleware.NewDCT(ctClient, &costCalculator))
 
 	// Add query recording middleware
@@ -108,8 +111,33 @@ func New(settings config.Settings) (*App, error) {
 		),
 	)
 
+	mcpHandler, err := mcpserver.New(mcpserver.NewGQLGenExecutor(es), "DIMO Telemetry", "0.1.0", "telemetry",
+		mcpserver.WithTools(graph.MCPTools),
+		mcpserver.WithCondensedSchema(graph.CondensedSchema),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("couldn't create MCP handler: %w", err)
+	}
+
+	// MCP shares the same auth chain as GraphQL. Schema introspection (get_schema)
+	// is reachable without a JWT because WithCredentialsOptional is true — this is
+	// acceptable since the schema is not secret. All data-fetching tools enforce
+	// @requiresVehicleToken at the GraphQL resolver level.
+	mcpAuthHandler := PanicRecoveryMiddleware(
+		LoggerMiddleware(
+			limiter.AddRequestTimeout(
+				authMiddleware.CheckJWT(
+					authLoggerMiddleware(
+						auth.AddClaimHandler(mcpHandler, settings.VehicleNFTAddress),
+					),
+				),
+			),
+		),
+	)
+
 	return &App{
 		Handler:       serverHandler,
+		MCPHandler:    mcpAuthHandler,
 		QueryRecorder: queryRec,
 		cleanup: func() {
 			// TODO add cleanup logic for closing connections

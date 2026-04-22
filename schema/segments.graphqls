@@ -4,14 +4,14 @@ enum DetectionMechanism {
   Most reliable for vehicles with proper ignition signal support.
   """
   ignitionDetection
-  
+
   """
   Frequency analysis: Segments are detected by analyzing signal update patterns.
   Uses pre-computed materialized view for optimal performance.
   Ideal for real-time APIs and bulk queries.
   """
   frequencyAnalysis
-  
+
   """
   Change point detection: Uses CUSUM algorithm to detect statistical regime changes.
   Monitors cumulative deviation in signal frequency via materialized view.
@@ -26,7 +26,7 @@ enum DetectionMechanism {
   idling
 
   """
-  Refuel: Detects where fuel level rises significantly. 
+  Refuel: Detects where fuel level rises significantly.
   """
   refuel
 
@@ -40,7 +40,7 @@ extend type Query {
   """
   Returns vehicle usage segments detected using the specified mechanism.
   Maximum date range: 31 days.
-  
+
   Detection mechanisms:
   - ignitionDetection: Uses 'isIgnitionOn' signal with configurable debouncing
   - frequencyAnalysis: Analyzes signal update frequency to detect activity periods
@@ -48,10 +48,10 @@ extend type Query {
   - idling: Idling segments (engine rpm idle)
   - refuel: Refueling segments (fuel level increased)
   - recharge: Charging segments (battery SoC increased)
-  
+
   Segment IDs are stable and consistent across queries as long as the segment start
   is captured in the underlying data source.
-  
+
   Each segment includes summary: signals, start/end location, and (when requested) eventCounts.
   A default set of signal requests is always applied (e.g. speed, odometer; for refuel/recharge also the level signal at start and end).
   When signalRequests is provided, those requests are added on top of the default set; duplicates (same name and agg) are omitted.
@@ -74,6 +74,8 @@ extend type Query {
     """
     after: Time
   ): [Segment!]! @requiresVehicleToken @requiresAllOfPrivileges(privileges: [VEHICLE_ALL_TIME_LOCATION, VEHICLE_NON_LOCATION_DATA])
+    @mcpTool(name: "get_trip_segments", description: "Get vehicle trip/activity segments detected using a specified mechanism (frequencyAnalysis, ignitionDetection, changePointDetection, idling, refuel, recharge). Returns start/end locations, duration, and optional signal aggregates and event counts. Maximum date range: 31 days.", selection: "start { timestamp value { latitude longitude } } end { timestamp value { latitude longitude } } duration isOngoing startedBeforeRange signals { name agg value } eventCounts { name count }")
+    @mcpExample(description: "Trip segments with start/end locations and signal aggregates", query: "query Trips($tokenId:Int!,$from:Time!,$to:Time!) { segments(tokenId:$tokenId,from:$from,to:$to,mechanism:frequencyAnalysis) { start{timestamp value{latitude longitude}} end{timestamp value{latitude longitude}} duration isOngoing signals{name agg value} eventCounts{name count} } }")
 
   """
   Returns one record per calendar day in the date range.
@@ -90,6 +92,8 @@ extend type Query {
     eventRequests: [SegmentEventRequest!]
     timezone: String
   ): [DailyActivity!]! @requiresVehicleToken @requiresAllOfPrivileges(privileges: [VEHICLE_ALL_TIME_LOCATION, VEHICLE_NON_LOCATION_DATA])
+    @mcpTool(name: "get_daily_activity", description: "Get per-day driving activity summaries for a vehicle. Returns segment count, total active duration, and signal aggregates per day. Maximum date range: 31 days.", selection: "segmentCount duration signals { name agg value } eventCounts { name count }")
+    @mcpExample(description: "Daily activity summaries", query: "query Daily($tokenId:Int!,$from:Time!,$to:Time!) { dailyActivity(tokenId:$tokenId,from:$from,to:$to,mechanism:frequencyAnalysis) { segmentCount duration signals{name agg value} eventCounts{name count} } }")
 }
 
 input SegmentSignalRequest {
@@ -102,17 +106,15 @@ input SegmentEventRequest {
 }
 
 type DailyActivity {
-  """Start of day (timestamp = day start, value = location). Same shape as Segment.start. Null if not available."""
+  """Day start location. Null if unavailable."""
   start: SignalLocation
-  """End of day (timestamp = day end, location). Same shape as Segment.end. Null if not available."""
+  """Day end location. Null if unavailable."""
   end: SignalLocation
-  """Number of activity segments that started or fell within that day."""
+  """Activity segments that started or fell within this day."""
   segmentCount: Int!
-  """Sum of segment durations (total active time that day) in seconds."""
+  """Total active time in seconds."""
   duration: Int!
-  """Per-day signal aggregates (same shape as segment signals)."""
   signals: [SignalAggregationValue!]!
-  """Per-day event counts."""
   eventCounts: [EventCount!]!
 }
 
@@ -124,14 +126,14 @@ input SegmentConfig {
   Default: 300 (5 minutes), Min: 60, Max: 3600
   """
   maxGapSeconds: Int = 300
-  
+
   """
   Minimum segment duration (seconds) to include in results.
   Filters very short segments (testing, engine cycling).
   Default: 240 (4 minutes), Min: 60, Max: 3600
   """
   minSegmentDurationSeconds: Int = 240
-  
+
   """
   [frequencyAnalysis] Minimum signal count per window for activity detection.
   [idling] Minimum samples per window to consider it idle (same semantics).
@@ -153,39 +155,14 @@ input SegmentConfig {
 }
 
 type Segment {
-  """
-  Segment start (timestamp and location). Uses SignalLocation; always present.
-  """
   start: SignalLocation!
-  
-  """
-  Segment end (timestamp and location). Uses SignalLocation; omitted when isOngoing is true.
-  """
+  """Omitted when isOngoing is true."""
   end: SignalLocation
-  
-  """
-  Duration in seconds. If ongoing: from start to query 'to'. If complete: from start to end.
-  """
+  """In seconds. If ongoing: computed from start to query 'to'."""
   duration: Int!
-  
-  """
-  True if segment extends beyond query time range (last activity is ongoing).
-  When true, end is not included in the response.
-  """
+  """When true, end is omitted."""
   isOngoing: Boolean!
-  
-  """
-  True if segment started before query time range.
-  """
   startedBeforeRange: Boolean!
-  
-  """
-  Per-segment signal aggregates. Same shape as signals elsewhere (name, agg, value).
-  """
   signals: [SignalAggregationValue!]
-  """
-  Per-segment event counts.
-  """
   eventCounts: [EventCount!]
 }
-
