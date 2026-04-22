@@ -54,7 +54,7 @@ const (
 	// latestLocationCond excludes (0, 0) points from the latest-location
 	// computation. Kept in sync with the projection's argMaxIf/maxIf
 	// conditions.
-	latestLocationCond = "(" + vss.ValueLocationCol + ".latitude != 0) OR (" + vss.ValueLocationCol + ".longitude != 0)"
+	latestLocationCond = "(tupleElement(" + vss.ValueLocationCol + ", 'latitude') != 0) OR (tupleElement(" + vss.ValueLocationCol + ", 'longitude') != 0)"
 	latestLocation     = "argMaxIf(" + vss.ValueLocationCol + ", " + vss.TimestampCol + ", " + latestLocationCond + ") as " + AggLocationCol
 	latestLocationTS   = "maxIf(" + vss.TimestampCol + ", " + latestLocationCond + ") as ts"
 )

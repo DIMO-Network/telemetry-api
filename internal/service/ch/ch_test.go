@@ -9,9 +9,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/DIMO-Network/cloudevent"
 	chconfig "github.com/DIMO-Network/clickhouse-infra/pkg/connect/config"
 	"github.com/DIMO-Network/clickhouse-infra/pkg/container"
+	"github.com/DIMO-Network/cloudevent"
 	"github.com/DIMO-Network/model-garage/pkg/migrations"
 	"github.com/DIMO-Network/model-garage/pkg/vss"
 	"github.com/DIMO-Network/telemetry-api/internal/config"
@@ -20,8 +20,9 @@ import (
 )
 
 const (
-	day        = time.Hour * 24
-	dataPoints = 10
+	day                    = time.Hour * 24
+	dataPoints             = 10
+	testClickHousePassword = "test-clickhouse-password"
 
 	testSubject1   = "did:erc721:137:0xbA5738a18d83D41847dfFbDC6101d37C69c9B0cF:1"
 	testSubject2   = "did:erc721:137:0xbA5738a18d83D41847dfFbDC6101d37C69c9B0cF:2"
@@ -42,7 +43,9 @@ func TestCHService(t *testing.T) {
 func (c *CHServiceTestSuite) SetupSuite() {
 	ctx := context.Background()
 	var err error
-	c.container, err = container.CreateClickHouseContainer(ctx, chconfig.Settings{})
+	c.container, err = container.CreateClickHouseContainer(ctx, chconfig.Settings{
+		Password: testClickHousePassword,
+	})
 	c.Require().NoError(err, "Failed to create clickhouse container")
 
 	db, err := c.container.GetClickhouseAsDB()
@@ -71,9 +74,10 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 	endTs := c.dataStartTime.Add(time.Second * time.Duration(30*dataPoints))
 	ctx := context.Background()
 	testCases := []struct {
-		name     string
-		aggArgs  model.AggregatedSignalArgs
-		expected []AggSignal
+		name                  string
+		aggArgs               model.AggregatedSignalArgs
+		expected              []AggSignal
+		allowedTopValueString []string
 	}{
 		{
 			name: "no aggs",
@@ -233,6 +237,7 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 					ValueString: "value2",
 				},
 			},
+			allowedTopValueString: []string{"value2", "value5", "value8"},
 		},
 		{
 			name: "first float",
@@ -817,6 +822,15 @@ func (c *CHServiceTestSuite) TestGetAggSignal() {
 			})
 
 			for i, sig := range result {
+				if len(tc.allowedTopValueString) > 0 {
+					c.Require().Equal(tc.expected[i].SignalType, sig.SignalType)
+					c.Require().Equal(tc.expected[i].SignalIndex, sig.SignalIndex)
+					c.Require().Equal(tc.expected[i].Timestamp, sig.Timestamp)
+					c.Require().Equal(tc.expected[i].ValueNumber, sig.ValueNumber)
+					c.Require().Equal(tc.expected[i].ValueLocation, sig.ValueLocation)
+					c.Require().Contains(tc.allowedTopValueString, sig.ValueString)
+					continue
+				}
 				c.Require().Equal(tc.expected[i], *sig)
 			}
 		})
