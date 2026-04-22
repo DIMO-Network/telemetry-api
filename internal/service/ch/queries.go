@@ -407,7 +407,7 @@ WHERE
 GROUP BY
   name
 */
-func getAllLatestQuery(subject string, filter *model.SignalFilter, lookbackFrom time.Time) (string, []any) {
+func getAllLatestQuery(subject string, filter *model.SignalFilter) (string, []any) {
 	mods := []qm.QueryMod{
 		qm.Select(vss.NameCol),
 		qm.Select(latestTimestamp),
@@ -417,9 +417,6 @@ func getAllLatestQuery(subject string, filter *model.SignalFilter, lookbackFrom 
 		qm.From(vss.TableName),
 		qm.Where(subjectWhere, subject),
 		qm.GroupBy(vss.NameCol),
-	}
-	if !lookbackFrom.IsZero() {
-		mods = append(mods, whereTimestampFrom(lookbackFrom))
 	}
 	mods = append(mods, getFilterMods(filter)...)
 	return newQuery(mods...)

@@ -98,20 +98,10 @@ func (s *Service) GetLatestSignals(ctx context.Context, subject string, latestAr
 	return signals, nil
 }
 
-// lookbackFrom returns the earliest timestamp the "latest" queries will
-// scan, or the zero Time if no lower bound is configured.
-func (s *Service) lookbackFrom() time.Time {
-	if s.latestLookback <= 0 {
-		return time.Time{}
-	}
-	return time.Now().Add(-s.latestLookback)
-}
-
 // GetAllLatestSignals returns the latest value for every signal stored for a subject.
 func (s *Service) GetAllLatestSignals(ctx context.Context, subject string, filter *model.SignalFilter) ([]*vss.Signal, error) {
-	lookbackFrom := s.lookbackFrom()
-	stmt, args := getAllLatestQuery(subject, filter, lookbackFrom)
-	lastSeenStmt, lastSeenArgs := getLastSeenQuery(subject, &model.SignalArgs{Filter: filter}, lookbackFrom)
+	stmt, args := getAllLatestQuery(subject, filter)
+	lastSeenStmt, lastSeenArgs := getLastSeenQuery(subject, &model.SignalArgs{Filter: filter})
 	stmt, args = unionAll([]string{stmt, lastSeenStmt}, [][]any{args, lastSeenArgs})
 
 	signals, err := s.getSignals(ctx, stmt, args)
