@@ -48,7 +48,7 @@ const (
 	latestString            = "argMax(" + vss.ValueStringCol + ", " + vss.TimestampCol + ") as " + vss.ValueStringCol
 	latestNumber            = "argMax(" + vss.ValueNumberCol + ", " + vss.TimestampCol + ") as " + vss.ValueNumberCol
 	latestLocationTimestamp = "maxIf(" + vss.TimestampCol + ", " + latestLocationValidity + ") as ts"
-	latestLocationValue     = "argMaxIf(" + vss.ValueLocationCol + ", " + vss.TimestampCol + ", " + latestLocationValidity + ") as " + vss.ValueLocationCol
+	latestLocationValue     = "argMaxIf(" + vss.ValueLocationCol + ", " + vss.TimestampCol + ", " + latestLocationValidity + ") as " + AggLocationCol
 	latestTimestamp         = "max(" + vss.TimestampCol + ") as ts"
 	latestLocationValidity  = "(tupleElement(" + vss.ValueLocationCol + ", 'latitude') != 0) OR (tupleElement(" + vss.ValueLocationCol + ", 'longitude') != 0)"
 )
