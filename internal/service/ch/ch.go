@@ -83,11 +83,13 @@ func getMaxExecutionTime(maxRequestDuration string) (int, error) {
 
 // GetLatestSignals returns the latest signals based on the provided arguments from the ClickHouse database.
 func (s *Service) GetLatestSignals(ctx context.Context, subject string, latestArgs *model.LatestSignalsArgs) ([]*vss.Signal, error) {
-	lookbackFrom := s.lookbackFrom()
-	stmt, args := getLatestQuery(subject, latestArgs, lookbackFrom)
+	stmt, args := getLatestQuery(subject, latestArgs)
 	if latestArgs.IncludeLastSeen {
-		lastSeenStmt, lastSeenArgs := getLastSeenQuery(subject, &latestArgs.SignalArgs, lookbackFrom)
+		lastSeenStmt, lastSeenArgs := getLastSeenQuery(subject, &latestArgs.SignalArgs, time.Time{})
 		stmt, args = unionAll([]string{stmt, lastSeenStmt}, [][]any{args, lastSeenArgs})
+	}
+	if stmt == "" {
+		return []*vss.Signal{}, nil
 	}
 
 	signals, err := s.getSignals(ctx, stmt, args)

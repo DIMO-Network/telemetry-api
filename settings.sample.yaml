@@ -12,6 +12,6 @@ PARQUET_BUCKET: dimo-iceberg-prod
 VINVC_DATA_VERSION: 'VINVCv0.0'
 IDENTITY_API_REQUEST_TIMEOUT_SECONDS: 5
 MAX_REQUEST_DURATION: 30s
-# Upper bound on how far back the "latest signal" queries scan. Set to 0
-# to disable (full scan).
+# Upper bound on how far back the `signalsSnapshot` latest-value query scans.
+# `signalsLatest` ignores this and always returns the latest stored row.
 LATEST_SIGNALS_LOOKBACK_DAYS: 45

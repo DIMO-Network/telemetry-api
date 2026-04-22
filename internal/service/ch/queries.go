@@ -45,10 +45,12 @@ const (
 
 // Aggregation functions for latest signals.
 const (
-	latestString    = "argMax(" + vss.ValueStringCol + ", " + vss.TimestampCol + ") as " + vss.ValueStringCol
-	latestNumber    = "argMax(" + vss.ValueNumberCol + ", " + vss.TimestampCol + ") as " + vss.ValueNumberCol
-	latestLocation  = "argMax(" + vss.ValueLocationCol + ", " + vss.TimestampCol + ") as " + AggLocationCol
-	latestTimestamp = "max(" + vss.TimestampCol + ") as ts"
+	latestString            = "argMax(" + vss.ValueStringCol + ", " + vss.TimestampCol + ") as " + vss.ValueStringCol
+	latestNumber            = "argMax(" + vss.ValueNumberCol + ", " + vss.TimestampCol + ") as " + vss.ValueNumberCol
+	latestLocationTimestamp = "maxIf(" + vss.TimestampCol + ", " + latestLocationValidity + ") as ts"
+	latestLocationValue     = "argMaxIf(" + vss.ValueLocationCol + ", " + vss.TimestampCol + ", " + latestLocationValidity + ") as " + vss.ValueLocationCol
+	latestTimestamp         = "max(" + vss.TimestampCol + ") as ts"
+	latestLocationValidity  = "(tupleElement(" + vss.ValueLocationCol + ", 'latitude') != 0) OR (tupleElement(" + vss.ValueLocationCol + ", 'longitude') != 0)"
 )
 
 // Aggregation functions for string signals.
@@ -64,7 +66,6 @@ const (
 	locationTupleType = "Tuple(latitude Float64, longitude Float64, hdop Float64, heading Float64)"
 	locationZeroTuple = "CAST(tuple(0, 0, 0, 0), '" + locationTupleType + "')"
 )
-
 
 // FieldType indicates the type of values in the aggregation.
 type FieldType uint8
@@ -318,7 +319,7 @@ WHERE
 GROUP BY
   name
 */
-func getLatestQuery(subject string, latestArgs *model.LatestSignalsArgs, lookbackFrom time.Time) (string, []any) {
+func getLatestQuery(subject string, latestArgs *model.LatestSignalsArgs) (string, []any) {
 	signalNames := make([]string, 0, len(latestArgs.SignalNames))
 	for name := range latestArgs.SignalNames {
 		signalNames = append(signalNames, name)
@@ -329,35 +330,22 @@ func getLatestQuery(subject string, latestArgs *model.LatestSignalsArgs, lookbac
 		locationSignalNames = append(locationSignalNames, name)
 	}
 
-	mods := []qm.QueryMod{
-		qm.Select(vss.NameCol),
-		qm.Select(latestTimestamp),
-		qm.Select(latestNumber),
-		qm.Select(latestString),
-		qm.Select(latestLocation),
-		qm.From(vss.TableName),
-		qm.Where(subjectWhere, subject),
+	statements := make([]string, 0, 2)
+	allArgs := make([][]any, 0, 2)
+
+	if len(signalNames) > 0 {
+		stmt, args := getLatestNumberStringQuery(subject, latestArgs.Filter, signalNames)
+		statements = append(statements, stmt)
+		allArgs = append(allArgs, args)
 	}
-	if !lookbackFrom.IsZero() {
-		mods = append(mods, whereTimestampFrom(lookbackFrom))
+
+	if len(locationSignalNames) > 0 {
+		stmt, args := getLatestLocationQuery(subject, latestArgs.Filter, locationSignalNames)
+		statements = append(statements, stmt)
+		allArgs = append(allArgs, args)
 	}
-	mods = append(mods,
-		qm.Expr(
-			qm.WhereIn(nameIn, signalNames),
-			qm.Or2(
-				qm.Expr(
-					qm.WhereIn(nameIn, locationSignalNames),
-					qm.Expr(
-						qmhelper.Where(vss.ValueLocationCol+".latitude", qmhelper.NEQ, 0),
-						qm.Or2(qmhelper.Where(vss.ValueLocationCol+".longitude", qmhelper.NEQ, 0)),
-					),
-				),
-			),
-		),
-		qm.GroupBy(vss.NameCol),
-	)
-	mods = append(mods, getFilterMods(latestArgs.Filter)...)
-	return newQuery(mods...)
+
+	return unionAll(statements, allArgs)
 }
 
 // getAllLatestQuery creates a query to get the latest signal value for ALL signal names.
@@ -382,7 +370,7 @@ func getAllLatestQuery(subject string, filter *model.SignalFilter, lookbackFrom 
 		qm.Select(latestTimestamp),
 		qm.Select(latestNumber),
 		qm.Select(latestString),
-		qm.Select(latestLocation),
+		qm.Select("argMax(" + vss.ValueLocationCol + ", " + vss.TimestampCol + ") as " + AggLocationCol),
 		qm.From(vss.TableName),
 		qm.Where(subjectWhere, subject),
 		qm.GroupBy(vss.NameCol),
@@ -431,14 +419,51 @@ func getLastSeenQuery(subject string, sigArgs *model.SignalArgs, lookbackFrom ti
 // unionAll creates a UNION ALL statement from the given statements and arguments.
 func unionAll(allStatements []string, allArgs [][]any) (string, []any) {
 	var args []any
+	trimmedStatements := make([]string, 0, len(allStatements))
 	for i := range allStatements {
-		allStatements[i] = strings.TrimSuffix(allStatements[i], ";")
+		if allStatements[i] == "" {
+			continue
+		}
+		trimmedStatements = append(trimmedStatements, strings.TrimSuffix(allStatements[i], ";"))
+		args = append(args, allArgs[i]...)
 	}
-	unionStmt := strings.Join(allStatements, " UNION ALL ")
-	for _, arg := range allArgs {
-		args = append(args, arg...)
+	if len(trimmedStatements) == 0 {
+		return "", nil
 	}
+	unionStmt := strings.Join(trimmedStatements, " UNION ALL ")
 	return unionStmt, args
+}
+
+func getLatestNumberStringQuery(subject string, filter *model.SignalFilter, signalNames []string) (string, []any) {
+	mods := []qm.QueryMod{
+		qm.Select(vss.NameCol),
+		qm.Select(latestTimestamp),
+		qm.Select(latestNumber),
+		qm.Select(latestString),
+		qm.Select(locValAsZero),
+		qm.From(vss.TableName),
+		qm.Where(subjectWhere, subject),
+		qm.WhereIn(nameIn, signalNames),
+		qm.GroupBy(vss.NameCol),
+	}
+	mods = append(mods, getFilterMods(filter)...)
+	return newQuery(mods...)
+}
+
+func getLatestLocationQuery(subject string, filter *model.SignalFilter, signalNames []string) (string, []any) {
+	mods := []qm.QueryMod{
+		qm.Select(vss.NameCol),
+		qm.Select(latestLocationTimestamp),
+		qm.Select(numValAsNull),
+		qm.Select(strValAsNull),
+		qm.Select(latestLocationValue),
+		qm.From(vss.TableName),
+		qm.Where(subjectWhere, subject),
+		qm.WhereIn(nameIn, signalNames),
+		qm.GroupBy(vss.NameCol),
+	}
+	mods = append(mods, getFilterMods(filter)...)
+	return newQuery(mods...)
 }
 
 // getAggQuery creates a single query to perform multiple aggregations on the signal data in the same time range and interval.

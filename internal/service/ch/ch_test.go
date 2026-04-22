@@ -9,9 +9,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/DIMO-Network/cloudevent"
 	chconfig "github.com/DIMO-Network/clickhouse-infra/pkg/connect/config"
 	"github.com/DIMO-Network/clickhouse-infra/pkg/container"
+	"github.com/DIMO-Network/cloudevent"
 	"github.com/DIMO-Network/model-garage/pkg/migrations"
 	"github.com/DIMO-Network/model-garage/pkg/vss"
 	"github.com/DIMO-Network/telemetry-api/internal/config"
@@ -922,6 +922,36 @@ func (c *CHServiceTestSuite) TestGetLatestSignal() {
 			}
 		})
 	}
+}
+
+func (c *CHServiceTestSuite) TestLatestSignalsIgnoreConfiguredLookback() {
+	ctx := context.Background()
+	settings := config.Settings{
+		Clickhouse:                c.container.Config(),
+		MaxRequestDuration:        "1s",
+		LatestSignalsLookbackDays: 1,
+	}
+	lookbackSvc, err := NewService(settings)
+	c.Require().NoError(err)
+
+	result, err := lookbackSvc.GetLatestSignals(ctx, testSubject1, &model.LatestSignalsArgs{
+		SignalArgs: model.SignalArgs{TokenID: 1},
+		SignalNames: map[string]struct{}{
+			vss.FieldSpeed: {},
+		},
+		IncludeLastSeen: true,
+	})
+	c.Require().NoError(err)
+	c.Require().Len(result, 2)
+
+	byName := make(map[string]vss.SignalData, len(result))
+	for _, sig := range result {
+		byName[sig.Data.Name] = sig.Data
+	}
+
+	c.Require().Equal(c.dataStartTime.Add(time.Second*time.Duration(30*(dataPoints-1))), byName[vss.FieldSpeed].Timestamp)
+	c.Require().Equal(9.0, byName[vss.FieldSpeed].ValueNumber)
+	c.Require().Equal(c.dataStartTime.Add(299*time.Second), byName[model.LastSeenField].Timestamp)
 }
 
 func (c *CHServiceTestSuite) TestGetAvailableSignals() {
