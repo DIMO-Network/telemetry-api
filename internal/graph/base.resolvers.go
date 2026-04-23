@@ -16,21 +16,43 @@ import (
 )
 
 // Signals is the resolver for the Signals field.
-func (r *queryResolver) Signals(ctx context.Context, tokenID int, interval string, from time.Time, to time.Time, filter *model.SignalFilter) ([]*model.SignalAggregations, error) {
+func (r *queryResolver) Signals(ctx context.Context, tokenID int, interval string, from time.Time, to time.Time, signalRequests []*model.SignalAggregationRequest, filter *model.SignalFilter) ([]*model.SignalAggregations, error) {
 	aggArgs, err := aggregationArgsFromContext(ctx, tokenID, interval, from, to, filter)
 	if err != nil {
 		return nil, err
 	}
-	return r.BaseRepo.GetSignal(ctx, aggArgs)
+	permissions := permissionsFromContext(ctx)
+	allowedReqs, reqAliases := appendSignalRequestArgs(aggArgs, signalRequests, permissions)
+
+	buckets, err := r.BaseRepo.GetSignal(ctx, aggArgs)
+	if err != nil {
+		return nil, err
+	}
+	populateAggregationSignals(buckets, allowedReqs, reqAliases)
+	return buckets, nil
 }
 
 // SignalsLatest is the resolver for the SignalsLatest field.
-func (r *queryResolver) SignalsLatest(ctx context.Context, tokenID int, filter *model.SignalFilter) (*model.SignalCollection, error) {
+func (r *queryResolver) SignalsLatest(ctx context.Context, tokenID int, signalNames []string, filter *model.SignalFilter) (*model.SignalCollection, error) {
 	latestArgs, err := latestArgsFromContext(ctx, tokenID, filter)
 	if err != nil {
 		return nil, err
 	}
-	return r.BaseRepo.GetSignalLatest(ctx, latestArgs)
+	coll, err := r.BaseRepo.GetSignalLatest(ctx, latestArgs)
+	if err != nil {
+		return nil, err
+	}
+
+	allowedNames := filterSignalNamesByPrivilege(signalNames, permissionsFromContext(ctx))
+	if len(allowedNames) == 0 {
+		return coll, nil
+	}
+	snap, err := r.BaseRepo.GetSignalSnapshot(ctx, uint32(tokenID), filter)
+	if err != nil {
+		return nil, err
+	}
+	coll.Signals = filterSnapshotByName(snap.Signals, allowedNames)
+	return coll, nil
 }
 
 // AvailableSignals is the resolver for the AvailableSignals field.

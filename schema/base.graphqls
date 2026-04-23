@@ -33,14 +33,29 @@ type Query {
     interval: String!
     from: Time!
     to: Time!
+    """
+    List of {name, agg} pairs specifying which float signals to aggregate.
+    Required — an empty list produces no signal data. Signal names come from
+    `availableSignals` or `dataSummary`. Aggregations: AVG, MED, MAX, MIN,
+    RAND, FIRST, LAST.
+    """
+    signalRequests: [SignalAggregationRequest!]!
     filter: SignalFilter
   ): [SignalAggregations!] @requiresVehicleToken
-    @mcpTool(name: "get_signals_time_series", description: "Get aggregated signal time series for a vehicle over a date range. Returns signal values bucketed by the specified interval (e.g. '1h', '15m'). Use with signal field names and aggregation functions.", selection: "timestamp")
-    @mcpExample(description: "Hourly average speed over a time range", query: "query TimeSeries($tokenId:Int!,$from:Time!,$to:Time!) { signals(tokenId:$tokenId,interval:\"1h\",from:$from,to:$to) { timestamp speed(agg:AVG) } }")
-  signalsLatest(tokenId: Int!, filter: SignalFilter): SignalCollection
+    @mcpTool(name: "get_signals_time_series", description: "Get aggregated time series for a named list of float signals. Pass signalRequests as an array of {name, agg} objects (e.g. [{name:\"speed\",agg:AVG},{name:\"powertrainTractionBatteryStateOfChargeCurrent\",agg:LAST}]). Returns one bucket per interval with signals as [{name, agg, value}]. Signal names come from get_available_signals or get_data_summary. Aggregations: AVG, MED, MAX, MIN, RAND, FIRST, LAST.", selection: "timestamp signals { name agg value }")
+    @mcpExample(description: "Hourly average speed and last state of charge", query: "query TS($tokenId:Int!,$from:Time!,$to:Time!) { signals(tokenId:$tokenId,interval:\"1h\",from:$from,to:$to,signalRequests:[{name:\"speed\",agg:AVG},{name:\"powertrainTractionBatteryStateOfChargeCurrent\",agg:LAST}]) { timestamp signals { name agg value } } }")
+  signalsLatest(
+    tokenId: Int!
+    """
+    List of signal names to return. Required — an empty list produces no
+    signal data. Signal names come from `availableSignals` or `dataSummary`.
+    """
+    signalNames: [String!]!
+    filter: SignalFilter
+  ): SignalCollection
     @requiresVehicleToken
-    @mcpTool(name: "get_latest_signals", description: "Get the most recent signal values for a vehicle by token ID. Returns the last-seen timestamp for the vehicle.", selection: "lastSeen")
-    @mcpExample(description: "Latest speed and battery charge", query: "query Latest($tokenId:Int!) { signalsLatest(tokenId:$tokenId) { lastSeen speed{timestamp value} powertrainTractionBatteryStateOfChargeCurrent{timestamp value} } }")
+    @mcpTool(name: "get_latest_signals", description: "Get the most recent value for a named list of signals. Pass signalNames as an array of strings (e.g. [\"speed\",\"powertrainTractionBatteryStateOfChargeCurrent\"]). Signal names come from get_available_signals or get_data_summary. Returns lastSeen plus a signals list, each entry with one of valueNumber, valueString, or valueLocation populated depending on signal type.", selection: "lastSeen signals { name timestamp valueNumber valueString valueLocation { latitude longitude hdop } }")
+    @mcpExample(description: "Latest speed and battery charge by name", query: "query Latest($tokenId:Int!) { signalsLatest(tokenId:$tokenId,signalNames:[\"speed\",\"powertrainTractionBatteryStateOfChargeCurrent\"]) { lastSeen signals { name timestamp valueNumber } } }")
   availableSignals(tokenId: Int!, filter: SignalFilter): [String!]
     @requiresVehicleToken
     @mcpTool(name: "get_available_signals", description: "List queryable signal names that have stored data for a vehicle by token ID.", selection: "")
@@ -60,6 +75,11 @@ type Query {
 type SignalAggregations {
   timestamp: Time!
   """
+  Per-bucket list of {name, agg, value} entries, one per entry in the request's
+  `signalRequests` argument. Populated only when `signalRequests` is supplied.
+  """
+  signals: [SignalAggregationValue!]!
+  """
   Approximate location of the vehicle in WGS 84 coordinates. The aggregation is applied to
   the raw location values and the result is then replaced with the center of the containing H3
   cell of resolution 6. HDOP is not obscured at all.
@@ -76,6 +96,12 @@ type SignalAggregations {
 
 type SignalCollection {
   lastSeen: Time
+  """
+  Flat list of latest values for the names passed in the request's
+  `signalNames` argument, filtered by caller privileges. Populated only when
+  `signalNames` is supplied.
+  """
+  signals: [LatestSignal!]!
   """
   Approximate location of the vehicle in WGS 84 coordinates. The raw value is replaced with
   the center of the containing H3 cell of resolution 6. HDOP is not obscured at all.
@@ -207,6 +233,16 @@ type Location {
   latitude: Float!
   longitude: Float!
   hdop: Float!
+}
+
+"""
+Request to compute one float-signal aggregation in a time-series query.
+Shape mirrors SegmentSignalRequest; used by the `signals` query's
+`signalRequests` argument.
+"""
+input SignalAggregationRequest {
+  name: String!
+  agg: FloatAggregation!
 }
 
 """

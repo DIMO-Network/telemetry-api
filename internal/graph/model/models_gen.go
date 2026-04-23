@@ -175,6 +175,14 @@ type SegmentSignalRequest struct {
 	Agg  FloatAggregation `json:"agg"`
 }
 
+// Request to compute one float-signal aggregation in a time-series query.
+// Shape mirrors SegmentSignalRequest; used by the `signals` query's
+// `signalRequests` argument.
+type SignalAggregationRequest struct {
+	Name string           `json:"name"`
+	Agg  FloatAggregation `json:"agg"`
+}
+
 // Result of aggregating a float signal over an interval. Used by segments and daily activity summaries.
 // Same shape as one row of aggregated signal data (name, aggregation type, computed value).
 type SignalAggregationValue struct {
@@ -185,6 +193,10 @@ type SignalAggregationValue struct {
 
 type SignalCollection struct {
 	LastSeen *time.Time `json:"lastSeen,omitempty"`
+	// Flat list of latest values for the names passed in the request's
+	// `signalNames` argument, filtered by caller privileges. Populated only when
+	// `signalNames` is supplied.
+	Signals []*LatestSignal `json:"signals"`
 	// Approximate location of the vehicle in WGS 84 coordinates. The raw value is replaced with
 	// the center of the containing H3 cell of resolution 6. HDOP is not obscured at all.
 	// Required Privileges: [VEHICLE_APPROXIMATE_LOCATION VEHICLE_ALL_TIME_LOCATION]

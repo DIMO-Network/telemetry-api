@@ -12,6 +12,11 @@ import (
 type SignalAggregations struct {
 	Timestamp time.Time `json:"timestamp"`
 
+	// Signals holds the {name, agg, value} entries computed from the request's
+	// signalRequests argument. One entry per supplied request that produced a
+	// value in this bucket and that the caller has permission to see.
+	Signals []*SignalAggregationValue `json:"signals"`
+
 	// Alias to value
 	ValueNumbers map[string]float64 `json:"-"`
 	// Alias to value
