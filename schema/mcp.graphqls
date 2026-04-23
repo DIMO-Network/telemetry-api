@@ -1,3 +1,4 @@
 directive @mcpTool(name: String!, description: String!, selection: String!, readOnly: Boolean = true) on FIELD_DEFINITION
+directive @mcpToolArg(name: String!, type: String!, description: String) repeatable on FIELD_DEFINITION
 directive @mcpExample(description: String!, query: String!) repeatable on FIELD_DEFINITION
 directive @mcpHide on FIELD_DEFINITION

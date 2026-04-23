@@ -38,6 +38,7 @@ type DirectiveRoot struct {
 	HasAggregation          func(ctx context.Context, obj any, next graphql.Resolver) (res any, err error)
 	IsSignal                func(ctx context.Context, obj any, next graphql.Resolver) (res any, err error)
 	McpHide                 func(ctx context.Context, obj any, next graphql.Resolver) (res any, err error)
+	McpToolArg              func(ctx context.Context, obj any, next graphql.Resolver, name string, typeArg string, description *string) (res any, err error)
 	RequiresAllOfPrivileges func(ctx context.Context, obj any, next graphql.Resolver, privileges []string) (res any, err error)
 	RequiresOneOfPrivilege  func(ctx context.Context, obj any, next graphql.Resolver, privileges []string) (res any, err error)
 	RequiresVehicleToken    func(ctx context.Context, obj any, next graphql.Resolver) (res any, err error)
@@ -3144,6 +3145,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputSegmentConfig,
 		ec.unmarshalInputSegmentEventRequest,
 		ec.unmarshalInputSegmentSignalRequest,
+		ec.unmarshalInputSignalAggregationRequest,
 		ec.unmarshalInputSignalFilter,
 		ec.unmarshalInputSignalFloatFilter,
 		ec.unmarshalInputSignalLocationFilter,
@@ -3309,12 +3311,30 @@ type Query {
     to: Time!
     filter: SignalFilter
   ): [SignalAggregations!] @requiresVehicleToken
-    @mcpTool(name: "get_signals_time_series", description: "Get aggregated signal time series for a vehicle over a date range. Returns signal values bucketed by the specified interval (e.g. '1h', '15m'). Use with signal field names and aggregation functions.", selection: "timestamp")
-    @mcpExample(description: "Hourly average speed over a time range", query: "query TimeSeries($tokenId:Int!,$from:Time!,$to:Time!) { signals(tokenId:$tokenId,interval:\"1h\",from:$from,to:$to) { timestamp speed(agg:AVG) } }")
+    @mcpTool(
+      name: "get_signals_time_series"
+      description: "Get aggregated time series for a named list of float signals. Pass signalRequests as [{name, agg}] (e.g. [{name:\"speed\",agg:AVG},{name:\"powertrainTractionBatteryStateOfChargeCurrent\",agg:LAST}]). Signal names come from get_available_signals or get_data_summary. Aggregations: AVG, MED, MAX, MIN, RAND, FIRST, LAST."
+      selection: "timestamp{{range .signalRequests}} {{.name}}(agg: {{.agg}}){{end}}"
+    )
+    @mcpToolArg(
+      name: "signalRequests"
+      type: "[SignalAggregationRequest!]!"
+      description: "List of {name, agg} pairs specifying which float signals to aggregate. Rendered into the GraphQL selection set at call time."
+    )
+    @mcpExample(description: "Hourly average speed and last state of charge", query: "query TS($tokenId:Int!,$from:Time!,$to:Time!) { signals(tokenId:$tokenId,interval:\"1h\",from:$from,to:$to) { timestamp speed(agg:AVG) powertrainTractionBatteryStateOfChargeCurrent(agg:LAST) } }")
   signalsLatest(tokenId: Int!, filter: SignalFilter): SignalCollection
     @requiresVehicleToken
-    @mcpTool(name: "get_latest_signals", description: "Get the most recent signal values for a vehicle by token ID. Returns the last-seen timestamp for the vehicle.", selection: "lastSeen")
-    @mcpExample(description: "Latest speed and battery charge", query: "query Latest($tokenId:Int!) { signalsLatest(tokenId:$tokenId) { lastSeen speed{timestamp value} powertrainTractionBatteryStateOfChargeCurrent{timestamp value} } }")
+    @mcpTool(
+      name: "get_latest_signals"
+      description: "Get the most recent value for a named list of float signals. Pass signalNames as an array of strings (e.g. [\"speed\",\"powertrainTractionBatteryStateOfChargeCurrent\"]). For non-float signals (strings, locations) use get_signals_snapshot. Signal names come from get_available_signals or get_data_summary."
+      selection: "lastSeen{{range .signalNames}} {{.}} {timestamp value}{{end}}"
+    )
+    @mcpToolArg(
+      name: "signalNames"
+      type: "[String!]!"
+      description: "List of float-signal names to return the latest value for. Rendered into the GraphQL selection set at call time."
+    )
+    @mcpExample(description: "Latest speed and battery charge by name", query: "query Latest($tokenId:Int!) { signalsLatest(tokenId:$tokenId) { lastSeen speed{timestamp value} powertrainTractionBatteryStateOfChargeCurrent{timestamp value} } }")
   availableSignals(tokenId: Int!, filter: SignalFilter): [String!]
     @requiresVehicleToken
     @mcpTool(name: "get_available_signals", description: "List queryable signal names that have stored data for a vehicle by token ID.", selection: "")
@@ -3484,6 +3504,15 @@ type Location {
 }
 
 """
+Float-signal aggregation request. Shape mirrors SegmentSignalRequest.
+Used by the MCP shortcut tool ` + "`" + `get_signals_time_series` + "`" + ` via @mcpToolArg.
+"""
+input SignalAggregationRequest {
+  name: String!
+  agg: FloatAggregation!
+}
+
+"""
 Result of aggregating a float signal over an interval. Used by segments and daily activity summaries.
 Same shape as one row of aggregated signal data (name, aggregation type, computed value).
 """
@@ -3579,6 +3608,7 @@ input EventFilter {
 }
 `, BuiltIn: false},
 	{Name: "../../schema/mcp.graphqls", Input: `directive @mcpTool(name: String!, description: String!, selection: String!, readOnly: Boolean = true) on FIELD_DEFINITION
+directive @mcpToolArg(name: String!, type: String!, description: String) repeatable on FIELD_DEFINITION
 directive @mcpExample(description: String!, query: String!) repeatable on FIELD_DEFINITION
 directive @mcpHide on FIELD_DEFINITION
 `, BuiltIn: false},
@@ -5679,6 +5709,27 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 // endregion ************************** generated!.gotpl **************************
 
 // region    ***************************** args.gotpl *****************************
+
+func (ec *executionContext) dir_mcpToolArg_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "name", ec.unmarshalNString2string)
+	if err != nil {
+		return nil, err
+	}
+	args["name"] = arg0
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "type", ec.unmarshalNString2string)
+	if err != nil {
+		return nil, err
+	}
+	args["type"] = arg1
+	arg2, err := graphql.ProcessArgField(ctx, rawArgs, "description", ec.unmarshalOString2ᚖstring)
+	if err != nil {
+		return nil, err
+	}
+	args["description"] = arg2
+	return args, nil
+}
 
 func (ec *executionContext) dir_requiresAllOfPrivileges_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
@@ -9115,8 +9166,30 @@ func (ec *executionContext) _Query_signals(ctx context.Context, field graphql.Co
 				}
 				return ec.Directives.RequiresVehicleToken(ctx, nil, directive0)
 			}
+			directive2 := func(ctx context.Context) (any, error) {
+				name, err := ec.unmarshalNString2string(ctx, "signalRequests")
+				if err != nil {
+					var zeroVal []*model.SignalAggregations
+					return zeroVal, err
+				}
+				typeArg, err := ec.unmarshalNString2string(ctx, "[SignalAggregationRequest!]!")
+				if err != nil {
+					var zeroVal []*model.SignalAggregations
+					return zeroVal, err
+				}
+				description, err := ec.unmarshalOString2ᚖstring(ctx, "List of {name, agg} pairs specifying which float signals to aggregate. Rendered into the GraphQL selection set at call time.")
+				if err != nil {
+					var zeroVal []*model.SignalAggregations
+					return zeroVal, err
+				}
+				if ec.Directives.McpToolArg == nil {
+					var zeroVal []*model.SignalAggregations
+					return zeroVal, errors.New("directive mcpToolArg is not implemented")
+				}
+				return ec.Directives.McpToolArg(ctx, nil, directive1, name, typeArg, description)
+			}
 
-			next = directive1
+			next = directive2
 			return next
 		},
 		ec.marshalOSignalAggregations2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalAggregationsᚄ,
@@ -9407,8 +9480,30 @@ func (ec *executionContext) _Query_signalsLatest(ctx context.Context, field grap
 				}
 				return ec.Directives.RequiresVehicleToken(ctx, nil, directive0)
 			}
+			directive2 := func(ctx context.Context) (any, error) {
+				name, err := ec.unmarshalNString2string(ctx, "signalNames")
+				if err != nil {
+					var zeroVal *model.SignalCollection
+					return zeroVal, err
+				}
+				typeArg, err := ec.unmarshalNString2string(ctx, "[String!]!")
+				if err != nil {
+					var zeroVal *model.SignalCollection
+					return zeroVal, err
+				}
+				description, err := ec.unmarshalOString2ᚖstring(ctx, "List of float-signal names to return the latest value for. Rendered into the GraphQL selection set at call time.")
+				if err != nil {
+					var zeroVal *model.SignalCollection
+					return zeroVal, err
+				}
+				if ec.Directives.McpToolArg == nil {
+					var zeroVal *model.SignalCollection
+					return zeroVal, errors.New("directive mcpToolArg is not implemented")
+				}
+				return ec.Directives.McpToolArg(ctx, nil, directive1, name, typeArg, description)
+			}
 
-			next = directive1
+			next = directive2
 			return next
 		},
 		ec.marshalOSignalCollection2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalCollection,
@@ -28694,6 +28789,43 @@ func (ec *executionContext) unmarshalInputSegmentEventRequest(ctx context.Contex
 
 func (ec *executionContext) unmarshalInputSegmentSignalRequest(ctx context.Context, obj any) (model.SegmentSignalRequest, error) {
 	var it model.SegmentSignalRequest
+	if obj == nil {
+		return it, nil
+	}
+
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"name", "agg"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "name":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Name = data
+		case "agg":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
+			data, err := ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Agg = data
+		}
+	}
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputSignalAggregationRequest(ctx context.Context, obj any) (model.SignalAggregationRequest, error) {
+	var it model.SignalAggregationRequest
 	if obj == nil {
 		return it, nil
 	}

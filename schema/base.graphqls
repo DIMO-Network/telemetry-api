@@ -35,12 +35,30 @@ type Query {
     to: Time!
     filter: SignalFilter
   ): [SignalAggregations!] @requiresVehicleToken
-    @mcpTool(name: "get_signals_time_series", description: "Get aggregated signal time series for a vehicle over a date range. Returns signal values bucketed by the specified interval (e.g. '1h', '15m'). Use with signal field names and aggregation functions.", selection: "timestamp")
-    @mcpExample(description: "Hourly average speed over a time range", query: "query TimeSeries($tokenId:Int!,$from:Time!,$to:Time!) { signals(tokenId:$tokenId,interval:\"1h\",from:$from,to:$to) { timestamp speed(agg:AVG) } }")
+    @mcpTool(
+      name: "get_signals_time_series"
+      description: "Get aggregated time series for a named list of float signals. Pass signalRequests as [{name, agg}] (e.g. [{name:\"speed\",agg:AVG},{name:\"powertrainTractionBatteryStateOfChargeCurrent\",agg:LAST}]). Signal names come from get_available_signals or get_data_summary. Aggregations: AVG, MED, MAX, MIN, RAND, FIRST, LAST."
+      selection: "timestamp{{range .signalRequests}} {{.name}}(agg: {{.agg}}){{end}}"
+    )
+    @mcpToolArg(
+      name: "signalRequests"
+      type: "[SignalAggregationRequest!]!"
+      description: "List of {name, agg} pairs specifying which float signals to aggregate. Rendered into the GraphQL selection set at call time."
+    )
+    @mcpExample(description: "Hourly average speed and last state of charge", query: "query TS($tokenId:Int!,$from:Time!,$to:Time!) { signals(tokenId:$tokenId,interval:\"1h\",from:$from,to:$to) { timestamp speed(agg:AVG) powertrainTractionBatteryStateOfChargeCurrent(agg:LAST) } }")
   signalsLatest(tokenId: Int!, filter: SignalFilter): SignalCollection
     @requiresVehicleToken
-    @mcpTool(name: "get_latest_signals", description: "Get the most recent signal values for a vehicle by token ID. Returns the last-seen timestamp for the vehicle.", selection: "lastSeen")
-    @mcpExample(description: "Latest speed and battery charge", query: "query Latest($tokenId:Int!) { signalsLatest(tokenId:$tokenId) { lastSeen speed{timestamp value} powertrainTractionBatteryStateOfChargeCurrent{timestamp value} } }")
+    @mcpTool(
+      name: "get_latest_signals"
+      description: "Get the most recent value for a named list of float signals. Pass signalNames as an array of strings (e.g. [\"speed\",\"powertrainTractionBatteryStateOfChargeCurrent\"]). For non-float signals (strings, locations) use get_signals_snapshot. Signal names come from get_available_signals or get_data_summary."
+      selection: "lastSeen{{range .signalNames}} {{.}} {timestamp value}{{end}}"
+    )
+    @mcpToolArg(
+      name: "signalNames"
+      type: "[String!]!"
+      description: "List of float-signal names to return the latest value for. Rendered into the GraphQL selection set at call time."
+    )
+    @mcpExample(description: "Latest speed and battery charge by name", query: "query Latest($tokenId:Int!) { signalsLatest(tokenId:$tokenId) { lastSeen speed{timestamp value} powertrainTractionBatteryStateOfChargeCurrent{timestamp value} } }")
   availableSignals(tokenId: Int!, filter: SignalFilter): [String!]
     @requiresVehicleToken
     @mcpTool(name: "get_available_signals", description: "List queryable signal names that have stored data for a vehicle by token ID.", selection: "")
@@ -207,6 +225,15 @@ type Location {
   latitude: Float!
   longitude: Float!
   hdop: Float!
+}
+
+"""
+Float-signal aggregation request. Shape mirrors SegmentSignalRequest.
+Used by the MCP shortcut tool `get_signals_time_series` via @mcpToolArg.
+"""
+input SignalAggregationRequest {
+  name: String!
+  agg: FloatAggregation!
 }
 
 """

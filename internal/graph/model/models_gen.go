@@ -175,6 +175,13 @@ type SegmentSignalRequest struct {
 	Agg  FloatAggregation `json:"agg"`
 }
 
+// Float-signal aggregation request. Shape mirrors SegmentSignalRequest.
+// Used by the MCP shortcut tool `get_signals_time_series` via @mcpToolArg.
+type SignalAggregationRequest struct {
+	Name string           `json:"name"`
+	Agg  FloatAggregation `json:"agg"`
+}
+
 // Result of aggregating a float signal over an interval. Used by segments and daily activity summaries.
 // Same shape as one row of aggregated signal data (name, aggregation type, computed value).
 type SignalAggregationValue struct {
