@@ -16,7 +16,6 @@ type Settings struct {
 	TokenExchangeIssuer       string          `yaml:"TOKEN_EXCHANGE_ISSUER_URL"`
 	VehicleNFTAddress         common.Address  `yaml:"VEHICLE_NFT_ADDRESS"`
 	MaxRequestDuration        string          `yaml:"MAX_REQUEST_DURATION"`
-	LatestSignalsLookbackDays int64           `yaml:"LATEST_SIGNALS_LOOKBACK_DAYS"`
 	ChainID                   uint64          `yaml:"DIMO_REGISTRY_CHAIN_ID"`
 	FetchAPIGRPCEndpoint      string          `yaml:"FETCH_API_GRPC_ENDPOINT"`
 	CreditTrackerEndpoint     string          `yaml:"CREDIT_TRACKER_ENDPOINT"`

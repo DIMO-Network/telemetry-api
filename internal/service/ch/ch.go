@@ -24,8 +24,7 @@ const (
 
 // Service is a ClickHouse service that interacts with the ClickHouse database.
 type Service struct {
-	conn           clickhouse.Conn
-	latestLookback time.Duration
+	conn clickhouse.Conn
 }
 
 // NewService creates a new ClickHouse service.
@@ -60,14 +59,7 @@ func NewService(settings config.Settings) (*Service, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to ping clickhouse: %w", err)
 	}
-	var latestLookback time.Duration
-	if settings.LatestSignalsLookbackDays > 0 {
-		latestLookback = time.Duration(settings.LatestSignalsLookbackDays) * 24 * time.Hour
-	}
-	return &Service{
-		conn:           conn,
-		latestLookback: latestLookback,
-	}, nil
+	return &Service{conn: conn}, nil
 }
 
 func getMaxExecutionTime(maxRequestDuration string) (int, error) {
@@ -81,13 +73,22 @@ func getMaxExecutionTime(maxRequestDuration string) (int, error) {
 	return int(maxExecutionTime.Seconds()), nil
 }
 
-// GetLatestSignals returns the latest signals based on the provided arguments from the ClickHouse database.
+// GetLatestSignals returns the latest signals based on the provided arguments
+// from the ClickHouse database. The queries are answered by the
+// signal_latest_by_subject_source_name projection, so no time bound is
+// applied; results reflect the full history of the subject.
 func (s *Service) GetLatestSignals(ctx context.Context, subject string, latestArgs *model.LatestSignalsArgs) ([]*vss.Signal, error) {
-	lookbackFrom := s.lookbackFrom()
-	stmt, args := getLatestQuery(subject, latestArgs, lookbackFrom)
+	stmt, args := getLatestQuery(subject, latestArgs)
 	if latestArgs.IncludeLastSeen {
-		lastSeenStmt, lastSeenArgs := getLastSeenQuery(subject, &latestArgs.SignalArgs, lookbackFrom)
-		stmt, args = unionAll([]string{stmt, lastSeenStmt}, [][]any{args, lastSeenArgs})
+		lastSeenStmt, lastSeenArgs := getLastSeenQuery(subject, &latestArgs.SignalArgs)
+		if stmt == "" {
+			stmt, args = lastSeenStmt, lastSeenArgs
+		} else {
+			stmt, args = unionAll([]string{stmt, lastSeenStmt}, [][]any{args, lastSeenArgs})
+		}
+	}
+	if stmt == "" {
+		return nil, nil
 	}
 
 	signals, err := s.getSignals(ctx, stmt, args)
@@ -97,20 +98,10 @@ func (s *Service) GetLatestSignals(ctx context.Context, subject string, latestAr
 	return signals, nil
 }
 
-// lookbackFrom returns the earliest timestamp the "latest" queries will
-// scan, or the zero Time if no lower bound is configured.
-func (s *Service) lookbackFrom() time.Time {
-	if s.latestLookback <= 0 {
-		return time.Time{}
-	}
-	return time.Now().Add(-s.latestLookback)
-}
-
 // GetAllLatestSignals returns the latest value for every signal stored for a subject.
 func (s *Service) GetAllLatestSignals(ctx context.Context, subject string, filter *model.SignalFilter) ([]*vss.Signal, error) {
-	lookbackFrom := s.lookbackFrom()
-	stmt, args := getAllLatestQuery(subject, filter, lookbackFrom)
-	lastSeenStmt, lastSeenArgs := getLastSeenQuery(subject, &model.SignalArgs{Filter: filter}, lookbackFrom)
+	stmt, args := getAllLatestQuery(subject, filter)
+	lastSeenStmt, lastSeenArgs := getLastSeenQuery(subject, &model.SignalArgs{Filter: filter})
 	stmt, args = unionAll([]string{stmt, lastSeenStmt}, [][]any{args, lastSeenArgs})
 
 	signals, err := s.getSignals(ctx, stmt, args)
@@ -322,7 +313,9 @@ type EventSummary struct {
 	LastSeen  time.Time
 }
 
-// GetEventSummaries returns per-event summaries (name, count, first/last seen) for a subject (vehicle), all time.
+// GetEventSummaries returns per-event summaries (name, count, first/last seen)
+// for a subject (vehicle), over all time. Relies on the (subject, source, name)
+// projection on the event table for acceptable performance.
 func (s *Service) GetEventSummaries(ctx context.Context, subject string) ([]*EventSummary, error) {
 	stmt, args := getEventSummariesQuery(subject)
 	rows, err := s.conn.Query(ctx, stmt, args...)

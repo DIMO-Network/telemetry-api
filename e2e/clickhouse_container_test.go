@@ -12,21 +12,26 @@ import (
 	"testing"
 	"time"
 
-	"github.com/DIMO-Network/cloudevent"
 	chconfig "github.com/DIMO-Network/clickhouse-infra/pkg/connect/config"
 	"github.com/DIMO-Network/clickhouse-infra/pkg/container"
+	"github.com/DIMO-Network/cloudevent"
 	sigmigrations "github.com/DIMO-Network/model-garage/pkg/migrations"
 	"github.com/DIMO-Network/model-garage/pkg/vss"
 	"github.com/stretchr/testify/require"
 )
 
-const loadBatchSize = 5000
+const (
+	loadBatchSize          = 5000
+	testClickHousePassword = "test-clickhouse-password"
+)
 
 func setupClickhouseContainer(t *testing.T) *container.Container {
 	t.Helper()
 	ctx := context.Background()
 
-	chContainer, err := container.CreateClickHouseContainer(ctx, chconfig.Settings{})
+	chContainer, err := container.CreateClickHouseContainer(ctx, chconfig.Settings{
+		Password: testClickHousePassword,
+	})
 	if err != nil {
 		t.Fatalf("Failed to create clickhouse container: %v", err)
 	}
@@ -161,7 +166,7 @@ func LoadSampleDataInto(t *testing.T, ch *container.Container, signalPath, event
 		events = append(events, vss.Event{
 			CloudEventHeader: cloudevent.CloudEventHeader{
 				Subject:  row[0],
-				Source:    row[1],
+				Source:   row[1],
 				Producer: row[2],
 				ID:       row[3],
 			},
