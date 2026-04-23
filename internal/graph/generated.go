@@ -116,8 +116,8 @@ type ComplexityRoot struct {
 		DataSummary      func(childComplexity int, tokenID int, filter *model.SignalFilter) int
 		Events           func(childComplexity int, tokenID int, from time.Time, to time.Time, filter *model.EventFilter) int
 		Segments         func(childComplexity int, tokenID int, from time.Time, to time.Time, mechanism model.DetectionMechanism, config *model.SegmentConfig, signalRequests []*model.SegmentSignalRequest, eventRequests []*model.SegmentEventRequest, limit *int, after *time.Time) int
-		Signals          func(childComplexity int, tokenID int, interval string, from time.Time, to time.Time, filter *model.SignalFilter) int
-		SignalsLatest    func(childComplexity int, tokenID int, filter *model.SignalFilter) int
+		Signals          func(childComplexity int, tokenID int, interval string, from time.Time, to time.Time, signalRequests []*model.SignalAggregationRequest, filter *model.SignalFilter) int
+		SignalsLatest    func(childComplexity int, tokenID int, signalNames []string, filter *model.SignalFilter) int
 		SignalsSnapshot  func(childComplexity int, tokenID int, filter *model.SignalFilter) int
 		VinVCLatest      func(childComplexity int, tokenID int) int
 	}
@@ -421,8 +421,8 @@ type ComplexityRoot struct {
 }
 
 type QueryResolver interface {
-	Signals(ctx context.Context, tokenID int, interval string, from time.Time, to time.Time, filter *model.SignalFilter) ([]*model.SignalAggregations, error)
-	SignalsLatest(ctx context.Context, tokenID int, filter *model.SignalFilter) (*model.SignalCollection, error)
+	Signals(ctx context.Context, tokenID int, interval string, from time.Time, to time.Time, signalRequests []*model.SignalAggregationRequest, filter *model.SignalFilter) ([]*model.SignalAggregations, error)
+	SignalsLatest(ctx context.Context, tokenID int, signalNames []string, filter *model.SignalFilter) (*model.SignalCollection, error)
 	AvailableSignals(ctx context.Context, tokenID int, filter *model.SignalFilter) ([]string, error)
 	SignalsSnapshot(ctx context.Context, tokenID int, filter *model.SignalFilter) (*model.SignalsSnapshotResponse, error)
 	DataSummary(ctx context.Context, tokenID int, filter *model.SignalFilter) (*model.DataSummary, error)
@@ -897,7 +897,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.ComplexityRoot.Query.Signals(childComplexity, args["tokenId"].(int), args["interval"].(string), args["from"].(time.Time), args["to"].(time.Time), args["filter"].(*model.SignalFilter)), true
+		return e.ComplexityRoot.Query.Signals(childComplexity, args["tokenId"].(int), args["interval"].(string), args["from"].(time.Time), args["to"].(time.Time), args["signalRequests"].([]*model.SignalAggregationRequest), args["filter"].(*model.SignalFilter)), true
 	case "Query.signalsLatest":
 		if e.ComplexityRoot.Query.SignalsLatest == nil {
 			break
@@ -908,7 +908,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.ComplexityRoot.Query.SignalsLatest(childComplexity, args["tokenId"].(int), args["filter"].(*model.SignalFilter)), true
+		return e.ComplexityRoot.Query.SignalsLatest(childComplexity, args["tokenId"].(int), args["signalNames"].([]string), args["filter"].(*model.SignalFilter)), true
 	case "Query.signalsSnapshot":
 		if e.ComplexityRoot.Query.SignalsSnapshot == nil {
 			break
@@ -3144,6 +3144,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputSegmentConfig,
 		ec.unmarshalInputSegmentEventRequest,
 		ec.unmarshalInputSegmentSignalRequest,
+		ec.unmarshalInputSignalAggregationRequest,
 		ec.unmarshalInputSignalFilter,
 		ec.unmarshalInputSignalFloatFilter,
 		ec.unmarshalInputSignalLocationFilter,
@@ -3307,14 +3308,39 @@ type Query {
     interval: String!
     from: Time!
     to: Time!
+    """
+    List of {name, agg} pairs specifying which float signals to aggregate.
+    The MCP shortcut tool ` + "`" + `get_signals_time_series` + "`" + ` renders these into the
+    GraphQL selection set at call time. GraphQL clients that select signal
+    fields directly (e.g. ` + "`" + `speed(agg: AVG)` + "`" + `) can leave this as ` + "`" + `[]` + "`" + `.
+    """
+    signalRequests: [SignalAggregationRequest!]! = []
     filter: SignalFilter
   ): [SignalAggregations!] @requiresVehicleToken
-    @mcpTool(name: "get_signals_time_series", description: "Get aggregated signal time series for a vehicle over a date range. Returns signal values bucketed by the specified interval (e.g. '1h', '15m'). Use with signal field names and aggregation functions.", selection: "timestamp")
-    @mcpExample(description: "Hourly average speed over a time range", query: "query TimeSeries($tokenId:Int!,$from:Time!,$to:Time!) { signals(tokenId:$tokenId,interval:\"1h\",from:$from,to:$to) { timestamp speed(agg:AVG) } }")
-  signalsLatest(tokenId: Int!, filter: SignalFilter): SignalCollection
+    @mcpTool(
+      name: "get_signals_time_series"
+      description: "Get aggregated time series for a named list of float signals. Pass signalRequests as [{name, agg}] (e.g. [{name:\"speed\",agg:AVG},{name:\"powertrainTractionBatteryStateOfChargeCurrent\",agg:LAST}]). Signal names come from get_available_signals or get_data_summary. Aggregations: AVG, MED, MAX, MIN, RAND, FIRST, LAST."
+      selection: "timestamp{{range .signalRequests}} {{.name}}(agg: {{.agg}}){{end}}"
+    )
+    @mcpExample(description: "Hourly average speed over a time range", query: "query TS($tokenId:Int!,$from:Time!,$to:Time!) { signals(tokenId:$tokenId,interval:\"1h\",from:$from,to:$to,signalRequests:[{name:\"speed\",agg:AVG}]) { timestamp speed(agg:AVG) } }")
+  signalsLatest(
+    tokenId: Int!
+    """
+    List of signal names to return the latest value for. The MCP shortcut
+    tool ` + "`" + `get_latest_signals` + "`" + ` renders these into the GraphQL selection set
+    at call time. GraphQL clients that select signal fields directly (e.g.
+    ` + "`" + `speed { timestamp value }` + "`" + `) can leave this as ` + "`" + `[]` + "`" + `.
+    """
+    signalNames: [String!]! = []
+    filter: SignalFilter
+  ): SignalCollection
     @requiresVehicleToken
-    @mcpTool(name: "get_latest_signals", description: "Get the most recent signal values for a vehicle by token ID. Returns the last-seen timestamp for the vehicle.", selection: "lastSeen")
-    @mcpExample(description: "Latest speed and battery charge", query: "query Latest($tokenId:Int!) { signalsLatest(tokenId:$tokenId) { lastSeen speed{timestamp value} powertrainTractionBatteryStateOfChargeCurrent{timestamp value} } }")
+    @mcpTool(
+      name: "get_latest_signals"
+      description: "Get the most recent value for a named list of float signals. Pass signalNames as an array of strings (e.g. [\"speed\",\"powertrainTractionBatteryStateOfChargeCurrent\"]). For non-float signals (strings, locations) use get_signals_snapshot. Signal names come from get_available_signals or get_data_summary."
+      selection: "lastSeen{{range .signalNames}} {{.}} {timestamp value}{{end}}"
+    )
+    @mcpExample(description: "Latest speed and battery charge", query: "query L($tokenId:Int!) { signalsLatest(tokenId:$tokenId,signalNames:[\"speed\",\"powertrainTractionBatteryStateOfChargeCurrent\"]) { lastSeen speed{timestamp value} powertrainTractionBatteryStateOfChargeCurrent{timestamp value} } }")
   availableSignals(tokenId: Int!, filter: SignalFilter): [String!]
     @requiresVehicleToken
     @mcpTool(name: "get_available_signals", description: "List queryable signal names that have stored data for a vehicle by token ID.", selection: "")
@@ -3481,6 +3507,18 @@ type Location {
   latitude: Float!
   longitude: Float!
   hdop: Float!
+}
+
+"""
+Request for one float-signal aggregation. Carried on the ` + "`" + `signals` + "`" + ` query's
+` + "`" + `signalRequests` + "`" + ` argument so the MCP shortcut tool's templated selection can
+expand it into a concrete selection set. The resolver itself does not read
+this argument — it reads the concrete selection set gqlgen built from the
+rendered template.
+"""
+input SignalAggregationRequest {
+  name: String!
+  agg: FloatAggregation!
 }
 
 """
@@ -5897,11 +5935,16 @@ func (ec *executionContext) field_Query_signalsLatest_args(ctx context.Context, 
 		return nil, err
 	}
 	args["tokenId"] = arg0
-	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFilter)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "signalNames", ec.unmarshalNString2ᚕstringᚄ)
 	if err != nil {
 		return nil, err
 	}
-	args["filter"] = arg1
+	args["signalNames"] = arg1
+	arg2, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFilter)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg2
 	return args, nil
 }
 
@@ -5944,11 +5987,16 @@ func (ec *executionContext) field_Query_signals_args(ctx context.Context, rawArg
 		return nil, err
 	}
 	args["to"] = arg3
-	arg4, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFilter)
+	arg4, err := graphql.ProcessArgField(ctx, rawArgs, "signalRequests", ec.unmarshalNSignalAggregationRequest2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalAggregationRequestᚄ)
 	if err != nil {
 		return nil, err
 	}
-	args["filter"] = arg4
+	args["signalRequests"] = arg4
+	arg5, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSignalFilter2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalFilter)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg5
 	return args, nil
 }
 
@@ -9103,7 +9151,7 @@ func (ec *executionContext) _Query_signals(ctx context.Context, field graphql.Co
 		ec.fieldContext_Query_signals,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.Resolvers.Query().Signals(ctx, fc.Args["tokenId"].(int), fc.Args["interval"].(string), fc.Args["from"].(time.Time), fc.Args["to"].(time.Time), fc.Args["filter"].(*model.SignalFilter))
+			return ec.Resolvers.Query().Signals(ctx, fc.Args["tokenId"].(int), fc.Args["interval"].(string), fc.Args["from"].(time.Time), fc.Args["to"].(time.Time), fc.Args["signalRequests"].([]*model.SignalAggregationRequest), fc.Args["filter"].(*model.SignalFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -9395,7 +9443,7 @@ func (ec *executionContext) _Query_signalsLatest(ctx context.Context, field grap
 		ec.fieldContext_Query_signalsLatest,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.Resolvers.Query().SignalsLatest(ctx, fc.Args["tokenId"].(int), fc.Args["filter"].(*model.SignalFilter))
+			return ec.Resolvers.Query().SignalsLatest(ctx, fc.Args["tokenId"].(int), fc.Args["signalNames"].([]string), fc.Args["filter"].(*model.SignalFilter))
 		},
 		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
 			directive0 := next
@@ -28729,6 +28777,43 @@ func (ec *executionContext) unmarshalInputSegmentSignalRequest(ctx context.Conte
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputSignalAggregationRequest(ctx context.Context, obj any) (model.SignalAggregationRequest, error) {
+	var it model.SignalAggregationRequest
+	if obj == nil {
+		return it, nil
+	}
+
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"name", "agg"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "name":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Name = data
+		case "agg":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("agg"))
+			data, err := ec.unmarshalNFloatAggregation2githubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐFloatAggregation(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Agg = data
+		}
+	}
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputSignalFilter(ctx context.Context, obj any) (model.SignalFilter, error) {
 	var it model.SignalFilter
 	if obj == nil {
@@ -34933,6 +35018,26 @@ func (ec *executionContext) unmarshalNSegmentEventRequest2ᚖgithubᚗcomᚋDIMO
 
 func (ec *executionContext) unmarshalNSegmentSignalRequest2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSegmentSignalRequest(ctx context.Context, v any) (*model.SegmentSignalRequest, error) {
 	res, err := ec.unmarshalInputSegmentSignalRequest(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNSignalAggregationRequest2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalAggregationRequestᚄ(ctx context.Context, v any) ([]*model.SignalAggregationRequest, error) {
+	var vSlice []any
+	vSlice = graphql.CoerceList(v)
+	var err error
+	res := make([]*model.SignalAggregationRequest, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNSignalAggregationRequest2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalAggregationRequest(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) unmarshalNSignalAggregationRequest2ᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSignalAggregationRequest(ctx context.Context, v any) (*model.SignalAggregationRequest, error) {
+	res, err := ec.unmarshalInputSignalAggregationRequest(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 

@@ -33,14 +33,39 @@ type Query {
     interval: String!
     from: Time!
     to: Time!
+    """
+    List of {name, agg} pairs specifying which float signals to aggregate.
+    The MCP shortcut tool `get_signals_time_series` renders these into the
+    GraphQL selection set at call time. GraphQL clients that select signal
+    fields directly (e.g. `speed(agg: AVG)`) can leave this as `[]`.
+    """
+    signalRequests: [SignalAggregationRequest!]! = []
     filter: SignalFilter
   ): [SignalAggregations!] @requiresVehicleToken
-    @mcpTool(name: "get_signals_time_series", description: "Get aggregated signal time series for a vehicle over a date range. Returns signal values bucketed by the specified interval (e.g. '1h', '15m'). Use with signal field names and aggregation functions.", selection: "timestamp")
-    @mcpExample(description: "Hourly average speed over a time range", query: "query TimeSeries($tokenId:Int!,$from:Time!,$to:Time!) { signals(tokenId:$tokenId,interval:\"1h\",from:$from,to:$to) { timestamp speed(agg:AVG) } }")
-  signalsLatest(tokenId: Int!, filter: SignalFilter): SignalCollection
+    @mcpTool(
+      name: "get_signals_time_series"
+      description: "Get aggregated time series for a named list of float signals. Pass signalRequests as [{name, agg}] (e.g. [{name:\"speed\",agg:AVG},{name:\"powertrainTractionBatteryStateOfChargeCurrent\",agg:LAST}]). Signal names come from get_available_signals or get_data_summary. Aggregations: AVG, MED, MAX, MIN, RAND, FIRST, LAST."
+      selection: "timestamp{{range .signalRequests}} {{.name}}(agg: {{.agg}}){{end}}"
+    )
+    @mcpExample(description: "Hourly average speed over a time range", query: "query TS($tokenId:Int!,$from:Time!,$to:Time!) { signals(tokenId:$tokenId,interval:\"1h\",from:$from,to:$to,signalRequests:[{name:\"speed\",agg:AVG}]) { timestamp speed(agg:AVG) } }")
+  signalsLatest(
+    tokenId: Int!
+    """
+    List of signal names to return the latest value for. The MCP shortcut
+    tool `get_latest_signals` renders these into the GraphQL selection set
+    at call time. GraphQL clients that select signal fields directly (e.g.
+    `speed { timestamp value }`) can leave this as `[]`.
+    """
+    signalNames: [String!]! = []
+    filter: SignalFilter
+  ): SignalCollection
     @requiresVehicleToken
-    @mcpTool(name: "get_latest_signals", description: "Get the most recent signal values for a vehicle by token ID. Returns the last-seen timestamp for the vehicle.", selection: "lastSeen")
-    @mcpExample(description: "Latest speed and battery charge", query: "query Latest($tokenId:Int!) { signalsLatest(tokenId:$tokenId) { lastSeen speed{timestamp value} powertrainTractionBatteryStateOfChargeCurrent{timestamp value} } }")
+    @mcpTool(
+      name: "get_latest_signals"
+      description: "Get the most recent value for a named list of float signals. Pass signalNames as an array of strings (e.g. [\"speed\",\"powertrainTractionBatteryStateOfChargeCurrent\"]). For non-float signals (strings, locations) use get_signals_snapshot. Signal names come from get_available_signals or get_data_summary."
+      selection: "lastSeen{{range .signalNames}} {{.}} {timestamp value}{{end}}"
+    )
+    @mcpExample(description: "Latest speed and battery charge", query: "query L($tokenId:Int!) { signalsLatest(tokenId:$tokenId,signalNames:[\"speed\",\"powertrainTractionBatteryStateOfChargeCurrent\"]) { lastSeen speed{timestamp value} powertrainTractionBatteryStateOfChargeCurrent{timestamp value} } }")
   availableSignals(tokenId: Int!, filter: SignalFilter): [String!]
     @requiresVehicleToken
     @mcpTool(name: "get_available_signals", description: "List queryable signal names that have stored data for a vehicle by token ID.", selection: "")
@@ -207,6 +232,18 @@ type Location {
   latitude: Float!
   longitude: Float!
   hdop: Float!
+}
+
+"""
+Request for one float-signal aggregation. Carried on the `signals` query's
+`signalRequests` argument so the MCP shortcut tool's templated selection can
+expand it into a concrete selection set. The resolver itself does not read
+this argument — it reads the concrete selection set gqlgen built from the
+rendered template.
+"""
+input SignalAggregationRequest {
+  name: String!
+  agg: FloatAggregation!
 }
 
 """

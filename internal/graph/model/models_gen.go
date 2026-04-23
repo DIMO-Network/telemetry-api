@@ -175,6 +175,16 @@ type SegmentSignalRequest struct {
 	Agg  FloatAggregation `json:"agg"`
 }
 
+// Request for one float-signal aggregation. Carried on the `signals` query's
+// `signalRequests` argument so the MCP shortcut tool's templated selection can
+// expand it into a concrete selection set. The resolver itself does not read
+// this argument — it reads the concrete selection set gqlgen built from the
+// rendered template.
+type SignalAggregationRequest struct {
+	Name string           `json:"name"`
+	Agg  FloatAggregation `json:"agg"`
+}
+
 // Result of aggregating a float signal over an interval. Used by segments and daily activity summaries.
 // Same shape as one row of aggregated signal data (name, aggregation type, computed value).
 type SignalAggregationValue struct {
