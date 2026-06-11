@@ -422,35 +422,39 @@ func getAllLatestQuery(subject string, filter *model.SignalFilter) (string, []an
 	return newQuery(mods...)
 }
 
-// GetLastSeenQuery creates a query to get the last seen timestamp of any signal.
+// getLastSeenQuery creates a query to get the last seen timestamp of any signal.
 // returns the query statement and the arguments list,
+//
+// The inner query aggregates at the same grain as the
+// signal_latest_by_subject_source_name projection (GROUP BY name with subject
+// pinned) so the projection matcher serves it from pre-aggregated rows. A flat
+// max(timestamp) with no GROUP BY is not reliably matched and falls back to
+// scanning the subject's full history.
 /*
 SELECT
 	'lastSeen' AS name,
-	max(timestamp) AS ts,
+	max(ts) AS ts,
 	NULL AS value_number,
 	NULL AS value_string,
 	CAST(tuple(0, 0, 0, 0), 'Tuple(latitude Float64, longitude Float64, hdop Float64, heading Float64)') AS value_location
 FROM
-	signal
-WHERE
-	subject = '...'
+	(SELECT max(timestamp) AS ts FROM signal WHERE subject = '...' GROUP BY name)
 */
 func getLastSeenQuery(subject string, sigArgs *model.SignalArgs) (string, []any) {
 	if sigArgs == nil {
 		return "", nil
 	}
-	mods := []qm.QueryMod{
-		qm.Select(lastSeenName),
+	innerMods := []qm.QueryMod{
 		qm.Select(lastSeenTS),
-		qm.Select(numValAsNull),
-		qm.Select(strValAsNull),
-		qm.Select(locValAsZero),
 		qm.From(vss.TableName),
 		qm.Where(subjectWhere, subject),
+		qm.GroupBy(vss.NameCol),
 	}
-	mods = append(mods, getFilterMods(sigArgs.Filter)...)
-	return newQuery(mods...)
+	innerMods = append(innerMods, getFilterMods(sigArgs.Filter)...)
+	innerStmt, args := newQuery(innerMods...)
+	stmt := "SELECT " + lastSeenName + ", max(ts) AS ts, " + numValAsNull + ", " + strValAsNull + ", " + locValAsZero +
+		" FROM (" + strings.TrimSuffix(innerStmt, ";") + ");"
+	return stmt, args
 }
 
 // unionAll creates a UNION ALL statement from the given statements and arguments.
