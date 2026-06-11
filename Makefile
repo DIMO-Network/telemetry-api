@@ -19,7 +19,7 @@ VERSION   := $(shell git describe --tags || echo "v0.0.0")
 VER_CUT   := $(shell echo $(VERSION) | cut -c2-)
 
 # Dependency versions
-GOLANGCI_VERSION   = latest
+GOLANGCI_VERSION   = v2.12.1
 MODEL_GARAGE_VERSION = $(shell go list -m -f '{{.Version}}' github.com/DIMO-Network/model-garage)
 help:
 	@echo "\nSpecify a subcommand:\n"
@@ -89,7 +89,7 @@ generate-go: ## Generate go code.
 
 tools-golangci-lint: ## install golangci-lint tool
 	@mkdir -p $(PATHINSTBIN)
-	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(PATHINSTBIN) $(GOLANGCI_VERSION)
+	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/$(GOLANGCI_VERSION)/install.sh | sh -s -- -b $(PATHINSTBIN) $(GOLANGCI_VERSION)
 
 
 tools: tools-golangci-lint ## Install all tools required for development.
