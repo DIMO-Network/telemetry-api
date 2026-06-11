@@ -74,9 +74,9 @@ func getMaxExecutionTime(maxRequestDuration string) (int, error) {
 }
 
 // GetLatestSignals returns the latest signals based on the provided arguments
-// from the ClickHouse database. The queries are answered by the
-// signal_latest_by_subject_source_name projection, so no time bound is
-// applied; results reflect the full history of the subject.
+// from the ClickHouse database. The queries are answered by the precomputed
+// signal_latest table, so no time bound is applied; results reflect the full
+// history of the subject.
 func (s *Service) GetLatestSignals(ctx context.Context, subject string, latestArgs *model.LatestSignalsArgs) ([]*vss.Signal, error) {
 	stmt, args := getLatestQuery(subject, latestArgs)
 	if latestArgs.IncludeLastSeen {
@@ -314,8 +314,8 @@ type EventSummary struct {
 }
 
 // GetEventSummaries returns per-event summaries (name, count, first/last seen)
-// for a subject (vehicle), over all time. Relies on the (subject, source, name)
-// projection on the event table for acceptable performance.
+// for a subject (vehicle), over all time, read from the precomputed
+// event_summary table.
 func (s *Service) GetEventSummaries(ctx context.Context, subject string) ([]*EventSummary, error) {
 	stmt, args := getEventSummariesQuery(subject)
 	rows, err := s.conn.Query(ctx, stmt, args...)

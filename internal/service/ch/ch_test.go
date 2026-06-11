@@ -938,36 +938,6 @@ func (c *CHServiceTestSuite) TestGetLatestSignal() {
 	}
 }
 
-// TestLatestQueriesUseProjection asserts that every branch of the latest-signals
-// query family can be served by the signal_latest_by_subject_source_name
-// projection. A branch that falls back to the base table scans the subject's
-// entire signal history, so its cost grows with history depth instead of with
-// the request. force_optimize_projection makes ClickHouse reject any query the
-// projection matcher cannot serve.
-func (c *CHServiceTestSuite) TestLatestQueriesUseProjection() {
-	lastSeenStmt, lastSeenArgs := getLastSeenQuery(testSubject1, &model.SignalArgs{})
-	nonLocStmt, nonLocArgs := getLatestNonLocationQuery(testSubject1, []string{vss.FieldSpeed}, nil)
-	locStmt, locArgs := getLatestLocationQuery(testSubject1, []string{vss.FieldCurrentLocationCoordinates}, nil)
-
-	testCases := []struct {
-		name string
-		stmt string
-		args []any
-	}{
-		{name: "lastSeen", stmt: lastSeenStmt, args: lastSeenArgs},
-		{name: "nonLocation", stmt: nonLocStmt, args: nonLocArgs},
-		{name: "location", stmt: locStmt, args: locArgs},
-	}
-	for _, tc := range testCases {
-		c.Run(tc.name, func() {
-			stmt := strings.TrimSuffix(tc.stmt, ";") + " SETTINGS force_optimize_projection = 1"
-			rows, err := c.chService.conn.Query(context.Background(), stmt, tc.args...)
-			c.Require().NoError(err, "query is not served by a projection:\n%s", tc.stmt)
-			c.Require().NoError(rows.Close())
-		})
-	}
-}
-
 func (c *CHServiceTestSuite) TestGetAvailableSignals() {
 	ctx := context.Background()
 	c.Run("has signals", func() {
