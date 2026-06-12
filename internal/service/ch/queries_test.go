@@ -41,23 +41,52 @@ func TestGetLastSeenQuery(t *testing.T) {
 		assert.Nil(t, args)
 	})
 
-	t.Run("aggregates at projection grain", func(t *testing.T) {
+	t.Run("reads signal_latest", func(t *testing.T) {
 		stmt, args := getLastSeenQuery("subj", &model.SignalArgs{})
-		want := "SELECT 'lastSeen' AS name, max(ts) AS ts, NULL AS value_number, NULL AS value_string, " +
+		want := "SELECT 'lastSeen' AS name, max(timestamp) AS ts, NULL AS value_number, NULL AS value_string, " +
 			"CAST(tuple(0, 0, 0, 0), 'Tuple(latitude Float64, longitude Float64, hdop Float64, heading Float64)') AS value_location " +
-			"FROM (SELECT max(timestamp) AS ts FROM `signal` WHERE (subject = ?) GROUP BY name);"
+			"FROM `signal_latest` WHERE (subject = ?) AND (kind = ?);"
 		assert.Equal(t, want, stmt)
-		assert.Equal(t, []any{"subj"}, args)
+		assert.Equal(t, []any{"subj", uint8(0)}, args)
 	})
 
-	t.Run("source filter stays in inner query", func(t *testing.T) {
+	t.Run("source filter applies", func(t *testing.T) {
 		stmt, args := getLastSeenQuery("subj", &model.SignalArgs{
 			Filter: &model.SignalFilter{Source: ref("0xcd445F4c6bDAD32b68a2939b912150Fe3C88803E")},
 		})
-		want := "SELECT 'lastSeen' AS name, max(ts) AS ts, NULL AS value_number, NULL AS value_string, " +
+		want := "SELECT 'lastSeen' AS name, max(timestamp) AS ts, NULL AS value_number, NULL AS value_string, " +
 			"CAST(tuple(0, 0, 0, 0), 'Tuple(latitude Float64, longitude Float64, hdop Float64, heading Float64)') AS value_location " +
-			"FROM (SELECT max(timestamp) AS ts FROM `signal` WHERE (subject = ?) AND (source = ?) GROUP BY name);"
+			"FROM `signal_latest` WHERE (subject = ?) AND (kind = ?) AND (source = ?);"
 		assert.Equal(t, want, stmt)
-		assert.Equal(t, []any{"subj", "0xcd445F4c6bDAD32b68a2939b912150Fe3C88803E"}, args)
+		assert.Equal(t, []any{"subj", uint8(0), "0xcd445F4c6bDAD32b68a2939b912150Fe3C88803E"}, args)
 	})
+}
+
+func TestGetLatestQueriesReadLatestTable(t *testing.T) {
+	nonLoc, _ := getLatestNonLocationQuery("subj", []string{"speed"}, nil)
+	assert.Contains(t, nonLoc, "FROM `signal_latest`")
+	assert.Contains(t, nonLoc, "(kind = ?)")
+
+	loc, _ := getLatestLocationQuery("subj", []string{"currentLocationCoordinates"}, nil)
+	assert.Contains(t, loc, "FROM `signal_latest`")
+	assert.Contains(t, loc, "(kind = ?)")
+	assert.NotContains(t, loc, "argMaxIf") // kind=1 rows are pre-filtered; plain argMax suffices
+
+	all, _ := getAllLatestQuery("subj", nil)
+	assert.Contains(t, all, "FROM `signal_latest`")
+	assert.Contains(t, all, "(kind = ?)")
+
+	distinct, _ := getDistinctQuery("subj", nil)
+	assert.Contains(t, distinct, "FROM `signal_latest`")
+	assert.Contains(t, distinct, "(kind = ?)")
+}
+
+func TestSummaryQueriesReadSummaryTables(t *testing.T) {
+	sig, _ := getSignalSummariesQuery("subj", nil)
+	assert.Contains(t, sig, "FROM `signal_summary`")
+	assert.Contains(t, sig, "sum(count)")
+
+	ev, _ := getEventSummariesQuery("subj")
+	assert.Contains(t, ev, "FROM `event_summary`")
+	assert.Contains(t, ev, "sum(count)")
 }
