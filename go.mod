@@ -11,7 +11,7 @@ require (
 	github.com/DIMO-Network/credit-tracker v0.0.6
 	github.com/DIMO-Network/fetch-api v0.0.16
 	github.com/DIMO-Network/model-garage v1.0.11
-	github.com/DIMO-Network/server-garage v0.3.0
+	github.com/DIMO-Network/server-garage v0.3.1-0.20260612015039-11a2fd29e616
 	github.com/DIMO-Network/shared v1.1.5
 	github.com/DIMO-Network/token-exchange-api v0.4.0
 	github.com/aarondl/sqlboiler/v4 v4.19.5

@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/99designs/gqlgen/graphql"
+	"github.com/99designs/gqlgen/graphql/executor"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/handler/extension"
 	"github.com/99designs/gqlgen/graphql/handler/transport"
@@ -81,11 +82,10 @@ func New(settings config.Settings) (*App, error) {
 	var costCalculator pricing.CostCalculator
 
 	es := graph.NewExecutableSchema(cfg)
-	server := newServer(es)
-	server.Use(dtcmiddleware.NewDCT(ctClient, &costCalculator))
+	dct := dtcmiddleware.NewDCT(ctClient, &costCalculator)
 
-	// Add query recording middleware
-	server.Use(queryRecorder.QueryRecordingExtension{Recorder: queryRec})
+	server := newServer(es)
+	configureGQLExtensions(server, dct, queryRec)
 
 	authMiddleware, err := auth.NewJWTMiddleware(settings.TokenExchangeIssuer, settings.TokenExchangeJWTKeySetURL)
 	if err != nil {
@@ -111,8 +111,19 @@ func New(settings config.Settings) (*App, error) {
 		),
 	)
 
-	mcpHandler, err := mcpserver.New(mcpserver.NewGQLGenExecutor(es), "DIMO Telemetry", "0.1.0", "telemetry",
-		mcpserver.WithTools(graph.OverrideMCPTools(graph.MCPTools)),
+	mcpTools, err := graph.OverrideMCPTools(graph.MCPTools)
+	if err != nil {
+		return nil, fmt.Errorf("couldn't override MCP tools: %w", err)
+	}
+
+	// The MCP executor gets the same extension set as the HTTP GraphQL server
+	// so tool calls are billed, recorded, and complexity-limited identically.
+	mcpExec := mcpserver.NewGQLGenExecutor(es, func(e *executor.Executor) {
+		configureGQLExtensions(e, dct, queryRec)
+	})
+
+	mcpHandler, err := mcpserver.New(mcpExec, "DIMO Telemetry", "0.1.0", "telemetry",
+		mcpserver.WithTools(mcpTools),
 		mcpserver.WithCondensedSchema(graph.CondensedSchema),
 	)
 	if err != nil {
@@ -175,11 +186,29 @@ func newServer(es graphql.ExecutableSchema) *handler.Server {
 	srv.AddTransport(transport.GET{})
 	srv.AddTransport(transport.POST{})
 	srv.AddTransport(transport.MultipartForm{})
+	// srv.SetQueryCache(graphql.NoCache[*ast.QueryDocument]{})
+
+	return srv
+}
+
+// gqlExtensionTarget is satisfied by both *handler.Server and
+// *executor.Executor, letting the HTTP GraphQL server and the MCP executor
+// share one extension configuration.
+type gqlExtensionTarget interface {
+	Use(graphql.HandlerExtension)
+	SetErrorPresenter(graphql.ErrorPresenterFunc)
+}
+
+// configureGQLExtensions applies the extension set shared by the HTTP GraphQL
+// server and the MCP executor: complexity limit, introspection, metrics,
+// error shaping, DCX credit tracking, and query recording. Keeping both paths
+// on one list means MCP tool calls are billed and limited exactly like
+// regular GraphQL requests.
+func configureGQLExtensions(srv gqlExtensionTarget, dct *dtcmiddleware.DCT, queryRec *queryRecorder.QueryRecorder) {
 	srv.Use(extension.FixedComplexityLimit(100))
 	srv.Use(extension.Introspection{})
 	srv.Use(metrics.Tracer{})
-	// srv.SetQueryCache(graphql.NoCache[*ast.QueryDocument]{})
 	srv.SetErrorPresenter(errorPresenter)
-
-	return srv
+	srv.Use(dct)
+	srv.Use(queryRecorder.QueryRecordingExtension{Recorder: queryRec})
 }
