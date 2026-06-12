@@ -112,7 +112,7 @@ func New(settings config.Settings) (*App, error) {
 	)
 
 	mcpHandler, err := mcpserver.New(mcpserver.NewGQLGenExecutor(es), "DIMO Telemetry", "0.1.0", "telemetry",
-		mcpserver.WithTools(graph.MCPTools),
+		mcpserver.WithTools(graph.OverrideMCPTools(graph.MCPTools)),
 		mcpserver.WithCondensedSchema(graph.CondensedSchema),
 	)
 	if err != nil {
