@@ -1,6 +1,10 @@
 package graph
 
-import "github.com/DIMO-Network/server-garage/pkg/mcpserver"
+import (
+	"fmt"
+
+	"github.com/DIMO-Network/server-garage/pkg/mcpserver"
+)
 
 // OverrideMCPTools patches the mcpgen-generated MCPTools slice so the two
 // shortcut tools that wrap `signals` and `signalsLatest` actually work.
@@ -21,18 +25,30 @@ import "github.com/DIMO-Network/server-garage/pkg/mcpserver"
 //     the argument flowing through to the GraphQL executor.
 //
 // The GraphQL schema is untouched.
-func OverrideMCPTools(tools []mcpserver.ToolDefinition) []mcpserver.ToolDefinition {
+//
+// Returns an error if either tool is missing from the generated slice, so a
+// rename in mcpgen output fails startup instead of silently shipping the
+// original empty-selection tools.
+func OverrideMCPTools(tools []mcpserver.ToolDefinition) ([]mcpserver.ToolDefinition, error) {
 	out := make([]mcpserver.ToolDefinition, len(tools))
 	copy(out, tools)
+	overridden := make(map[string]bool, 2)
 	for i := range out {
 		switch out[i].Name {
 		case "telemetry_get_signals_time_series":
 			overrideSignalsTimeSeries(&out[i])
+			overridden[out[i].Name] = true
 		case "telemetry_get_latest_signals":
 			overrideLatestSignals(&out[i])
+			overridden[out[i].Name] = true
 		}
 	}
-	return out
+	for _, name := range []string{"telemetry_get_signals_time_series", "telemetry_get_latest_signals"} {
+		if !overridden[name] {
+			return nil, fmt.Errorf("graph: OverrideMCPTools did not find tool %q in generated MCPTools; mcpgen output may have renamed it", name)
+		}
+	}
+	return out, nil
 }
 
 func overrideSignalsTimeSeries(t *mcpserver.ToolDefinition) {
