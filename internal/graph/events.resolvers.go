@@ -14,5 +14,8 @@ import (
 
 // Events is the resolver for the events field.
 func (r *queryResolver) Events(ctx context.Context, tokenID int, from time.Time, to time.Time, filter *model.EventFilter) ([]*model.Event, error) {
+	if r.ProxyClient != nil {
+		return r.ProxyClient.ProxyEvents(ctx, r.ProxySubjectFunc(tokenID), from, to, filter)
+	}
 	return r.BaseRepo.GetEvents(ctx, tokenID, from, to, filter)
 }

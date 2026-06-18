@@ -13,6 +13,7 @@ import (
 	"github.com/DIMO-Network/server-garage/pkg/gql/errorhandler"
 	"github.com/DIMO-Network/telemetry-api/internal/auth"
 	"github.com/DIMO-Network/telemetry-api/internal/limits"
+	"github.com/DIMO-Network/telemetry-api/internal/proxy"
 	"github.com/rs/zerolog"
 	"github.com/vektah/gqlparser/v2/gqlerror"
 )
@@ -90,6 +91,17 @@ func authLoggerMiddleware(next http.Handler) http.Handler {
 		}
 		loggerCtx := zerolog.Ctx(r.Context()).With().Str("jwtSubject", validateClaims.RegisteredClaims.Subject).Logger()
 		r = r.WithContext(loggerCtx.WithContext(r.Context()))
+		next.ServeHTTP(w, r)
+	})
+}
+
+// rawAuthMiddleware captures the raw Authorization header and stores it in context
+// so the proxy client can forward it to dq without re-signing.
+func rawAuthMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if v := r.Header.Get("Authorization"); v != "" {
+			r = r.WithContext(context.WithValue(r.Context(), proxy.AuthHeaderKey{}, v))
+		}
 		next.ServeHTTP(w, r)
 	})
 }
