@@ -21,4 +21,7 @@ type Settings struct {
 	CreditTrackerEndpoint     string          `yaml:"CREDIT_TRACKER_ENDPOINT"`
 	StorageNodeDevLicense     common.Address  `yaml:"STORAGE_NODE_DEV_LICENSE"`
 	VINDataVersion            string          `yaml:"VIN_DATA_VERSION"`
+	// RecordedDevelopers is a comma-separated list of developer license
+	// addresses whose queries are logged in full for later replay.
+	RecordedDevelopers string `yaml:"RECORDED_DEVELOPERS"`
 }
