@@ -66,6 +66,11 @@ func New(settings config.Settings) (*App, error) {
 	// Create query recorder
 	queryRec := queryRecorder.New()
 
+	replayLogger, err := queryRecorder.NewReplayLogger(settings.RecordedDevelopers)
+	if err != nil {
+		return nil, fmt.Errorf("couldn't parse recorded developer list: %w", err)
+	}
+
 	resolver := &graph.Resolver{
 		BaseRepo:        baseRepo,
 		VCRepo:          vcRepo,
@@ -85,7 +90,7 @@ func New(settings config.Settings) (*App, error) {
 	dct := dtcmiddleware.NewDCT(ctClient, &costCalculator)
 
 	server := newServer(es)
-	configureGQLExtensions(server, dct, queryRec)
+	configureGQLExtensions(server, dct, queryRec, replayLogger)
 
 	authMiddleware, err := auth.NewJWTMiddleware(settings.TokenExchangeIssuer, settings.TokenExchangeJWTKeySetURL)
 	if err != nil {
@@ -119,7 +124,7 @@ func New(settings config.Settings) (*App, error) {
 	// The MCP executor gets the same extension set as the HTTP GraphQL server
 	// so tool calls are billed, recorded, and complexity-limited identically.
 	mcpExec := mcpserver.NewGQLGenExecutor(es, func(e *executor.Executor) {
-		configureGQLExtensions(e, dct, queryRec)
+		configureGQLExtensions(e, dct, queryRec, replayLogger)
 	})
 
 	mcpHandler, err := mcpserver.New(mcpExec, "DIMO Telemetry", "0.1.0", "telemetry",
@@ -204,11 +209,14 @@ type gqlExtensionTarget interface {
 // error shaping, DCX credit tracking, and query recording. Keeping both paths
 // on one list means MCP tool calls are billed and limited exactly like
 // regular GraphQL requests.
-func configureGQLExtensions(srv gqlExtensionTarget, dct *dtcmiddleware.DCT, queryRec *queryRecorder.QueryRecorder) {
+func configureGQLExtensions(srv gqlExtensionTarget, dct *dtcmiddleware.DCT, queryRec *queryRecorder.QueryRecorder, replayLogger *queryRecorder.ReplayLogger) {
 	srv.Use(extension.FixedComplexityLimit(100))
 	srv.Use(extension.Introspection{})
 	srv.Use(metrics.Tracer{})
 	srv.SetErrorPresenter(errorPresenter)
 	srv.Use(dct)
 	srv.Use(queryRecorder.QueryRecordingExtension{Recorder: queryRec})
+	if replayLogger != nil {
+		srv.Use(replayLogger)
+	}
 }
