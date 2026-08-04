@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/vektah/gqlparser/v2/ast"
 	"github.com/vektah/gqlparser/v2/parser"
+	"github.com/vektah/gqlparser/v2/validator"
 )
 
 func TestOverrideMCPTools_PatchesBothTools(t *testing.T) {
@@ -99,6 +100,56 @@ func TestOverrideMCPTools_TemplatesRenderValidGraphQL(t *testing.T) {
 
 			require.Contains(t, buf.String(), "speed")
 			require.Contains(t, buf.String(), "powertrainTractionBatteryStateOfChargeCurrent")
+		})
+	}
+}
+
+// TestOverrideMCPTools_LocationSignalsValidateAgainstSchema reproduces the
+// 2026-08-03 production failures: location signals passed to the time-series
+// and latest tools rendered selections without subfields, and the executor
+// rejected them with "must have a selection of subfields". Parsing alone
+// can't catch that, so rendered queries must validate against the schema.
+func TestOverrideMCPTools_LocationSignalsValidateAgainstSchema(t *testing.T) {
+	out, err := OverrideMCPTools(MCPTools)
+	require.NoError(t, err)
+
+	cases := []struct {
+		toolName string
+		args     map[string]any
+	}{
+		{
+			toolName: "telemetry_get_signals_time_series",
+			args: map[string]any{
+				"signalRequests": []any{
+					map[string]any{"name": "speed", "agg": "AVG"},
+					map[string]any{"name": "currentLocationCoordinates", "agg": "LAST"},
+					map[string]any{"name": "currentLocationApproximateCoordinates", "agg": "FIRST"},
+				},
+			},
+		},
+		{
+			toolName: "telemetry_get_latest_signals",
+			args: map[string]any{
+				"signalNames": []any{"speed", "currentLocationCoordinates", "currentLocationApproximateCoordinates"},
+			},
+		},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.toolName, func(t *testing.T) {
+			tool := findTool(t, out, tc.toolName)
+
+			tmpl, err := template.New(tc.toolName).Option("missingkey=error").Parse(tool.SelectionTemplate)
+			require.NoError(t, err)
+			var buf strings.Builder
+			require.NoError(t, tmpl.Execute(&buf, tc.args))
+
+			query := strings.Replace(tool.Query, mcpserver.SelectionPlaceholder, buf.String(), 1)
+			doc, parseErr := parser.ParseQuery(&ast.Source{Input: query})
+			require.Nil(t, parseErr, "rendered query must parse: %s", query)
+
+			errs := validator.ValidateWithRules(parsedSchema, doc, nil)
+			require.Empty(t, errs, "rendered query must validate against the schema: %s", query)
 		})
 	}
 }

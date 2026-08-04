@@ -2,6 +2,8 @@ package graph
 
 import (
 	"fmt"
+	"sort"
+	"strings"
 
 	"github.com/DIMO-Network/server-garage/pkg/mcpserver"
 )
@@ -52,29 +54,74 @@ func OverrideMCPTools(tools []mcpserver.ToolDefinition) ([]mcpserver.ToolDefinit
 }
 
 func overrideSignalsTimeSeries(t *mcpserver.ToolDefinition) {
-	t.Description = "Get aggregated time series for a named list of float signals. Pass signalRequests as [{name, agg}] (e.g. [{name:\"speed\",agg:\"AVG\"},{name:\"powertrainTractionBatteryStateOfChargeCurrent\",agg:\"LAST\"}]). Returns buckets of {timestamp, <signal>: <value>, ...}. Signal names come from get_available_signals or get_data_summary. Aggregations: AVG, MED, MAX, MIN, RAND, FIRST, LAST."
+	t.Description = "Get aggregated time series for a named list of float or location signals. Pass signalRequests as [{name, agg}] (e.g. [{name:\"speed\",agg:\"AVG\"},{name:\"currentLocationCoordinates\",agg:\"LAST\"}]). Returns buckets of {timestamp, <signal>: <value>, ...}; location signals yield {latitude, longitude, hdop} values. Signal names come from get_available_signals or get_data_summary. Aggregations for float signals: AVG, MED, MAX, MIN, RAND, FIRST, LAST; for location signals: AVG, RAND, FIRST, LAST."
 	t.Query = `query($tokenId: Int!, $interval: String!, $from: Time!, $to: Time!, $filter: SignalFilter) { signals(tokenId: $tokenId, interval: $interval, from: $from, to: $to, filter: $filter) { __MCPGEN_SELECTION__ } }`
-	t.SelectionTemplate = "timestamp{{range .signalRequests}} {{.name}}(agg: {{.agg}}){{end}}"
+	t.SelectionTemplate = fmt.Sprintf(
+		"timestamp{{range .signalRequests}} {{if %s}}{{.name}}(agg: {{.agg}}) %s{{else}}{{.name}}(agg: {{.agg}}){{end}}{{end}}",
+		locationNameCondition(".name"), locationSelection)
 	t.Args = append(t.Args, mcpserver.ArgDefinition{
 		Name:        "signalRequests",
 		Type:        "array",
 		ItemsType:   "object",
 		Required:    true,
 		ToolOnly:    true,
-		Description: "List of {name, agg} pairs specifying which float signals to aggregate. Each `name` is a signal field name; each `agg` is one of AVG, MED, MAX, MIN, RAND, FIRST, LAST.",
+		Description: "List of {name, agg} pairs specifying which signals to aggregate. Each `name` is a signal field name. For float signals `agg` is one of AVG, MED, MAX, MIN, RAND, FIRST, LAST; for location signals one of AVG, RAND, FIRST, LAST.",
 	})
 }
 
 func overrideLatestSignals(t *mcpserver.ToolDefinition) {
-	t.Description = "Get the most recent value for a named list of float signals. Pass signalNames as an array of strings (e.g. [\"speed\",\"powertrainTractionBatteryStateOfChargeCurrent\"]). For non-float signals (strings, locations) use get_signals_snapshot. Signal names come from get_available_signals or get_data_summary."
+	t.Description = "Get the most recent value for a named list of signals. Pass signalNames as an array of strings (e.g. [\"speed\",\"currentLocationCoordinates\"]). Float signals return {timestamp, value}; location signals return {timestamp, value: {latitude, longitude, hdop}}. For string signals use get_signals_snapshot. Signal names come from get_available_signals or get_data_summary."
 	t.Query = `query($tokenId: Int!, $filter: SignalFilter) { signalsLatest(tokenId: $tokenId, filter: $filter) { __MCPGEN_SELECTION__ } }`
-	t.SelectionTemplate = "lastSeen{{range .signalNames}} {{.}} {timestamp value}{{end}}"
+	t.SelectionTemplate = fmt.Sprintf(
+		"lastSeen{{range .signalNames}} {{if %s}}{{.}} {timestamp value %s}{{else}}{{.}} {timestamp value}{{end}}{{end}}",
+		locationNameCondition("."), locationSelection)
 	t.Args = append(t.Args, mcpserver.ArgDefinition{
 		Name:        "signalNames",
 		Type:        "array",
 		ItemsType:   "string",
 		Required:    true,
 		ToolOnly:    true,
-		Description: "List of float-signal field names to return the latest value for.",
+		Description: "List of float- or location-signal field names to return the latest value for.",
 	})
+}
+
+// locationSelection is the subfield selection required for location-valued
+// signals; the Location type has exactly these fields.
+const locationSelection = "{ latitude longitude hdop }"
+
+// locationSignalNames lists the signal fields whose value type is a location,
+// read from the parsed schema so regenerated location signals are picked up
+// without touching this file. SignalCollection wraps them in SignalLocation;
+// the same names take LocationAggregation on SignalAggregations.
+func locationSignalNames() []string {
+	def := parsedSchema.Types["SignalCollection"]
+	if def == nil {
+		return nil
+	}
+	var names []string
+	for _, f := range def.Fields {
+		if f.Type.Name() == "SignalLocation" {
+			names = append(names, f.Name)
+		}
+	}
+	sort.Strings(names)
+	return names
+}
+
+// locationNameCondition renders a text/template boolean expression that is
+// true when the signal name referenced by ref (e.g. ".name" or ".") is a
+// location signal.
+func locationNameCondition(ref string) string {
+	names := locationSignalNames()
+	if len(names) == 0 {
+		return "false"
+	}
+	terms := make([]string, len(names))
+	for i, n := range names {
+		terms[i] = fmt.Sprintf("(eq %s %q)", ref, n)
+	}
+	if len(terms) == 1 {
+		return terms[0]
+	}
+	return "or " + strings.Join(terms, " ")
 }

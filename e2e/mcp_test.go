@@ -171,11 +171,19 @@ func TestMCPSignalTools(t *testing.T) {
 			CloudEventHeader: cloudevent.CloudEventHeader{Source: source, Subject: subject},
 			Data:             vss.SignalData{Timestamp: baseTime.Add(90 * time.Minute), Name: vss.FieldPowertrainTractionBatteryStateOfChargeCurrent, ValueNumber: 42.5},
 		},
+		{
+			CloudEventHeader: cloudevent.CloudEventHeader{Source: source, Subject: subject},
+			Data: vss.SignalData{
+				Timestamp:     baseTime.Add(60 * time.Minute),
+				Name:          vss.FieldCurrentLocationCoordinates,
+				ValueLocation: vss.Location{Latitude: 42.615208, Longitude: -83.029093, HDOP: 5},
+			},
+		},
 	}
 	insertSignal(t, services.CH, signals)
 
 	server := newMCPServer(t, services.Settings)
-	token := services.Auth.CreateVehicleToken(t, mcpTestTokenID, []string{tokenclaims.PermissionGetNonLocationHistory})
+	token := services.Auth.CreateVehicleToken(t, mcpTestTokenID, []string{tokenclaims.PermissionGetNonLocationHistory, tokenclaims.PermissionGetLocationHistory})
 
 	t.Run("latest signals returns data", func(t *testing.T) {
 		text, isError := callTool(t, server.URL, token, "telemetry_get_latest_signals", map[string]any{
@@ -249,6 +257,74 @@ func TestMCPSignalTools(t *testing.T) {
 		assert.Nil(t, second.Speed, "no speed data in second bucket")
 		require.NotNil(t, second.SoC)
 		assert.Equal(t, 42.5, *second.SoC, "LAST of SoC in second bucket")
+	})
+
+	t.Run("latest signals returns location values with subfields", func(t *testing.T) {
+		text, isError := callTool(t, server.URL, token, "telemetry_get_latest_signals", map[string]any{
+			"tokenId":     mcpTestTokenID,
+			"signalNames": []string{"speed", "currentLocationCoordinates"},
+		})
+		require.False(t, isError, "tool error: %s", text)
+
+		var resp struct {
+			Data struct {
+				SignalsLatest struct {
+					Coordinates struct {
+						Timestamp string `json:"timestamp"`
+						Value     struct {
+							Latitude  float64 `json:"latitude"`
+							Longitude float64 `json:"longitude"`
+							HDOP      float64 `json:"hdop"`
+						} `json:"value"`
+					} `json:"currentLocationCoordinates"`
+				} `json:"signalsLatest"`
+			} `json:"data"`
+			Errors []struct {
+				Message string `json:"message"`
+			} `json:"errors"`
+		}
+		require.NoError(t, json.Unmarshal([]byte(text), &resp))
+		require.Empty(t, resp.Errors, "GraphQL errors: %s", text)
+
+		coords := resp.Data.SignalsLatest.Coordinates
+		assert.Equal(t, baseTime.Add(60*time.Minute).Format(time.RFC3339), coords.Timestamp)
+		assert.Equal(t, 42.615208, coords.Value.Latitude)
+		assert.Equal(t, -83.029093, coords.Value.Longitude)
+		assert.Equal(t, 5.0, coords.Value.HDOP)
+	})
+
+	t.Run("time series aggregates location signals", func(t *testing.T) {
+		text, isError := callTool(t, server.URL, token, "telemetry_get_signals_time_series", map[string]any{
+			"tokenId":  mcpTestTokenID,
+			"interval": "1h",
+			"from":     baseTime.Format(time.RFC3339),
+			"to":       baseTime.Add(2 * time.Hour).Format(time.RFC3339),
+			"signalRequests": []map[string]any{
+				{"name": "currentLocationCoordinates", "agg": "LAST"},
+			},
+		})
+		require.False(t, isError, "tool error: %s", text)
+
+		var resp struct {
+			Data struct {
+				Signals []struct {
+					Coordinates *struct {
+						Latitude  float64 `json:"latitude"`
+						Longitude float64 `json:"longitude"`
+					} `json:"currentLocationCoordinates"`
+				} `json:"signals"`
+			} `json:"data"`
+			Errors []struct {
+				Message string `json:"message"`
+			} `json:"errors"`
+		}
+		require.NoError(t, json.Unmarshal([]byte(text), &resp))
+		require.Empty(t, resp.Errors, "GraphQL errors: %s", text)
+		require.NotEmpty(t, resp.Data.Signals)
+
+		require.NotNil(t, resp.Data.Signals[0].Coordinates)
+		assert.Equal(t, 42.615208, resp.Data.Signals[0].Coordinates.Latitude)
+		assert.Equal(t, -83.029093, resp.Data.Signals[0].Coordinates.Longitude)
 	})
 
 	t.Run("missing agg key fails template render before execution", func(t *testing.T) {
