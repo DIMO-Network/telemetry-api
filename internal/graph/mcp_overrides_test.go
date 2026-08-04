@@ -148,7 +148,7 @@ func TestOverrideMCPTools_LocationSignalsValidateAgainstSchema(t *testing.T) {
 			doc, parseErr := parser.ParseQuery(&ast.Source{Input: query})
 			require.Nil(t, parseErr, "rendered query must parse: %s", query)
 
-			errs := validator.Validate(parsedSchema, doc)
+			errs := validator.ValidateWithRules(parsedSchema, doc, nil)
 			require.Empty(t, errs, "rendered query must validate against the schema: %s", query)
 		})
 	}
