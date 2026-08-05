@@ -229,9 +229,19 @@ func (r *Repository) GetSignalSnapshot(ctx context.Context, tokenID uint32, filt
 // GetDataSummary returns the signal and event metadata for the given tokenID and filter.
 func (r *Repository) GetDataSummary(ctx context.Context, tokenID uint32, filter *model.SignalFilter) (*model.DataSummary, error) {
 	subject := r.toSubject(tokenID)
-	signalDataSummary, err := r.chService.GetSignalSummaries(ctx, subject, filter)
+	allSignalSummaries, err := r.chService.GetSignalSummaries(ctx, subject, filter)
 	if err != nil {
 		return nil, handleDBError(ctx, err)
+	}
+	// Same queryable filter as availableSignals / signalsSnapshot: stored
+	// names that left the GraphQL schema (e.g. currentLocationIsRedacted)
+	// must not be advertised — callers feed these names back into signal
+	// queries and get validation errors.
+	signalDataSummary := make([]*model.SignalDataSummary, 0, len(allSignalSummaries))
+	for _, metadata := range allSignalSummaries {
+		if _, ok := r.queryableSignals[metadata.Name]; ok {
+			signalDataSummary = append(signalDataSummary, metadata)
+		}
 	}
 	eventSummaries, err := r.chService.GetEventSummaries(ctx, subject)
 	if err != nil {

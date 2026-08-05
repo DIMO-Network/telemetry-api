@@ -514,3 +514,43 @@ func TestGetEvents(t *testing.T) {
 func ref[T any](t T) *T {
 	return &t
 }
+
+// TestGetDataSummaryFiltersUnqueryableSignals pins dataSummary to the same
+// queryable-signal filter used by availableSignals and signalsSnapshot.
+// Stored names that are no longer in the GraphQL schema (prod example:
+// currentLocationIsRedacted) must not be advertised — agents feed these names
+// back into signal queries and get GRAPHQL_VALIDATION_FAILED.
+func TestGetDataSummaryFiltersUnqueryableSignals(t *testing.T) {
+	testSubject := cloudevent.ERC721DID{
+		ChainID:         baseSettings.ChainID,
+		ContractAddress: baseSettings.VehicleNFTAddress,
+		TokenID:         big.NewInt(1),
+	}.String()
+
+	queryableSeen := time.Date(2026, 8, 3, 12, 0, 0, 0, time.UTC)
+	staleSeen := time.Date(2024, 7, 22, 10, 41, 26, 0, time.UTC)
+
+	mocks := setupMocks(t)
+	mocks.CHService.EXPECT().
+		GetSignalSummaries(gomock.Any(), testSubject, nil).
+		Return([]*model.SignalDataSummary{
+			{Name: "speed", NumberOfSignals: 10, FirstSeen: queryableSeen, LastSeen: queryableSeen},
+			{Name: "currentLocationIsRedacted", NumberOfSignals: 5, FirstSeen: staleSeen, LastSeen: staleSeen},
+		}, nil)
+	mocks.CHService.EXPECT().
+		GetEventSummaries(gomock.Any(), testSubject).
+		Return(nil, nil)
+
+	repo, err := repositories.NewRepository(mocks.CHService, baseSettings)
+	require.NoError(t, err)
+
+	result, err := repo.GetDataSummary(context.Background(), 1, nil)
+	require.NoError(t, err)
+
+	require.Equal(t, []string{"speed"}, result.AvailableSignals)
+	require.Len(t, result.SignalDataSummary, 1)
+	require.Equal(t, "speed", result.SignalDataSummary[0].Name)
+	require.Equal(t, uint64(10), result.NumberOfSignals, "counts must exclude unqueryable signals")
+	require.Equal(t, queryableSeen, result.FirstSeen, "first/last seen must exclude unqueryable signals")
+	require.Equal(t, queryableSeen, result.LastSeen)
+}
