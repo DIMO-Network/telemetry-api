@@ -360,3 +360,43 @@ func TestMCPSignalTools(t *testing.T) {
 		assert.Contains(t, text, "unauthorized")
 	})
 }
+
+// TestMCPNumericArgs covers the two argument shapes that historically broke on
+// gqlgen's Int coercion: raw telemetry_query variables, and Ints nested inside
+// object-typed shortcut args (server-garage #40).
+func TestMCPNumericArgs(t *testing.T) {
+	services := GetTestServices(t)
+	server := newMCPServer(t, services.Settings)
+	token := services.Auth.CreateVehicleToken(t, mcpTestTokenID, []string{tokenclaims.PermissionGetNonLocationHistory, tokenclaims.PermissionGetLocationHistory})
+
+	assertNoGraphQLErrors := func(t *testing.T, text string, isError bool) {
+		t.Helper()
+		require.False(t, isError, "tool error: %s", text)
+		var resp struct {
+			Errors []struct {
+				Message string `json:"message"`
+			} `json:"errors"`
+		}
+		require.NoError(t, json.Unmarshal([]byte(text), &resp))
+		require.Empty(t, resp.Errors, "GraphQL errors: %s", text)
+	}
+
+	t.Run("query tool accepts Int variables", func(t *testing.T) {
+		text, isError := callTool(t, server.URL, token, "telemetry_query", map[string]any{
+			"query":     `query($tokenId: Int!) { signalsLatest(tokenId: $tokenId) { lastSeen } }`,
+			"variables": map[string]any{"tokenId": mcpTestTokenID},
+		})
+		assertNoGraphQLErrors(t, text, isError)
+	})
+
+	t.Run("shortcut tool accepts Int nested in object arg", func(t *testing.T) {
+		text, isError := callTool(t, server.URL, token, "telemetry_get_trip_segments", map[string]any{
+			"tokenId":   mcpTestTokenID,
+			"from":      "2024-11-20T00:00:00Z",
+			"to":        "2024-11-21T00:00:00Z",
+			"mechanism": "ignitionDetection",
+			"config":    map[string]any{"maxGapSeconds": 300},
+		})
+		assertNoGraphQLErrors(t, text, isError)
+	})
+}
