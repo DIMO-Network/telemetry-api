@@ -21,6 +21,7 @@ import (
 //	  "odo": [{"ts": "RFC3339", "value": 12345.6}, ...],
 //	  "expectedStarts":   ["RFC3339", ...],   // a session must start within expectTolerance of each
 //	  "unexpectedStarts": ["RFC3339", ...],   // no session may start within expectTolerance of any
+//	  "laterWindowFrom": "RFC3339",           // optional: detection over [this, end) must not be empty
 //	  "expectedSoc": [{"start": "RFC3339", "from": 23, "to": 56}, ...]
 //	}
 const rechargeRealDataEnv = "RECHARGE_REALDATA_JSON"
@@ -40,6 +41,7 @@ type realDataExport struct {
 	Odo              []realDataSample `json:"odo"`
 	ExpectedStarts   []time.Time      `json:"expectedStarts"`
 	UnexpectedStarts []time.Time      `json:"unexpectedStarts"`
+	LaterWindowFrom  *time.Time       `json:"laterWindowFrom"` // optional: a narrower window that must still yield sessions
 	ExpectedSoc      []struct {
 		Start time.Time `json:"start"`
 		From  float64   `json:"from"`
@@ -112,6 +114,9 @@ func TestRechargeRealData(t *testing.T) {
 			}
 		}
 		cut := last.Add(-24 * time.Hour)
+		if export.LaterWindowFrom != nil {
+			cut = *export.LaterWindowFrom
+		}
 		cutSoc := soc[sort.Search(len(soc), func(i int) bool { return !soc[i].ts.Before(cut) }):]
 		cutOdo := odo[sort.Search(len(odo), func(i int) bool { return !odo[i].ts.Before(cut) }):]
 		require.NotEmpty(t, detectRechargeSessions(cutSoc, cutOdo, rechargeDefaultMinDurationSeconds, rechargeMinRisePct),

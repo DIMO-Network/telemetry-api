@@ -727,7 +727,9 @@ const (
 	// Recharge: Detects where battery state of charge rises while the vehicle is stationary.
 	// Aftermarket devices often sleep through a charge, so the segment spans from the last
 	// reading before the car stopped to the first reading after it woke: duration is an
-	// upper bound, and maxSampleGapSeconds reports the unobserved portion.
+	// upper bound, and maxSampleGapSeconds reports the unobserved portion. A session is
+	// only reported when both of those readings fall inside [from, to]. Consecutive charges
+	// at the same odometer with no drop in between are reported as one session.
 	DetectionMechanismRecharge DetectionMechanism = "recharge"
 )
 

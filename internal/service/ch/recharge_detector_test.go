@@ -184,6 +184,42 @@ func TestDetectRechargeSessions(t *testing.T) {
 		require.Equal(t, at(180), got[1].end)
 	})
 
+	t.Run("a short hop between two charges with no SoC drop yields two sessions", func(t *testing.T) {
+		// Slow charge 44->79 at home, 2 km hop (integer SoC shows no drop), fast charge 79->90.
+		soc := newSeries(base, pt{0, 44}, pt{300, 60}, pt{600, 79}, pt{640, 79}, pt{680, 85}, pt{700, 90}, pt{720, 89})
+		odo := newSeries(base, pt{0, 1000}, pt{600, 1000}, pt{620, 1001}, pt{640, 1002}, pt{700, 1002}, pt{720, 1010})
+		got := detectRechargeSessions(soc, odo, minDur, minRise)
+		require.Len(t, got, 2)
+		require.Equal(t, at(0), got[0].start)
+		require.Equal(t, at(600), got[0].end)
+		require.Equal(t, at(640), got[1].start)
+		require.Equal(t, at(700), got[1].end)
+	})
+
+	t.Run("sparse odometer does not lag the start past the arrival reading", func(t *testing.T) {
+		// Tesla shape: SoC every minute, odometer every 5 minutes. The car stops at minute 7 and
+		// starts charging at minute 9; the first stationary odometer sample is at minute 10.
+		socPts := []pt{{0, 20}, {1, 18}, {2, 17}, {3, 15}, {4, 13}, {5, 12}, {6, 12}, {7, 11}, {8, 11}}
+		for m := 9; m <= 30; m++ {
+			socPts = append(socPts, pt{float64(m), 11 + 2*float64(m-8)})
+		}
+		socPts = append(socPts, pt{45, 55}, pt{60, 55}, pt{65, 54})
+		odo := newSeries(base, pt{0, 1000}, pt{5, 1003}, pt{10, 1005.2}, pt{15, 1005.2}, pt{60, 1005.2}, pt{65, 1008})
+		got := detectRechargeSessions(newSeries(base, socPts...), odo, minDur, minRise)
+		require.Len(t, got, 1)
+		require.Equal(t, at(8), got[0].start, "start is the last 11%% reading, not the 15%% at the first stationary odometer sample")
+		require.Equal(t, at(30), got[0].end)
+	})
+
+	t.Run("duplicate timestamps do not panic and still detect the rise", func(t *testing.T) {
+		soc := newSeries(base, pt{0, 44}, pt{0, 44}, pt{600, 79}, pt{600, 79})
+		odo := newSeries(base, pt{0, 1000}, pt{0, 1000}, pt{600, 1000})
+		got := detectRechargeSessions(soc, odo, minDur, minRise)
+		require.Len(t, got, 1)
+		require.Equal(t, at(0), got[0].start)
+		require.Equal(t, at(600), got[0].end)
+	})
+
 	t.Run("fewer than two SoC samples yields nothing", func(t *testing.T) {
 		require.Empty(t, detectRechargeSessions(nil, nil, minDur, minRise))
 		require.Empty(t, detectRechargeSessions(newSeries(base, pt{0, 50}), nil, minDur, minRise))
@@ -208,6 +244,9 @@ func TestRechargeSessionsToSegments(t *testing.T) {
 
 	require.Empty(t, rechargeSessionsToSegments(nil, from))
 	require.NotNil(t, rechargeSessionsToSegments(nil, from))
+
+	atFrom := rechargeSessionsToSegments([]rechargeSession{{start: from, end: base}}, from)
+	require.True(t, atFrom[0].StartedBeforeRange)
 }
 
 func TestLevelFirstLastInRange(t *testing.T) {
