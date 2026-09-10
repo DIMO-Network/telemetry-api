@@ -142,6 +142,9 @@ type Segment struct {
 	StartedBeforeRange bool                      `json:"startedBeforeRange"`
 	Signals            []*SignalAggregationValue `json:"signals,omitempty"`
 	EventCounts        []*EventCount             `json:"eventCounts,omitempty"`
+	// Longest interval in seconds inside the segment with no state-of-charge sample.
+	// Set for recharge only (devices that sleep while charging report nothing until they wake), null otherwise.
+	MaxSampleGapSeconds *int `json:"maxSampleGapSeconds,omitempty"`
 }
 
 type SegmentConfig struct {
@@ -721,7 +724,10 @@ const (
 	DetectionMechanismIdling DetectionMechanism = "idling"
 	// Refuel: Detects where fuel level rises significantly.
 	DetectionMechanismRefuel DetectionMechanism = "refuel"
-	// Recharge: Hybrid detection. Uses charging signals and state of charge for detection.
+	// Recharge: Detects where battery state of charge rises while the vehicle is stationary.
+	// Aftermarket devices often sleep through a charge, so the segment spans from the last
+	// reading before the car stopped to the first reading after it woke: duration is an
+	// upper bound, and maxSampleGapSeconds reports the unobserved portion.
 	DetectionMechanismRecharge DetectionMechanism = "recharge"
 )
 

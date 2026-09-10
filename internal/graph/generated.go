@@ -123,13 +123,14 @@ type ComplexityRoot struct {
 	}
 
 	Segment struct {
-		Duration           func(childComplexity int) int
-		End                func(childComplexity int) int
-		EventCounts        func(childComplexity int) int
-		IsOngoing          func(childComplexity int) int
-		Signals            func(childComplexity int) int
-		Start              func(childComplexity int) int
-		StartedBeforeRange func(childComplexity int) int
+		Duration            func(childComplexity int) int
+		End                 func(childComplexity int) int
+		EventCounts         func(childComplexity int) int
+		IsOngoing           func(childComplexity int) int
+		MaxSampleGapSeconds func(childComplexity int) int
+		Signals             func(childComplexity int) int
+		Start               func(childComplexity int) int
+		StartedBeforeRange  func(childComplexity int) int
 	}
 
 	SignalAggregationValue struct {
@@ -956,6 +957,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.ComplexityRoot.Segment.IsOngoing(childComplexity), true
+	case "Segment.maxSampleGapSeconds":
+		if e.ComplexityRoot.Segment.MaxSampleGapSeconds == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Segment.MaxSampleGapSeconds(childComplexity), true
 	case "Segment.signals":
 		if e.ComplexityRoot.Segment.Signals == nil {
 			break
@@ -3615,7 +3622,10 @@ directive @mcpHide on FIELD_DEFINITION
   refuel
 
   """
-  Recharge: Hybrid detection. Uses charging signals and state of charge for detection.
+  Recharge: Detects where battery state of charge rises while the vehicle is stationary.
+  Aftermarket devices often sleep through a charge, so the segment spans from the last
+  reading before the car stopped to the first reading after it woke: duration is an
+  upper bound, and maxSampleGapSeconds reports the unobserved portion.
   """
   recharge
 }
@@ -3749,6 +3759,11 @@ type Segment {
   startedBeforeRange: Boolean!
   signals: [SignalAggregationValue!]
   eventCounts: [EventCount!]
+  """
+  Longest interval in seconds inside the segment with no state-of-charge sample.
+  Set for recharge only (devices that sleep while charging report nothing until they wake), null otherwise.
+  """
+  maxSampleGapSeconds: Int
 }
 `, BuiltIn: false},
 	{Name: "../../schema/signals-events_gen.graphqls", Input: `# Code generated  with ` + "`" + `make gql-model` + "`" + ` DO NOT EDIT.
@@ -10066,6 +10081,8 @@ func (ec *executionContext) fieldContext_Query_segments(ctx context.Context, fie
 				return ec.fieldContext_Segment_signals(ctx, field)
 			case "eventCounts":
 				return ec.fieldContext_Segment_eventCounts(ctx, field)
+			case "maxSampleGapSeconds":
+				return ec.fieldContext_Segment_maxSampleGapSeconds(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Segment", field.Name)
 		},
@@ -10582,6 +10599,35 @@ func (ec *executionContext) fieldContext_Segment_eventCounts(_ context.Context, 
 				return ec.fieldContext_EventCount_count(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type EventCount", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Segment_maxSampleGapSeconds(ctx context.Context, field graphql.CollectedField, obj *model.Segment) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Segment_maxSampleGapSeconds,
+		func(ctx context.Context) (any, error) {
+			return obj.MaxSampleGapSeconds, nil
+		},
+		nil,
+		ec.marshalOInt2ᚖint,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_Segment_maxSampleGapSeconds(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Segment",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
 		},
 	}
 	return fc, nil
@@ -29749,6 +29795,8 @@ func (ec *executionContext) _Segment(ctx context.Context, sel ast.SelectionSet, 
 			out.Values[i] = ec._Segment_signals(ctx, field, obj)
 		case "eventCounts":
 			out.Values[i] = ec._Segment_eventCounts(ctx, field, obj)
+		case "maxSampleGapSeconds":
+			out.Values[i] = ec._Segment_maxSampleGapSeconds(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
