@@ -225,6 +225,17 @@ func (r *Repository) GetSegments(ctx context.Context, tokenID int, from, to time
 	if err != nil {
 		return nil, handleDBError(ctx, err)
 	}
+	// The ClickHouse bound is truncated to microseconds, so a segment starting exactly at `after` can come back;
+	// enforce the exclusive cursor here.
+	if after != nil {
+		kept := chSegments[:0]
+		for _, seg := range chSegments {
+			if seg.Start.Timestamp.After(*after) {
+				kept = append(kept, seg)
+			}
+		}
+		chSegments = kept
+	}
 	// Apply limit before building ranges and batch queries so we don't run agg/event-count for segments we'll drop.
 	if limit != nil && len(chSegments) > *limit {
 		chSegments = chSegments[:*limit]
