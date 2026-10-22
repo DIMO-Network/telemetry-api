@@ -1,6 +1,6 @@
 module github.com/DIMO-Network/telemetry-api
 
-go 1.25.3
+go 1.27.0
 
 require (
 	github.com/99designs/gqlgen v0.17.89
@@ -26,7 +26,7 @@ require (
 	github.com/uber/h3-go/v4 v4.3.0
 	github.com/vektah/gqlparser/v2 v2.5.32
 	go.uber.org/mock v0.6.0
-	golang.org/x/sync v0.20.0
+	golang.org/x/sync v0.24.0
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20260217215200-42d3e9bedb6d
 	google.golang.org/grpc v1.79.1
 	google.golang.org/protobuf v1.36.11
@@ -129,13 +129,13 @@ require (
 	go.opentelemetry.io/otel/trace v1.42.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.yaml.in/yaml/v2 v2.4.4 // indirect
-	golang.org/x/crypto v0.49.0 // indirect
-	golang.org/x/mod v0.33.0 // indirect
-	golang.org/x/net v0.51.0 // indirect
+	golang.org/x/crypto v0.58.0 // indirect
+	golang.org/x/mod v0.42.0 // indirect
+	golang.org/x/net v0.61.0 // indirect
 	golang.org/x/oauth2 v0.36.0 // indirect
-	golang.org/x/sys v0.42.0 // indirect
-	golang.org/x/text v0.35.0 // indirect
-	golang.org/x/tools v0.42.0 // indirect
+	golang.org/x/sys v0.49.0 // indirect
+	golang.org/x/text v0.43.0 // indirect
+	golang.org/x/tools v0.52.0 // indirect
 	golang.org/x/xerrors v0.0.0-20240903120638-7835f813f4da // indirect
 	gopkg.in/go-jose/go-jose.v2 v2.6.3 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect

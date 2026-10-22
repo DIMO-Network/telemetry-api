@@ -215,7 +215,6 @@ func TestRequiresOneOfPrivilegeCheck(t *testing.T) {
 						tokenclaims.PermissionGetLocationHistory,
 						tokenclaims.PermissionGetNonLocationHistory,
 					},
-					ContractAddress: vehicleNFTAddr,
 				},
 			},
 			expectedError: false,
@@ -247,9 +246,12 @@ func TestRequiresOneOfPrivilegeCheck(t *testing.T) {
 				tokenclaims.PermissionGetNonLocationHistory,
 			},
 			telemetryClaim: &TelemetryClaim{
-				CustomClaims: tokenclaims.CustomClaims{
-					PrivilegeIDs:    nil,
+				AssetDID: cloudevent.ERC721DID{
+					ChainID:         1,
 					ContractAddress: vehicleNFTAddr,
+				},
+				CustomClaims: tokenclaims.CustomClaims{
+					Permissions: nil,
 				},
 			},
 			expectedError: true,

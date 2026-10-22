@@ -19,7 +19,7 @@ VERSION   := $(shell git describe --tags || echo "v0.0.0")
 VER_CUT   := $(shell echo $(VERSION) | cut -c2-)
 
 # Dependency versions
-GOLANGCI_VERSION   = v2.12.1
+GOLANGCI_VERSION   = v2.15.0
 MODEL_GARAGE_VERSION = $(shell go list -m -f '{{.Version}}' github.com/DIMO-Network/model-garage)
 help:
 	@echo "\nSpecify a subcommand:\n"
