@@ -1,4 +1,4 @@
-FROM golang:1.25-bookworm AS build
+FROM golang:1.27 AS build
 
 RUN useradd -u 10001 dimo
 
