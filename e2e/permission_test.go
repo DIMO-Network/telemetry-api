@@ -151,7 +151,89 @@ func TestPermission(t *testing.T) {
 				}
 			}`,
 			permissions: []string{tokenclaims.PermissionGetNonLocationHistory},
-			expectedErr: "unauthorized: missing required privilege(s) privilege:GetLocationHistory",
+			expectedErr: "unauthorized: requires at least one of the following privileges [privilege:GetLocationHistory privilege:GetApproximateLocation]",
+		},
+		{
+			name:    "Segments approximate location success",
+			tokenID: 39718,
+			query: `query {
+				segments(
+					tokenId: 39718
+					from: "2023-01-01T00:00:00Z"
+					to: "2023-01-02T00:00:00Z"
+					mechanism: ignitionDetection
+				) {
+					start { timestamp value { latitude longitude } }
+					end { timestamp value { latitude longitude } }
+				}
+			}`,
+			permissions: []string{tokenclaims.PermissionGetApproximateLocation, tokenclaims.PermissionGetNonLocationHistory},
+		},
+		{
+			name:    "Segments approximate location rejects location signal request",
+			tokenID: 39718,
+			query: `query {
+				segments(
+					tokenId: 39718
+					from: "2023-01-01T00:00:00Z"
+					to: "2023-01-02T00:00:00Z"
+					mechanism: ignitionDetection
+					signalRequests: [{ name: "currentLocationAltitude", agg: AVG }]
+				) {
+					start { timestamp }
+				}
+			}`,
+			permissions: []string{tokenclaims.PermissionGetApproximateLocation, tokenclaims.PermissionGetNonLocationHistory},
+			expectedErr: "unauthorized: missing required privilege(s) privilege:GetLocationHistory for signal currentLocationAltitude in signalRequests",
+		},
+		{
+			name:    "Segments approximate location rejects event requests",
+			tokenID: 39718,
+			query: `query {
+				segments(
+					tokenId: 39718
+					from: "2023-01-01T00:00:00Z"
+					to: "2023-01-02T00:00:00Z"
+					mechanism: ignitionDetection
+					eventRequests: [{ name: "behavior.harshBraking" }]
+				) {
+					start { timestamp }
+				}
+			}`,
+			permissions: []string{tokenclaims.PermissionGetApproximateLocation, tokenclaims.PermissionGetNonLocationHistory},
+			expectedErr: "unauthorized: missing required privilege(s) privilege:GetLocationHistory for eventRequests",
+		},
+		{
+			name:    "Segments approximate location without non-location",
+			tokenID: 39718,
+			query: `query {
+				segments(
+					tokenId: 39718
+					from: "2023-01-01T00:00:00Z"
+					to: "2023-01-02T00:00:00Z"
+					mechanism: ignitionDetection
+				) {
+					start { timestamp }
+				}
+			}`,
+			permissions: []string{tokenclaims.PermissionGetApproximateLocation},
+			expectedErr: "unauthorized: missing required privilege(s) privilege:GetNonLocationHistory",
+		},
+		{
+			name:    "Daily activity approximate location success",
+			tokenID: 39718,
+			query: `query {
+				dailyActivity(
+					tokenId: 39718
+					from: "2023-01-01T00:00:00Z"
+					to: "2023-01-02T00:00:00Z"
+					mechanism: ignitionDetection
+				) {
+					segmentCount
+					start { timestamp value { latitude longitude } }
+				}
+			}`,
+			permissions: []string{tokenclaims.PermissionGetApproximateLocation, tokenclaims.PermissionGetNonLocationHistory},
 		},
 		{
 			name:    "Segments permissions missing non-location",
