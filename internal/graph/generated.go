@@ -3651,6 +3651,12 @@ extend type Query {
   Each segment includes summary: signals, start/end location, and (when requested) eventCounts.
   A default set of signal requests is always applied (e.g. speed, odometer; for refuel/recharge also the level signal at start and end).
   When signalRequests is provided, those requests are added on top of the default set; duplicates (same name and agg) are omitted.
+
+  Required Privileges: VEHICLE_NON_LOCATION_DATA and one of [VEHICLE_ALL_TIME_LOCATION VEHICLE_APPROXIMATE_LOCATION].
+  With VEHICLE_ALL_TIME_LOCATION, start/end values are exact coordinates. With only VEHICLE_APPROXIMATE_LOCATION,
+  they are the center of the H3 cell (resolution 6) containing the exact coordinates, the same approximation used by
+  currentLocationApproximateCoordinates. A signalRequest for a signal the caller lacks privileges for is rejected,
+  and eventRequests require VEHICLE_ALL_TIME_LOCATION, as the events query does.
   """
   segments(
     tokenId: Int!
@@ -3669,14 +3675,16 @@ extend type Query {
     Pass the startTime of the last segment from the previous page for the next page.
     """
     after: Time
-  ): [Segment!]! @requiresVehicleToken @requiresAllOfPrivileges(privileges: [VEHICLE_ALL_TIME_LOCATION, VEHICLE_NON_LOCATION_DATA])
-    @mcpTool(name: "get_trip_segments", description: "Get vehicle trip/activity segments detected using a specified mechanism (frequencyAnalysis, ignitionDetection, changePointDetection, idling, refuel, recharge). Returns start/end locations, duration, and optional signal aggregates and event counts. Maximum date range: 31 days.", selection: "start { timestamp value { latitude longitude } } end { timestamp value { latitude longitude } } duration isOngoing startedBeforeRange signals { name agg value } eventCounts { name count }")
+  ): [Segment!]! @requiresVehicleToken @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @requiresOneOfPrivilege(privileges: [VEHICLE_ALL_TIME_LOCATION, VEHICLE_APPROXIMATE_LOCATION])
+    @mcpTool(name: "get_trip_segments", description: "Get vehicle trip/activity segments detected using a specified mechanism (frequencyAnalysis, ignitionDetection, changePointDetection, idling, refuel, recharge). Returns start/end locations (approximate if the token only grants approximate location), duration, and optional signal aggregates and event counts. Maximum date range: 31 days.", selection: "start { timestamp value { latitude longitude } } end { timestamp value { latitude longitude } } duration isOngoing startedBeforeRange signals { name agg value } eventCounts { name count }")
     @mcpExample(description: "Trip segments with start/end locations and signal aggregates", query: "query Trips($tokenId:Int!,$from:Time!,$to:Time!) { segments(tokenId:$tokenId,from:$from,to:$to,mechanism:frequencyAnalysis) { start{timestamp value{latitude longitude}} end{timestamp value{latitude longitude}} duration isOngoing signals{name agg value} eventCounts{name count} } }")
 
   """
   Returns one record per calendar day in the date range.
   Mechanism must be ignitionDetection, frequencyAnalysis, or changePointDetection (idling, refuel, and recharge not allowed).
   Maximum date range: 31 days.
+
+  Required Privileges: same as segments. With only VEHICLE_APPROXIMATE_LOCATION, start/end values are approximate.
   """
   dailyActivity(
     tokenId: Int!
@@ -3687,7 +3695,7 @@ extend type Query {
     signalRequests: [SegmentSignalRequest!]
     eventRequests: [SegmentEventRequest!]
     timezone: String
-  ): [DailyActivity!]! @requiresVehicleToken @requiresAllOfPrivileges(privileges: [VEHICLE_ALL_TIME_LOCATION, VEHICLE_NON_LOCATION_DATA])
+  ): [DailyActivity!]! @requiresVehicleToken @requiresAllOfPrivileges(privileges: [VEHICLE_NON_LOCATION_DATA]) @requiresOneOfPrivilege(privileges: [VEHICLE_ALL_TIME_LOCATION, VEHICLE_APPROXIMATE_LOCATION])
     @mcpTool(name: "get_daily_activity", description: "Get per-day driving activity summaries for a vehicle. Returns segment count, total active duration, and signal aggregates per day. Maximum date range: 31 days.", selection: "segmentCount duration signals { name agg value } eventCounts { name count }")
     @mcpExample(description: "Daily activity summaries", query: "query Daily($tokenId:Int!,$from:Time!,$to:Time!) { dailyActivity(tokenId:$tokenId,from:$from,to:$to,mechanism:frequencyAnalysis) { segmentCount duration signals{name agg value} eventCounts{name count} } }")
 }
@@ -10040,7 +10048,7 @@ func (ec *executionContext) _Query_segments(ctx context.Context, field graphql.C
 				return ec.Directives.RequiresVehicleToken(ctx, nil, directive0)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_ALL_TIME_LOCATION", "VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal []*model.Segment
 					return zeroVal, err
@@ -10051,8 +10059,20 @@ func (ec *executionContext) _Query_segments(ctx context.Context, field graphql.C
 				}
 				return ec.Directives.RequiresAllOfPrivileges(ctx, nil, directive1, privileges)
 			}
+			directive3 := func(ctx context.Context) (any, error) {
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_ALL_TIME_LOCATION", "VEHICLE_APPROXIMATE_LOCATION"})
+				if err != nil {
+					var zeroVal []*model.Segment
+					return zeroVal, err
+				}
+				if ec.Directives.RequiresOneOfPrivilege == nil {
+					var zeroVal []*model.Segment
+					return zeroVal, errors.New("directive requiresOneOfPrivilege is not implemented")
+				}
+				return ec.Directives.RequiresOneOfPrivilege(ctx, nil, directive2, privileges)
+			}
 
-			next = directive2
+			next = directive3
 			return next
 		},
 		ec.marshalNSegment2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐSegmentᚄ,
@@ -10124,7 +10144,7 @@ func (ec *executionContext) _Query_dailyActivity(ctx context.Context, field grap
 				return ec.Directives.RequiresVehicleToken(ctx, nil, directive0)
 			}
 			directive2 := func(ctx context.Context) (any, error) {
-				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_ALL_TIME_LOCATION", "VEHICLE_NON_LOCATION_DATA"})
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_NON_LOCATION_DATA"})
 				if err != nil {
 					var zeroVal []*model.DailyActivity
 					return zeroVal, err
@@ -10135,8 +10155,20 @@ func (ec *executionContext) _Query_dailyActivity(ctx context.Context, field grap
 				}
 				return ec.Directives.RequiresAllOfPrivileges(ctx, nil, directive1, privileges)
 			}
+			directive3 := func(ctx context.Context) (any, error) {
+				privileges, err := ec.unmarshalNPrivilege2ᚕstringᚄ(ctx, []any{"VEHICLE_ALL_TIME_LOCATION", "VEHICLE_APPROXIMATE_LOCATION"})
+				if err != nil {
+					var zeroVal []*model.DailyActivity
+					return zeroVal, err
+				}
+				if ec.Directives.RequiresOneOfPrivilege == nil {
+					var zeroVal []*model.DailyActivity
+					return zeroVal, errors.New("directive requiresOneOfPrivilege is not implemented")
+				}
+				return ec.Directives.RequiresOneOfPrivilege(ctx, nil, directive2, privileges)
+			}
 
-			next = directive2
+			next = directive3
 			return next
 		},
 		ec.marshalNDailyActivity2ᚕᚖgithubᚗcomᚋDIMOᚑNetworkᚋtelemetryᚑapiᚋinternalᚋgraphᚋmodelᚐDailyActivityᚄ,

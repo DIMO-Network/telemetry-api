@@ -14,10 +14,38 @@ import (
 
 // Segments is the resolver for the segments field.
 func (r *queryResolver) Segments(ctx context.Context, tokenID int, from time.Time, to time.Time, mechanism model.DetectionMechanism, config *model.SegmentConfig, signalRequests []*model.SegmentSignalRequest, eventRequests []*model.SegmentEventRequest, limit *int, after *time.Time) ([]*model.Segment, error) {
-	return r.BaseRepo.GetSegments(ctx, tokenID, from, to, mechanism, config, signalRequests, eventRequests, limit, after)
+	permissions := callerPermissions(ctx)
+	if err := checkSegmentSignalRequests(ctx, signalRequests, permissions); err != nil {
+		return nil, err
+	}
+	if err := checkSegmentEventRequests(ctx, eventRequests, permissions); err != nil {
+		return nil, err
+	}
+	segments, err := r.BaseRepo.GetSegments(ctx, tokenID, from, to, mechanism, config, signalRequests, eventRequests, limit, after)
+	if err != nil {
+		return nil, err
+	}
+	if !hasExactLocation(permissions) {
+		approximateSegmentLocations(segments)
+	}
+	return segments, nil
 }
 
 // DailyActivity is the resolver for the dailyActivity field.
 func (r *queryResolver) DailyActivity(ctx context.Context, tokenID int, from time.Time, to time.Time, mechanism model.DetectionMechanism, config *model.SegmentConfig, signalRequests []*model.SegmentSignalRequest, eventRequests []*model.SegmentEventRequest, timezone *string) ([]*model.DailyActivity, error) {
-	return r.BaseRepo.GetDailyActivity(ctx, tokenID, from, to, mechanism, config, signalRequests, eventRequests, timezone)
+	permissions := callerPermissions(ctx)
+	if err := checkSegmentSignalRequests(ctx, signalRequests, permissions); err != nil {
+		return nil, err
+	}
+	if err := checkSegmentEventRequests(ctx, eventRequests, permissions); err != nil {
+		return nil, err
+	}
+	days, err := r.BaseRepo.GetDailyActivity(ctx, tokenID, from, to, mechanism, config, signalRequests, eventRequests, timezone)
+	if err != nil {
+		return nil, err
+	}
+	if !hasExactLocation(permissions) {
+		approximateDailyActivityLocations(days)
+	}
+	return days, nil
 }
