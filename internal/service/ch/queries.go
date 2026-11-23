@@ -205,7 +205,7 @@ func selectLocationAggs(stringAggs []model.LocationSignalArgs) qm.QueryMod {
 	}
 	caseStmts := make([]string, 0, len(stringAggs))
 	for i, agg := range stringAggs {
-		caseStmts = append(caseStmts, fmt.Sprintf("WHEN %s = %d AND %s = %d THEN %s", signalTypeCol, LocType, signalIndexCol, i, getLocationAgg(agg.Agg)))
+		caseStmts = append(caseStmts, fmt.Sprintf("WHEN %s = %d AND %s = %d THEN %s", signalTypeCol, LocType, signalIndexCol, i, getLocationAgg(agg.Agg, agg.PreferFix)))
 	}
 	caseStmt := fmt.Sprintf("CASE %s ELSE %s END AS %s", strings.Join(caseStmts, " "), locationZeroTuple, AggLocationCol)
 	return qm.Select(caseStmt)
@@ -234,8 +234,8 @@ func getStringAgg(aggType model.StringAggregation) string {
 	return aggStr
 }
 
-func getLocationAgg(aggType model.LocationAggregation) string {
-	return locationAggExpr(vss.ValueLocationCol, vss.TimestampCol, aggType)
+func getLocationAgg(aggType model.LocationAggregation, preferFix bool) string {
+	return locationAggExpr(vss.ValueLocationCol, vss.TimestampCol, aggType, preferFix)
 }
 
 // floatAggExpr returns the aggregation expression for a float agg type using the given column exprs (e.g. value_number and timestamp, optionally qualified).
@@ -261,15 +261,24 @@ func floatAggExpr(valueNumberExpr, timestampExpr string, aggType model.FloatAggr
 }
 
 // locationAggExpr returns the aggregation expression for a location agg type using the given column exprs.
-func locationAggExpr(valueLocationExpr, timestampExpr string, aggType model.LocationAggregation) string {
+// When preferFix is set, FIRST and LAST use only samples with a GPS fix (hdop != 0) if the group has any.
+func locationAggExpr(valueLocationExpr, timestampExpr string, aggType model.LocationAggregation, preferFix bool) string {
+	// tupleElement rather than valueLocationExpr+".hdop": the batch query qualifies the column as batch_inner.value_location.
+	fix := "tupleElement(" + valueLocationExpr + ", 'hdop') != 0"
 	switch aggType {
 	case model.LocationAggregationAvg:
 		return "CAST(tuple(avg(" + valueLocationExpr + ".latitude), avg(" + valueLocationExpr + ".longitude), avg(" + valueLocationExpr + ".hdop), avg(" + valueLocationExpr + ".heading)), '" + locationTupleType + "')"
 	case model.LocationAggregationRand:
 		return fmt.Sprintf("groupArraySample(1, %d)("+valueLocationExpr+")[1]", time.Now().UnixMilli())
 	case model.LocationAggregationFirst:
+		if preferFix {
+			return "if(countIf(" + fix + ") > 0, argMinIf(" + valueLocationExpr + ", " + timestampExpr + ", " + fix + "), argMin(" + valueLocationExpr + ", " + timestampExpr + "))"
+		}
 		return "argMin(" + valueLocationExpr + ", " + timestampExpr + ")"
 	case model.LocationAggregationLast:
+		if preferFix {
+			return "if(countIf(" + fix + ") > 0, argMaxIf(" + valueLocationExpr + ", " + timestampExpr + ", " + fix + "), argMax(" + valueLocationExpr + ", " + timestampExpr + "))"
+		}
 		return "argMax(" + valueLocationExpr + ", " + timestampExpr + ")"
 	default:
 		return "argMin(" + valueLocationExpr + ", " + timestampExpr + ")"
@@ -317,7 +326,7 @@ func batchLocationCaseExprWithAlias(alias string, locationArgs []model.LocationS
 	}
 	parts := make([]string, 0, len(locationArgs))
 	for i, agg := range locationArgs {
-		expr := locationAggExpr(vLoc, ts, agg.Agg)
+		expr := locationAggExpr(vLoc, ts, agg.Agg, agg.PreferFix)
 		parts = append(parts, fmt.Sprintf("WHEN %s = %d AND %s = %d THEN %s", typeCol, LocType, indexCol, i, expr))
 	}
 	return fmt.Sprintf("CASE %s ELSE %s END AS %s", strings.Join(parts, " "), locationZeroTuple, AggLocationCol)

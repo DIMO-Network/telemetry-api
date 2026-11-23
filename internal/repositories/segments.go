@@ -149,8 +149,8 @@ func buildAggArgs(signalReqs []*model.SegmentSignalRequest) ([]model.FloatSignal
 		})
 	}
 	locationArgs := []model.LocationSignalArgs{
-		{Name: vss.FieldCurrentLocationCoordinates, Agg: model.LocationAggregationFirst, Alias: "startLoc"},
-		{Name: vss.FieldCurrentLocationCoordinates, Agg: model.LocationAggregationLast, Alias: "endLoc"},
+		{Name: vss.FieldCurrentLocationCoordinates, Agg: model.LocationAggregationFirst, Alias: "startLoc", PreferFix: true},
+		{Name: vss.FieldCurrentLocationCoordinates, Agg: model.LocationAggregationLast, Alias: "endLoc", PreferFix: true},
 	}
 	return floatArgs, locationArgs
 }

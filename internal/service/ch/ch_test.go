@@ -26,6 +26,7 @@ const (
 
 	testSubject1   = "did:erc721:137:0xbA5738a18d83D41847dfFbDC6101d37C69c9B0cF:1"
 	testSubject2   = "did:erc721:137:0xbA5738a18d83D41847dfFbDC6101d37C69c9B0cF:2"
+	testSubject3   = "did:erc721:137:0xbA5738a18d83D41847dfFbDC6101d37C69c9B0cF:3"
 	testSubject100 = "did:erc721:137:0xbA5738a18d83D41847dfFbDC6101d37C69c9B0cF:100"
 )
 
@@ -1029,6 +1030,86 @@ func (c *CHServiceTestSuite) TestOriginGrouping() {
 
 	// Verify the average value (should be 100.0 since all values are 100.0)
 	c.Require().Equal(100.0, result[0].ValueNumber, "Unexpected average value")
+}
+
+func (c *CHServiceTestSuite) TestLocationPreferFix() {
+	ctx := context.Background()
+	conn, err := c.container.GetClickHouseAsConn()
+	c.Require().NoError(err, "Failed to get clickhouse connection")
+
+	t0 := c.dataStartTime.Add(48 * time.Hour)
+	pts := []struct {
+		offset time.Duration
+		loc    vss.Location
+	}{
+		{0, vss.Location{Latitude: 1, Longitude: 1, HDOP: 0}},
+		{1 * time.Second, vss.Location{Latitude: 2, Longitude: 2, HDOP: 0.7}},
+		{2 * time.Second, vss.Location{Latitude: 3, Longitude: 3, HDOP: 0.5}},
+		{3 * time.Second, vss.Location{Latitude: 4, Longitude: 4, HDOP: 0}},
+		{60 * time.Second, vss.Location{Latitude: 9, Longitude: 9, HDOP: 0}},
+		{61 * time.Second, vss.Location{Latitude: 10, Longitude: 10, HDOP: 0}},
+	}
+	sigCols := strings.Join(vss.SignalColNames(), ", ")
+	batch, err := conn.PrepareBatch(ctx, fmt.Sprintf("INSERT INTO %s (%s)", vss.TableName, sigCols))
+	c.Require().NoError(err, "Failed to prepare batch")
+	for _, p := range pts {
+		sig := vss.Signal{
+			CloudEventHeader: cloudevent.CloudEventHeader{Source: "test/prefer-fix", Subject: testSubject3},
+			Data: vss.SignalData{
+				Name:          vss.FieldCurrentLocationCoordinates,
+				Timestamp:     t0.Add(p.offset),
+				ValueLocation: p.loc,
+			},
+		}
+		c.Require().NoError(batch.Append(vss.SignalToSlice(sig)...))
+	}
+	c.Require().NoError(batch.Send())
+
+	agg := func(a model.LocationAggregation, preferFix bool) []model.LocationSignalArgs {
+		return []model.LocationSignalArgs{{Name: vss.FieldCurrentLocationCoordinates, Agg: a, Alias: "loc", PreferFix: preferFix}}
+	}
+	singleAt := func(from time.Duration, a model.LocationAggregation, preferFix bool) vss.Location {
+		res, err := c.chService.GetAggregatedSignals(ctx, testSubject3, &model.AggregatedSignalArgs{
+			SignalArgs:   model.SignalArgs{TokenID: 3},
+			FromTS:       t0.Add(from),
+			ToTS:         t0.Add(from + 10*time.Second),
+			Interval:     day.Microseconds(),
+			LocationArgs: agg(a, preferFix),
+		})
+		c.Require().NoError(err)
+		c.Require().Len(res, 1)
+		return res[0].ValueLocation
+	}
+	single := func(a model.LocationAggregation, preferFix bool) vss.Location {
+		return singleAt(0, a, preferFix)
+	}
+	first := single(model.LocationAggregationFirst, true)
+	c.Require().Equal([]float64{2, 2}, []float64{first.Latitude, first.Longitude}, "FIRST+PreferFix")
+	last := single(model.LocationAggregationLast, true)
+	c.Require().Equal([]float64{3, 3}, []float64{last.Latitude, last.Longitude}, "LAST+PreferFix")
+	plain := single(model.LocationAggregationFirst, false)
+	c.Require().Equal([]float64{1, 1}, []float64{plain.Latitude, plain.Longitude}, "FIRST without PreferFix")
+	// A range whose only rows have no fix falls back to them.
+	noFixFirst := singleAt(60*time.Second, model.LocationAggregationFirst, true)
+	c.Require().Equal([]float64{9, 9}, []float64{noFixFirst.Latitude, noFixFirst.Longitude}, "FIRST+PreferFix, no fix in range")
+	noFixLast := singleAt(60*time.Second, model.LocationAggregationLast, true)
+	c.Require().Equal([]float64{10, 10}, []float64{noFixLast.Latitude, noFixLast.Longitude}, "LAST+PreferFix, no fix in range")
+
+	ranges := []TimeRange{{From: t0, To: t0.Add(10 * time.Second)}, {From: t0.Add(60 * time.Second), To: t0.Add(70 * time.Second)}}
+	locArgs := []model.LocationSignalArgs{
+		{Name: vss.FieldCurrentLocationCoordinates, Agg: model.LocationAggregationFirst, Alias: "first", PreferFix: true},
+		{Name: vss.FieldCurrentLocationCoordinates, Agg: model.LocationAggregationLast, Alias: "last", PreferFix: true},
+	}
+	rows, err := c.chService.GetAggregatedSignalsForRanges(ctx, testSubject3, ranges, t0, t0.Add(70*time.Second), nil, locArgs)
+	c.Require().NoError(err)
+	got := map[[2]int][]float64{}
+	for _, r := range rows {
+		got[[2]int{r.SegIndex, int(r.SignalIndex)}] = []float64{r.ValueLocation.Latitude, r.ValueLocation.Longitude}
+	}
+	c.Require().Equal([]float64{2, 2}, got[[2]int{0, 0}], "range 0 first")
+	c.Require().Equal([]float64{3, 3}, got[[2]int{0, 1}], "range 0 last")
+	c.Require().Equal([]float64{9, 9}, got[[2]int{1, 0}], "range 1 first")
+	c.Require().Equal([]float64{10, 10}, got[[2]int{1, 1}], "range 1 last")
 }
 
 func (c *CHServiceTestSuite) TestGetEvents() {

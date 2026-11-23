@@ -72,6 +72,8 @@ type LocationSignalArgs struct {
 	// Filter optionally constrains the values fed into the aggregation. This will always
 	// be null for approximate location queries.
 	Filter *SignalLocationFilter
+	// PreferFix makes FIRST and LAST skip samples without a GPS fix (hdop 0) when the group has at least one with a fix.
+	PreferFix bool
 }
 
 // FloatSignalArgs is the arguments for querying a float signals.
