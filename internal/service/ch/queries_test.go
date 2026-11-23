@@ -3,9 +3,11 @@ package ch
 import (
 	"testing"
 
+	"github.com/DIMO-Network/model-garage/pkg/vss"
 	"github.com/DIMO-Network/telemetry-api/internal/graph/model"
 	"github.com/aarondl/sqlboiler/v4/queries/qm"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestWithSource(t *testing.T) {
@@ -89,4 +91,15 @@ func TestSummaryQueriesReadSummaryTables(t *testing.T) {
 	ev, _ := getEventSummariesQuery("subj")
 	assert.Contains(t, ev, "FROM `event_summary`")
 	assert.Contains(t, ev, "sum(count)")
+}
+
+func TestLocationAggExprPreferFix(t *testing.T) {
+	v, ts := vss.ValueLocationCol, vss.TimestampCol
+	fix := "tupleElement(" + v + ", 'hdop') != 0" // tupleElement, not v+".hdop": the batch query qualifies v as batch_inner.value_location
+	require.Equal(t, "argMin("+v+", "+ts+")", locationAggExpr(v, ts, model.LocationAggregationFirst, false))
+	require.Equal(t, "if(countIf("+fix+") > 0, argMinIf("+v+", "+ts+", "+fix+"), argMin("+v+", "+ts+"))",
+		locationAggExpr(v, ts, model.LocationAggregationFirst, true))
+	require.Equal(t, "if(countIf("+fix+") > 0, argMaxIf("+v+", "+ts+", "+fix+"), argMax("+v+", "+ts+"))",
+		locationAggExpr(v, ts, model.LocationAggregationLast, true))
+	require.Equal(t, locationAggExpr(v, ts, model.LocationAggregationAvg, false), locationAggExpr(v, ts, model.LocationAggregationAvg, true))
 }
