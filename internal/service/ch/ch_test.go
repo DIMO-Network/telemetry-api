@@ -1068,11 +1068,11 @@ func (c *CHServiceTestSuite) TestLocationPreferFix() {
 	agg := func(a model.LocationAggregation, preferFix bool) []model.LocationSignalArgs {
 		return []model.LocationSignalArgs{{Name: vss.FieldCurrentLocationCoordinates, Agg: a, Alias: "loc", PreferFix: preferFix}}
 	}
-	single := func(a model.LocationAggregation, preferFix bool) vss.Location {
+	singleAt := func(from time.Duration, a model.LocationAggregation, preferFix bool) vss.Location {
 		res, err := c.chService.GetAggregatedSignals(ctx, testSubject3, &model.AggregatedSignalArgs{
 			SignalArgs:   model.SignalArgs{TokenID: 3},
-			FromTS:       t0,
-			ToTS:         t0.Add(10 * time.Second),
+			FromTS:       t0.Add(from),
+			ToTS:         t0.Add(from + 10*time.Second),
 			Interval:     day.Microseconds(),
 			LocationArgs: agg(a, preferFix),
 		})
@@ -1080,12 +1080,20 @@ func (c *CHServiceTestSuite) TestLocationPreferFix() {
 		c.Require().Len(res, 1)
 		return res[0].ValueLocation
 	}
+	single := func(a model.LocationAggregation, preferFix bool) vss.Location {
+		return singleAt(0, a, preferFix)
+	}
 	first := single(model.LocationAggregationFirst, true)
 	c.Require().Equal([]float64{2, 2}, []float64{first.Latitude, first.Longitude}, "FIRST+PreferFix")
 	last := single(model.LocationAggregationLast, true)
 	c.Require().Equal([]float64{3, 3}, []float64{last.Latitude, last.Longitude}, "LAST+PreferFix")
 	plain := single(model.LocationAggregationFirst, false)
 	c.Require().Equal([]float64{1, 1}, []float64{plain.Latitude, plain.Longitude}, "FIRST without PreferFix")
+	// A range whose only rows have no fix falls back to them.
+	noFixFirst := singleAt(60*time.Second, model.LocationAggregationFirst, true)
+	c.Require().Equal([]float64{9, 9}, []float64{noFixFirst.Latitude, noFixFirst.Longitude}, "FIRST+PreferFix, no fix in range")
+	noFixLast := singleAt(60*time.Second, model.LocationAggregationLast, true)
+	c.Require().Equal([]float64{10, 10}, []float64{noFixLast.Latitude, noFixLast.Longitude}, "LAST+PreferFix, no fix in range")
 
 	ranges := []TimeRange{{From: t0, To: t0.Add(10 * time.Second)}, {From: t0.Add(60 * time.Second), To: t0.Add(70 * time.Second)}}
 	locArgs := []model.LocationSignalArgs{

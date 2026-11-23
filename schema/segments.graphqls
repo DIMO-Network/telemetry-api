@@ -58,6 +58,7 @@ extend type Query {
   is captured in the underlying data source.
 
   Each segment includes summary: signals, start/end location, and (when requested) eventCounts.
+  Start and end locations are the first and last location with a GPS fix (hdop != 0) in the range, or the first and last location of any kind when none has a fix.
   A default set of signal requests is always applied (e.g. speed, odometer; for refuel/recharge also the level signal at start and end).
   When signalRequests is provided, those requests are added on top of the default set; duplicates (same name and agg) are omitted.
 
@@ -92,6 +93,7 @@ extend type Query {
   Returns one record per calendar day in the date range.
   Mechanism must be ignitionDetection, frequencyAnalysis, or changePointDetection (idling, refuel, and recharge not allowed).
   Maximum date range: 31 days.
+  Start and end locations are the first and last location with a GPS fix (hdop != 0) in the range, or the first and last location of any kind when none has a fix.
 
   Required Privileges: same as segments. With only VEHICLE_APPROXIMATE_LOCATION, start/end values are approximate.
   """
